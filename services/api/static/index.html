@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform AI — Interactive Test Console</title>
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-secondary: #101522;
+      --bg-card: rgba(20, 27, 44, 0.7);
+      --bg-card-hover: rgba(28, 38, 62, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(99, 102, 241, 0.4);
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-danger: #ef4444;
+      --accent-cyan: #06b6d4;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-stack);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-glow {
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Navbar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(10, 13, 20, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      font-size: 1.1rem;
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      font-weight: 600;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Status Pill */
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-success);
+      box-shadow: 0 0 8px var(--accent-success);
+    }
+
+    .status-dot.degraded {
+      background: var(--accent-warning);
+      box-shadow: 0 0 8px var(--accent-warning);
+    }
+
+    .status-dot.offline {
+      background: var(--accent-danger);
+      box-shadow: 0 0 8px var(--accent-danger);
+    }
+
+    /* Tenant Selector Bar */
+    .tenant-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-secondary);
+      padding: 4px 6px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .tenant-select {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 4px 8px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .tenant-select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .api-key-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-family: monospace;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .api-key-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Main Container & Tabs */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      color: #ffffff;
+      background: var(--accent-gradient);
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Tab Content Layouts */
+    .tab-pane {
+      display: none;
+      gap: 24px;
+    }
+
+    .tab-pane.active {
+      display: flex;
+    }
+
+    /* Chat Tab Layout */
+    .chat-container {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 20px;
+      width: 100%;
+      min-height: 680px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .setting-group {
+      margin-bottom: 18px;
+    }
+
+    .setting-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    select.form-control, input.form-control, textarea.form-control {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select.form-control:focus, input.form-control:focus, textarea.form-control:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .toggle-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .toggle-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Range Sliders */
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type=range] {
+      flex: 1;
+      accent-color: var(--accent-primary);
+    }
+
+    /* Chat Messages Window */
+    .chat-window {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msg-bubble {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-bubble.user {
+      align-self: flex-end;
+    }
+
+    .msg-bubble.assistant {
+      align-self: flex-start;
+    }
+
+    .msg-header {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .msg-content {
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg-bubble.user .msg-content {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+
+    .msg-bubble.assistant .msg-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* RAG Context Citation Box */
+    .context-badge {
+      font-size: 0.75rem;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-success);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      margin-top: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .context-details {
+      display: none;
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(0, 0, 0, 0.3);
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      border-left: 2px solid var(--accent-success);
+    }
+
+    /* Chat Input Area */
+    .input-area {
+      border-top: 1px solid var(--border-color);
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      background: rgba(16, 21, 34, 0.6);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+    }
+
+    .input-area textarea {
+      flex: 1;
+      height: 52px;
+      resize: none;
+    }
+
+    .btn-send {
+      background: var(--accent-gradient);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-weight: 700;
+      padding: 0 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn-send:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-send:active {
+      transform: translateY(0);
+    }
+
+    .btn-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Prompt Suggestions */
+    .suggestions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .suggestion-chip {
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 5px 12px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .suggestion-chip:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: var(--accent-primary);
+      color: #ffffff;
+    }
+
+    /* Document Tab Grid */
+    .docs-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.35);
+    }
+
+    /* Document List Table */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-primary);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* API Explorer Tab */
+    .api-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .curl-box {
+      background: #050811;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .json-box {
+      background: #050811;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.82rem;
+      color: #a7f3d0;
+      max-height: 400px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 16px 28px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+
+  <!-- Navbar -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <span class="brand-title">Platform AI</span>
+        <span class="brand-badge">PostgreSQL pgvector + Gemma 4 T4 GPU</span>
+      </div>
+    </div>
+
+    <div class="top-controls">
+      <!-- Tenant Selector Preset -->
+      <div class="tenant-bar">
+        <label for="tenantPreset" style="font-size: 0.75rem; color: var(--text-muted); font-weight:600;">TENANT:</label>
+        <select id="tenantPreset" class="tenant-select" onchange="onTenantPresetChange()">
+          <option value="alpha">Tenant Alpha (Active)</option>
+          <option value="beta">Tenant Beta (Isolation Test)</option>
+          <option value="custom">Custom Key...</option>
+        </select>
+        <input type="text" id="activeApiKey" class="api-key-input" placeholder="Bearer API Key" value="sk-live-tenant-a-aurora-key-987">
+      </div>
+
+      <!-- Health Pill -->
+      <div class="status-pill" id="healthPill" title="Server Connectivity">
+        <div class="status-dot" id="healthDot"></div>
+        <span id="healthText">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('chatTab', this)">💬 Chat & Gemma RAG</button>
+      <button class="tab-btn" onclick="switchTab('docsTab', this)">📚 Knowledge Base (pgvector)</button>
+      <button class="tab-btn" onclick="switchTab('audioTab', this)">🎙️ Audio AI Studio</button>
+      <button class="tab-btn" onclick="switchTab('apiTab', this)">⚡ API Explorer & cURL</button>
+    </div>
+
+    <!-- TAB 1: Chat Playground -->
+    <div id="chatTab" class="tab-pane active">
+      <div class="chat-container">
+        <!-- Sidebar Settings -->
+        <div class="card">
+          <div class="card-header">
+            <span>Model & Inference</span>
+            <span id="activeModelBadge" class="brand-badge">GPU</span>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label" for="modelSelect">Select Model Alias</label>
+            <select id="modelSelect" class="form-control" onchange="updateModelBadge()">
+              <option value="gemma-gpu" selected>gemma-gpu (Live Gemma 4 E2B on T4 GPU)</option>
+              <option value="local-smoke">local-smoke (Local Weights SmolLM-135M)</option>
+              <option value="mock-chat">mock-chat (Instant Offline Mock)</option>
+              <option value="general-chat">general-chat (Hosted OpenAI compatible)</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-title">PostgreSQL RAG</div>
+                <div class="toggle-subtitle">Augment with tenant pgvector chunks</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="ragToggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-title">Streaming (SSE)</div>
+                <div class="toggle-subtitle">Stream tokens incrementally</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="streamToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label">
+              <span>Max Tokens</span>
+              <span id="maxTokensVal">128</span>
+            </div>
+            <div class="range-wrap">
+              <input type="range" id="maxTokens" min="16" max="512" value="128" oninput="document.getElementById('maxTokensVal').innerText = this.value">
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label">
+              <span>Temperature</span>
+              <span id="tempVal">0.0</span>
+            </div>
+            <div class="range-wrap">
+              <input type="range" id="temp" min="0" max="1" step="0.1" value="0.0" oninput="document.getElementById('tempVal').innerText = this.value">
+            </div>
+          </div>
+
+          <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn btn-secondary" onclick="clearChat()">🗑️ Clear Conversation</button>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center;">
+              Tenant Scoped • Cosine Distance pgvector
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Messages Panel -->
+        <div class="card chat-window">
+          <div class="card-header">
+            <span>Live Conversation</span>
+            <span id="chatStats" style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">Ready</span>
+          </div>
+
+          <div class="messages-area" id="messagesArea">
+            <div class="msg-bubble assistant">
+              <div class="msg-header">🤖 Platform AI • Initialized</div>
+              <div class="msg-content">Hello! I am connected to the platform. You can test live model generation using <strong>google/gemma-4-E2B-it on your Colab T4 GPU</strong>, or query the PostgreSQL vector store with RAG enabled. Try asking one of the suggested prompts below!</div>
+            </div>
+          </div>
+
+          <!-- Prompt suggestions -->
+          <div style="padding: 0 16px;">
+            <div class="suggestions">
+              <span class="suggestion-chip" onclick="usePrompt('What is the operating temperature of the Aurora quantum sensor?')">❄️ Aurora Sensor Temperature? (RAG Test)</span>
+              <span class="suggestion-chip" onclick="usePrompt('What is 2+2? Answer in one word.')">⚡ 2+2 Math Check</span>
+              <span class="suggestion-chip" onclick="usePrompt('Explain what a quantum sensor is in two sentences.')">🧠 Quantum Sensor Explanation</span>
+              <span class="suggestion-chip" onclick="usePrompt('What subterranean instruments detect magnetic anomalies?')">🧭 Subterranean Exploration</span>
+            </div>
+          </div>
+
+          <!-- Input bar -->
+          <div class="input-area">
+            <textarea id="chatInput" placeholder="Type your prompt here... (Press Enter to Send)" onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendMessage(); }"></textarea>
+            <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+              <span>Send</span>
+              <span>➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Knowledge Base (pgvector) -->
+    <div id="docsTab" class="tab-pane">
+      <div class="docs-grid">
+        <!-- Ingestion Form -->
+        <div class="card">
+          <div class="card-header">
+            <span>Ingest New Document</span>
+            <span class="brand-badge">SentenceTransformers</span>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label" for="docTitle">Document Title</label>
+            <input type="text" id="docTitle" class="form-control" placeholder="e.g. Aurora Quantum Sensor Tech Spec">
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label" for="docSourceType">Source Type</label>
+            <select id="docSourceType" class="form-control">
+              <option value="technical_spec">Technical Specification</option>
+              <option value="documentation">Documentation</option>
+              <option value="research_paper">Research Paper</option>
+              <option value="notes">Notes</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label" for="docContent">Document Content (Will be Chunked & Embedded into 384-dim pgvector)</label>
+            <textarea id="docContent" class="form-control" rows="8" placeholder="Paste knowledge text here..."></textarea>
+          </div>
+
+          <button class="btn btn-primary" id="btnUploadDoc" onclick="uploadDocument()" style="width: 100%;">
+            <span>⚡ Ingest into PostgreSQL</span>
+          </button>
+          <div id="uploadStatus" style="font-size: 0.8rem; margin-top: 10px; text-align: center;"></div>
+        </div>
+
+        <!-- Document List & Semantic Search -->
+        <div class="card">
+          <div class="card-header">
+            <span>Tenant Document Chunks in PostgreSQL</span>
+            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="loadDocuments()">↻ Refresh List</button>
+          </div>
+
+          <!-- Quick Semantic Search Tester -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px;">
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 8px;">🔍 TEST COSINE VECTOR SEARCH</div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="searchQuery" class="form-control" placeholder="Search by semantic meaning...">
+              <button class="btn btn-primary" onclick="testSemanticSearch()">Search</button>
+            </div>
+            <div id="searchResults" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
+
+          <!-- Document Table -->
+          <div class="table-container">
+            <table id="docsTable">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Source</th>
+                  <th>Chunks</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="docsTableBody">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading documents...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Audio AI Studio -->
+    <div id="audioTab" class="tab-pane">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%;">
+        <!-- TTS Card -->
+        <div class="card">
+          <div class="card-header">
+            <span>Text-to-Speech (TTS)</span>
+            <span class="brand-badge">POST /v1/audio/speech</span>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">Voice / Model</label>
+            <select id="ttsVoice" class="form-control">
+              <option value="alloy">alloy (Neutral)</option>
+              <option value="echo">echo (Warm)</option>
+              <option value="fable">fable (Expressive)</option>
+              <option value="onyx">onyx (Deep)</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">Input Text</label>
+            <textarea id="ttsInput" class="form-control" rows="4">The Aurora quantum sensor operates at 4 Kelvin with sub-nanotesla precision.</textarea>
+          </div>
+
+          <button class="btn btn-primary" onclick="synthesizeSpeech()">🔊 Synthesize Audio</button>
+          <div id="ttsAudioPlayer" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- STT Card -->
+        <div class="card">
+          <div class="card-header">
+            <span>Speech-to-Text (STT)</span>
+            <span class="brand-badge">POST /v1/audio/transcriptions</span>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">Upload Audio File (WAV, MP3, M4A)</label>
+            <input type="file" id="sttFile" class="form-control" accept="audio/*">
+          </div>
+
+          <button class="btn btn-primary" onclick="transcribeAudio()">🎙️ Transcribe Audio</button>
+
+          <div style="margin-top: 16px;">
+            <label class="setting-label">Transcription Output</label>
+            <textarea id="sttOutput" class="form-control" rows="6" readonly placeholder="Transcribed text will appear here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: API Explorer & cURL -->
+    <div id="apiTab" class="tab-pane">
+      <div class="api-grid">
+        <div class="card">
+          <div class="card-header">
+            <span>Select Endpoint</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn btn-secondary" onclick="showEndpointCurl('chat')">POST /v1/chat/completions</button>
+            <button class="btn btn-secondary" onclick="showEndpointCurl('docs')">POST /v1/documents</button>
+            <button class="btn btn-secondary" onclick="showEndpointCurl('search')">POST /v1/documents/search</button>
+            <button class="btn btn-secondary" onclick="showEndpointCurl('models')">GET /v1/models</button>
+            <button class="btn btn-secondary" onclick="showEndpointCurl('health')">GET /health</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span id="endpointTitle">cURL Command Generator</span>
+            <button class="btn btn-secondary" style="font-size: 0.75rem;" onclick="copyCurl()">📋 Copy cURL</button>
+          </div>
+
+          <div class="curl-box" id="curlOutput">Select an endpoint on the left...</div>
+
+          <div style="margin-top: 16px;">
+            <div class="setting-label">Live Test Response</div>
+            <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="runCurrentApiTest()">⚡ Execute Request via Browser</button>
+            <pre class="json-box" id="apiResponse">Click 'Execute Request' to see live JSON response...</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    Platform AI Core Runtime • Unified PostgreSQL 16 + pgvector • Google Gemma 4 E2B Multimodal • OpenAI-Compatible APIs
+  </footer>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let currentEndpoint = 'chat';
+
+    // Preset API Keys for testing
+    const PRESETS = {
+      alpha: 'sk-live-tenant-a-aurora-key-987',
+      beta: 'sk-live-tenant-b-rival-key-654',
+      custom: ''
+    };
+
+    function getApiKey() {
+      return document.getElementById('activeApiKey').value.trim();
+    }
+
+    function onTenantPresetChange() {
+      const val = document.getElementById('tenantPreset').value;
+      if (val in PRESETS && val !== 'custom') {
+        document.getElementById('activeApiKey').value = PRESETS[val];
+      }
+      showToast(`Switched active context to ${val.toUpperCase()}`);
+      loadDocuments();
+      updateCurl();
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+
+      if (tabId === 'docsTab') loadDocuments();
+      if (tabId === 'apiTab') showEndpointCurl(currentEndpoint);
+    }
+
+    function updateModelBadge() {
+      const model = document.getElementById('modelSelect').value;
+      const badge = document.getElementById('activeModelBadge');
+      if (model === 'gemma-gpu') {
+        badge.innerText = 'Colab GPU';
+        badge.style.background = 'rgba(16, 185, 129, 0.2)';
+        badge.style.color = '#10b981';
+      } else if (model === 'local-smoke') {
+        badge.innerText = 'Local Weights';
+        badge.style.background = 'rgba(6, 182, 212, 0.2)';
+        badge.style.color = '#06b6d4';
+      } else {
+        badge.innerText = 'Mock/API';
+        badge.style.background = 'rgba(99, 102, 241, 0.15)';
+        badge.style.color = '#a5b4fc';
+      }
+      updateCurl();
+    }
+
+    function usePrompt(text) {
+      document.getElementById('chatInput').value = text;
+      document.getElementById('chatInput').focus();
+    }
+
+    function clearChat() {
+      document.getElementById('messagesArea').innerHTML = `
+        <div class="msg-bubble assistant">
+          <div class="msg-header">🤖 Platform AI</div>
+          <div class="msg-content">Conversation cleared. What would you like to explore next?</div>
+        </div>
+      `;
+      document.getElementById('chatStats').innerText = 'Ready';
+    }
+
+    // Health Polling
+    async function checkHealth() {
+      const dot = document.getElementById('healthDot');
+      const text = document.getElementById('healthText');
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        if (res.ok) {
+          const data = await res.json();
+          dot.className = 'status-dot';
+          text.innerText = `Online (${data.services?.database || 'OK'})`;
+        } else {
+          dot.className = 'status-dot degraded';
+          text.innerText = `HTTP ${res.status}`;
+        }
+      } catch (err) {
+        dot.className = 'status-dot offline';
+        text.innerText = 'Offline';
+      }
+    }
+
+    // Chat Message Execution
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const model = document.getElementById('modelSelect').value;
+      const enableRag = document.getElementById('ragToggle').checked;
+      const stream = document.getElementById('streamToggle').checked;
+      const maxTokens = parseInt(document.getElementById('maxTokens').value, 10);
+      const temperature = parseFloat(document.getElementById('temp').value);
+      const apiKey = getApiKey();
+
+      // Append User Bubble
+      appendMessage('user', text, 'You');
+      input.value = '';
+
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
+      const stats = document.getElementById('chatStats');
+      stats.innerText = `Inferencing with ${model}...`;
+      const startTime = performance.now();
+
+      // Create Assistant Placeholder
+      const assistantMsgElem = appendMessage('assistant', stream ? '' : 'Thinking...', `🤖 ${model}`);
+      const contentElem = assistantMsgElem.querySelector('.msg-content');
+
+      try {
+        const payload = {
+          model: model,
+          messages: [{ role: 'user', content: text }],
+          enable_rag: enableRag,
+          stream: stream,
+          max_tokens: maxTokens,
+          temperature: temperature
+        };
+
+        const res = await fetch(`${API_BASE}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: { message: res.statusText } }));
+          contentElem.innerHTML = `<span style="color: var(--accent-danger)">Error (${res.status}): ${err?.error?.message || 'Inference failed'}</span>`;
+          stats.innerText = `Failed in ${duration}s`;
+          sendBtn.disabled = false;
+          return;
+        }
+
+        if (stream) {
+          contentElem.innerText = '';
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let accumulated = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                try {
+                  const parsed = JSON.parse(line.substring(6));
+                  const delta = parsed.choices?.[0]?.delta?.content || '';
+                  accumulated += delta;
+                  contentElem.innerText = accumulated;
+                } catch (e) {}
+              }
+            }
+          }
+          stats.innerText = `Streamed in ${duration}s`;
+        } else {
+          const data = await res.json();
+          const answer = data.choices?.[0]?.message?.content || '(No response generated)';
+          contentElem.innerText = answer;
+
+          // If RAG augmented
+          const promptTokens = data.usage?.prompt_tokens || 0;
+          stats.innerText = `Completed in ${duration}s • Prompt tokens: ${promptTokens}`;
+
+          if (enableRag) {
+            const citationBadge = document.createElement('div');
+            citationBadge.className = 'context-badge';
+            citationBadge.innerHTML = `<span>✓ Augmented via pgvector RAG (Prompt tokens: ${promptTokens})</span> <span>▾ View</span>`;
+            const citationDetail = document.createElement('div');
+            citationDetail.className = 'context-details';
+            citationDetail.innerText = `Verified PostgreSQL semantic search context was injected prior to sending to ${model}.`;
+            citationBadge.onclick = () => {
+              citationDetail.style.display = citationDetail.style.display === 'block' ? 'none' : 'block';
+            };
+            assistantMsgElem.appendChild(citationBadge);
+            assistantMsgElem.appendChild(citationDetail);
+          }
+        }
+      } catch (err) {
+        contentElem.innerHTML = `<span style="color: var(--accent-danger)">Network error: ${err.message}</span>`;
+        stats.innerText = 'Error';
+      } finally {
+        sendBtn.disabled = false;
+        document.getElementById('messagesArea').scrollTop = document.getElementById('messagesArea').scrollHeight;
+      }
+    }
+
+    function appendMessage(role, text, label) {
+      const container = document.getElementById('messagesArea');
+      const bubble = document.createElement('div');
+      bubble.className = `msg-bubble ${role}`;
+      bubble.innerHTML = `
+        <div class="msg-header">${label}</div>
+        <div class="msg-content">${escapeHtml(text)}</div>
+      `;
+      container.appendChild(bubble);
+      container.scrollTop = container.scrollHeight;
+      return bubble;
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Document Ingestion
+    async function uploadDocument() {
+      const title = document.getElementById('docTitle').value.trim();
+      const content = document.getElementById('docContent').value.trim();
+      const sourceType = document.getElementById('docSourceType').value;
+      const statusElem = document.getElementById('uploadStatus');
+
+      if (!title || !content) {
+        statusElem.innerHTML = `<span style="color: var(--accent-warning)">Please enter both title and content.</span>`;
+        return;
+      }
+
+      statusElem.innerHTML = `<span>Chunking, embedding (all-MiniLM-L6-v2), and inserting into PostgreSQL pgvector...</span>`;
+      const btn = document.getElementById('btnUploadDoc');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/documents`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getApiKey()}`
+          },
+          body: JSON.stringify({
+            title: title,
+            content: content,
+            source_type: sourceType
+          })
+        });
+
+        if (res.ok) {
+          const doc = await res.json();
+          statusElem.innerHTML = `<span style="color: var(--accent-success)">✓ Successfully created Document ID ${doc.id} with ${doc.total_chunks} chunk(s)!</span>`;
+          document.getElementById('docTitle').value = '';
+          document.getElementById('docContent').value = '';
+          loadDocuments();
+        } else {
+          const err = await res.json().catch(() => ({}));
+          statusElem.innerHTML = `<span style="color: var(--accent-danger)">Upload failed: ${err?.detail || res.statusText}</span>`;
+        }
+      } catch (err) {
+        statusElem.innerHTML = `<span style="color: var(--accent-danger)">Error: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Load Documents List
+    async function loadDocuments() {
+      const tbody = document.getElementById('docsTableBody');
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching tenant documents from PostgreSQL...</td></tr>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/documents`, {
+          headers: { 'Authorization': `Bearer ${getApiKey()}` }
+        });
+
+        if (!res.ok) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--accent-danger);">Failed to load (HTTP ${res.status}). Verify API key scopes.</td></tr>`;
+          return;
+        }
+
+        const data = await res.json();
+        const docs = data.data || [];
+
+        if (docs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No documents indexed for this tenant. Upload one on the left!</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = docs.map(d => `
+          <tr>
+            <td style="font-weight: 600;">${escapeHtml(d.title)}</td>
+            <td><span class="brand-badge">${escapeHtml(d.source_type)}</span></td>
+            <td>${d.total_chunks}</td>
+            <td style="color: var(--text-muted); font-size: 0.78rem;">${new Date(d.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn btn-danger" style="padding: 3px 8px; font-size: 0.72rem;" onclick="deleteDoc('${d.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--accent-danger);">Error: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function deleteDoc(docId) {
+      if (!confirm(`Are you sure you want to delete document ${docId}?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/v1/documents/${docId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${getApiKey()}` }
+        });
+        if (res.ok) {
+          showToast('Document deleted.');
+          loadDocuments();
+        } else {
+          alert('Delete failed.');
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    // Semantic Search Tester
+    async function testSemanticSearch() {
+      const q = document.getElementById('searchQuery').value.trim();
+      const resultsDiv = document.getElementById('searchResults');
+      if (!q) return;
+
+      resultsDiv.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-muted);">Computing embedding and searching pgvector...</div>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/documents/search`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getApiKey()}`
+          },
+          body: JSON.stringify({ query: q, top_k: 3 })
+        });
+
+        if (!res.ok) {
+          resultsDiv.innerHTML = `<div style="color: var(--accent-danger);">Search failed: HTTP ${res.status}</div>`;
+          return;
+        }
+
+        const data = await res.json();
+        const items = data.results || [];
+        if (items.length === 0) {
+          resultsDiv.innerHTML = `<div style="font-size: 0.8rem; color: var(--text-muted);">No matches found for this tenant.</div>`;
+          return;
+        }
+
+        resultsDiv.innerHTML = items.map((item, idx) => `
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.8rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-weight: 600; color: var(--accent-cyan);">Rank #${idx + 1} (Chunk ${item.chunk_index})</span>
+              <span style="color: var(--accent-success); font-weight: 600;">Cosine Similarity: ${(item.score * 100).toFixed(1)}%</span>
+            </div>
+            <div style="color: #cbd5e1; font-size: 0.78rem;">${escapeHtml(item.content)}</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        resultsDiv.innerHTML = `<div style="color: var(--accent-danger);">Error: ${err.message}</div>`;
+      }
+    }
+
+    // Audio Features
+    async function synthesizeSpeech() {
+      const text = document.getElementById('ttsInput').value.trim();
+      const voice = document.getElementById('ttsVoice').value;
+      const playerDiv = document.getElementById('ttsAudioPlayer');
+
+      playerDiv.innerHTML = `<span style="font-size: 0.8rem; color: var(--text-muted);">Generating speech...</span>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/audio/speech`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getApiKey()}`
+          },
+          body: JSON.stringify({
+            model: 'tts-1',
+            input: text,
+            voice: voice
+          })
+        });
+
+        if (!res.ok) {
+          playerDiv.innerHTML = `<span style="color: var(--accent-danger)">TTS Error: HTTP ${res.status}</span>`;
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        playerDiv.innerHTML = `
+          <audio controls autoplay style="width: 100%;">
+            <source src="${url}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        `;
+      } catch (err) {
+        playerDiv.innerHTML = `<span style="color: var(--accent-danger)">Error: ${err.message}</span>`;
+      }
+    }
+
+    async function transcribeAudio() {
+      const fileInput = document.getElementById('sttFile');
+      const out = document.getElementById('sttOutput');
+      if (!fileInput.files.length) {
+        alert('Please choose an audio file first.');
+        return;
+      }
+
+      out.value = 'Transcribing audio...';
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      formData.append('model', 'whisper-1');
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/audio/transcriptions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${getApiKey()}`
+          },
+          body: formData
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          out.value = data.text || '(Empty transcription)';
+        } else {
+          out.value = `Transcription failed: HTTP ${res.status}`;
+        }
+      } catch (e) {
+        out.value = `Error: ${e.message}`;
+      }
+    }
+
+    // API Explorer
+    function showEndpointCurl(ep) {
+      currentEndpoint = ep;
+      updateCurl();
+    }
+
+    function updateCurl() {
+      const key = getApiKey();
+      const model = document.getElementById('modelSelect')?.value || 'gemma-gpu';
+      const box = document.getElementById('curlOutput');
+      const title = document.getElementById('endpointTitle');
+
+      if (currentEndpoint === 'chat') {
+        title.innerText = 'cURL: Chat Completions (OpenAI Compatible)';
+        box.innerText = `curl -X POST ${API_BASE}/v1/chat/completions \\
+  -H "Authorization: Bearer ${key}" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "${model}",
+    "messages": [
+      {"role": "user", "content": "What is the operating temperature of the Aurora quantum sensor?"}
+    ],
+    "enable_rag": true,
+    "max_tokens": 128
+  }'`;
+      } else if (currentEndpoint === 'docs') {
+        title.innerText = 'cURL: Upload & Index Document';
+        box.innerText = `curl -X POST ${API_BASE}/v1/documents \\
+  -H "Authorization: Bearer ${key}" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "title": "Aurora Quantum Sensor Tech Spec",
+    "content": "The Aurora sensor operates at 4 Kelvin.",
+    "source_type": "technical_spec"
+  }'`;
+      } else if (currentEndpoint === 'search') {
+        title.innerText = 'cURL: Semantic Search (pgvector)';
+        box.innerText = `curl -X POST ${API_BASE}/v1/documents/search \\
+  -H "Authorization: Bearer ${key}" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "query": "cryogenic magnetometer temperature",
+    "top_k": 3
+  }'`;
+      } else if (currentEndpoint === 'models') {
+        title.innerText = 'cURL: List Available Models';
+        box.innerText = `curl -X GET ${API_BASE}/v1/models \\
+  -H "Authorization: Bearer ${key}"`;
+      } else if (currentEndpoint === 'health') {
+        title.innerText = 'cURL: Platform Health Check';
+        box.innerText = `curl -X GET ${API_BASE}/health`;
+      }
+    }
+
+    async function runCurrentApiTest() {
+      const key = getApiKey();
+      const model = document.getElementById('modelSelect')?.value || 'gemma-gpu';
+      const resBox = document.getElementById('apiResponse');
+      resBox.innerText = 'Executing request...';
+
+      try {
+        let res;
+        if (currentEndpoint === 'chat') {
+          res = await fetch(`${API_BASE}/v1/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: 'user', content: 'Say hello in 3 words!' }],
+              max_tokens: 30
+            })
+          });
+        } else if (currentEndpoint === 'models') {
+          res = await fetch(`${API_BASE}/v1/models`, {
+            headers: { 'Authorization': `Bearer ${key}` }
+          });
+        } else if (currentEndpoint === 'health') {
+          res = await fetch(`${API_BASE}/health`);
+        } else if (currentEndpoint === 'search') {
+          res = await fetch(`${API_BASE}/v1/documents/search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ query: 'sensor', top_k: 2 })
+          });
+        } else {
+          resBox.innerText = 'Execute test available for chat, models, health, and search.';
+          return;
+        }
+
+        const json = await res.json();
+        resBox.innerText = JSON.stringify(json, null, 2);
+      } catch (e) {
+        resBox.innerText = `Error: ${e.message}`;
+      }
+    }
+
+    function copyCurl() {
+      const text = document.getElementById('curlOutput').innerText;
+      navigator.clipboard.writeText(text);
+      showToast('cURL copied to clipboard!');
+    }
+
+    function showToast(msg) {
+      console.log(msg);
+    }
+
+    // Init
+    checkHealth();
+    setInterval(checkHealth, 8000);
+    updateModelBadge();
+    updateCurl();
+  </script>
+</body>
+</html>

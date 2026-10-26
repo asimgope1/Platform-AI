@@ -1,4 +1,6 @@
+import os
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from platform_core.errors.exceptions import PlatformError
 from platform_core.errors.api_errors import platform_error_handler, create_error_response
@@ -48,6 +50,14 @@ def create_app() -> FastAPI:
     app.include_router(documents.router)
     app.include_router(audio_transcriptions.router)
     app.include_router(audio_speech.router)
+
+    # Mount Interactive Test UI Console
+    static_file = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    if os.path.exists(static_file):
+        @app.get("/", response_class=FileResponse, include_in_schema=False)
+        @app.get("/ui", response_class=FileResponse, include_in_schema=False)
+        async def serve_ui():
+            return FileResponse(static_file)
 
     return app
 
