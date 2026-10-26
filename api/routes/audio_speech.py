@@ -34,4 +34,6 @@ async def create_speech(
     )
 
     media_type = f"audio/{payload.response_format}" if payload.response_format != "mp3" else "audio/mpeg"
+    if audio_bytes.startswith(b"RIFF"):
+        media_type = "audio/wav"
     return Response(content=audio_bytes, media_type=media_type)

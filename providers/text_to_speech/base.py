@@ -5,8 +5,17 @@ from platform_core.contracts.providers import BaseTextToSpeechAdapter
 from platform_core.errors.exceptions import ProviderError
 
 
+import io
+import math
+import shutil
+import struct
+import subprocess
+import tempfile
+import wave
+
+
 class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
-    """Produces valid synthetic MP3 frames for development and offline testing."""
+    """Produces valid synthetic audio frames (real spoken WAV on macOS / PCM tone / MP3 frames) for development and testing."""
 
     async def synthesize(
         self,
@@ -15,6 +24,42 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         voice: str = "alloy",
         response_format: str = "mp3",
     ) -> bytes:
+        if response_format.lower() == "wav":
+            # If macOS 'say' command is available, generate real spoken voice
+            if shutil.which("say"):
+                try:
+                    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
+                        out_path = tf.name
+                    subprocess.run(
+                        ["say", "-o", out_path, "--data-format=LEI16@22050", text],
+                        check=True,
+                        timeout=10,
+                    )
+                    with open(out_path, "rb") as f:
+                        data = f.read()
+                    os.remove(out_path)
+                    if data:
+                        return data
+                except Exception:
+                    pass
+
+            # Fallback: Generate valid audible RIFF WAVE PCM tone
+            buf = io.BytesIO()
+            sample_rate = 22050
+            duration = min(3.0, max(0.5, len(text) * 0.05))
+            n_samples = int(sample_rate * duration)
+            with wave.open(buf, "wb") as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(sample_rate)
+                frames = bytearray()
+                for i in range(n_samples):
+                    t = i / sample_rate
+                    val = int(16000.0 * (math.sin(2.0 * math.pi * 440.0 * t) * 0.6 + math.sin(2.0 * math.pi * 880.0 * t) * 0.4) * math.exp(-t))
+                    frames.extend(struct.pack("<h", max(-32767, min(32767, val))))
+                wf.writeframes(frames)
+            return buf.getvalue()
+
         # Standard MPEG audio frame sync header (32 frames)
         frame_header = b"\xff\xfb\x90\x00\x00\x00\x00\x00"
         return frame_header * max(16, min(len(text) * 2, 512))

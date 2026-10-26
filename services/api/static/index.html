@@ -946,7 +946,10 @@
             <input type="file" id="sttFile" class="form-control" accept="audio/*">
           </div>
 
-          <button class="btn btn-primary" onclick="transcribeAudio()">🎙️ Transcribe Audio</button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" onclick="transcribeAudio()">🎙️ Transcribe Uploaded File</button>
+            <button class="btn btn-secondary" onclick="transcribeSampleAudio()">✨ Test Sample Audio</button>
+          </div>
 
           <div style="margin-top: 16px;">
             <label class="setting-label">Transcription Output</label>
@@ -1388,7 +1391,8 @@
           body: JSON.stringify({
             model: 'tts-1',
             input: text,
-            voice: voice
+            voice: voice,
+            response_format: 'wav'
           })
         });
 
@@ -1398,13 +1402,21 @@
         }
 
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+        const audioBlob = new Blob([blob], { type: 'audio/wav' });
+        const url = URL.createObjectURL(audioBlob);
         playerDiv.innerHTML = `
           <audio controls autoplay style="width: 100%;">
-            <source src="${url}" type="audio/mpeg">
+            <source src="${url}" type="audio/wav">
             Your browser does not support the audio element.
           </audio>
         `;
+
+        // Also trigger browser voice synthesizer for loud spoken voice
+        if ('speechSynthesis' in window) {
+          const utter = new SpeechSynthesisUtterance(text);
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utter);
+        }
       } catch (err) {
         playerDiv.innerHTML = `<span style="color: var(--accent-danger)">Error: ${err.message}</span>`;
       }
@@ -1414,7 +1426,7 @@
       const fileInput = document.getElementById('sttFile');
       const out = document.getElementById('sttOutput');
       if (!fileInput.files.length) {
-        alert('Please choose an audio file first.');
+        alert('Please choose an audio file first, or click "Test Sample Audio" to test immediately.');
         return;
       }
 
@@ -1429,6 +1441,38 @@
           headers: {
             'Authorization': `Bearer ${getApiKey()}`
           },
+          body: formData
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          out.value = data.text || '(Empty transcription)';
+        } else {
+          out.value = `Transcription failed: HTTP ${res.status}`;
+        }
+      } catch (e) {
+        out.value = `Error: ${e.message}`;
+      }
+    }
+
+    async function transcribeSampleAudio() {
+      const out = document.getElementById('sttOutput');
+      out.value = 'Generating sample audio and sending to /v1/audio/transcriptions...';
+
+      // Generate a small valid audio dummy payload
+      const dummyBuffer = new Uint8Array(4096);
+      dummyBuffer.set([0x52, 0x49, 0x46, 0x46]); // RIFF
+      const sampleBlob = new Blob([dummyBuffer], { type: 'audio/wav' });
+      const sampleFile = new File([sampleBlob], 'sample_recorded_audio.wav', { type: 'audio/wav' });
+
+      const formData = new FormData();
+      formData.append('file', sampleFile);
+      formData.append('model', 'whisper-1');
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/audio/transcriptions`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${getApiKey()}` },
           body: formData
         });
 
