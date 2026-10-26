@@ -1,0 +1,97 @@
+# Declarative Provider and Model Configuration
+
+model_aliases:
+  general-chat:
+    provider: hosted_chat
+    model: gpt-4o-mini
+    description: "Primary fast general chat model"
+    capabilities:
+      - chat
+      - streaming
+      - tool_calling
+
+  mock-chat:
+    provider: mock_provider
+    model: mock-instant-1
+    description: "Mock chat model for local testing and zero-cost offline development"
+    capabilities:
+      - chat
+      - streaming
+      - tool_calling
+
+  gemma-local:
+    provider: gemma_transformers
+    model: google/gemma-4-E2B-it
+    description: "Local Gemma 4 E2B instruction-tuned open weights model"
+    capabilities:
+      - chat
+
+  local-smoke:
+    provider: smoke_transformers
+    model: HuggingFaceTB/SmolLM-135M-Instruct
+    description: "Lightweight real-weights open model for local smoke testing on memory-constrained hardware"
+    capabilities:
+      - chat
+
+  local-gemma:
+    provider: local_transformers
+    model: google/gemma-4-E4B-it
+    description: "Local Gemma open-weights model"
+    capabilities:
+      - chat
+      - vision
+      - tool_calling
+
+providers:
+  hosted_chat:
+    type: openai_compatible
+    base_url_env: HOSTED_AI_BASE_URL
+    api_key_env: HOSTED_AI_API_KEY
+    timeout_seconds: 60
+
+  mock_provider:
+    type: mock
+    timeout_seconds: 5
+
+  gemma_transformers:
+    type: gemma_transformers
+    model: google/gemma-4-E2B-it
+    device: auto
+
+  smoke_transformers:
+    type: gemma_transformers
+    model: HuggingFaceTB/SmolLM-135M-Instruct
+    device: auto
+
+  local_transformers:
+    type: transformers
+    device: auto
+    trust_remote_code: false
+
+embeddings:
+  default:
+    provider: mock_embeddings
+    model: text-embedding-3-small
+    dimension: 1536
+
+  semantic-default:
+    provider: sentence_transformers
+    model: sentence-transformers/all-MiniLM-L6-v2
+    dimension: 384
+
+speech_to_text:
+  default:
+    provider: mock_stt
+    model: whisper-1
+
+text_to_speech:
+  default:
+    provider: mock_tts
+    model: tts-1
+
+vector_store:
+  default:
+    provider: pgvector
+    collection: knowledge_chunks
+    dimensions: 384
+    distance_metric: cosine

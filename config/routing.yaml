@@ -1,0 +1,17 @@
+# Routing policies and fallback configurations
+
+default_chat_model: general-chat
+fallback_chat_model: mock-chat
+
+routes:
+  chat:
+    primary: general-chat
+    fallbacks:
+      - mock-chat
+    retry:
+      max_attempts: 2
+      backoff_factor: 1.5
+
+rate_limits:
+  default_rpm: 60
+  default_tpm: 60000
