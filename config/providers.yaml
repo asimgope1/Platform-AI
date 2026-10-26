@@ -92,6 +92,13 @@ embeddings:
     model: text-embedding-004
     dimension: 384
 
+  colab-embeddinggemma-2:
+    provider: openai_compatible
+    base_url: https://than-rather-possibilities-douglas.trycloudflare.com/v1
+    api_key: R7uBg0v1Md558uEvZpzn5EX-3y7r49Cs
+    model: google/embeddinggemma-2
+    dimension: 768
+
   semantic-default:
     provider: sentence_transformers
     model: sentence-transformers/all-MiniLM-L6-v2

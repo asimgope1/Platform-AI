@@ -97,6 +97,8 @@ class ProviderRegistry:
                     self.embedding_adapters[e_id] = GoogleGenAIEmbeddingAdapter(e_id, e_cfg.model_dump())
                 elif p_name == "sentence_transformers":
                     self.embedding_adapters[e_id] = SentenceTransformersEmbeddingAdapter(e_id, e_cfg.model_dump())
+                elif p_name in ("openai_compatible", "colab"):
+                    self.embedding_adapters[e_id] = OpenAICompatibleEmbeddingAdapter(e_id, e_cfg.model_dump())
                 elif p_name == "mock_embeddings":
                     self.embedding_adapters[e_id] = MockEmbeddingAdapter(e_id, e_cfg.model_dump(), dimension=e_cfg.dimension)
 

@@ -7,7 +7,9 @@ class EmbeddingService:
 
     def __init__(self, provider_id: Optional[str] = None, model: Optional[str] = None):
         if provider_id is None:
-            if model == "text-embedding-3-small":
+            if model in ("google/embeddinggemma-2", "embeddinggemma-2"):
+                provider_id = "colab-embeddinggemma-2"
+            elif model == "text-embedding-3-small":
                 provider_id = "default"
             elif "google-embeddings" in provider_registry.embedding_adapters:
                 provider_id = "google-embeddings"
