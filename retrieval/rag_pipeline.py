@@ -21,6 +21,7 @@ class RAGPipeline:
         tenant_id: str,
         query: str,
         top_k: int = 3,
+        min_similarity_score: float = 0.30,
     ) -> str:
         # Retrieve candidate chunks (fetch slightly more if reranking)
         fetch_k = top_k * 2 if self.reranker else top_k
@@ -28,7 +29,12 @@ class RAGPipeline:
         if not results:
             return ""
 
-        chunks = [chunk for chunk, score in results]
+        # Filter out irrelevant chunks that do not meet the minimum similarity threshold
+        relevant_results = [(chunk, score) for chunk, score in results if score >= min_similarity_score]
+        if not relevant_results:
+            return ""
+
+        chunks = [chunk for chunk, score in relevant_results]
 
         # Rerank if reranker is available
         if self.reranker and len(chunks) > 1:

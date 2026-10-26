@@ -16,8 +16,7 @@ class ContextBuilder:
         system_instruction = (
             "You have access to the following relevant context from verified platform documents:\n\n"
             f"{rag_context}\n\n"
-            "Answer the user's questions truthfully and accurately based on this context. "
-            "Cite sources where relevant."
+            "Use this context to answer domain-specific questions when relevant, while maintaining your general knowledge, common sense, and conversational intelligence."
         )
 
         augmented_messages = list(messages)
@@ -36,8 +35,8 @@ class ContextBuilder:
             if augmented_messages[i].role == "user":
                 user_msg = augmented_messages[i]
                 augmented_content = (
-                    f"Context:\n{rag_context}\n\n"
-                    f"User Question:\n{user_msg.content}"
+                    f"Relevant Context (if applicable to query):\n{rag_context}\n\n"
+                    f"User Message:\n{user_msg.content}"
                 )
                 augmented_messages[i] = ChatMessage(
                     role="user",
