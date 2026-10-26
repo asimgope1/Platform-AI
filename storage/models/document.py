@@ -31,8 +31,10 @@ class DocumentChunk(Base):
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     
-    # Native vector column for pgvector similarity search (dimension=384 for all-MiniLM-L6-v2)
+    # Native vector column for pgvector similarity search (dimension=384 for text-embedding-004 / MiniLM)
     embedding = mapped_column(Vector(384), nullable=True)
+    # Native vector column for EmbeddingGemma 2 (dimension=768)
+    embedding_768 = mapped_column(Vector(768), nullable=True)
     # JSON representation for cross-DB fallback compatibility
     embedding_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     meta_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

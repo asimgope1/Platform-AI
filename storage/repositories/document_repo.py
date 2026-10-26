@@ -42,12 +42,15 @@ class DocumentRepository:
     ) -> List[DocumentChunk]:
         created_chunks = []
         for idx, text, emb in chunks_data:
+            emb_384 = emb if len(emb) == 384 else None
+            emb_768 = emb if len(emb) == 768 else None
             chunk = DocumentChunk(
                 document_id=document_id,
                 tenant_id=tenant_id,
                 chunk_index=idx,
                 content=text,
-                embedding=emb,
+                embedding=emb_384,
+                embedding_768=emb_768,
                 embedding_json=json.dumps(emb),
             )
             self.session.add(chunk)
@@ -92,12 +95,15 @@ class DocumentRepository:
         # Native pgvector cosine distance on PostgreSQL
         bind = self.session.bind
         is_postgres = bind and "postgresql" in str(bind.url)
+        is_768 = len(query_embedding) == 768
+        target_col = DocumentChunk.embedding_768 if is_768 else DocumentChunk.embedding
+
         if is_postgres:
             try:
-                distance_expr = DocumentChunk.embedding.cosine_distance(query_embedding)
+                distance_expr = target_col.cosine_distance(query_embedding)
                 stmt = (
                     select(DocumentChunk, (1.0 - distance_expr).label("score"))
-                    .where(DocumentChunk.tenant_id == tenant_id)
+                    .where(DocumentChunk.tenant_id == tenant_id, target_col != None)
                     .order_by(distance_expr.asc())
                     .limit(top_k)
                 )
@@ -115,7 +121,7 @@ class DocumentRepository:
 
         scored_chunks = []
         for chunk in all_chunks:
-            chunk_emb = chunk.embedding
+            chunk_emb = chunk.embedding_768 if is_768 else chunk.embedding
             if chunk_emb is None and chunk.embedding_json:
                 chunk_emb = json.loads(chunk.embedding_json)
             if chunk_emb:
