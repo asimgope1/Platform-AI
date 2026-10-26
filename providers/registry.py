@@ -19,6 +19,7 @@ from providers.embeddings.base import MockEmbeddingAdapter, OpenAICompatibleEmbe
 from providers.embeddings.sentence_transformers import SentenceTransformersEmbeddingAdapter
 from providers.embeddings.google_genai import GoogleGenAIEmbeddingAdapter
 from providers.speech_to_text.base import MockSpeechToTextAdapter, OpenAISpeechToTextAdapter
+from providers.speech_to_text.whisper_local import WhisperLocalSpeechToTextAdapter
 from providers.text_to_speech.base import MockTextToSpeechAdapter, OpenAITextToSpeechAdapter
 from providers.vector_stores.base import InMemoryVectorStore
 from providers.vector_stores.pgvector import PGVectorStore
@@ -47,9 +48,10 @@ class ProviderRegistry:
         self.embedding_adapters["google_genai"] = GoogleGenAIEmbeddingAdapter("google_genai", {"dimension": 384})
         self.embedding_adapters["default"] = self.embedding_adapters["google_genai"]
 
+        self.stt_adapters["whisper_local"] = WhisperLocalSpeechToTextAdapter("whisper_local", {})
         self.stt_adapters["mock_stt"] = MockSpeechToTextAdapter("mock_stt", {})
         self.stt_adapters["openai_stt"] = OpenAISpeechToTextAdapter("openai_stt", {})
-        self.stt_adapters["default"] = self.stt_adapters["mock_stt"]
+        self.stt_adapters["default"] = self.stt_adapters["whisper_local"]
 
         self.tts_adapters["mock_tts"] = MockTextToSpeechAdapter("mock_tts", {})
         self.tts_adapters["openai_tts"] = OpenAITextToSpeechAdapter("openai_tts", {})
@@ -106,6 +108,18 @@ class ProviderRegistry:
                     self.vector_stores[vs_id] = PGVectorStore(vs_id, vs_cfg.model_dump())
                 elif p_name == "in_memory":
                     self.vector_stores[vs_id] = InMemoryVectorStore(vs_id, vs_cfg.model_dump())
+
+        # Initialize configured speech-to-text adapters
+        if cfg.speech_to_text:
+            for s_id, s_cfg in cfg.speech_to_text.items():
+                p_name = (s_cfg.get("provider", "") if isinstance(s_cfg, dict) else s_cfg.provider).lower()
+                s_dict = s_cfg if isinstance(s_cfg, dict) else s_cfg.model_dump()
+                if p_name in ("whisper_local", "whisper", "transformers"):
+                    self.stt_adapters[s_id] = WhisperLocalSpeechToTextAdapter(s_id, s_dict)
+                elif p_name == "mock_stt":
+                    self.stt_adapters[s_id] = MockSpeechToTextAdapter(s_id, s_dict)
+                elif p_name == "openai_stt":
+                    self.stt_adapters[s_id] = OpenAISpeechToTextAdapter(s_id, s_dict)
 
     def get_model_metadata(self, model_alias: str) -> ModelMetadata:
         if model_alias not in self.models:

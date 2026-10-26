@@ -7,8 +7,8 @@ class AudioService:
 
     def __init__(
         self,
-        stt_provider_id: str = "mock_stt",
-        tts_provider_id: str = "mock_tts",
+        stt_provider_id: str = "default",
+        tts_provider_id: str = "default",
     ):
         self.stt_provider_id = stt_provider_id
         self.tts_provider_id = tts_provider_id

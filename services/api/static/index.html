@@ -1465,19 +1465,35 @@
 
     async function transcribeSampleAudio() {
       const out = document.getElementById('sttOutput');
-      out.value = 'Generating sample audio and sending to /v1/audio/transcriptions...';
-
-      // Generate a small valid audio dummy payload
-      const dummyBuffer = new Uint8Array(4096);
-      dummyBuffer.set([0x52, 0x49, 0x46, 0x46]); // RIFF
-      const sampleBlob = new Blob([dummyBuffer], { type: 'audio/wav' });
-      const sampleFile = new File([sampleBlob], 'sample_recorded_audio.wav', { type: 'audio/wav' });
-
-      const formData = new FormData();
-      formData.append('file', sampleFile);
-      formData.append('model', 'whisper-1');
+      out.value = 'Synthesizing voice audio and sending to Whisper /v1/audio/transcriptions...';
 
       try {
+        // Synthesize spoken voice using TTS endpoint
+        const sampleText = "Hello, thank you for calling customer support.";
+        const speechRes = await fetch(`${API_BASE}/v1/audio/speech`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getApiKey()}`
+          },
+          body: JSON.stringify({
+            input: sampleText,
+            voice: 'alloy',
+            response_format: 'wav'
+          })
+        });
+
+        if (!speechRes.ok) {
+          throw new Error(`TTS synthesis failed: HTTP ${speechRes.status}`);
+        }
+
+        const audioBlob = await speechRes.blob();
+        const sampleFile = new File([audioBlob], 'sample_voice.wav', { type: 'audio/wav' });
+
+        const formData = new FormData();
+        formData.append('file', sampleFile);
+        formData.append('model', 'whisper-1');
+
         const res = await fetch(`${API_BASE}/v1/audio/transcriptions`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${getApiKey()}` },
@@ -1486,7 +1502,7 @@
 
         if (res.ok) {
           const data = await res.json();
-          out.value = data.text || '(Empty transcription)';
+          out.value = `[Transcribed from sample speech audio]:\n"${data.text}"\n\n(Language: ${data.language || 'en'}, Duration: ${data.duration || 0}s)`;
         } else {
           out.value = `Transcription failed: HTTP ${res.status}`;
         }

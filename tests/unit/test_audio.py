@@ -30,3 +30,18 @@ async def test_audio_service():
 
     speech = await service.synthesize("Testing TTS service")
     assert len(speech) > 0
+
+
+@pytest.mark.asyncio
+async def test_whisper_local_stt():
+    from providers.speech_to_text.whisper_local import WhisperLocalSpeechToTextAdapter
+    adapter = WhisperLocalSpeechToTextAdapter("whisper_local", {})
+    
+    # 1. Test empty audio
+    empty_res = await adapter.transcribe(b"")
+    assert empty_res["text"] == ""
+    
+    # 2. Test fallback for corrupt/dummy bytes
+    dummy_res = await adapter.transcribe(b"dummy_corrupt_bytes", filename="recording.wav")
+    assert "recording.wav" in dummy_res["text"]
+

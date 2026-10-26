@@ -99,8 +99,8 @@ embeddings:
 
 speech_to_text:
   default:
-    provider: mock_stt
-    model: whisper-1
+    provider: whisper_local
+    model: openai/whisper-tiny
 
 text_to_speech:
   default:
