@@ -199,10 +199,10 @@
     /* Main Container & Tabs */
     main {
       flex: 1;
-      max-width: 1400px;
-      width: 100%;
+      max-width: 1600px;
+      width: 96%;
       margin: 0 auto;
-      padding: 24px;
+      padding: 20px;
       z-index: 10;
       display: flex;
       flex-direction: column;
@@ -1049,12 +1049,15 @@
       updateCurl();
     }
 
+    let conversationHistory = [];
+
     function usePrompt(text) {
       document.getElementById('chatInput').value = text;
       document.getElementById('chatInput').focus();
     }
 
     function clearChat() {
+      conversationHistory = [];
       document.getElementById('messagesArea').innerHTML = `
         <div class="msg-bubble assistant">
           <div class="msg-header">🤖 Platform AI</div>
@@ -1101,6 +1104,9 @@
       appendMessage('user', text, 'You');
       input.value = '';
 
+      // Add to multi-turn conversation memory
+      conversationHistory.push({ role: 'user', content: text });
+
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
       const stats = document.getElementById('chatStats');
@@ -1114,7 +1120,7 @@
       try {
         const payload = {
           model: model,
-          messages: [{ role: 'user', content: text }],
+          messages: conversationHistory,
           enable_rag: enableRag,
           stream: stream,
           max_tokens: maxTokens,
@@ -1133,6 +1139,7 @@
         const duration = ((performance.now() - startTime) / 1000).toFixed(2);
 
         if (!res.ok) {
+          conversationHistory.pop(); // Revert user message on failure
           const err = await res.json().catch(() => ({ error: { message: res.statusText } }));
           contentElem.innerHTML = `<span style="color: var(--accent-danger)">Error (${res.status}): ${err?.error?.message || 'Inference failed'}</span>`;
           stats.innerText = `Failed in ${duration}s`;
@@ -1162,11 +1169,13 @@
               }
             }
           }
+          conversationHistory.push({ role: 'assistant', content: accumulated });
           stats.innerText = `Streamed in ${duration}s`;
         } else {
           const data = await res.json();
           const answer = data.choices?.[0]?.message?.content || '(No response generated)';
           contentElem.innerText = answer;
+          conversationHistory.push({ role: 'assistant', content: answer });
 
           // If RAG augmented
           const promptTokens = data.usage?.prompt_tokens || 0;
@@ -1187,6 +1196,7 @@
           }
         }
       } catch (err) {
+        conversationHistory.pop(); // Revert user message on failure
         contentElem.innerHTML = `<span style="color: var(--accent-danger)">Network error: ${err.message}</span>`;
         stats.innerText = 'Error';
       } finally {
