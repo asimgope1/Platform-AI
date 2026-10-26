@@ -50,3 +50,23 @@ async def test_mock_embedding_adapter_parity():
     vectors = await adapter.generate_embeddings(["Parity check text"], "all-MiniLM-L6-v2")
     assert len(vectors) == 1
     assert len(vectors[0]) == 384
+
+
+@pytest.mark.asyncio
+async def test_google_genai_embedding_multilingual():
+    """Verify Google GenAI embedding adapter handles both Hindi and English with dimension 384."""
+    from providers.embeddings.google_genai import GoogleGenAIEmbeddingAdapter
+    adapter = GoogleGenAIEmbeddingAdapter("google_embeddings", {"dimension": 384})
+    
+    texts = [
+        "कृपया मुझे अपने IVR सपोर्ट विकल्प बताएं", # Hindi: Tell me your IVR support options
+        "I need immediate assistance with my failed UPI refund transaction.", # English
+    ]
+    vectors = await adapter.generate_embeddings(texts)
+    assert len(vectors) == 2
+    for vec in vectors:
+        assert len(vec) == 384
+        assert all(isinstance(x, float) and not math.isnan(x) for x in vec)
+        norm = math.sqrt(sum(x * x for x in vec))
+        assert abs(norm - 1.0) < 1e-2
+

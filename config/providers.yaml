@@ -87,6 +87,11 @@ embeddings:
     model: text-embedding-3-small
     dimension: 1536
 
+  google-embeddings:
+    provider: google_genai
+    model: text-embedding-004
+    dimension: 384
+
   semantic-default:
     provider: sentence_transformers
     model: sentence-transformers/all-MiniLM-L6-v2

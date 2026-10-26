@@ -17,6 +17,7 @@ from providers.chat.transformers_local import TransformersLocalChatAdapter
 from providers.chat.gemma_transformers import GemmaTransformersChatAdapter
 from providers.embeddings.base import MockEmbeddingAdapter, OpenAICompatibleEmbeddingAdapter
 from providers.embeddings.sentence_transformers import SentenceTransformersEmbeddingAdapter
+from providers.embeddings.google_genai import GoogleGenAIEmbeddingAdapter
 from providers.speech_to_text.base import MockSpeechToTextAdapter, OpenAISpeechToTextAdapter
 from providers.text_to_speech.base import MockTextToSpeechAdapter, OpenAITextToSpeechAdapter
 from providers.vector_stores.base import InMemoryVectorStore
@@ -43,7 +44,8 @@ class ProviderRegistry:
     def _seed_default_adapters(self) -> None:
         self.embedding_adapters["mock_embeddings"] = MockEmbeddingAdapter("mock_embeddings", {})
         self.embedding_adapters["sentence_transformers"] = SentenceTransformersEmbeddingAdapter("sentence_transformers", {})
-        self.embedding_adapters["default"] = self.embedding_adapters["mock_embeddings"]
+        self.embedding_adapters["google_genai"] = GoogleGenAIEmbeddingAdapter("google_genai", {"dimension": 384})
+        self.embedding_adapters["default"] = self.embedding_adapters["google_genai"]
 
         self.stt_adapters["mock_stt"] = MockSpeechToTextAdapter("mock_stt", {})
         self.stt_adapters["openai_stt"] = OpenAISpeechToTextAdapter("openai_stt", {})
@@ -89,7 +91,9 @@ class ProviderRegistry:
         if cfg.embeddings:
             for e_id, e_cfg in cfg.embeddings.items():
                 p_name = e_cfg.provider.lower()
-                if p_name == "sentence_transformers":
+                if p_name in ("google_genai", "google_embeddings", "google"):
+                    self.embedding_adapters[e_id] = GoogleGenAIEmbeddingAdapter(e_id, e_cfg.model_dump())
+                elif p_name == "sentence_transformers":
                     self.embedding_adapters[e_id] = SentenceTransformersEmbeddingAdapter(e_id, e_cfg.model_dump())
                 elif p_name == "mock_embeddings":
                     self.embedding_adapters[e_id] = MockEmbeddingAdapter(e_id, e_cfg.model_dump(), dimension=e_cfg.dimension)

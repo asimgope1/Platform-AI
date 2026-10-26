@@ -9,12 +9,18 @@ class EmbeddingService:
         if provider_id is None:
             if model == "text-embedding-3-small":
                 provider_id = "default"
+            elif "google-embeddings" in provider_registry.embedding_adapters:
+                provider_id = "google-embeddings"
+                model = model or "text-embedding-004"
+            elif "google_genai" in provider_registry.embedding_adapters:
+                provider_id = "google_genai"
+                model = model or "text-embedding-004"
             elif "semantic-default" in provider_registry.embedding_adapters:
                 provider_id = "semantic-default"
                 model = model or "sentence-transformers/all-MiniLM-L6-v2"
             else:
                 provider_id = "default"
-                model = model or "text-embedding-3-small"
+                model = model or "text-embedding-004"
 
         self.provider_id = provider_id
         self.model = model or "text-embedding-3-small"
