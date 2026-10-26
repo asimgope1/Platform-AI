@@ -12,6 +12,8 @@ class ModelAliasConfig(BaseModel):
 class ProviderConfig(BaseModel):
     type: str  # e.g., 'openai_compatible', 'mock', 'transformers', 'gemma_transformers'
     model: Optional[str] = None
+    base_url: Optional[str] = None
+    api_key: Optional[str] = None
     base_url_env: Optional[str] = None
     api_key_env: Optional[str] = None
     timeout_seconds: float = 60.0

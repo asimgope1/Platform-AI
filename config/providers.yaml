@@ -33,6 +33,13 @@ model_aliases:
     capabilities:
       - chat
 
+  gemma-gpu:
+    provider: colab_gemma_gpu
+    model: google/gemma-4-E2B-it
+    description: "Live Google Gemma 4 E2B on T4 GPU (Cloud runtime)"
+    capabilities:
+      - chat
+
   local-gemma:
     provider: local_transformers
     model: google/gemma-4-E4B-it
@@ -62,6 +69,12 @@ providers:
     type: gemma_transformers
     model: HuggingFaceTB/SmolLM-135M-Instruct
     device: auto
+
+  colab_gemma_gpu:
+    type: openai_compatible
+    base_url: https://than-rather-possibilities-douglas.trycloudflare.com/v1
+    api_key: R7uBg0v1Md558uEvZpzn5EX-3y7r49Cs
+    timeout_seconds: 60
 
   local_transformers:
     type: transformers
