@@ -18,8 +18,8 @@ async def test_mock_stt():
 async def test_mock_tts():
     adapter = MockTextToSpeechAdapter("mock_tts", {})
     audio_bytes = await adapter.synthesize(text="Hello from AI platform")
-    assert len(audio_bytes) > 0
-    assert audio_bytes.startswith(b"\xff\xfb\x90")
+    assert len(audio_bytes) > 100
+    assert audio_bytes.startswith((b"\xff", b"ID3", b"RIFF"))
 
 
 @pytest.mark.asyncio

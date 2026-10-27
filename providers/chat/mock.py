@@ -69,8 +69,19 @@ class MockChatAdapter(BaseChatAdapter):
                 usage=UsageInfo(prompt_tokens=15, completion_tokens=20, total_tokens=35),
             )
 
-        # Standard text reply
-        reply_content = f"Mock response for [{model_meta.alias}]: Hello! I have received your message: '{last_msg}'."
+        # Context-aware intelligent mock responses
+        lower_msg = last_msg.lower()
+        if any(w in lower_msg for w in ["hi", "hello", "hey", "नमस्ते", "hii", "heya"]):
+            reply_content = "Hello! How can I assist you today? You can ask me about UPI refunds, Video KYC requirements, order tracking, or test PostgreSQL RAG retrieval."
+        elif any(w in lower_msg for w in ["refund", "upi", "रिफंड", "cut", "kat gaya", "paise"]):
+            reply_content = "If your bank account was debited via UPI, the refund will be automatically credited back within 24 to 48 hours per banking regulations. You can track this using your 12-digit UTR reference."
+        elif any(w in lower_msg for w in ["kyc", "केवाईसी", "video kyc", "pan"]):
+            reply_content = "For Video KYC, please keep your physical PAN card and Aadhaar-linked mobile ready. The verification takes only 2 minutes and unlocks full account privileges within 1 hour."
+        elif any(w in lower_msg for w in ["order", "delivery", "track", "ऑर्डर", "डिलीवरी"]):
+            reply_content = "Your order has been processed and standard delivery takes 2 to 4 business days to arrive safely at your doorstep."
+        else:
+            reply_content = f"Hello! I have processed your inquiry: '{last_msg}'. How else can I assist you today?"
+
         return NormalizedChatResponse(
             id=req_id,
             model=model_meta.alias,
@@ -107,9 +118,26 @@ class MockChatAdapter(BaseChatAdapter):
             ],
         )
 
-        words = ["Hello", " from", f" {model_meta.alias}", "!", " Streamed", " mock", " completion", " is", " working."]
-        for word in words:
-            await asyncio.sleep(0.01)
+        last_msg = request.messages[-1].content if request.messages else ""
+        if isinstance(last_msg, list):
+            last_msg = str(last_msg)
+        lower_msg = last_msg.lower()
+
+        if any(w in lower_msg for w in ["hi", "hello", "hey", "नमस्ते", "hii", "heya"]):
+            reply_content = "Hello! How can I assist you today? You can ask me about UPI refunds, Video KYC requirements, order tracking, or test PostgreSQL RAG retrieval."
+        elif any(w in lower_msg for w in ["refund", "upi", "रिफंड", "cut", "kat gaya", "paise"]):
+            reply_content = "If your bank account was debited via UPI, the refund will be automatically credited back within 24 to 48 hours per banking regulations. You can track this using your 12-digit UTR reference."
+        elif any(w in lower_msg for w in ["kyc", "केवाईसी", "video kyc", "pan"]):
+            reply_content = "For Video KYC, please keep your physical PAN card and Aadhaar-linked mobile ready. The verification takes only 2 minutes and unlocks full account privileges within 1 hour."
+        elif any(w in lower_msg for w in ["order", "delivery", "track", "ऑर्डर", "डिलीवरी"]):
+            reply_content = "Your order has been processed and standard delivery takes 2 to 4 business days to arrive safely at your doorstep."
+        else:
+            reply_content = f"Hello! I have processed your inquiry: '{last_msg}'. How else can I assist you today?"
+
+        words = reply_content.split(" ")
+        for i, word in enumerate(words):
+            prefix = "" if i == 0 else " "
+            await asyncio.sleep(0.015)
             yield StreamChunk(
                 id=req_id,
                 model=model_meta.alias,
@@ -117,7 +145,7 @@ class MockChatAdapter(BaseChatAdapter):
                 choices=[
                     StreamChoice(
                         index=0,
-                        delta=StreamDelta(content=word),
+                        delta=StreamDelta(content=prefix + word),
                         finish_reason=None,
                     )
                 ],
