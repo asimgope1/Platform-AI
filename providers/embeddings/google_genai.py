@@ -41,6 +41,14 @@ class GoogleGenAIEmbeddingAdapter(BaseEmbeddingAdapter):
             )
         return self._fallback_adapter
 
+    def warmup(self):
+        try:
+            fb = self._get_fallback_adapter()
+            if hasattr(fb, "warmup"):
+                fb.warmup()
+        except Exception:
+            pass
+
     def _get_genai_client(self):
         if not self.api_key:
             return None

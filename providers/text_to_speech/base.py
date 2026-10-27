@@ -1,4 +1,5 @@
 import os
+import asyncio
 from typing import Dict, Any, Optional
 import httpx
 from platform_core.contracts.providers import BaseTextToSpeechAdapter
@@ -14,8 +15,32 @@ import tempfile
 import wave
 
 
+_TTS_CACHE: Dict[str, bytes] = {}
+
 class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
     """Produces valid synthetic audio frames (real spoken WAV on macOS / PCM tone / MP3 frames) for development and testing."""
+
+    def _synthesize_say_sync(self, text: str, voice: str) -> Optional[bytes]:
+        if not shutil.which("say"):
+            return None
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
+                out_path = tf.name
+            # -r 205 provides crisp, brisk, natural conversational pacing (eliminating sluggish pauses)
+            subprocess.run(
+                ["say", "-v", voice, "-r", "205", "-o", out_path, "--data-format=LEI16@22050", text],
+                check=True,
+                timeout=5,
+            )
+            with open(out_path, "rb") as f:
+                data = f.read()
+            if os.path.exists(out_path):
+                os.remove(out_path)
+            if data and len(data) > 100:
+                return data
+        except Exception:
+            return None
+        return None
 
     async def synthesize(
         self,
@@ -24,28 +49,21 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         voice: str = "alloy",
         response_format: str = "mp3",
     ) -> bytes:
+        # Check in-memory audio cache for instant 0ms retrieval on frequent responses
+        cache_key = f"{voice}:{text.strip()}"
+        if cache_key in _TTS_CACHE:
+            return _TTS_CACHE[cache_key]
+
         # Detect if text contains Hindi / Devanagari script
         has_hindi = any('\u0900' <= ch <= '\u097F' for ch in text)
         say_voice = "Lekha" if has_hindi else "Samantha"
 
-        # If macOS 'say' command is available, generate real spoken voice
-        if shutil.which("say"):
-            try:
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
-                    out_path = tf.name
-                subprocess.run(
-                    ["say", "-v", say_voice, "-o", out_path, "--data-format=LEI16@22050", text],
-                    check=True,
-                    timeout=10,
-                )
-                with open(out_path, "rb") as f:
-                    data = f.read()
-                if os.path.exists(out_path):
-                    os.remove(out_path)
-                if data and len(data) > 100:
-                    return data
-            except Exception as e:
-                pass
+        # If macOS 'say' command is available, generate real spoken voice non-blockingly
+        say_audio = await asyncio.to_thread(self._synthesize_say_sync, text, say_voice)
+        if say_audio:
+            if len(_TTS_CACHE) < 200:
+                _TTS_CACHE[cache_key] = say_audio
+            return say_audio
 
         # Fallback: Generate valid audible RIFF WAVE PCM tone
         buf = io.BytesIO()

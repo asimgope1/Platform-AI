@@ -101,3 +101,21 @@ class ProviderBridge:
         elif hasattr(audio_data, "audio_bytes"):
             return audio_data.audio_bytes
         return bytes(audio_data)
+
+    @classmethod
+    def warmup_models(cls):
+        """Warm up Whisper and Embeddings in background so live caller turns are sub-second."""
+        cls.ensure_initialized()
+        try:
+            stt = provider_registry.get_stt_adapter("whisper_local")
+            if hasattr(stt, "warmup"):
+                stt.warmup()
+        except Exception as e:
+            logger.warning(f"STT warmup notice: {e}")
+
+        try:
+            emb = provider_registry.get_embedding_adapter("google-embeddings")
+            if hasattr(emb, "warmup"):
+                emb.warmup()
+        except Exception as e:
+            logger.warning(f"Embedding warmup notice: {e}")

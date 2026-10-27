@@ -33,6 +33,14 @@ class SentenceTransformersEmbeddingAdapter(BaseEmbeddingAdapter):
                         )
         return self._model
 
+    def warmup(self):
+        """Pre-load model weights into RAM so first query takes 0.01s instead of 8s."""
+        try:
+            model = self._get_model()
+            model.encode(["warmup"], convert_to_numpy=True)
+        except Exception:
+            pass
+
     def _encode_sync(self, texts: List[str]) -> List[List[float]]:
         model = self._get_model()
         vectors = model.encode(

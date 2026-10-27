@@ -1992,9 +1992,9 @@
     let persistentScriptNode = null;
     let persistentAnalyser = null;
 
-    const VAD_SPEECH_THRESHOLD = 0.026;  // RMS voice threshold
-    const VAD_SILENCE_TIMEOUT_MS = 650;  // 650ms pause finishes the caller's utterance
-    const VAD_MIN_SPEECH_MS = 380;       // Filters out throat clearing or breath
+    const VAD_SPEECH_THRESHOLD = 0.024;  // RMS voice threshold
+    const VAD_SILENCE_TIMEOUT_MS = 400;  // 400ms pause finishes caller utterance (conversational speed)
+    const VAD_MIN_SPEECH_MS = 250;       // Minimum 250ms of speech
 
     const CALLER_PROFILES = {
       '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },

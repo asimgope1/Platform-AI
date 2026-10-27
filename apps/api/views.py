@@ -51,6 +51,10 @@ class StartCallView(APIView):
         except Exception as e:
             greeting_audio_b64 = None
 
+        # Eagerly pre-warm Whisper and Embeddings while greeting is playing aloud
+        import threading
+        threading.Thread(target=ProviderBridge.warmup_models, daemon=True).start()
+
         return Response({
             "status": "active",
             "call_id": session.call_id,

@@ -32,6 +32,16 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                     self._pipe = pipeline("automatic-speech-recognition", model=self.model_name)
         return self._pipe
 
+    def warmup(self):
+        """Warm up Whisper weights and JIT graphs in the background."""
+        try:
+            pipe = self._get_pipeline()
+            dummy = np.zeros(16000, dtype=np.float32)
+            pipe({"raw": dummy, "sampling_rate": 16000})
+            logger.info("Whisper model successfully warmed up in memory.")
+        except Exception as e:
+            logger.warning(f"Whisper warmup notice: {e}")
+
     def _transcribe_sync(
         self,
         audio_bytes: bytes,

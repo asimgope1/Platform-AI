@@ -74,7 +74,7 @@ providers:
     type: openai_compatible
     base_url: https://than-rather-possibilities-douglas.trycloudflare.com/v1
     api_key: R7uBg0v1Md558uEvZpzn5EX-3y7r49Cs
-    timeout_seconds: 60
+    timeout_seconds: 1.5
 
   local_transformers:
     type: transformers

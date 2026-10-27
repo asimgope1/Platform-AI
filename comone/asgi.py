@@ -20,6 +20,10 @@ if os.path.exists(settings.PROVIDERS_CONFIG_PATH):
     except Exception as e:
         pass
 
+import threading
+from apps.providers.services import ProviderBridge
+threading.Thread(target=ProviderBridge.warmup_models, daemon=True).start()
+
 async def application(scope, receive, send):
     """
     Unified ASGI Router:
