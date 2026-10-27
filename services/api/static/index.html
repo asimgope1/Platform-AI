@@ -1998,9 +1998,10 @@
     let latestRecognizedTranscript = '';
     let interimSpeechTranscript = '';
 
-    const VAD_SPEECH_THRESHOLD = 0.015;  // Responsive conversational speech threshold (no shouting required)
-    const VAD_SILENCE_TIMEOUT_MS = 750;  // 750ms natural pause before turn completion (prevents cutting off mid-sentence)
+    const VAD_SPEECH_THRESHOLD = 0.018;  // Base speech threshold
+    const VAD_SILENCE_TIMEOUT_MS = 750;  // 750ms natural pause before turn completion
     const VAD_MIN_SPEECH_MS = 260;       // Minimum 260ms of speech
+    let ambientNoiseFloor = 0.008;       // Dynamically tracks background room noise (fans, AC)
 
     const CALLER_PROFILES = {
       '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },
@@ -2280,10 +2281,19 @@
         });
         persistentSource = persistentAudioCtx.createMediaStreamSource(persistentMicStream);
 
+        // High-pass filter (130Hz) eliminates room fan / AC rumble before VAD processing
+        const highPass = persistentAudioCtx.createBiquadFilter();
+        highPass.type = 'highpass';
+        highPass.frequency.value = 130;
+        persistentSource.connect(highPass);
+
         persistentAnalyser = persistentAudioCtx.createAnalyser();
         persistentAnalyser.fftSize = 512;
+        highPass.connect(persistentAnalyser);
 
         persistentScriptNode = persistentAudioCtx.createScriptProcessor(4096, 1, 1);
+        persistentAnalyser.connect(persistentScriptNode);
+        persistentScriptNode.connect(persistentAudioCtx.destination);
         currentTurnBuffers = [];
         isUserSpeaking = false;
         silenceStartTimestamp = 0;
@@ -2306,6 +2316,11 @@
           const rmsDisplay = document.getElementById('rmsValDisplay');
           if (rmsDisplay) rmsDisplay.innerText = levelPercent + '%';
 
+          // Dynamically track ambient room noise floor (fans, AC, room hum)
+          if (!isUserSpeaking && !isAgentSpeaking && !isGreetingPlaying) {
+            ambientNoiseFloor = ambientNoiseFloor * 0.95 + rms * 0.05;
+          }
+
           const now = performance.now();
 
           // 2. If greeting is playing, allow intelligent barge-in after 600ms acoustic grace
@@ -2326,8 +2341,9 @@
           // If not in hands-free mode or if turn is currently processing, skip auto-dispatch
           if (!isHandsFreeMode || isProcessingTurn) return;
 
-          // 3. VAD Speech Detection (slightly higher threshold when agent audio is playing to prevent echo)
-          const effectiveThreshold = isAgentSpeaking ? (VAD_SPEECH_THRESHOLD * 2.2) : VAD_SPEECH_THRESHOLD;
+          // 3. Dynamic VAD Speech Detection: floats comfortably above ambient room noise
+          const dynamicThreshold = Math.max(VAD_SPEECH_THRESHOLD, ambientNoiseFloor * 2.3);
+          const effectiveThreshold = isAgentSpeaking ? (dynamicThreshold * 2.2) : dynamicThreshold;
 
           if (rms >= effectiveThreshold) {
             // Caller voice detected -> interrupt agent if speaking (Barge-in)
@@ -2447,9 +2463,9 @@
       }
       const avgRms = Math.sqrt(totalSum / Math.max(1, totalSamples));
 
-      // Only discard if NO words were recognized AND raw audio is below murmur/noise floor
-      if (!recognizedText && (avgRms < 0.008 || totalSamples < 16000 * 0.20)) {
-        console.log('Discarded low-volume noise turn (RMS:', avgRms.toFixed(4), ')');
+      // Only discard if NO words were recognized AND raw audio is below speech threshold
+      if (!recognizedText && (avgRms < 0.016 || totalSamples < 16000 * 0.35)) {
+        console.log('Discarded low-volume ambient room noise (RMS:', avgRms.toFixed(4), ')');
         resumeSpeechRecognizerForNewTurn();
         if (currentCallId && !isGreetingPlaying) {
           updateVadStateUI('listening');
@@ -2486,6 +2502,15 @@
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+
+        // If backend filtered out ambient fan/room noise, stay quietly in listening mode
+        if (data.status === 'ignored_ambient_noise' || !data.ai_response_text) {
+          console.log('Filtered out ambient room noise turn.');
+          isProcessingTurn = false;
+          resumeSpeechRecognizerForNewTurn();
+          updateVadStateUI('listening', '🎧 Listening for your voice... (Just speak naturally)');
+          return;
+        }
 
         // Render turn & play response spoken audio immediately
         renderCognitiveTurn(data);
@@ -2745,6 +2770,9 @@
     }
 
     function renderCognitiveTurn(data) {
+      if (!data || data.status === 'ignored_ambient_noise' || !data.ai_response_text) {
+        return;
+      }
       const callerName = document.getElementById('crmName').innerText || 'Rahul Kumar';
 
       // 1. Append Caller Bubble

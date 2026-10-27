@@ -23,6 +23,24 @@ logger = logging.getLogger(__name__)
 
 class CognitiveVoicePipeline:
     @classmethod
+    def _is_noise_hallucination(cls, text: str) -> bool:
+        """Detect autoregressive Whisper hallucinations on continuous background noise (fans, AC, static)."""
+        if not text:
+            return True
+        clean = text.strip()
+        if clean in ("...", "(Speech audio)", "(Ambient noise)") or len(clean) < 2:
+            return True
+        # Detect token repetition loops: e.g. "पुपुपुपु...", "you you you...", "...."
+        for n in (1, 2, 3, 4):
+            unit = clean[:n]
+            if len(clean) >= 6 and clean.count(unit) * n >= len(clean) * 0.65:
+                return True
+        words = clean.split()
+        if len(words) >= 4 and len(set(words)) <= 2:
+            return True
+        return False
+
+    @classmethod
     async def process_call_turn(
         cls,
         session: CallSession,
@@ -55,8 +73,16 @@ class CognitiveVoicePipeline:
         elif text_input:
             caller_text = text_input.strip()
 
-        if not caller_text:
-            caller_text = "..."
+        # Reject room ambient noise and Whisper repetitive hallucinations so bot stays quiet
+        if not caller_text or cls._is_noise_hallucination(caller_text):
+            return {
+                "call_id": session.call_id,
+                "status": "ignored_ambient_noise",
+                "caller_transcript": "(Ambient noise)",
+                "ai_response_text": None,
+                "ai_response_audio_base64": None,
+                "total_turn_latency_ms": int((time.time() - t_start) * 1000),
+            }
 
         t_perceive = int((time.time() - t0) * 1000)
         result["stage_timings_ms"]["01_perceive"] = t_perceive
