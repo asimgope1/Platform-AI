@@ -1991,6 +1991,9 @@
     let persistentSource = null;
     let persistentScriptNode = null;
     let persistentAnalyser = null;
+    let liveSpeechRecognizer = null;
+    let latestRecognizedTranscript = '';
+    let interimSpeechTranscript = '';
 
     const VAD_SPEECH_THRESHOLD = 0.024;  // RMS voice threshold
     const VAD_SILENCE_TIMEOUT_MS = 400;  // 400ms pause finishes caller utterance (conversational speed)
@@ -2316,6 +2319,45 @@
         persistentAnalyser.connect(persistentScriptNode);
         persistentScriptNode.connect(persistentAudioCtx.destination);
 
+        // High-accuracy native speech recognition (Google Speech Engine in Chrome)
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          try {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            liveSpeechRecognizer = new SpeechRec();
+            const langSelect = document.getElementById('callLangSelect');
+            const lang = langSelect ? langSelect.value : 'hi';
+            liveSpeechRecognizer.lang = (lang === 'hi') ? 'hi-IN' : 'en-IN';
+            liveSpeechRecognizer.continuous = true;
+            liveSpeechRecognizer.interimResults = true;
+            liveSpeechRecognizer.maxAlternatives = 1;
+
+            liveSpeechRecognizer.onresult = (event) => {
+              for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const tr = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                  latestRecognizedTranscript = (latestRecognizedTranscript + ' ' + tr).trim();
+                } else {
+                  interimSpeechTranscript = tr;
+                }
+              }
+            };
+
+            liveSpeechRecognizer.onerror = (e) => {
+              console.log('WebSpeech status:', e.error);
+            };
+
+            liveSpeechRecognizer.onend = () => {
+              if (currentCallId && liveSpeechRecognizer && !isGreetingPlaying) {
+                try { liveSpeechRecognizer.start(); } catch (err) {}
+              }
+            };
+
+            liveSpeechRecognizer.start();
+          } catch (e) {
+            console.log('WebSpeech fallback to server STT:', e);
+          }
+        }
+
       } catch (err) {
         console.warn('Microphone continuous access error:', err);
         updateVadStateUI('manual', 'Microphone access denied. You can test using prompt chips.');
@@ -2359,8 +2401,16 @@
       let samples16k = downsampleTo16k(merged, originalSampleRate);
       let wavBlob = encodeWAV(samples16k, 16000);
 
+      // Prioritize high-accuracy transcript recognized directly by client browser
+      const recognizedText = (latestRecognizedTranscript || interimSpeechTranscript || '').trim();
+      latestRecognizedTranscript = '';
+      interimSpeechTranscript = '';
+
       const formData = new FormData();
       formData.append('audio', wavBlob, 'caller_utterance.wav');
+      if (recognizedText) {
+        formData.append('text', recognizedText);
+      }
 
       try {
         const res = await fetch(`${API_BASE}/api/v2/telephony/calls/${currentCallId}/turn/`, {
@@ -2389,6 +2439,14 @@
       if (!currentCallId) return;
       clearInterval(callTimerInterval);
       interruptAgentIfSpeaking();
+
+      // Clean up WebSpeech Recognizer
+      if (liveSpeechRecognizer) {
+        try { liveSpeechRecognizer.stop(); } catch (e) {}
+        liveSpeechRecognizer = null;
+      }
+      latestRecognizedTranscript = '';
+      interimSpeechTranscript = '';
 
       // Clean up audio hardware
       if (persistentMicStream) {

@@ -43,8 +43,13 @@ class CognitiveVoicePipeline:
         t0 = time.time()
         caller_text = ""
         stt_meta = {}
-        if audio_bytes:
-            stt_res = await ProviderBridge.transcribe_audio(audio_bytes)
+
+        # 1. High fidelity: Use client-recognized transcript if provided (e.g. Web Speech API)
+        if text_input and text_input.strip() and text_input.strip() not in ("...", "(Speech audio)"):
+            caller_text = text_input.strip()
+        # 2. Or run server-side Whisper with call's target language
+        elif audio_bytes:
+            stt_res = await ProviderBridge.transcribe_audio(audio_bytes, language=session.language)
             caller_text = stt_res.get("text", "").strip()
             stt_meta = stt_res
         elif text_input:
@@ -151,6 +156,12 @@ class CognitiveVoicePipeline:
                     "आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी अन्य विषय में सहायता कर सकता हूँ?"
                     if session.language == "hi" else
                     "You are very welcome! Is there anything else I can help you with today?"
+                )
+            elif any(w in caller_text.lower() for w in ["haha", "hahaha", "हहा", "lol"]):
+                ai_reply = (
+                    "जी बताएं! मैं आपकी रिफंड स्थिति, वीडियो केवाईसी, या ऑर्डर डिलीवरी में कैसे सहायता कर सकता हूँ?"
+                    if session.language == "hi" else
+                    "Glad to bring a smile! How may I assist you with your refund, KYC, or order delivery today?"
                 )
             elif "Mock response" in raw_reply or not raw_reply:
                 if "UPI" in intent or "REFUND" in intent:
@@ -262,14 +273,29 @@ class CognitiveVoicePipeline:
     def _analyze_sentiment_and_intent(cls, text: str) -> (str, float, str):
         """Analyze text to extract intent, sentiment score (-1.0 to 1.0) and emotion."""
         lower = text.lower()
-        # Intent detection
-        if any(w in lower for w in ["upi", "पैसा", "refund", "रिफंड", "कट गया"]):
+        # Robust Multi-Dialect & Phonetic Intent Detection (Hinglish, Hindi, English, and common ASR misspellings)
+        if any(w in lower for w in [
+            "refund", "reefend", "refand", "refun", "upi", "कट गया", "kat gaya", "kat gya", "kat gaye",
+            "पैसा", "पैसे", "paise", "paisa", "रिफंड", "यूपीआई", "debit", "debited", "failed", "fail",
+            "utr", "ریفنڈ", "پیسے", "balance", "कट गया", "account se kat", "waapas", "wapas", "kya hua"
+        ]):
             intent = "UPI_REFUND_INQUIRY"
-        elif any(w in lower for w in ["kyc", "केवाईसी", "pan", "aadhar", "पैन कार्ड"]):
+        elif any(w in lower for w in [
+            "kyc", "kaycee", "k y c", "kaivaisi", "ke vaai see", "केवाईसी", "वीडियो केवाईसी", "video kyc",
+            "pan", "pan card", "पैन कार्ड", "aadhar", "adhar", "आधार", "verification", "verify",
+            "document", "dastavez", "ویڈیو", "ویسی", "کے وائی سی"
+        ]):
             intent = "VIDEO_KYC_VERIFICATION"
-        elif any(w in lower for w in ["order", "ऑर्डर", "tracking", "डिलीवरी", "cancel"]):
+        elif any(w in lower for w in [
+            "order", "ordr", "ऑर्डर", "tracking", "track", "डिलीवरी", "delivery", "delivry", "delivary",
+            "cancel", "cancellation", "dispatch", "parcel", "पार्सल", "package", "kab aayega", "status",
+            "कब आएगा", "पहुंचेगा"
+        ]):
             intent = "ORDER_TRACKING_CANCELLATION"
-        elif any(w in lower for w in ["agent", "human", "representative", "बात", "प्रतिनिधि"]):
+        elif any(w in lower for w in [
+            "agent", "human", "representative", "executive", "person", "transfer", "talk to human",
+            "बात", "प्रतिनिधि", "इंसान", "अधिकारी", "बात करवाओ", "कॉल ट्रांसफर", "कस्टमर केयर"
+        ]):
             intent = "LIVE_AGENT_TRANSFER"
         else:
             intent = "GENERAL_INQUIRY"

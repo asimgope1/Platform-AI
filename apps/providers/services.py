@@ -84,11 +84,16 @@ class ProviderBridge:
                 }
 
     @classmethod
-    async def transcribe_audio(cls, audio_bytes: bytes, filename: str = "caller_audio.wav") -> Dict[str, Any]:
+    async def transcribe_audio(
+        cls,
+        audio_bytes: bytes,
+        filename: str = "caller_audio.wav",
+        language: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """Perceive Stage: Transcribe caller audio bytes with WhisperLocalSpeechToTextAdapter."""
         cls.ensure_initialized()
         stt_adapter = provider_registry.get_stt_adapter("whisper_local")
-        return await stt_adapter.transcribe(audio_bytes=audio_bytes, filename=filename)
+        return await stt_adapter.transcribe(audio_bytes=audio_bytes, filename=filename, language=language)
 
     @classmethod
     async def synthesize_speech(cls, text: str, voice: str = "alloy") -> bytes:
