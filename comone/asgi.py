@@ -11,6 +11,14 @@ django_app = get_asgi_application()
 
 # Import FastAPI application
 from services.api.main import app as fastapi_app
+from providers.registry import provider_registry
+from platform_core.config.settings import settings
+
+if os.path.exists(settings.PROVIDERS_CONFIG_PATH):
+    try:
+        provider_registry.initialize_from_file(settings.PROVIDERS_CONFIG_PATH)
+    except Exception as e:
+        pass
 
 async def application(scope, receive, send):
     """

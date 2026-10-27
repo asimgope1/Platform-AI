@@ -88,15 +88,24 @@ class ChatOrchestrator:
             return stream_wrapper()
 
         # 6. Non-streaming with optional tool loop
-        if current_request.tools:
-            response = await self.tool_loop_runner.run(
-                adapter=adapter,
-                request=current_request,
-                model_meta=model_meta,
-                context=context,
-            )
-        else:
-            response = await adapter.chat_completion(current_request, model_meta)
+        try:
+            if current_request.tools:
+                response = await self.tool_loop_runner.run(
+                    adapter=adapter,
+                    request=current_request,
+                    model_meta=model_meta,
+                    context=context,
+                )
+            else:
+                response = await adapter.chat_completion(current_request, model_meta)
+        except Exception as e:
+            logger.warning(f"Primary model {model_meta.alias} failed ({e}); falling back to local fallback provider.")
+            try:
+                fallback_meta = self.model_resolver.resolve("mock-chat")
+                fallback_adapter = provider_registry.get_chat_adapter(fallback_meta.provider_id)
+                response = await fallback_adapter.chat_completion(current_request, fallback_meta)
+            except Exception:
+                raise e
 
         # 7. Record metrics and return
         duration_ms = (time.perf_counter() - start_time) * 1000

@@ -210,10 +210,17 @@
     }
 
     .tab-nav {
+      position: sticky;
+      top: 65px;
+      z-index: 45;
+      background: rgba(10, 13, 20, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       display: flex;
       gap: 8px;
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 12px;
+      padding: 10px 0 12px 0;
+      margin-top: -10px;
     }
 
     .tab-btn {
@@ -1024,9 +1031,9 @@
           <div class="setting-group">
             <label class="setting-label" for="modelSelect">Select Model Alias</label>
             <select id="modelSelect" class="form-control" onchange="updateModelBadge()">
-              <option value="gemma-gpu" selected>gemma-gpu (Live Gemma 4 E2B on T4 GPU)</option>
+              <option value="mock-chat" selected>mock-chat (Instant Local RAG - Ready)</option>
               <option value="local-smoke">local-smoke (Local Weights SmolLM-135M)</option>
-              <option value="mock-chat">mock-chat (Instant Offline Mock)</option>
+              <option value="gemma-gpu">gemma-gpu (Live Gemma 4 on Colab T4 GPU)</option>
               <option value="general-chat">general-chat (Hosted OpenAI compatible)</option>
             </select>
           </div>
