@@ -72,9 +72,9 @@ providers:
 
   colab_gemma_gpu:
     type: openai_compatible
-    base_url: https://than-rather-possibilities-douglas.trycloudflare.com/v1
-    api_key: R7uBg0v1Md558uEvZpzn5EX-3y7r49Cs
-    timeout_seconds: 1.5
+    base_url: https://camel-treated-celebrity-nested.trycloudflare.com/v1
+    api_key: FzLKJi3Qp6wjfzrV4LC7UeDlP9Uwdyh8
+    timeout_seconds: 30
 
   local_transformers:
     type: transformers
@@ -94,8 +94,8 @@ embeddings:
 
   colab-embeddinggemma-2:
     provider: openai_compatible
-    base_url: https://than-rather-possibilities-douglas.trycloudflare.com/v1
-    api_key: R7uBg0v1Md558uEvZpzn5EX-3y7r49Cs
+    base_url: https://camel-treated-celebrity-nested.trycloudflare.com/v1
+    api_key: FzLKJi3Qp6wjfzrV4LC7UeDlP9Uwdyh8
     model: google/embeddinggemma-2
     dimension: 768
 

@@ -29,7 +29,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
             with self._load_lock:
                 if self._pipe is None:
                     from transformers import pipeline
-                    self._pipe = pipeline("automatic-speech-recognition", model=self.model_name)
+                    self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu")
         return self._pipe
 
     def warmup(self):
