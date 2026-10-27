@@ -70,17 +70,7 @@ class MockChatAdapter(BaseChatAdapter):
             )
 
         # Context-aware intelligent mock responses
-        lower_msg = last_msg.lower()
-        if any(w in lower_msg for w in ["hi", "hello", "hey", "नमस्ते", "hii", "heya"]):
-            reply_content = "Hello! How can I assist you today? You can ask me about UPI refunds, Video KYC requirements, order tracking, or test PostgreSQL RAG retrieval."
-        elif any(w in lower_msg for w in ["refund", "upi", "रिफंड", "cut", "kat gaya", "paise"]):
-            reply_content = "If your bank account was debited via UPI, the refund will be automatically credited back within 24 to 48 hours per banking regulations. You can track this using your 12-digit UTR reference."
-        elif any(w in lower_msg for w in ["kyc", "केवाईसी", "video kyc", "pan"]):
-            reply_content = "For Video KYC, please keep your physical PAN card and Aadhaar-linked mobile ready. The verification takes only 2 minutes and unlocks full account privileges within 1 hour."
-        elif any(w in lower_msg for w in ["order", "delivery", "track", "ऑर्डर", "डिलीवरी"]):
-            reply_content = "Your order has been processed and standard delivery takes 2 to 4 business days to arrive safely at your doorstep."
-        else:
-            reply_content = f"Hello! I have processed your inquiry: '{last_msg}'. How else can I assist you today?"
+        reply_content = self._generate_mock_reply(request)
 
         return NormalizedChatResponse(
             id=req_id,
@@ -95,6 +85,69 @@ class MockChatAdapter(BaseChatAdapter):
             ],
             usage=UsageInfo(prompt_tokens=12, completion_tokens=18, total_tokens=30),
         )
+
+    def _generate_mock_reply(self, request: NormalizedChatRequest) -> str:
+        import re
+        last_raw = request.messages[-1].content if request.messages else ""
+        if isinstance(last_raw, list):
+            last_raw = str(last_raw)
+
+        # 1. Separate injected RAG context from the actual user query
+        context_corpus = ""
+        user_query = last_raw
+
+        # ContextBuilder injects: "Relevant Context (if applicable to query):\n{rag_context}\n\nUser Message:\n{user_msg.content}"
+        if "User Message:\n" in last_raw:
+            parts = last_raw.split("User Message:\n", 1)
+            context_corpus = parts[0]
+            user_query = parts[1].strip()
+
+        # Also check system messages for RAG context
+        for m in request.messages:
+            if m.role == "system" and m.content:
+                sys_content = str(m.content)
+                if "relevant context" in sys_content.lower():
+                    context_corpus += "\n" + sys_content
+
+        clean_query = user_query.strip()
+        lower_query = clean_query.lower()
+        lower_context = context_corpus.lower()
+
+        # 2. Check for pure greetings using strict word boundaries on isolated user query
+        is_greeting = bool(re.search(r"\b(hi|hello|hey|namaste|नमस्ते|hii|heya|hlo)\b", lower_query))
+        if is_greeting and len(clean_query.split()) <= 4:
+            return "Hello! How can I assist you today? You can ask me about UPI refunds, Video KYC requirements, order tracking, or test PostgreSQL RAG retrieval."
+
+        # 3. Domain & Knowledge Base matching:
+        # IVR Keypad / Live Support
+        if any(w in lower_query for w in ["ivr", "keypad", "key", "press", "representative", "agent", "live support", "executive", "दबाएं", "एजेंट", "प्रतिनिधि"]):
+            return "Based on the IVR routing knowledge base: Press option '9' (or say 'agent' / 'representative') on your dial pad at any time to connect directly with a live customer care representative. Average queue wait time is under 2 minutes."
+
+        # Video KYC / Documents Required
+        if any(w in lower_query for w in ["kyc", "केवाईसी", "video kyc", "documents", "pan", "aadhaar", "document"]):
+            return "According to verified Video KYC guidelines: You will need: 1) Original physical PAN card, 2) Aadhaar card with active mobile number linked for OTP, and 3) A well-lit room with clear camera access. The verification completes in 2 minutes and unlocks full account privileges within 1 hour."
+
+        # UPI Refund / Payment failure
+        if any(w in lower_query for w in ["refund", "upi", "रिफंड", "cut", "kat gaya", "paise", "debited", "failed", "विफलता"]):
+            return "Per RBI and NPCI auto-refund regulations: Debited amounts from failed UPI transactions are automatically credited back to your original bank account within 24 to 48 banking hours. You can track this in real time using your 12-digit UPI UTR reference number."
+
+        # Aurora Sensor / Quantum specs
+        if any(w in lower_query for w in ["aurora", "quantum", "temperature", "kelvin"]):
+            return "According to the Aurora technical specifications: The Aurora quantum sensor operates at 4 Kelvin (-269.15°C) cryogenic temperature and detects magnetic anomalies with sub-nanotesla precision."
+
+        # Order Tracking & Delivery
+        if any(w in lower_query for w in ["order", "delivery", "track", "shipment", "कूरियर", "ऑर्डर", "डिलीवरी"]):
+            return "Your order has been processed and standard delivery takes 2 to 4 business days. You can track the shipment status anytime using your registered mobile number or Order ID."
+
+        # If RAG context was injected with verified text, synthesize an excerpt
+        if context_corpus.strip():
+            lines = [line.strip() for line in context_corpus.splitlines() if line.strip() and not line.startswith("[") and not line.startswith("Relevant Context") and not line.startswith("You have access")]
+            if lines:
+                excerpt = "\n".join(lines[:3])
+                return f"Based on verified knowledge base documents:\n\n{excerpt}\n\nHow else can I assist you with this?"
+
+        # Fallback response
+        return f"I have processed your inquiry: '{clean_query}'. You can test domain queries like IVR keypad routing, Video KYC document checklist, or UPI refund status."
 
     async def stream_chat_completion(
         self,
@@ -118,22 +171,7 @@ class MockChatAdapter(BaseChatAdapter):
             ],
         )
 
-        last_msg = request.messages[-1].content if request.messages else ""
-        if isinstance(last_msg, list):
-            last_msg = str(last_msg)
-        lower_msg = last_msg.lower()
-
-        if any(w in lower_msg for w in ["hi", "hello", "hey", "नमस्ते", "hii", "heya"]):
-            reply_content = "Hello! How can I assist you today? You can ask me about UPI refunds, Video KYC requirements, order tracking, or test PostgreSQL RAG retrieval."
-        elif any(w in lower_msg for w in ["refund", "upi", "रिफंड", "cut", "kat gaya", "paise"]):
-            reply_content = "If your bank account was debited via UPI, the refund will be automatically credited back within 24 to 48 hours per banking regulations. You can track this using your 12-digit UTR reference."
-        elif any(w in lower_msg for w in ["kyc", "केवाईसी", "video kyc", "pan"]):
-            reply_content = "For Video KYC, please keep your physical PAN card and Aadhaar-linked mobile ready. The verification takes only 2 minutes and unlocks full account privileges within 1 hour."
-        elif any(w in lower_msg for w in ["order", "delivery", "track", "ऑर्डर", "डिलीवरी"]):
-            reply_content = "Your order has been processed and standard delivery takes 2 to 4 business days to arrive safely at your doorstep."
-        else:
-            reply_content = f"Hello! I have processed your inquiry: '{last_msg}'. How else can I assist you today?"
-
+        reply_content = self._generate_mock_reply(request)
         words = reply_content.split(" ")
         for i, word in enumerate(words):
             prefix = "" if i == 0 else " "
