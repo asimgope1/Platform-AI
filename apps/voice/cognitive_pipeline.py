@@ -277,21 +277,24 @@ class CognitiveVoicePipeline:
         lower = text.lower()
         # Robust Multi-Dialect & Phonetic Intent Detection (Hinglish, Hindi, English, and common ASR misspellings)
         if any(w in lower for w in [
-            "refund", "reefend", "refand", "refun", "upi", "कट गया", "kat gaya", "kat gya", "kat gaye",
-            "पैसा", "पैसे", "paise", "paisa", "रिफंड", "यूपीआई", "debit", "debited", "failed", "fail",
-            "utr", "ریفنڈ", "پیسے", "balance", "कट गया", "account se kat", "waapas", "wapas", "kya hua"
+            "refund", "reefend", "refand", "refun", "re fund", "rifund", "freefund", "free fund",
+            "रिफंड", "रीफंड", "रिफन्ड", "रीफ़ंड", "रिफ़ंड", "फ्रीफंड", "फ्रीफ़ंड", "फ्री फंड",
+            "स्थिति", "stithi", "sthiti", "स्टेटस", "status", "upi", "यूपीआई", "यूटीआर", "utr",
+            "कट गया", "kat gaya", "kat gya", "कट गए", "kat gaye",
+            "पैसा", "पैसे", "paise", "paisa", "debit", "debited", "failed", "fail",
+            "ریفنڈ", "پیسے", "balance", "account se kat", "waapas", "wapas", "वापस", "kya hua"
         ]):
             intent = "UPI_REFUND_INQUIRY"
         elif any(w in lower for w in [
             "kyc", "kaycee", "k y c", "kaivaisi", "ke vaai see", "केवाईसी", "वीडियो केवाईसी", "video kyc",
             "pan", "pan card", "पैन कार्ड", "aadhar", "adhar", "आधार", "verification", "verify",
-            "document", "dastavez", "ویڈیو", "ویسی", "کے وائی سی"
+            "document", "dastavez", "दस्तावेज़", "ویڈیو", "ویسی", "کے وائی سی"
         ]):
             intent = "VIDEO_KYC_VERIFICATION"
         elif any(w in lower for w in [
-            "order", "ordr", "ऑर्डर", "tracking", "track", "डिलीवरी", "delivery", "delivry", "delivary",
-            "cancel", "cancellation", "dispatch", "parcel", "पार्सल", "package", "kab aayega", "status",
-            "कब आएगा", "पहुंचेगा"
+            "order", "ordr", "ऑर्डर", "tracking", "track", "ट्रैक", "ट्रैकिंग", "डिलीवरी", "delivery", "delivry", "delivary",
+            "cancel", "cancellation", "dispatch", "parcel", "पार्सल", "package", "kab aayega",
+            "कब आएगा", "पहुंचेगा", "कहाँ है", "kahan hai"
         ]):
             intent = "ORDER_TRACKING_CANCELLATION"
         elif any(w in lower for w in [
