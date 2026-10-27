@@ -95,7 +95,7 @@ class ProviderBridge:
         """Respond Stage: Synthesize spoken response via TTS adapter."""
         cls.ensure_initialized()
         tts_adapter = provider_registry.get_tts_adapter("mock_tts")
-        audio_data = await tts_adapter.synthesize(text=text, voice=voice)
+        audio_data = await tts_adapter.synthesize(text=text, voice=voice, response_format="wav")
         if isinstance(audio_data, bytes):
             return audio_data
         elif hasattr(audio_data, "audio_bytes"):

@@ -138,7 +138,21 @@ class CognitiveVoicePipeline:
         else:
             chat_res = await ProviderBridge.generate_chat_response(messages=messages, max_tokens=150)
             raw_reply = chat_res.get("content", "")
-            if "Mock response" in raw_reply or not raw_reply:
+            is_silent_turn = (caller_text == "..." or not caller_text)
+
+            if is_silent_turn:
+                ai_reply = (
+                    "माफ़ कीजिए, आपकी आवाज़ स्पष्ट नहीं सुनाई दी। कृपया बताएं, मैं आपकी क्या सहायता कर सकता हूँ?"
+                    if session.language == "hi" else
+                    "Pardon me, I couldn't hear that clearly. Could you please repeat how I can assist you?"
+                )
+            elif any(w in caller_text.lower() for w in ["thank", "thanks", "धन्यवाद", "शुक्रिया", "shukriya"]):
+                ai_reply = (
+                    "आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी अन्य विषय में सहायता कर सकता हूँ?"
+                    if session.language == "hi" else
+                    "You are very welcome! Is there anything else I can help you with today?"
+                )
+            elif "Mock response" in raw_reply or not raw_reply:
                 if "UPI" in intent or "REFUND" in intent:
                     ai_reply = (
                         "यदि आपके बैंक खाते से यूपीआई राशि कट गई है लेकिन ऑर्डर नहीं बना, "
@@ -162,9 +176,9 @@ class CognitiveVoicePipeline:
                     )
                 else:
                     ai_reply = (
-                        "नमस्ते! हमारी ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। बताएं मैं आपकी क्या सहायता कर सकता हूँ?"
+                        "जी, मैं आपकी सहायता के लिए तैयार हूँ। आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
                         if session.language == "hi" else
-                        "Hello! Welcome to Customer Support. How may I assist you today?"
+                        "I am here to assist you. You can ask about refund status, video KYC verification, or delivery tracking."
                     )
             else:
                 ai_reply = raw_reply

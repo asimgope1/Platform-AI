@@ -91,6 +91,20 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
             audio_data = scipy.signal.resample(audio_data, num_samples)
             samplerate = 16000
 
+        # Check for near-silence before running heavy whisper pipeline
+        rms = float(np.sqrt(np.mean(audio_data ** 2)))
+        peak = float(np.max(np.abs(audio_data)))
+        duration = round(float(len(audio_data)) / float(samplerate), 2)
+
+        if rms < 0.007 or peak < 0.018 or duration < 0.3:
+            logger.info(f"Skipping silent/murmur audio turn: rms={rms:.4f}, peak={peak:.4f}, dur={duration}s")
+            return {
+                "text": "",
+                "language": language or "en",
+                "duration": duration,
+                "words": [],
+            }
+
         # Run whisper pipeline
         pipe = self._get_pipeline()
         kwargs = {}
@@ -101,9 +115,16 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         result = pipe(raw_input, **kwargs)
         transcribed_text = result.get("text", "").strip()
 
-        duration = round(float(len(audio_data)) / float(samplerate), 2)
+        # Filter repetitive hallucination loops (e.g. 'à l'ouh, à l'ouh...' or 'you you you')
+        words = transcribed_text.lower().split()
+        if len(words) >= 6:
+            unique_words = set(words)
+            if len(unique_words) <= 2 or (len(words) / max(1, len(unique_words))) > 4:
+                logger.warning(f"Whisper hallucination discarded: '{transcribed_text[:60]}...'")
+                transcribed_text = ""
+
         return {
-            "text": transcribed_text if transcribed_text else f"Transcribed speech content from {filename}.",
+            "text": transcribed_text,
             "language": language or "en",
             "duration": duration,
             "words": [],

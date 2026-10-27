@@ -1979,6 +1979,7 @@
     let isHandsFreeMode = true;
     let isUserSpeaking = false;
     let isAgentSpeaking = false;
+    let isGreetingPlaying = false;
     let isProcessingTurn = false;
     let speechStartTimestamp = 0;
     let silenceStartTimestamp = 0;
@@ -1991,9 +1992,9 @@
     let persistentScriptNode = null;
     let persistentAnalyser = null;
 
-    const VAD_SPEECH_THRESHOLD = 0.024;  // RMS voice threshold
+    const VAD_SPEECH_THRESHOLD = 0.026;  // RMS voice threshold
     const VAD_SILENCE_TIMEOUT_MS = 650;  // 650ms pause finishes the caller's utterance
-    const VAD_MIN_SPEECH_MS = 350;       // Filters out throat clearing or breath
+    const VAD_MIN_SPEECH_MS = 380;       // Filters out throat clearing or breath
 
     const CALLER_PROFILES = {
       '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },
@@ -2091,7 +2092,7 @@
       interruptAgentIfSpeaking();
       if (!b64) {
         if (onEndedCallback) onEndedCallback();
-        updateVadStateUI('listening');
+        if (currentCallId && !isGreetingPlaying) updateVadStateUI('listening');
         return;
       }
 
@@ -2099,38 +2100,46 @@
         const audioSrc = `data:audio/wav;base64,${b64}`;
         currentAgentAudio = new Audio(audioSrc);
         isAgentSpeaking = true;
-        updateVadStateUI('agent_speaking');
+        if (!isGreetingPlaying) {
+          updateVadStateUI('agent_speaking', '🔊 AI Agent Speaking... (Speak to interrupt)');
+        }
 
         currentAgentAudio.onended = () => {
           isAgentSpeaking = false;
           currentAgentAudio = null;
           if (onEndedCallback) onEndedCallback();
-          if (currentCallId) {
-            updateVadStateUI('listening');
+          if (currentCallId && !isGreetingPlaying) {
+            updateVadStateUI('listening', '🎧 Listening for your voice... (Just speak naturally)');
           }
         };
 
         currentAgentAudio.onerror = (e) => {
+          console.warn('Agent audio element error:', e);
           isAgentSpeaking = false;
           currentAgentAudio = null;
           if (onEndedCallback) onEndedCallback();
-          if (currentCallId) {
+          if (currentCallId && !isGreetingPlaying) {
             updateVadStateUI('listening');
           }
         };
 
-        currentAgentAudio.play().catch(err => {
-          console.warn('Autoplay notice:', err);
-          isAgentSpeaking = false;
-          currentAgentAudio = null;
-          if (onEndedCallback) onEndedCallback();
-          if (currentCallId) {
-            updateVadStateUI('listening');
-          }
-        });
+        const playPromise = currentAgentAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.warn('Autoplay prevented or interrupted:', err);
+            isAgentSpeaking = false;
+            currentAgentAudio = null;
+            if (onEndedCallback) onEndedCallback();
+            if (currentCallId && !isGreetingPlaying) {
+              updateVadStateUI('listening');
+            }
+          });
+        }
       } catch (err) {
         console.error('Audio playback error:', err);
-        updateVadStateUI('listening');
+        isAgentSpeaking = false;
+        if (onEndedCallback) onEndedCallback();
+        if (currentCallId && !isGreetingPlaying) updateVadStateUI('listening');
       }
     }
 
@@ -2193,12 +2202,18 @@
           document.getElementById('callDuration').innerText = `${mins}:${secs}`;
         }, 1000);
 
-        // Initialize Live Microphone & Continuous VAD
+        // Initialize Live Microphone with Echo Cancellation
         await initContinuousVadAudio();
 
-        // Play initial greeting aloud automatically
+        // Protect and play initial greeting aloud automatically
+        isGreetingPlaying = true;
+        updateVadStateUI('agent_speaking', '🔊 Playing Welcome Greeting...');
+
         playAgentSpokenAudio(data.initial_greeting_audio_base64, () => {
-          updateVadStateUI('listening');
+          isGreetingPlaying = false;
+          if (currentCallId) {
+            updateVadStateUI('listening', '🎧 Listening for your voice... (Just speak naturally)');
+          }
         });
 
       } catch (err) {
@@ -2213,7 +2228,13 @@
       try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         persistentAudioCtx = new AudioContextClass();
-        persistentMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        persistentMicStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
         persistentSource = persistentAudioCtx.createMediaStreamSource(persistentMicStream);
 
         persistentAnalyser = persistentAudioCtx.createAnalyser();
@@ -2242,15 +2263,22 @@
           const rmsDisplay = document.getElementById('rmsValDisplay');
           if (rmsDisplay) rmsDisplay.innerText = levelPercent + '%';
 
+          // If greeting is playing, the caller is hearing the welcome message: do NOT buffer or interrupt!
+          if (isGreetingPlaying) return;
+
           // If not in hands-free mode or if turn is currently processing, skip auto-dispatch
           if (!isHandsFreeMode || isProcessingTurn) return;
 
           const now = performance.now();
 
-          // 2. VAD: Speech Detection
-          if (rms >= VAD_SPEECH_THRESHOLD) {
+          // 2. VAD: Speech Detection (require higher threshold if agent is speaking to prevent speaker bleed)
+          const effectiveThreshold = isAgentSpeaking ? (VAD_SPEECH_THRESHOLD * 2.4) : VAD_SPEECH_THRESHOLD;
+
+          if (rms >= effectiveThreshold) {
             // Caller voice detected -> interrupt agent if speaking (Barge-in)
-            interruptAgentIfSpeaking();
+            if (isAgentSpeaking) {
+              interruptAgentIfSpeaking();
+            }
 
             if (!isUserSpeaking) {
               isUserSpeaking = true;
@@ -2263,19 +2291,16 @@
           } else {
             // Below threshold (silence/pause)
             if (isUserSpeaking) {
-              // Capture trailing silence for sentence tail
               currentTurnBuffers.push(new Float32Array(input));
 
               if (silenceStartTimestamp === 0) {
                 silenceStartTimestamp = now;
               } else if (now - silenceStartTimestamp >= VAD_SILENCE_TIMEOUT_MS) {
-                // Silence timeout expired -> User finished their sentence!
                 const speechDuration = now - speechStartTimestamp;
                 isUserSpeaking = false;
                 silenceStartTimestamp = 0;
 
                 if (speechDuration >= VAD_MIN_SPEECH_MS && currentTurnBuffers.length > 0) {
-                  // Valid turn: automatically dispatch
                   triggerAutomaticHandsFreeTurn(currentTurnBuffers);
                   currentTurnBuffers = [];
                 } else {
@@ -2299,12 +2324,30 @@
 
     async function triggerAutomaticHandsFreeTurn(buffers) {
       if (isProcessingTurn || !currentCallId) return;
+
+      // Filter out low-energy ambient room noise or very short bursts to prevent Whisper hallucinations
+      let totalSum = 0;
+      let totalSamples = 0;
+      for (let b of buffers) {
+        for (let i = 0; i < b.length; i++) {
+          totalSum += b[i] * b[i];
+          totalSamples++;
+        }
+      }
+      const avgRms = Math.sqrt(totalSum / Math.max(1, totalSamples));
+      if (avgRms < 0.016 || totalSamples < 16000 * 0.35) {
+        console.log('Discarded low-volume murmur/noise turn (RMS:', avgRms.toFixed(4), ')');
+        if (currentCallId && !isGreetingPlaying) {
+          updateVadStateUI('listening');
+        }
+        return;
+      }
+
       isProcessingTurn = true;
       updateVadStateUI('processing');
       document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing Speech & RAG...';
 
       // Merge buffers
-      let totalSamples = buffers.reduce((acc, b) => acc + b.length, 0);
       let merged = new Float32Array(totalSamples);
       let offset = 0;
       for (let b of buffers) {
@@ -2532,10 +2575,13 @@
       let audioPlayerHtml = '';
       if (audioB64) {
         audioPlayerHtml = `
-          <div class="chat-bubble-audio">
-            <audio controls style="width: 100%; height: 32px;">
+          <div class="chat-bubble-audio" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+            <audio controls style="flex: 1; height: 32px;" preload="auto">
               <source src="data:audio/wav;base64,${audioB64}" type="audio/wav">
             </audio>
+            <button class="btn btn-secondary btn-replay-audio" style="padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; height: 32px; display: flex; align-items: center; gap: 4px;">
+              🔊 Replay
+            </button>
           </div>
         `;
       }
@@ -2556,6 +2602,15 @@
         ${audioPlayerHtml}
         ${metaHtml}
       `;
+
+      if (audioB64) {
+        const replayBtn = bubble.querySelector('.btn-replay-audio');
+        if (replayBtn) {
+          replayBtn.addEventListener('click', () => {
+            playAgentSpokenAudio(audioB64);
+          });
+        }
+      }
 
       chatArea.appendChild(bubble);
       chatArea.scrollTop = chatArea.scrollHeight;
