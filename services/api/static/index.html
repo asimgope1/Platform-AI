@@ -1980,10 +1980,13 @@
     let isUserSpeaking = false;
     let isAgentSpeaking = false;
     let isGreetingPlaying = false;
+    let greetingStartTime = 0;
     let isProcessingTurn = false;
     let speechStartTimestamp = 0;
     let silenceStartTimestamp = 0;
     let currentTurnBuffers = [];
+    let preSpeechRingBuffer = [];
+    const PRE_SPEECH_BUFFER_COUNT = 4; // ~370ms pre-roll history to prevent cutting off first syllable
     let currentAgentAudio = null;
 
     let persistentAudioCtx = null;
@@ -1995,9 +1998,9 @@
     let latestRecognizedTranscript = '';
     let interimSpeechTranscript = '';
 
-    const VAD_SPEECH_THRESHOLD = 0.024;  // RMS voice threshold
-    const VAD_SILENCE_TIMEOUT_MS = 400;  // 400ms pause finishes caller utterance (conversational speed)
-    const VAD_MIN_SPEECH_MS = 250;       // Minimum 250ms of speech
+    const VAD_SPEECH_THRESHOLD = 0.015;  // Responsive conversational speech threshold (no shouting required)
+    const VAD_SILENCE_TIMEOUT_MS = 750;  // 750ms natural pause before turn completion (prevents cutting off mid-sentence)
+    const VAD_MIN_SPEECH_MS = 260;       // Minimum 260ms of speech
 
     const CALLER_PROFILES = {
       '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },
@@ -2216,7 +2219,8 @@
 
         // Protect and play initial greeting aloud automatically
         isGreetingPlaying = true;
-        updateVadStateUI('agent_speaking', '🔊 Playing Welcome Greeting...');
+        greetingStartTime = performance.now();
+        updateVadStateUI('agent_speaking', '🔊 Playing Welcome Greeting... (Speak anytime to talk)');
 
         playAgentSpokenAudio(data.initial_greeting_audio_base64, () => {
           isGreetingPlaying = false;
@@ -2272,16 +2276,28 @@
           const rmsDisplay = document.getElementById('rmsValDisplay');
           if (rmsDisplay) rmsDisplay.innerText = levelPercent + '%';
 
-          // If greeting is playing, the caller is hearing the welcome message: do NOT buffer or interrupt!
-          if (isGreetingPlaying) return;
+          const now = performance.now();
+
+          // 2. If greeting is playing, allow intelligent barge-in after 600ms acoustic grace
+          if (isGreetingPlaying) {
+            const timeSinceGreetingStart = now - greetingStartTime;
+            if (timeSinceGreetingStart < 600) {
+              return;
+            }
+            if (rms >= VAD_SPEECH_THRESHOLD * 2.2 || (interimSpeechTranscript && interimSpeechTranscript.length > 2)) {
+              console.log('Caller barged in during greeting, allowing turn capture.');
+              isGreetingPlaying = false;
+              interruptAgentIfSpeaking();
+            } else {
+              return;
+            }
+          }
 
           // If not in hands-free mode or if turn is currently processing, skip auto-dispatch
           if (!isHandsFreeMode || isProcessingTurn) return;
 
-          const now = performance.now();
-
-          // 2. VAD: Speech Detection (require higher threshold if agent is speaking to prevent speaker bleed)
-          const effectiveThreshold = isAgentSpeaking ? (VAD_SPEECH_THRESHOLD * 2.4) : VAD_SPEECH_THRESHOLD;
+          // 3. VAD Speech Detection (slightly higher threshold when agent audio is playing to prevent echo)
+          const effectiveThreshold = isAgentSpeaking ? (VAD_SPEECH_THRESHOLD * 2.2) : VAD_SPEECH_THRESHOLD;
 
           if (rms >= effectiveThreshold) {
             // Caller voice detected -> interrupt agent if speaking (Barge-in)
@@ -2292,7 +2308,8 @@
             if (!isUserSpeaking) {
               isUserSpeaking = true;
               speechStartTimestamp = now;
-              currentTurnBuffers = [];
+              // Pre-seed with pre-speech audio history so the first syllable/word is completely preserved!
+              currentTurnBuffers = [...preSpeechRingBuffer];
               updateVadStateUI('caller_speaking');
             }
             silenceStartTimestamp = 0;
@@ -2316,6 +2333,12 @@
                   currentTurnBuffers = [];
                   updateVadStateUI('listening');
                 }
+              }
+            } else {
+              // Maintain rolling ring buffer while waiting for caller to speak
+              preSpeechRingBuffer.push(new Float32Array(input));
+              if (preSpeechRingBuffer.length > PRE_SPEECH_BUFFER_COUNT) {
+                preSpeechRingBuffer.shift();
               }
             }
           }
@@ -2373,7 +2396,12 @@
     async function triggerAutomaticHandsFreeTurn(buffers) {
       if (isProcessingTurn || !currentCallId) return;
 
-      // Filter out low-energy ambient room noise or very short bursts to prevent Whisper hallucinations
+      // Extract high-accuracy transcript recognized directly by client browser
+      const recognizedText = (latestRecognizedTranscript || interimSpeechTranscript || '').trim();
+      latestRecognizedTranscript = '';
+      interimSpeechTranscript = '';
+
+      // Calculate total samples and energy
       let totalSum = 0;
       let totalSamples = 0;
       for (let b of buffers) {
@@ -2383,8 +2411,10 @@
         }
       }
       const avgRms = Math.sqrt(totalSum / Math.max(1, totalSamples));
-      if (avgRms < 0.016 || totalSamples < 16000 * 0.35) {
-        console.log('Discarded low-volume murmur/noise turn (RMS:', avgRms.toFixed(4), ')');
+
+      // Only discard if NO words were recognized AND raw audio is below murmur/noise floor
+      if (!recognizedText && (avgRms < 0.008 || totalSamples < 16000 * 0.20)) {
+        console.log('Discarded low-volume noise turn (RMS:', avgRms.toFixed(4), ')');
         if (currentCallId && !isGreetingPlaying) {
           updateVadStateUI('listening');
         }
@@ -2406,11 +2436,6 @@
       const originalSampleRate = persistentAudioCtx ? persistentAudioCtx.sampleRate : 44100;
       let samples16k = downsampleTo16k(merged, originalSampleRate);
       let wavBlob = encodeWAV(samples16k, 16000);
-
-      // Prioritize high-accuracy transcript recognized directly by client browser
-      const recognizedText = (latestRecognizedTranscript || interimSpeechTranscript || '').trim();
-      latestRecognizedTranscript = '';
-      interimSpeechTranscript = '';
 
       const formData = new FormData();
       formData.append('audio', wavBlob, 'caller_utterance.wav');
