@@ -872,8 +872,15 @@
         <!-- Document List & Semantic Search -->
         <div class="card">
           <div class="card-header">
-            <span>Tenant Document Chunks in PostgreSQL</span>
-            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="loadDocuments()">↻ Refresh List</button>
+            <div>
+              <span>Tenant Document Chunks in PostgreSQL</span>
+              <span id="activeTenantBadge" class="brand-badge" style="margin-left: 8px; background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Active: IVR Support</span>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="switchTenantQuick('ivr')">📞 Switch to IVR Support</button>
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="switchTenantQuick('alpha')">⚛️ Tenant Alpha</button>
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="loadDocuments()">↻ Refresh List</button>
+            </div>
           </div>
 
           <!-- Quick Semantic Search Tester -->
@@ -1021,14 +1028,41 @@
       return document.getElementById('activeApiKey').value.trim();
     }
 
+    function updateTenantBadge(val) {
+      const badge = document.getElementById('activeTenantBadge');
+      if (!badge) return;
+      if (val === 'ivr') {
+        badge.innerText = 'Active: IVR Support (17 chunks)';
+        badge.style.background = 'rgba(16, 185, 129, 0.2)';
+        badge.style.color = '#34d399';
+      } else if (val === 'alpha') {
+        badge.innerText = 'Active: Tenant Alpha (Aurora)';
+        badge.style.background = 'rgba(59, 130, 246, 0.2)';
+        badge.style.color = '#93c5fd';
+      } else {
+        badge.innerText = `Active: ${val.toUpperCase()}`;
+        badge.style.background = 'rgba(148, 163, 184, 0.2)';
+        badge.style.color = '#cbd5e1';
+      }
+    }
+
     function onTenantPresetChange() {
       const val = document.getElementById('tenantPreset').value;
       if (val in PRESETS && val !== 'custom') {
         document.getElementById('activeApiKey').value = PRESETS[val];
       }
+      updateTenantBadge(val);
       showToast(`Switched active context to ${val.toUpperCase()}`);
       loadDocuments();
       updateCurl();
+    }
+
+    function switchTenantQuick(presetKey) {
+      const select = document.getElementById('tenantPreset');
+      if (select) {
+        select.value = presetKey;
+      }
+      onTenantPresetChange();
     }
 
     function switchTab(tabId, btn) {
@@ -1621,6 +1655,7 @@
     checkHealth();
     setInterval(checkHealth, 8000);
     updateModelBadge();
+    updateTenantBadge(document.getElementById('tenantPreset').value);
     updateCurl();
   </script>
 </body>
