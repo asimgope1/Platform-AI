@@ -194,6 +194,19 @@ class CognitiveVoicePipeline:
                     if session.language == "hi" else
                     "Glad to bring a smile! How may I help you with your refund, KYC, or order delivery today?"
                 )
+            is_hindi_session = (session.language == "hi")
+            has_hindi_response = any("\u0900" <= ch <= "\u097f" for ch in raw_reply)
+
+            if is_hindi_session and not has_hindi_response:
+                # Strictly enforce Hindi voice response when caller selected Hindi language
+                if "UPI" in intent or "REFUND" in intent or any(w in caller_text.lower() for w in ["refund", "upi", "jubiai", "istiti", "sthiti", "रिफंड", "paise"]):
+                    ai_reply = f"जी बिल्कुल {hi_name}आप चिंता मत कीजिए! अगर बैंक खाते से यूपीआई पैसे कट गए हैं, तो 24 से 48 घंटे में वो स्वतः आपके खाते में वापस आ जाते हैं। आप अपनी यूपीआई ऐप में 12 अंकों के यूटीआर नंबर से भी स्टेटस चेक कर सकते हैं।"
+                elif "KYC" in intent or any(w in caller_text.lower() for w in ["kyc", "केवाईसी", "pan", "aadhaar"]):
+                    ai_reply = f"जी {hi_name}वीडियो केवाईसी करना बहुत ही आसान है! बस अपना ओरिजिनल पैन कार्ड और आधार से लिंक मोबाइल पास रखिएगा। सिर्फ 2 मिनट का वीडियो कॉल होगा, और 1 घंटे में आपका खाता चालू हो जाएगा।"
+                elif "ORDER" in intent or any(w in caller_text.lower() for w in ["order", "delivery", "ऑर्डर", "कूरियर"]):
+                    ai_reply = f"जी {hi_name}आपका ऑर्डर निकल चुका है और अगले 2 से 4 दिनों में सुरक्षित आपके पते पर डिलीवर हो जाएगा।"
+                else:
+                    ai_reply = f"जी {hi_name}बताइए मैं आपकी क्या मदद करूँ? आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
             elif "Mock response" in raw_reply or not raw_reply:
                 if "UPI" in intent or "REFUND" in intent:
                     ai_reply = (

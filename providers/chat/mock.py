@@ -113,22 +113,40 @@ class MockChatAdapter(BaseChatAdapter):
         lower_query = clean_query.lower()
         lower_context = context_corpus.lower()
 
+        # Detect if caller/user asks in Hindi or Hinglish or if system requested Hindi
+        has_devanagari = any("\u0900" <= ch <= "\u097f" for ch in clean_query)
+        has_hinglish = any(re.search(rf"\b{w}\b", lower_query) for w in ["jubiai", "istiti", "sthiti", "paisa", "paise", "kat", "gaya", "karo", "batao", "batae", "kya", "kaise", "kab", "kripya", "namaste", "madad", "chahiye", "hai", "hu", "kijiye"])
+        wants_hindi = (
+            has_devanagari
+            or has_hinglish
+            or "reply in natural conversational hindi" in lower_context
+            or any(m.role == "system" and "hindi" in str(m.content).lower() for m in request.messages)
+        )
+
         # 2. Check for pure greetings using strict word boundaries on isolated user query
         is_greeting = bool(re.search(r"\b(hi|hello|hey|namaste|नमस्ते|hii|heya|hlo)\b", lower_query))
         if is_greeting and len(clean_query.split()) <= 4:
+            if wants_hindi:
+                return "नमस्ते! मैं आज आपकी क्या सहायता कर सकता हूँ? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या ऑर्डर ट्रैकिंग के बारे में पूछ सकते हैं।"
             return "Hello! How can I assist you today? You can ask me about UPI refunds, Video KYC requirements, order tracking, or test PostgreSQL RAG retrieval."
 
         # 3. Domain & Knowledge Base matching:
         # IVR Keypad / Live Support
         if any(w in lower_query for w in ["ivr", "keypad", "key", "press", "representative", "agent", "live support", "executive", "दबाएं", "एजेंट", "प्रतिनिधि"]):
+            if wants_hindi:
+                return "कस्टमर केयर प्रतिनिधि से सीधे बात करने के लिए अपने डायल पैड पर किसी भी समय '9' दबाएं या 'एजेंट' बोलें। औसत प्रतीक्षा समय 2 मिनट से कम है।"
             return "Based on the IVR routing knowledge base: Press option '9' (or say 'agent' / 'representative') on your dial pad at any time to connect directly with a live customer care representative. Average queue wait time is under 2 minutes."
 
         # Video KYC / Documents Required
         if any(w in lower_query for w in ["kyc", "केवाईसी", "video kyc", "documents", "pan", "aadhaar", "document"]):
+            if wants_hindi:
+                return "डिजिटल वीडियो केवाईसी के लिए आवश्यक दस्तावेज: 1) मूल फिजिकल पैन कार्ड, 2) आधार से लिंक सक्रिय मोबाइल नंबर (ओटीपी के लिए), और 3) अच्छी रोशनी वाला कमरा। यह सत्यापन सिर्फ 2 मिनट में पूरा हो जाता है।"
             return "According to verified Video KYC guidelines: You will need: 1) Original physical PAN card, 2) Aadhaar card with active mobile number linked for OTP, and 3) A well-lit room with clear camera access. The verification completes in 2 minutes and unlocks full account privileges within 1 hour."
 
         # UPI Refund / Payment failure
-        if any(w in lower_query for w in ["refund", "upi", "रिफंड", "cut", "kat gaya", "paise", "debited", "failed", "विफलता"]):
+        if any(w in lower_query for w in ["refund", "upi", "jubiai", "रिफंड", "cut", "kat gaya", "paise", "debited", "failed", "विफलता", "istiti", "sthiti"]):
+            if wants_hindi:
+                return "आरबीआई और एनपीसीआई के नियमानुसार: यदि यूपीआई से पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में स्वतः आपके बैंक खाते में रिफंड आ जाता है। आप 12 अंकों के यूटीआर (UTR) नंबर से भी स्टेटस चेक कर सकते हैं।"
             return "Per RBI and NPCI auto-refund regulations: Debited amounts from failed UPI transactions are automatically credited back to your original bank account within 24 to 48 banking hours. You can track this in real time using your 12-digit UPI UTR reference number."
 
         # Aurora Sensor / Quantum specs
@@ -137,6 +155,8 @@ class MockChatAdapter(BaseChatAdapter):
 
         # Order Tracking & Delivery
         if any(w in lower_query for w in ["order", "delivery", "track", "shipment", "कूरियर", "ऑर्डर", "डिलीवरी"]):
+            if wants_hindi:
+                return "आपका ऑर्डर प्रोसेस हो चुका है और सामान्य डिलीवरी में 2 से 4 कार्यदिवस लगते हैं। आप अपने पंजीकृत मोबाइल नंबर या ऑर्डर आईडी से कभी भी स्टेटस ट्रैक कर सकते हैं।"
             return "Your order has been processed and standard delivery takes 2 to 4 business days. You can track the shipment status anytime using your registered mobile number or Order ID."
 
         # If RAG context was injected with verified text, synthesize an excerpt
@@ -147,6 +167,8 @@ class MockChatAdapter(BaseChatAdapter):
                 return f"Based on verified knowledge base documents:\n\n{excerpt}\n\nHow else can I assist you with this?"
 
         # Fallback response
+        if wants_hindi:
+            return f"मैंने आपकी पूछताछ दर्ज कर ली है: '{clean_query}'। आप यूपीआई रिफंड, वीडियो केवाईसी, या ऑर्डर ट्रैकिंग के बारे में पूछ सकते हैं।"
         return f"I have processed your inquiry: '{clean_query}'. You can test domain queries like IVR keypad routing, Video KYC document checklist, or UPI refund status."
 
     async def stream_chat_completion(
