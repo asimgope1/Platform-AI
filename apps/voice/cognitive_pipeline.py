@@ -133,12 +133,17 @@ class CognitiveVoicePipeline:
             role = "user" if past_speaker == "caller" else "assistant"
             messages.append({"role": role, "content": past_text})
 
+        crm = CrmBridgeService.lookup_customer_by_number(session.caller_number)
+        cust_name = crm.get("name") if crm else None
+        first_name = cust_name.split()[0] if cust_name else ""
+        hi_name = f"{first_name} जी, " if first_name else "जी, "
+        en_name = f"{first_name}, " if first_name else ""
+
         if escalation_triggered:
             ai_reply = (
-                "मैं समझता हूँ। मैं तुरंत आपकी कॉल हमारे वरिष्ठ ग्राहक सेवा प्रतिनिधि (Customer Care Specialist) "
-                "को ट्रांसफर कर रहा हूँ। कृपया एक क्षण प्रतीक्षा करें।"
+                f"जी बिल्कुल {hi_name}मैं आपकी परेशानी समझ सकता हूँ। मैं तुरंत आपकी कॉल हमारे सीनियर स्पेशलिस्ट को ट्रांसफर कर रहा हूँ। कृपया एक क्षण लाइन पर बने रहें।"
                 if session.language == "hi" else
-                "I completely understand. I am transferring your call directly to a senior customer care specialist right away. Please hold."
+                f"I completely understand {en_name}Let me transfer your call directly to our senior customer care specialist right away. Please hold for just a moment."
             )
         else:
             chat_res = await ProviderBridge.generate_chat_response(messages=messages, max_tokens=150)
@@ -147,49 +152,46 @@ class CognitiveVoicePipeline:
 
             if is_silent_turn:
                 ai_reply = (
-                    "माफ़ कीजिए, आपकी आवाज़ स्पष्ट नहीं सुनाई दी। कृपया बताएं, मैं आपकी क्या सहायता कर सकता हूँ?"
+                    "माफ़ कीजिए, मुझे आपकी आवाज़ साफ़ नहीं आई। कृपया एक बार फिर बताइए, मैं आपकी क्या मदद करूँ?"
                     if session.language == "hi" else
-                    "Pardon me, I couldn't hear that clearly. Could you please repeat how I can assist you?"
+                    "Sorry, I couldn't hear you clearly. Could you please repeat how I can help you?"
                 )
             elif any(w in caller_text.lower() for w in ["thank", "thanks", "धन्यवाद", "शुक्रिया", "shukriya"]):
                 ai_reply = (
-                    "आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी अन्य विषय में सहायता कर सकता हूँ?"
+                    "अरे, आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी और चीज़ में मदद कर सकता हूँ?"
                     if session.language == "hi" else
-                    "You are very welcome! Is there anything else I can help you with today?"
+                    "You are most welcome! Is there anything else I can help you with today?"
                 )
             elif any(w in caller_text.lower() for w in ["haha", "hahaha", "हहा", "lol"]):
                 ai_reply = (
-                    "जी बताएं! मैं आपकी रिफंड स्थिति, वीडियो केवाईसी, या ऑर्डर डिलीवरी में कैसे सहायता कर सकता हूँ?"
+                    "हाँजी बताइए! मैं आपकी रिफंड स्थिति, वीडियो केवाईसी, या ऑर्डर डिलीवरी में कैसे मदद करूँ?"
                     if session.language == "hi" else
-                    "Glad to bring a smile! How may I assist you with your refund, KYC, or order delivery today?"
+                    "Glad to bring a smile! How may I help you with your refund, KYC, or order delivery today?"
                 )
             elif "Mock response" in raw_reply or not raw_reply:
                 if "UPI" in intent or "REFUND" in intent:
                     ai_reply = (
-                        "यदि आपके बैंक खाते से यूपीआई राशि कट गई है लेकिन ऑर्डर नहीं बना, "
-                        "तो आरबीआई नियमों के अनुसार 24 से 48 बैंकिंग घंटों के भीतर स्वतः आपके खाते में रिफंड आ जाता है। "
-                        "आप बैंकिंग ऐप में 12-अंकों के यूटीआर (UTR) नंबर से भी स्थिति जांच सकते हैं।"
+                        f"जी बिल्कुल {hi_name}आप चिंता मत कीजिए! अगर बैंक खाते से यूपीआई पैसे कट गए हैं, तो 24 से 48 घंटे में वो स्वतः आपके खाते में वापस आ जाते हैं। आप अपनी यूपीआई ऐप में 12 अंकों के यूटीआर नंबर से भी स्टेटस चेक कर सकते हैं।"
                         if session.language == "hi" else
-                        "If your bank account was debited via UPI, the refund will be automatically credited back within 24 hours per banking guidelines. You can track this using your 12-digit UTR reference."
+                        f"Don't worry at all {en_name}! If your UPI payment was debited, the amount will be automatically refunded back to your bank account within 24 to 48 hours. You can also track it anytime using your 12-digit UTR reference."
                     )
                 elif "KYC" in intent:
                     ai_reply = (
-                        "वीडियो केवाईसी के लिए आपका मूल पैन कार्ड (Original Physical PAN Card) और आधार से लिंक मोबाइल नंबर अनिवार्य है। "
-                        "सत्यापन 2 मिनट में पूरा हो जाता है और खाता 1 घंटे में सक्रिय हो जाता है।"
+                        f"जी {hi_name}वीडियो केवाईसी करना बहुत ही आसान है! बस अपना ओरिजिनल पैन कार्ड और आधार से लिंक मोबाइल पास रखिएगा। सिर्फ 2 मिनट का वीडियो कॉल होगा, और 1 घंटे में आपका खाता चालू हो जाएगा।"
                         if session.language == "hi" else
-                        "For Video KYC, please have your original physical PAN card and Aadhaar-linked phone ready. The process takes 2 minutes and unlocks your account within 1 hour."
+                        f"Video KYC is super easy {en_name}! Just keep your original physical PAN card and Aadhaar-linked mobile ready. It takes only 2 minutes and your account will be activated within an hour."
                     )
                 elif "ORDER" in intent:
                     ai_reply = (
-                        "आपका ऑर्डर सफलतापूर्वक प्रोसेस हो चुका है और 2 से 4 कार्यदिवसों में आपके पते पर डिलीवर हो जाएगा।"
+                        f"जी {hi_name}आपका ऑर्डर निकल चुका है और अगले 2 से 4 दिनों में सुरक्षित आपके पते पर डिलीवर हो जाएगा।"
                         if session.language == "hi" else
-                        "Your order has been processed and standard delivery takes 2 to 4 business days."
+                        f"Great news {en_name}! Your order has already been dispatched and will be safely delivered to your doorstep within 2 to 4 business days."
                     )
                 else:
                     ai_reply = (
-                        "जी, मैं आपकी सहायता के लिए तैयार हूँ। आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
+                        f"जी {hi_name}बताइए मैं आपकी क्या मदद करूँ? आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
                         if session.language == "hi" else
-                        "I am here to assist you. You can ask about refund status, video KYC verification, or delivery tracking."
+                        f"I am right here to help you {en_name}! You can ask me about your refund status, video KYC verification, or delivery tracking."
                     )
             else:
                 ai_reply = raw_reply

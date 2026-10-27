@@ -18,7 +18,22 @@ import wave
 _TTS_CACHE: Dict[str, bytes] = {}
 
 class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
-    """Produces valid synthetic audio frames (real spoken WAV on macOS / PCM tone / MP3 frames) for development and testing."""
+    """Produces ultra-natural neural spoken audio (Edge-TTS hi-IN-SwaraNeural / en-IN-NeerjaNeural) with caching and local fallback."""
+
+    async def _synthesize_edge_tts(self, text: str, voice: str) -> Optional[bytes]:
+        try:
+            import edge_tts
+            communicate = edge_tts.Communicate(text, voice)
+            chunks = []
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    chunks.append(chunk["data"])
+            audio = b"".join(chunks)
+            if audio and len(audio) > 100:
+                return audio
+        except Exception:
+            return None
+        return None
 
     def _synthesize_say_sync(self, text: str, voice: str) -> Optional[bytes]:
         if not shutil.which("say"):
@@ -26,9 +41,8 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         try:
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
                 out_path = tf.name
-            # -r 205 provides crisp, brisk, natural conversational pacing (eliminating sluggish pauses)
             subprocess.run(
-                ["say", "-v", voice, "-r", "205", "-o", out_path, "--data-format=LEI16@22050", text],
+                ["say", "-v", voice, "-r", "185", "-o", out_path, "--data-format=LEI16@22050", text],
                 check=True,
                 timeout=5,
             )
@@ -49,26 +63,40 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         voice: str = "alloy",
         response_format: str = "mp3",
     ) -> bytes:
-        # Check in-memory audio cache for instant 0ms retrieval on frequent responses
-        cache_key = f"{voice}:{text.strip()}"
+        clean_text = text.strip()
+        cache_key = f"{voice}:{clean_text}"
         if cache_key in _TTS_CACHE:
             return _TTS_CACHE[cache_key]
 
-        # Detect if text contains Hindi / Devanagari script
-        has_hindi = any('\u0900' <= ch <= '\u097F' for ch in text)
-        say_voice = "Lekha" if has_hindi else "Samantha"
+        # Detect language / script for natural neural voice selection
+        has_hindi = any('\u0900' <= ch <= '\u097F' for ch in clean_text)
+        neural_voice = "hi-IN-SwaraNeural" if has_hindi else "en-IN-NeerjaNeural"
 
-        # If macOS 'say' command is available, generate real spoken voice non-blockingly
-        say_audio = await asyncio.to_thread(self._synthesize_say_sync, text, say_voice)
+        # Primary: Ultra-realistic neural speech with human breathing and natural intonation
+        try:
+            edge_audio = await asyncio.wait_for(
+                self._synthesize_edge_tts(clean_text, neural_voice),
+                timeout=3.0
+            )
+            if edge_audio:
+                if len(_TTS_CACHE) < 250:
+                    _TTS_CACHE[cache_key] = edge_audio
+                return edge_audio
+        except Exception:
+            pass
+
+        # Secondary Fallback: macOS system voice if edge-tts network is slow
+        say_voice = "Lekha" if has_hindi else "Samantha"
+        say_audio = await asyncio.to_thread(self._synthesize_say_sync, clean_text, say_voice)
         if say_audio:
-            if len(_TTS_CACHE) < 200:
+            if len(_TTS_CACHE) < 250:
                 _TTS_CACHE[cache_key] = say_audio
             return say_audio
 
-        # Fallback: Generate valid audible RIFF WAVE PCM tone
+        # Tertiary Fallback: Generate audible RIFF WAVE PCM tone
         buf = io.BytesIO()
         sample_rate = 22050
-        duration = min(3.0, max(0.5, len(text) * 0.05))
+        duration = min(3.0, max(0.5, len(clean_text) * 0.05))
         n_samples = int(sample_rate * duration)
         with wave.open(buf, "wb") as wf:
             wf.setnchannels(1)

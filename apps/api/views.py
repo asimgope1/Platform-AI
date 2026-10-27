@@ -32,13 +32,20 @@ class StartCallView(APIView):
         )
 
         crm_profile = CrmBridgeService.lookup_customer_by_number(caller_number)
+        cust_name = crm_profile.get("name") if crm_profile else None
+        first_name = cust_name.split()[0] if cust_name else ""
 
-        # Initial IVR greeting based on language
-        greeting_text = (
-            "नमस्ते! हमारी ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। मैं आपकी क्या सहायता कर सकता हूँ?"
-            if language == "hi" else
-            "Thank you for calling Customer Support. How may I assist you today?"
-        )
+        # Initial IVR greeting with warm, natural human phrasing
+        if language == "hi":
+            if first_name:
+                greeting_text = f"नमस्ते {first_name} जी! हमारी हेल्पलाइन में आपका स्वागत है। बताइए, आज मैं आपकी क्या मदद करूँ?"
+            else:
+                greeting_text = "नमस्ते! हमारी ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। बताइए, आज मैं आपकी क्या सहायता करूँ?"
+        else:
+            if first_name:
+                greeting_text = f"Hello {first_name}! Welcome to our support helpline. How can I assist you today?"
+            else:
+                greeting_text = "Hello! Welcome to our customer helpline. How may I assist you today?"
 
         from asgiref.sync import async_to_sync
         from apps.providers.services import ProviderBridge

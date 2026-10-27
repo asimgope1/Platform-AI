@@ -2091,6 +2091,11 @@
       }
     }
 
+    function getAudioMime(b64) {
+      if (!b64) return 'audio/mp3';
+      return b64.startsWith('UklGR') ? 'audio/wav' : 'audio/mp3';
+    }
+
     function playAgentSpokenAudio(b64, onEndedCallback) {
       interruptAgentIfSpeaking();
       if (!b64) {
@@ -2100,7 +2105,8 @@
       }
 
       try {
-        const audioSrc = `data:audio/wav;base64,${b64}`;
+        const mime = getAudioMime(b64);
+        const audioSrc = `data:${mime};base64,${b64}`;
         currentAgentAudio = new Audio(audioSrc);
         isAgentSpeaking = true;
         if (!isGreetingPlaying) {
@@ -2632,10 +2638,11 @@
 
       let audioPlayerHtml = '';
       if (audioB64) {
+        const mime = getAudioMime(audioB64);
         audioPlayerHtml = `
           <div class="chat-bubble-audio" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
             <audio controls style="flex: 1; height: 32px;" preload="auto">
-              <source src="data:audio/wav;base64,${audioB64}" type="audio/wav">
+              <source src="data:${mime};base64,${audioB64}" type="${mime}">
             </audio>
             <button class="btn btn-secondary btn-replay-audio" style="padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; height: 32px; display: flex; align-items: center; gap: 4px;">
               🔊 Replay

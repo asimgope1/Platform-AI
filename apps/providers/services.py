@@ -124,3 +124,25 @@ class ProviderBridge:
                 emb.warmup()
         except Exception as e:
             logger.warning(f"Embedding warmup notice: {e}")
+
+        try:
+            tts = provider_registry.get_tts_adapter("mock_tts")
+            if hasattr(tts, "synthesize"):
+                import asyncio
+                phrases = [
+                    "नमस्ते! हमारी ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। बताइए, आज मैं आपकी क्या सहायता करूँ?",
+                    "Hello! Welcome to our customer helpline. How may I assist you today?",
+                    "जी बिल्कुल, आप चिंता मत कीजिए! अगर बैंक खाते से यूपीआई पैसे कट गए हैं, तो 24 से 48 घंटे में वो स्वतः आपके खाते में वापस आ जाते हैं। आप अपनी यूपीआई ऐप में 12 अंकों के यूटीआर नंबर से भी स्टेटस चेक कर सकते हैं।",
+                    "Don't worry at all! If your UPI payment was debited, the amount will be automatically refunded back to your bank account within 24 to 48 hours. You can also track it anytime using your 12-digit UTR reference.",
+                    "जी, वीडियो केवाईसी करना बहुत ही आसान है! बस अपना ओरिजिनल पैन कार्ड और आधार से लिंक मोबाइल पास रखिएगा। सिर्फ 2 मिनट का वीडियो कॉल होगा, और 1 घंटे में आपका खाता चालू हो जाएगा।",
+                    "Video KYC is super easy! Just keep your original physical PAN card and Aadhaar-linked mobile ready. It takes only 2 minutes and your account will be activated within an hour."
+                ]
+                loop = asyncio.new_event_loop()
+                for p in phrases:
+                    try:
+                        loop.run_until_complete(tts.synthesize(text=p))
+                    except Exception:
+                        pass
+                loop.close()
+        except Exception as e:
+            logger.warning(f"TTS warmup notice: {e}")
