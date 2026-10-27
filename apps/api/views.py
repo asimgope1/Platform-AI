@@ -40,6 +40,17 @@ class StartCallView(APIView):
             "Thank you for calling Customer Support. How may I assist you today?"
         )
 
+        from asgiref.sync import async_to_sync
+        from apps.providers.services import ProviderBridge
+
+        greeting_audio_b64 = None
+        try:
+            greeting_audio_bytes = async_to_sync(ProviderBridge.synthesize_speech)(greeting_text)
+            if greeting_audio_bytes:
+                greeting_audio_b64 = base64.b64encode(greeting_audio_bytes).decode("ascii")
+        except Exception as e:
+            greeting_audio_b64 = None
+
         return Response({
             "status": "active",
             "call_id": session.call_id,
@@ -47,6 +58,7 @@ class StartCallView(APIView):
             "language": session.language,
             "crm_customer_surfaced": crm_profile,
             "initial_greeting": greeting_text,
+            "initial_greeting_audio_base64": greeting_audio_b64,
             "started_at": session.started_at.isoformat(),
         }, status=status.HTTP_201_CREATED)
 

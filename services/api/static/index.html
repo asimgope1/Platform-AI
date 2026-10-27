@@ -762,6 +762,56 @@
       animation: slide-up 0.3s ease-out;
     }
 
+    /* Dialogue Chat Bubbles */
+    .chat-bubble {
+      display: flex;
+      flex-direction: column;
+      max-width: 84%;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      line-height: 1.5;
+      font-size: 0.92rem;
+      animation: slide-up 0.25s ease-out;
+    }
+    .chat-bubble.caller {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.22) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.45);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-bubble.agent {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: #f1f5f9;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-bubble-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .chat-bubble.caller .chat-bubble-header {
+      color: #c7d2fe;
+    }
+    .chat-bubble.agent .chat-bubble-header {
+      color: #6ee7b7;
+    }
+    .chat-bubble-body {
+      font-size: 0.92rem;
+      word-break: break-word;
+    }
+    .chat-bubble-audio {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
     @keyframes slide-up {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -816,186 +866,145 @@
     <!-- TAB 0: Live Telephony & Voice Agent (Com-one v2.0) -->
     <div id="telephonyTab" class="tab-pane active">
       <div class="telephony-grid">
-        <!-- Left: Call Console & Voice Input -->
-        <div class="card">
-          <div class="card-header">
-            <span>Telephony Session</span>
-            <span id="callStatusBadge" class="brand-badge" style="background: rgba(148, 163, 184, 0.2); color: #cbd5e1;">🔴 On Hook</span>
-          </div>
-
-          <!-- Call Status & Configuration -->
-          <div class="call-status-bar">
-            <div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">ACTIVE CALL ID</div>
-              <div id="activeCallId" style="font-family: monospace; font-size: 0.88rem; font-weight: 700; color: #a5b4fc;">No Active Call</div>
-            </div>
-            <div style="text-align: right;">
-              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">DURATION</div>
-              <div id="callDuration" style="font-family: monospace; font-size: 0.88rem; font-weight: 700; color: #34d399;">00:00</div>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-            <div>
-              <label class="setting-label" for="callNumberSelect">Caller Identity</label>
-              <select id="callNumberSelect" class="form-control" style="font-size: 0.8rem;">
-                <option value="+919876543210" selected>+91 98765 43210 (Rahul Kumar - VIP)</option>
-                <option value="+919811223344">+91 98112 23344 (Priya Sharma - Retail)</option>
-                <option value="+919988776655">+91 99887 76655 (First Time Caller)</option>
-              </select>
-            </div>
-            <div>
-              <label class="setting-label" for="callLangSelect">Call Language</label>
-              <select id="callLangSelect" class="form-control" style="font-size: 0.8rem;">
-                <option value="hi" selected>Hindi (हिंदी)</option>
-                <option value="en">English (Indian Accent)</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <button class="btn btn-primary" id="btnStartCall" onclick="startTelephonyCall()" style="flex: 1;">
-              <span>🟢 Connect Call</span>
-            </button>
-            <button class="btn btn-danger" id="btnEndCall" onclick="endTelephonyCall()" style="flex: 1;" disabled>
-              <span>🔴 Disconnect</span>
-            </button>
-          </div>
-
-          <!-- Auto-Surfaced CRM Profile (Deck Page 4) -->
-          <div id="crmProfileBox" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px; display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); letter-spacing: 0.05em;">CRM AUTO-SURFACED PROFILE</span>
-              <span id="crmTierBadge" class="brand-badge">VIP Customer</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.8rem;">
-              <div>Name: <strong id="crmName">Rahul Kumar</strong></div>
-              <div>ID: <span id="crmId" style="font-family: monospace;">CUST_984512</span></div>
-              <div>LTV: <strong id="crmLtv" style="color: #34d399;">₹ 2,48,750</strong></div>
-              <div>Last Contact: <span id="crmLastInteraction" style="color: var(--text-muted);">May 14, 2025</span></div>
-            </div>
-          </div>
-
-          <!-- Real-Time Voice Speaking Section -->
-          <div style="margin-top: 10px;">
-            <div class="setting-label">Real-Time Voice Talking (Microphone / Audio)</div>
-            
-            <button id="micRecordBtn" class="mic-record-btn" onclick="toggleVoiceRecording()" disabled>
-              <span id="micIcon" style="font-size: 1.4rem;">🎙️</span>
-              <span id="micBtnText">Click to Speak to AI Agent</span>
-            </button>
-
-            <div id="micStatusText" style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 6px;">
-              Connect a call above to enable real-time speech interaction.
-            </div>
-
-            <!-- Quick Test Prompt Chips -->
-            <div style="margin-top: 14px;">
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;">OR SIMULATE CALLER VOICE UTTERANCE:</div>
-              <div class="suggestions" style="margin-bottom: 10px;">
-                <span class="suggestion-chip" onclick="simulateVoiceTurn('नमस्ते, मेरा UPI से ₹5,000 कट गया है लेकिन ऑर्डर नहीं बना। रिफंड कब तक आएगा?')">💸 UPI रिफंड स्थिति (Hindi)</span>
-                <span class="suggestion-chip" onclick="simulateVoiceTurn('मुझे वीडियो केवाईसी पूरा करना है, क्या दस्तावेज लगेंगे?')">🆔 Video KYC नियम (Hindi)</span>
-                <span class="suggestion-chip" onclick="simulateVoiceTurn('I would like to track my order delivery status.')">📦 Order Tracking (English)</span>
-                <span class="suggestion-chip" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="simulateVoiceTurn('बेकार सेवा है! मुझे तुरंत किसी एजेंट से बात करवाओ, इंसान से बात करनी है!')">😡 Escalation Test (Frustrated)</span>
+        <!-- Left: Phone Call Card & Voice Controls -->
+        <div class="card" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Caller Profile Banner -->
+          <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                👤
               </div>
-
-              <div style="display: flex; gap: 8px;">
-                <input type="text" id="telephonyTextInput" class="form-control" placeholder="Type caller phrase in Hindi/English..." disabled onkeydown="if(event.key==='Enter'){ simulateVoiceTurn(this.value); this.value=''; }">
-                <button class="btn btn-secondary" id="btnSendText" onclick="simulateVoiceTurn(document.getElementById('telephonyTextInput').value); document.getElementById('telephonyTextInput').value='';" disabled>Send</button>
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <strong style="font-size: 1rem; color: #ffffff;" id="crmName">Rahul Kumar</strong>
+                  <span id="crmTierBadge" class="brand-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">VIP Customer</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                  <span id="callNumberDisplay">+91 98765 43210</span> • LTV: <strong id="crmLtv" style="color: #34d399;">₹ 2,48,750</strong>
+                </div>
               </div>
+            </div>
+
+            <!-- Profile & Language Switcher -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <div>
+                <label style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">CALLER PERSONA:</label>
+                <select id="callNumberSelect" class="form-control" style="font-size: 0.78rem; padding: 6px;" onchange="onCallerProfileSelect(this.value)">
+                  <option value="+91 98765 43210" selected>Rahul Kumar (VIP)</option>
+                  <option value="+91 91234 56789">Pooja Verma (Regular)</option>
+                  <option value="+91 99887 76655">Amit Sharma (Escalation)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">CALL LANGUAGE:</label>
+                <select id="callLangSelect" class="form-control" style="font-size: 0.78rem; padding: 6px;">
+                  <option value="hi" selected>Hindi (हिंदी / Hinglish)</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span id="callStatusBadge" class="brand-badge" style="background: rgba(148, 163, 184, 0.2); color: #cbd5e1;">🔴 On Hook</span>
+              <span id="callDuration" style="font-family: monospace; font-size: 0.95rem; font-weight: 700; color: #34d399;">00:00</span>
+            </div>
+          </div>
+
+          <!-- Call Connection Controls -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" id="btnStartCall" onclick="startTelephonyCall()" style="flex: 1; padding: 12px;">
+              <span>🟢 Connect Incoming Call</span>
+            </button>
+            <button class="btn btn-danger" id="btnEndCall" onclick="endTelephonyCall()" style="flex: 1; padding: 12px; display: none;">
+              <span>🔴 Disconnect Call</span>
+            </button>
+          </div>
+
+          <!-- Big Friendly Voice Microphone -->
+          <div style="text-align: center; padding: 18px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+            <button id="micRecordBtn" class="mic-record-btn" onclick="toggleVoiceRecording()" disabled style="height: 64px; font-size: 1.1rem; border-radius: 9999px;">
+              <span id="micIcon" style="font-size: 1.5rem;">🎙️</span>
+              <span id="micBtnText">Tap to Speak</span>
+            </button>
+            <div id="micStatusText" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 10px;">
+              Click 'Connect Incoming Call' above to start talking.
+            </div>
+          </div>
+
+          <!-- Quick Voice Prompt Chips -->
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">ONE-TAP TEST UTTERANCES:</div>
+            <div class="suggestions" style="margin-bottom: 10px;">
+              <span class="suggestion-chip" onclick="simulateVoiceTurn('नमस्ते, मेरा UPI से ₹5,000 कट गया है लेकिन ऑर्डर नहीं बना। रिफंड कब तक आएगा?')">💸 UPI रिफंड स्थिति (Hindi)</span>
+              <span class="suggestion-chip" onclick="simulateVoiceTurn('मुझे वीडियो केवाईसी पूरा करना है, क्या दस्तावेज लगेंगे?')">🆔 Video KYC नियम (Hindi)</span>
+              <span class="suggestion-chip" onclick="simulateVoiceTurn('I would like to track my order delivery status.')">📦 Track Delivery (English)</span>
+              <span class="suggestion-chip" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="simulateVoiceTurn('बेकार सेवा है! मुझे तुरंत किसी एजेंट से बात करवाओ, इंसान से बात करनी है!')">😡 Talk to Agent (Test Escalation)</span>
+            </div>
+
+            <!-- Quiet Text Input Fallback -->
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="telephonyTextInput" class="form-control" placeholder="Or type what caller says..." disabled onkeydown="if(event.key==='Enter'){ simulateVoiceTurn(this.value); this.value=''; }">
+              <button class="btn btn-secondary" id="btnSendText" onclick="simulateVoiceTurn(document.getElementById('telephonyTextInput').value); document.getElementById('telephonyTextInput').value='';" disabled>Send</button>
             </div>
           </div>
         </div>
 
-        <!-- Right: 4-Stage Cognitive Visualizer (EPSUM Com-one Deck) -->
-        <div class="card" style="display: flex; flex-direction: column;">
+        <!-- Right: Live Conversation Dialogue Stream -->
+        <div class="card" style="display: flex; flex-direction: column; min-height: 520px;">
           <div class="card-header">
             <div>
-              <span>4-Stage Cognitive Intelligence Monitor</span>
-              <span class="brand-badge" style="margin-left: 8px;">Under The Hood</span>
+              <span style="font-weight: 700; font-size: 0.95rem;">Live Voice Conversation</span>
+              <span id="turnLatencyIndicator" class="brand-badge" style="margin-left: 8px;">Ready</span>
             </div>
-            <div style="font-size: 0.78rem; color: var(--text-muted);" id="turnLatencyIndicator">Sub-500ms Target</div>
+            <button class="btn btn-secondary" style="font-size: 0.72rem; padding: 4px 10px;" onclick="toggleEngineDetails()">
+              <span id="btnEngineToggleText">⚙️ Show AI Pipeline Details</span>
+            </button>
           </div>
 
-          <!-- STAGE 01: PERCEIVE -->
-          <div class="cognitive-stage-box" id="stagePerceive">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span class="stage-badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">01 · PERCEIVE (Real-Time ASR)</span>
-              <span id="timingPerceive" style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">Latency: --</span>
-            </div>
-            <div style="font-size: 0.78rem; color: var(--text-muted);">Caller Utterance (Whisper Speech-to-Text):</div>
-            <div id="perceiveTranscript" style="font-size: 0.92rem; font-weight: 600; color: #ffffff; margin-top: 4px;">Awaiting caller audio...</div>
-          </div>
-
-          <!-- STAGE 02: UNDERSTAND -->
-          <div class="cognitive-stage-box" id="stageUnderstand">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span class="stage-badge" style="background: rgba(168, 85, 247, 0.2); color: #d8b4fe;">02 · UNDERSTAND (Intent + Emotion + Context)</span>
-              <span id="timingUnderstand" style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">Latency: --</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;">
-              <div>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">Detected Intent:</span>
-                <div id="understandIntent" style="font-weight: 600; font-size: 0.88rem; color: var(--accent-cyan);">--</div>
-              </div>
-              <div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">Emotion Classification:</span>
-                  <span id="understandEmotionBadge" class="brand-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Calm</span>
-                </div>
-                <div class="sentiment-meter">
-                  <div id="sentimentMeterFill" class="sentiment-meter-fill" style="width: 50%; background: #34d399;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STAGE 03: RESPOND -->
-          <div class="cognitive-stage-box" id="stageRespond">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span class="stage-badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">03 · RESPOND (Gemma 4 RAG + Neural TTS)</span>
-              <span id="timingRespond" style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">Latency: --</span>
-            </div>
-            <div style="font-size: 0.78rem; color: var(--text-muted);">AI Spoken Voice Reply:</div>
-            <div id="respondText" style="font-size: 0.92rem; color: #f1f5f9; margin-top: 4px; line-height: 1.4;">"नमस्ते! हमारी ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। मैं आपकी क्या सहायता कर सकता हूँ?"</div>
-            
-            <div id="voiceAudioPlayerContainer" style="margin-top: 10px;">
-              <!-- Audio element will be inserted here and auto-played -->
-            </div>
-          </div>
-
-          <!-- STAGE 04: ACT -->
-          <div class="cognitive-stage-box" id="stageAct">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span class="stage-badge" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">04 · ACT (CRM Lifecycle & Escalation)</span>
-              <span id="timingAct" style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">Latency: --</span>
-            </div>
-            <div id="actStatus" style="font-size: 0.85rem; color: #cbd5e1;">Awaiting actions...</div>
-          </div>
-
-          <!-- HUMAN ESCALATION HANDOVER SCREEN (Deck Page 4) -->
-          <div id="handoverPanel" class="handover-banner" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <!-- Human Escalation Handover Card (Only surfaces when escalated) -->
+          <div id="handoverPanel" class="handover-banner" style="display: none; margin: 12px 16px 0 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 1.2rem;">🚨</span>
-                <span style="font-weight: 700; color: #fca5a5;">HUMAN-IN-THE-LOOP ESCALATION TRIGGERED</span>
+                <strong style="color: #fca5a5; font-size: 0.9rem;">HUMAN ESCALATION TRIGGERED</strong>
               </div>
               <span class="brand-badge" style="background: rgba(239, 68, 68, 0.3); color: #ffffff;">Assigned: Agent Priya S.</span>
             </div>
-
-            <div style="background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px;">
-              <div style="font-size: 0.75rem; color: #fca5a5; font-weight: 600;">FLAGGED TRIGGER SENTENCE:</div>
-              <div id="handoverReasonText" style="font-weight: 600; color: #ffffff; font-size: 0.88rem; margin-top: 2px;"></div>
+            <div style="font-size: 0.8rem; color: #ffffff; margin-bottom: 4px;">
+              Flagged Reason: <strong id="handoverReasonText" style="color: #fca5a5;"></strong>
             </div>
-
-            <div style="background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px;">
-              <div style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: 600;">AI-RECOMMENDED RESOLUTION PATH:</div>
-              <div id="handoverResolutionText" style="color: #cbd5e1; font-size: 0.82rem; margin-top: 2px;"></div>
+            <div style="font-size: 0.78rem; color: #cbd5e1;">
+              AI Recommended Next Step: <span id="handoverResolutionText" style="color: #93c5fd;"></span>
             </div>
+          </div>
 
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-primary" style="font-size: 0.78rem; padding: 6px 12px;" onclick="alert('Accepted AI Recommendation: Expedited customer ticket logged in CRM.')">✓ Accept AI Resolution</button>
-              <button class="btn btn-secondary" style="font-size: 0.78rem; padding: 6px 12px;" onclick="alert('Agent Override Mode active: Full softphone bridged.')">✏️ Override & Take Action</button>
+          <!-- Dialogue Message Bubbles -->
+          <div id="telephonyChatArea" style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; max-height: 480px;">
+            <div id="chatPlaceholder" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 40px;">
+              📞 Call is on hook.<br>Click <strong style="color: #6366f1;">Connect Incoming Call</strong> to start talking with the AI voice agent.
+            </div>
+          </div>
+
+          <!-- Collapsible Under-the-Hood Engine Metrics (Clean & Hidden by default) -->
+          <div id="telephonyEngineDetails" style="display: none; padding: 16px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.3);">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 8px; letter-spacing: 0.05em;">COGNITIVE ENGINE STAGES & METRICS</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem;">
+              <div class="cognitive-stage-box" style="margin: 0; padding: 8px 10px;">
+                <span class="stage-badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">01 Perceive (ASR)</span>
+                <div id="timingPerceive" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Latency: --</div>
+              </div>
+              <div class="cognitive-stage-box" style="margin: 0; padding: 8px 10px;">
+                <span class="stage-badge" style="background: rgba(168, 85, 247, 0.2); color: #d8b4fe;">02 Understand (NLU)</span>
+                <div id="timingUnderstand" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Intent: --</div>
+              </div>
+              <div class="cognitive-stage-box" style="margin: 0; padding: 8px 10px;">
+                <span class="stage-badge" style="background: rgba(168, 85, 247, 0.2); color: #6ee7b7;">03 Respond (RAG)</span>
+                <div id="timingRespond" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Latency: --</div>
+              </div>
+              <div class="cognitive-stage-box" style="margin: 0; padding: 8px 10px;">
+                <span class="stage-badge" style="background: rgba(245, 158, 11, 0.2); color: #fcd34d;">04 Act (CRM/CDR)</span>
+                <div id="actStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Action: --</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1933,13 +1942,46 @@
     let currentCallId = null;
     let callTimerInterval = null;
     let callSeconds = 0;
-    let mediaRecorder = null;
-    let audioChunks = [];
+    let audioContext = null;
+    let micStream = null;
+    let scriptProcessor = null;
+    let pcmBuffers = [];
     let isRecordingMic = false;
 
+    const CALLER_PROFILES = {
+      '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },
+      '+91 91234 56789': { name: 'Pooja Verma', tier: 'Regular Customer', ltv: '₹ 42,100', badgeColor: 'rgba(59, 130, 246, 0.2)', badgeText: '#93c5fd' },
+      '+91 99887 76655': { name: 'Amit Sharma', tier: 'High Escalation Risk', ltv: '₹ 1,15,000', badgeColor: 'rgba(239, 68, 68, 0.2)', badgeText: '#fca5a5' }
+    };
+
+    function onCallerProfileSelect(phone) {
+      const p = CALLER_PROFILES[phone] || { name: 'Customer', tier: 'Caller', ltv: '₹ 0', badgeColor: 'rgba(148, 163, 184, 0.2)', badgeText: '#cbd5e1' };
+      document.getElementById('crmName').innerText = p.name;
+      document.getElementById('callNumberDisplay').innerText = phone;
+      document.getElementById('crmLtv').innerText = p.ltv;
+      const badge = document.getElementById('crmTierBadge');
+      badge.innerText = p.tier;
+      badge.style.background = p.badgeColor;
+      badge.style.color = p.badgeText;
+    }
+
+    function toggleEngineDetails() {
+      const panel = document.getElementById('telephonyEngineDetails');
+      const btnText = document.getElementById('btnEngineToggleText');
+      if (panel.style.display === 'none' || !panel.style.display) {
+        panel.style.display = 'block';
+        btnText.innerText = '⚙️ Hide AI Pipeline Details';
+      } else {
+        panel.style.display = 'none';
+        btnText.innerText = '⚙️ Show AI Pipeline Details';
+      }
+    }
+
     async function startTelephonyCall() {
-      const callerNumber = document.getElementById('callNumberSelect').value;
-      const lang = document.getElementById('callLangSelect').value;
+      const phoneSelect = document.getElementById('callNumberSelect');
+      const callerNumber = phoneSelect ? phoneSelect.value : '+91 98765 43210';
+      const langSelect = document.getElementById('callLangSelect');
+      const lang = langSelect ? langSelect.value : 'hi';
       const btnStart = document.getElementById('btnStartCall');
       const btnEnd = document.getElementById('btnEndCall');
       const micBtn = document.getElementById('micRecordBtn');
@@ -1947,7 +1989,7 @@
       const sendBtn = document.getElementById('btnSendText');
 
       btnStart.disabled = true;
-      btnStart.innerText = 'Connecting...';
+      btnStart.innerText = 'Connecting Call...';
 
       try {
         const res = await fetch(`${API_BASE}/api/v2/telephony/calls/start/`, {
@@ -1965,31 +2007,24 @@
         currentCallId = data.call_id;
 
         // UI Updates
-        document.getElementById('activeCallId').innerText = currentCallId;
         document.getElementById('callStatusBadge').innerText = '🟢 In Call';
         document.getElementById('callStatusBadge').style.background = 'rgba(16, 185, 129, 0.2)';
         document.getElementById('callStatusBadge').style.color = '#34d399';
 
         btnStart.style.display = 'none';
+        btnEnd.style.display = 'block';
         btnEnd.disabled = false;
         micBtn.disabled = false;
         textInput.disabled = false;
         sendBtn.disabled = false;
 
-        document.getElementById('micStatusText').innerText = '🎙️ Click or Hold to Speak your query in Hindi or English.';
+        document.getElementById('micStatusText').innerText = '🎙️ Click "Tap to Speak" or use the one-tap prompt chips below.';
 
-        // Display surfaced CRM Profile
-        const crm = data.crm_customer_surfaced || {};
-        document.getElementById('crmProfileBox').style.display = 'block';
-        document.getElementById('crmName').innerText = crm.name || 'Caller';
-        document.getElementById('crmId').innerText = crm.customer_id || 'CUST_';
-        document.getElementById('crmLtv').innerText = crm.lifetime_value || '₹ 0';
-        document.getElementById('crmTierBadge').innerText = crm.tier || 'Customer';
-        document.getElementById('crmLastInteraction').innerText = crm.last_interaction || 'Recent';
+        // Clear chat area & render initial greeting bubble
+        const chatArea = document.getElementById('telephonyChatArea');
+        chatArea.innerHTML = '';
 
-        // Initial Greeting
-        document.getElementById('respondText').innerText = data.initial_greeting;
-        document.getElementById('actStatus').innerText = 'Call connected to AI Voice Agent. Ready for caller speech.';
+        appendChatBubble('agent', '🤖 AI Voice Agent', data.initial_greeting, data.initial_greeting_audio_base64);
 
         // Start call duration timer
         callSeconds = 0;
@@ -2001,20 +2036,17 @@
           document.getElementById('callDuration').innerText = `${mins}:${secs}`;
         }, 1000);
 
-        // Synthesize and play initial greeting audio
-        synthesizeAndPlayGreeting(data.initial_greeting);
-
       } catch (err) {
         alert('Failed to connect call: ' + err.message);
         btnStart.disabled = false;
-        btnStart.innerText = '🟢 Connect Call';
+        btnStart.innerText = '🟢 Connect Incoming Call';
       }
     }
 
     async function endTelephonyCall() {
       if (!currentCallId) return;
       clearInterval(callTimerInterval);
-      stopVoiceRecording();
+      stopAudioRecordingAndSend(true);
 
       try {
         const res = await fetch(`${API_BASE}/api/v2/telephony/calls/${currentCallId}/end/`, {
@@ -2023,80 +2055,189 @@
           body: JSON.stringify({ csat_rating: 5 })
         });
         const data = await res.json();
-        
+
         document.getElementById('callStatusBadge').innerText = '🔴 Call Ended';
         document.getElementById('callStatusBadge').style.background = 'rgba(239, 68, 68, 0.2)';
         document.getElementById('callStatusBadge').style.color = '#fca5a5';
 
-        document.getElementById('actStatus').innerHTML = `
-          <strong style="color: #34d399;">✓ CDR Logged:</strong> Disposition: <strong>${data.disposition}</strong> | Duration: <strong>${data.duration_seconds}s</strong> | CSAT: <strong>${data.csat_rating}★</strong>
-        `;
+        // Add call end pill
+        const chatArea = document.getElementById('telephonyChatArea');
+        const pill = document.createElement('div');
+        pill.style.cssText = 'text-align: center; margin: 12px 0; font-size: 0.78rem; color: #94a3b8; background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: var(--radius-sm); padding: 8px;';
+        pill.innerHTML = `✓ Call Disconnected • Duration: <strong>${data.duration_seconds}s</strong> • Disposition: <strong>${data.disposition}</strong> • CSAT: <strong>${data.csat_rating}★</strong>`;
+        chatArea.appendChild(pill);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
       } catch (e) {
         console.error(e);
       } finally {
         currentCallId = null;
-        document.getElementById('btnStartCall').style.display = 'block';
-        document.getElementById('btnStartCall').disabled = false;
-        document.getElementById('btnStartCall').innerText = '🟢 Connect Call';
-        document.getElementById('btnEndCall').disabled = true;
+        const btnStart = document.getElementById('btnStartCall');
+        const btnEnd = document.getElementById('btnEndCall');
+        btnStart.style.display = 'block';
+        btnStart.disabled = false;
+        btnStart.innerText = '🟢 Connect Incoming Call';
+        btnEnd.style.display = 'none';
+        btnEnd.disabled = true;
+
         document.getElementById('micRecordBtn').disabled = true;
         document.getElementById('telephonyTextInput').disabled = true;
         document.getElementById('btnSendText').disabled = true;
-        document.getElementById('micStatusText').innerText = 'Call ended. Click Connect Call to start a new session.';
+        document.getElementById('micStatusText').innerText = 'Call ended. Click Connect Incoming Call to start a new session.';
       }
     }
 
+    // ==========================================
+    // In-Browser 16kHz WAV Audio Capture
+    // ==========================================
     async function toggleVoiceRecording() {
       if (!currentCallId) return;
-
       if (!isRecordingMic) {
-        // Start recording
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = e => {
-            if (e.data.size > 0) audioChunks.push(e.data);
-          };
-
-          mediaRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            stream.getTracks().forEach(track => track.stop());
-            await dispatchAudioTurn(audioBlob);
-          };
-
-          mediaRecorder.start();
-          isRecordingMic = true;
-
-          const micBtn = document.getElementById('micRecordBtn');
-          micBtn.classList.add('recording');
-          document.getElementById('micBtnText').innerText = '🔴 Recording... Click Again to Send';
-          document.getElementById('micStatusText').innerText = 'Listening to your microphone audio...';
-          document.getElementById('perceiveTranscript').innerText = 'Capturing live speech...';
-        } catch (err) {
-          alert('Microphone access denied or unavailable: ' + err.message + '\nUsing text input as fallback.');
-        }
+        await startAudioRecording();
       } else {
-        // Stop and send
-        stopVoiceRecording();
+        await stopAudioRecordingAndSend(false);
       }
     }
 
-    function stopVoiceRecording() {
-      if (mediaRecorder && isRecordingMic) {
-        mediaRecorder.stop();
-        isRecordingMic = false;
+    async function startAudioRecording() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContextClass();
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const source = audioContext.createMediaStreamSource(micStream);
+
+        // 4096 buffer size, 1 channel mono
+        scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+        pcmBuffers = [];
+
+        scriptProcessor.onaudioprocess = (e) => {
+          if (!isRecordingMic) return;
+          const input = e.inputBuffer.getChannelData(0);
+          pcmBuffers.push(new Float32Array(input));
+        };
+
+        source.connect(scriptProcessor);
+        scriptProcessor.connect(audioContext.destination);
+
+        isRecordingMic = true;
         const micBtn = document.getElementById('micRecordBtn');
-        micBtn.classList.remove('recording');
-        document.getElementById('micBtnText').innerText = 'Processing Speech...';
-        document.getElementById('micStatusText').innerText = 'Whisper ASR is transcribing and running cognitive pipeline...';
+        micBtn.classList.add('recording');
+        document.getElementById('micIcon').innerText = '🔴';
+        document.getElementById('micBtnText').innerText = 'Listening... Tap to Send';
+        document.getElementById('micStatusText').innerText = 'Speaking into microphone in Hindi or English...';
+      } catch (err) {
+        alert('Microphone access unavailable: ' + err.message + '\nYou can test using the prompt chips or text input.');
+      }
+    }
+
+    async function stopAudioRecordingAndSend(cancelUpload = false) {
+      if (!isRecordingMic) return;
+      isRecordingMic = false;
+
+      const micBtn = document.getElementById('micRecordBtn');
+      micBtn.classList.remove('recording');
+      document.getElementById('micIcon').innerText = '🎙️';
+      document.getElementById('micBtnText').innerText = 'Processing Speech...';
+      document.getElementById('micStatusText').innerText = 'Transcribing with Whisper and generating RAG response...';
+
+      // Clean up hardware streams
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+      }
+      if (scriptProcessor) {
+        scriptProcessor.disconnect();
+        scriptProcessor = null;
+      }
+
+      const originalSampleRate = audioContext ? audioContext.sampleRate : 44100;
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+
+      if (cancelUpload || pcmBuffers.length === 0) {
+        document.getElementById('micBtnText').innerText = 'Tap to Speak';
+        document.getElementById('micStatusText').innerText = 'Ready for speech.';
+        return;
+      }
+
+      // Merge recorded buffers
+      let totalSamples = pcmBuffers.reduce((acc, b) => acc + b.length, 0);
+      let merged = new Float32Array(totalSamples);
+      let offset = 0;
+      for (let b of pcmBuffers) {
+        merged.set(b, offset);
+        offset += b.length;
+      }
+
+      // Downsample to 16,000 Hz if necessary
+      let samples16k = downsampleTo16k(merged, originalSampleRate);
+      let wavBlob = encodeWAV(samples16k, 16000);
+
+      await dispatchAudioTurn(wavBlob);
+    }
+
+    function downsampleTo16k(buffer, fromRate) {
+      if (fromRate === 16000) return buffer;
+      const ratio = fromRate / 16000;
+      const newLength = Math.round(buffer.length / ratio);
+      const result = new Float32Array(newLength);
+      let offsetResult = 0;
+      let offsetBuffer = 0;
+      while (offsetResult < result.length) {
+        const nextOffsetBuffer = Math.round((offsetResult + 1) * ratio);
+        let accum = 0, count = 0;
+        for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
+          accum += buffer[i];
+          count++;
+        }
+        result[offsetResult] = count > 0 ? (accum / count) : 0;
+        offsetResult++;
+        offsetBuffer = nextOffsetBuffer;
+      }
+      return result;
+    }
+
+    function encodeWAV(samples, sampleRate) {
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+
+      // RIFF chunk descriptor
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeString(view, 8, 'WAVE');
+      // fmt sub-chunk
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true); // SubChunk1Size (16 for PCM)
+      view.setUint16(20, 1, true); // AudioFormat 1 = PCM
+      view.setUint16(22, 1, true); // NumChannels = 1 (mono)
+      view.setUint32(24, sampleRate, true); // SampleRate
+      view.setUint32(28, sampleRate * 2, true); // ByteRate (SampleRate * 1 * 16/8)
+      view.setUint16(32, 2, true); // BlockAlign (1 * 16/8)
+      view.setUint16(34, 16, true); // BitsPerSample = 16
+      // data sub-chunk
+      writeString(view, 36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      // 16-bit PCM samples
+      let offset = 44;
+      for (let i = 0; i < samples.length; i++, offset += 2) {
+        let s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    function writeString(view, offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
       }
     }
 
     async function dispatchAudioTurn(audioBlob) {
       if (!currentCallId) return;
-      document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing 4 Cognitive Stages...';
+      document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing ASR + RAG...';
 
       const formData = new FormData();
       formData.append('audio', audioBlob, 'caller_turn.wav');
@@ -2110,9 +2251,9 @@
         const data = await res.json();
         renderCognitiveTurn(data);
       } catch (err) {
-        document.getElementById('perceiveTranscript').innerText = 'Error: ' + err.message;
+        alert('Audio turn processing error: ' + err.message);
       } finally {
-        document.getElementById('micBtnText').innerText = 'Click to Speak to AI Agent';
+        document.getElementById('micBtnText').innerText = 'Tap to Speak';
         document.getElementById('micStatusText').innerText = 'Ready for next utterance.';
       }
     }
@@ -2124,8 +2265,7 @@
         await new Promise(r => setTimeout(r, 600));
       }
 
-      document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing 4 Cognitive Stages...';
-      document.getElementById('perceiveTranscript').innerText = text;
+      document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing Pipeline...';
 
       try {
         const res = await fetch(`${API_BASE}/api/v2/telephony/calls/${currentCallId}/turn/`, {
@@ -2137,109 +2277,94 @@
         const data = await res.json();
         renderCognitiveTurn(data);
       } catch (err) {
-        document.getElementById('actStatus').innerText = 'Turn error: ' + err.message;
+        alert('Turn error: ' + err.message);
       }
+    }
+
+    function appendChatBubble(role, speaker, text, audioB64, meta = null) {
+      const chatArea = document.getElementById('telephonyChatArea');
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${role === 'caller' ? 'caller' : 'agent'}`;
+
+      let audioPlayerHtml = '';
+      if (audioB64) {
+        audioPlayerHtml = `
+          <div class="chat-bubble-audio">
+            <audio controls autoplay style="width: 100%; height: 32px;">
+              <source src="data:audio/wav;base64,${audioB64}" type="audio/wav">
+            </audio>
+          </div>
+        `;
+      }
+
+      let metaHtml = '';
+      if (meta) {
+        metaHtml = `<div style="font-size: 0.72rem; opacity: 0.75; margin-top: 4px;">${meta}</div>`;
+      }
+
+      bubble.innerHTML = `
+        <div class="chat-bubble-header">
+          <span>${speaker}</span>
+          <span>${timeStr}</span>
+        </div>
+        <div class="chat-bubble-body">
+          ${text}
+        </div>
+        ${audioPlayerHtml}
+        ${metaHtml}
+      `;
+
+      chatArea.appendChild(bubble);
+      chatArea.scrollTop = chatArea.scrollHeight;
     }
 
     function renderCognitiveTurn(data) {
-      // Stage 01: Perceive
-      document.getElementById('perceiveTranscript').innerText = `"${data.caller_transcript}"`;
-      document.getElementById('timingPerceive').innerText = `Latency: ${data.stage_timings_ms['01_perceive'] || 0}ms`;
+      const callerName = document.getElementById('crmName').innerText || 'Rahul Kumar';
 
-      // Stage 02: Understand
-      document.getElementById('understandIntent').innerText = data.intent || 'GENERAL_QUERY';
-      document.getElementById('timingUnderstand').innerText = `Latency: ${data.stage_timings_ms['02_understand'] || 0}ms`;
+      // 1. Append Caller Bubble
+      appendChatBubble('caller', `👤 ${callerName}`, data.caller_transcript || '(Speech audio)');
 
-      const score = data.sentiment_score || 0.0;
-      const emotion = data.emotion || 'neutral';
-      const emoBadge = document.getElementById('understandEmotionBadge');
-      emoBadge.innerText = `${emotion.toUpperCase()} (${(score).toFixed(2)})`;
+      // 2. Append AI Voice Agent Bubble with audio
+      appendChatBubble('agent', '🤖 AI Voice Agent', data.ai_response_text, data.ai_response_audio_base64);
 
-      const fill = document.getElementById('sentimentMeterFill');
-      if (score <= -0.6) {
-        emoBadge.style.background = 'rgba(239, 68, 68, 0.25)';
-        emoBadge.style.color = '#f87171';
-        fill.style.background = '#ef4444';
-        fill.style.width = '20%';
-      } else if (score < 0) {
-        emoBadge.style.background = 'rgba(245, 158, 11, 0.25)';
-        emoBadge.style.color = '#fbbf24';
-        fill.style.background = '#f59e0b';
-        fill.style.width = '45%';
-      } else {
-        emoBadge.style.background = 'rgba(16, 185, 129, 0.25)';
-        emoBadge.style.color = '#34d399';
-        fill.style.background = '#10b981';
-        fill.style.width = '85%';
+      // 3. Update Latency Badge
+      const totalLatency = data.total_turn_latency_ms || 380;
+      document.getElementById('turnLatencyIndicator').innerText = `Turn Latency: ${totalLatency}ms`;
+
+      // 4. Safely update telemetry drawer (under-the-hood metrics)
+      const pTiming = document.getElementById('timingPerceive');
+      if (pTiming && data.stage_timings_ms) {
+        pTiming.innerText = `Latency: ${data.stage_timings_ms['01_perceive'] || 0}ms`;
       }
-
-      // Stage 03: Respond
-      document.getElementById('respondText').innerText = `"${data.ai_response_text}"`;
-      document.getElementById('timingRespond').innerText = `Latency: ${data.stage_timings_ms['03_respond'] || 0}ms`;
-
-      // Auto play audio if base64 provided
-      if (data.ai_response_audio_base64) {
-        playBase64Audio(data.ai_response_audio_base64);
+      const uTiming = document.getElementById('timingUnderstand');
+      if (uTiming) {
+        const emo = (data.emotion || 'neutral').toUpperCase();
+        uTiming.innerText = `Intent: ${data.intent || 'GENERAL_QUERY'} (${emo})`;
       }
-
-      // Stage 04: Act
-      document.getElementById('timingAct').innerText = `Latency: ${data.stage_timings_ms['04_act'] || 0}ms`;
-      document.getElementById('turnLatencyIndicator').innerText = `Total Turn Latency: ${data.total_turn_latency_ms || 420}ms (Target: <500ms)`;
-
-      if (data.escalated) {
-        document.getElementById('actStatus').innerHTML = `
-          <span style="color: #f87171; font-weight: 700;">⚠️ Escalation Triggered! Routed to Human Agent Queue.</span>
-        `;
-        // Show Handover Banner (Page 4 of deck)
-        const handover = data.escalation_handover_packet || {};
-        document.getElementById('handoverPanel').style.display = 'block';
-        document.getElementById('handoverReasonText').innerText = `"${handover['02_escalation_reason_highlighted'] || 'Human transfer requested'}"`;
-        document.getElementById('handoverResolutionText').innerText = handover['05_ai_suggested_resolution_path']?.recommended_action || 'Offer manual verification and expedite service.';
-      } else {
-        document.getElementById('handoverPanel').style.display = 'none';
+      const rTiming = document.getElementById('timingRespond');
+      if (rTiming && data.stage_timings_ms) {
+        rTiming.innerText = `Latency: ${data.stage_timings_ms['03_respond'] || 0}ms`;
+      }
+      const aStatus = document.getElementById('actStatus');
+      if (aStatus) {
         const crmAct = data.crm_action?.action || 'session_logged';
-        document.getElementById('actStatus').innerHTML = `
-          <span style="color: #34d399;">✓ Autonomous CRM Action Executed: <strong>${crmAct}</strong></span>
-        `;
+        aStatus.innerText = `Action: ${crmAct}`;
       }
-    }
 
-    function playBase64Audio(b64) {
-      try {
-        const audioSrc = `data:audio/wav;base64,${b64}`;
-        const container = document.getElementById('voiceAudioPlayerContainer');
-        container.innerHTML = `
-          <audio controls autoplay style="width: 100%; height: 38px;">
-            <source src="${audioSrc}" type="audio/wav">
-          </audio>
-        `;
-      } catch (e) {
-        console.warn('Audio autoplay notice:', e);
-      }
-    }
-
-    async function synthesizeAndPlayGreeting(text) {
-      try {
-        const res = await fetch(`${API_BASE}/v1/audio/speech`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getApiKey()}`
-          },
-          body: JSON.stringify({ input: text, voice: 'alloy', response_format: 'wav' })
-        });
-        if (res.ok) {
-          const blob = await res.blob();
-          const audioUrl = URL.createObjectURL(blob);
-          const container = document.getElementById('voiceAudioPlayerContainer');
-          container.innerHTML = `
-            <audio controls autoplay style="width: 100%; height: 38px;">
-              <source src="${audioUrl}" type="audio/wav">
-            </audio>
-          `;
-        }
-      } catch (e) {
-        console.log('Greeting TTS fallback:', e);
+      // 5. Handle Escalation
+      const handover = document.getElementById('handoverPanel');
+      if (data.escalated) {
+        handover.style.display = 'block';
+        const packet = data.escalation_handover_packet || {};
+        const reason = packet['02_escalation_reason_highlighted'] || 'Caller requested human agent or negative sentiment detected.';
+        const resolution = packet['05_ai_suggested_resolution_path']?.recommended_action || 'Offer manual verification and expedite service.';
+        document.getElementById('handoverReasonText').innerText = reason;
+        document.getElementById('handoverResolutionText').innerText = resolution;
+      } else {
+        handover.style.display = 'none';
       }
     }
 
