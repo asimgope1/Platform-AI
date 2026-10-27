@@ -927,14 +927,39 @@
             </button>
           </div>
 
-          <!-- Big Friendly Voice Microphone -->
-          <div style="text-align: center; padding: 18px 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-            <button id="micRecordBtn" class="mic-record-btn" onclick="toggleVoiceRecording()" disabled style="height: 64px; font-size: 1.1rem; border-radius: 9999px;">
-              <span id="micIcon" style="font-size: 1.5rem;">🎙️</span>
-              <span id="micBtnText">Tap to Speak</span>
-            </button>
-            <div id="micStatusText" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 10px;">
-              Click 'Connect Incoming Call' above to start talking.
+          <!-- Hands-Free Call Mode & Live Voice Activity Bar -->
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="callModeIcon" style="font-size: 1.1rem;">🎙️</span>
+                <strong style="font-size: 0.88rem; color: #ffffff;">Hands-Free Call Mode</strong>
+              </div>
+              <label class="switch" style="transform: scale(0.85);" title="Hands-Free Continuous Listening (Voice Activity Detection)">
+                <input type="checkbox" id="handsFreeToggle" checked onchange="onHandsFreeToggleChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <!-- Dynamic State Badge -->
+            <div id="vadStateBadge" style="text-align: center; padding: 12px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); margin-bottom: 12px; transition: all 0.25s;">
+              ⚪ Call on hook. Connect incoming call to start talking.
+            </div>
+
+            <!-- Real-time Voice Energy Level Meter -->
+            <div style="font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>Microphone Volume Level</span>
+              <span id="rmsValDisplay">0%</span>
+            </div>
+            <div style="height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; position: relative;">
+              <div id="micLevelBar" style="height: 100%; width: 0%; background: #10b981; transition: width 0.05s ease-out;"></div>
+            </div>
+
+            <!-- Manual Push-To-Talk Fallback Button (visible when hands-free is toggled off) -->
+            <div id="manualMicContainer" style="margin-top: 12px; display: none;">
+              <button id="micRecordBtn" class="mic-record-btn" onclick="toggleVoiceRecording()" disabled style="height: 48px; font-size: 0.95rem; border-radius: var(--radius-sm);">
+                <span id="micIcon">🎙️</span>
+                <span id="micBtnText">Push to Speak</span>
+              </button>
             </div>
           </div>
 
@@ -1944,16 +1969,31 @@
     }
 
     // ==========================================
-    // Com-one v2.0 Live Telephony Voice Agent Logic
+    // Com-one v2.0 Live Telephony Voice Agent Logic (Hands-Free VAD Engine)
     // ==========================================
     let currentCallId = null;
     let callTimerInterval = null;
     let callSeconds = 0;
-    let audioContext = null;
-    let micStream = null;
-    let scriptProcessor = null;
-    let pcmBuffers = [];
-    let isRecordingMic = false;
+
+    // Continuous Hands-Free VAD Engine State
+    let isHandsFreeMode = true;
+    let isUserSpeaking = false;
+    let isAgentSpeaking = false;
+    let isProcessingTurn = false;
+    let speechStartTimestamp = 0;
+    let silenceStartTimestamp = 0;
+    let currentTurnBuffers = [];
+    let currentAgentAudio = null;
+
+    let persistentAudioCtx = null;
+    let persistentMicStream = null;
+    let persistentSource = null;
+    let persistentScriptNode = null;
+    let persistentAnalyser = null;
+
+    const VAD_SPEECH_THRESHOLD = 0.024;  // RMS voice threshold
+    const VAD_SILENCE_TIMEOUT_MS = 650;  // 650ms pause finishes the caller's utterance
+    const VAD_MIN_SPEECH_MS = 350;       // Filters out throat clearing or breath
 
     const CALLER_PROFILES = {
       '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },
@@ -1984,6 +2024,119 @@
       }
     }
 
+    function onHandsFreeToggleChange() {
+      const toggle = document.getElementById('handsFreeToggle');
+      isHandsFreeMode = toggle ? toggle.checked : true;
+      const manualContainer = document.getElementById('manualMicContainer');
+      if (manualContainer) {
+        manualContainer.style.display = isHandsFreeMode ? 'none' : 'block';
+      }
+      if (!isHandsFreeMode) {
+        updateVadStateUI('manual', '🖱️ Push-to-Talk active. Use the button below to speak.');
+      } else if (currentCallId) {
+        updateVadStateUI('listening', '🎧 Hands-Free Active: Just speak naturally...');
+      }
+    }
+
+    function updateVadStateUI(state, customText = '') {
+      const badge = document.getElementById('vadStateBadge');
+      if (!badge) return;
+
+      if (state === 'on_hook') {
+        badge.style.background = 'rgba(255,255,255,0.04)';
+        badge.style.border = '1px solid var(--border-color)';
+        badge.style.color = 'var(--text-muted)';
+        badge.innerText = customText || '⚪ Call on hook. Connect incoming call to start talking.';
+      } else if (state === 'listening') {
+        badge.style.background = 'rgba(6, 182, 212, 0.12)';
+        badge.style.border = '1px solid rgba(6, 182, 212, 0.4)';
+        badge.style.color = '#67e8f9';
+        badge.innerText = customText || '🎧 Listening for your voice... (Just speak naturally)';
+      } else if (state === 'caller_speaking') {
+        badge.style.background = 'rgba(16, 185, 129, 0.2)';
+        badge.style.border = '1px solid rgba(16, 185, 129, 0.5)';
+        badge.style.color = '#34d399';
+        badge.innerText = customText || '🎙️ You are speaking...';
+      } else if (state === 'processing') {
+        badge.style.background = 'rgba(168, 85, 247, 0.18)';
+        badge.style.border = '1px solid rgba(168, 85, 247, 0.45)';
+        badge.style.color = '#d8b4fe';
+        badge.innerText = customText || '⚡ Processing speech & generating response...';
+      } else if (state === 'agent_speaking') {
+        badge.style.background = 'rgba(99, 102, 241, 0.2)';
+        badge.style.border = '1px solid rgba(99, 102, 241, 0.5)';
+        badge.style.color = '#a5b4fc';
+        badge.innerText = customText || '🔊 AI Agent Speaking... (Speak to interrupt)';
+      } else if (state === 'manual') {
+        badge.style.background = 'rgba(255,255,255,0.05)';
+        badge.style.border = '1px solid var(--border-color)';
+        badge.style.color = '#cbd5e1';
+        badge.innerText = customText;
+      }
+    }
+
+    function interruptAgentIfSpeaking() {
+      if (isAgentSpeaking && currentAgentAudio) {
+        try {
+          currentAgentAudio.pause();
+          currentAgentAudio.currentTime = 0;
+        } catch (e) {}
+        currentAgentAudio = null;
+        isAgentSpeaking = false;
+        console.log('Barge-in: Agent speech interrupted by caller.');
+      }
+    }
+
+    function playAgentSpokenAudio(b64, onEndedCallback) {
+      interruptAgentIfSpeaking();
+      if (!b64) {
+        if (onEndedCallback) onEndedCallback();
+        updateVadStateUI('listening');
+        return;
+      }
+
+      try {
+        const audioSrc = `data:audio/wav;base64,${b64}`;
+        currentAgentAudio = new Audio(audioSrc);
+        isAgentSpeaking = true;
+        updateVadStateUI('agent_speaking');
+
+        currentAgentAudio.onended = () => {
+          isAgentSpeaking = false;
+          currentAgentAudio = null;
+          if (onEndedCallback) onEndedCallback();
+          if (currentCallId) {
+            updateVadStateUI('listening');
+          }
+        };
+
+        currentAgentAudio.onerror = (e) => {
+          isAgentSpeaking = false;
+          currentAgentAudio = null;
+          if (onEndedCallback) onEndedCallback();
+          if (currentCallId) {
+            updateVadStateUI('listening');
+          }
+        };
+
+        currentAgentAudio.play().catch(err => {
+          console.warn('Autoplay notice:', err);
+          isAgentSpeaking = false;
+          currentAgentAudio = null;
+          if (onEndedCallback) onEndedCallback();
+          if (currentCallId) {
+            updateVadStateUI('listening');
+          }
+        });
+      } catch (err) {
+        console.error('Audio playback error:', err);
+        updateVadStateUI('listening');
+      }
+    }
+
+    // ==========================================
+    // Call Initialization & Live VAD Loop
+    // ==========================================
     async function startTelephonyCall() {
       const phoneSelect = document.getElementById('callNumberSelect');
       const callerNumber = phoneSelect ? phoneSelect.value : '+91 98765 43210';
@@ -2021,16 +2174,13 @@
         btnStart.style.display = 'none';
         btnEnd.style.display = 'block';
         btnEnd.disabled = false;
-        micBtn.disabled = false;
-        textInput.disabled = false;
-        sendBtn.disabled = false;
-
-        document.getElementById('micStatusText').innerText = '🎙️ Click "Tap to Speak" or use the one-tap prompt chips below.';
+        if (micBtn) micBtn.disabled = false;
+        if (textInput) textInput.disabled = false;
+        if (sendBtn) sendBtn.disabled = false;
 
         // Clear chat area & render initial greeting bubble
         const chatArea = document.getElementById('telephonyChatArea');
         chatArea.innerHTML = '';
-
         appendChatBubble('agent', '🤖 AI Voice Agent', data.initial_greeting, data.initial_greeting_audio_base64);
 
         // Start call duration timer
@@ -2043,17 +2193,177 @@
           document.getElementById('callDuration').innerText = `${mins}:${secs}`;
         }, 1000);
 
+        // Initialize Live Microphone & Continuous VAD
+        await initContinuousVadAudio();
+
+        // Play initial greeting aloud automatically
+        playAgentSpokenAudio(data.initial_greeting_audio_base64, () => {
+          updateVadStateUI('listening');
+        });
+
       } catch (err) {
         alert('Failed to connect call: ' + err.message);
         btnStart.disabled = false;
         btnStart.innerText = '🟢 Connect Incoming Call';
+        updateVadStateUI('on_hook');
+      }
+    }
+
+    async function initContinuousVadAudio() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        persistentAudioCtx = new AudioContextClass();
+        persistentMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        persistentSource = persistentAudioCtx.createMediaStreamSource(persistentMicStream);
+
+        persistentAnalyser = persistentAudioCtx.createAnalyser();
+        persistentAnalyser.fftSize = 512;
+
+        persistentScriptNode = persistentAudioCtx.createScriptProcessor(4096, 1, 1);
+        currentTurnBuffers = [];
+        isUserSpeaking = false;
+        silenceStartTimestamp = 0;
+
+        persistentScriptNode.onaudioprocess = (e) => {
+          if (!currentCallId) return;
+          const input = e.inputBuffer.getChannelData(0);
+
+          // 1. Calculate RMS volume
+          let sum = 0;
+          for (let i = 0; i < input.length; i++) {
+            sum += input[i] * input[i];
+          }
+          const rms = Math.sqrt(sum / input.length);
+
+          // Update real-time volume bar
+          const levelPercent = Math.min(100, Math.round(rms * 450));
+          const levelBar = document.getElementById('micLevelBar');
+          if (levelBar) levelBar.style.width = levelPercent + '%';
+          const rmsDisplay = document.getElementById('rmsValDisplay');
+          if (rmsDisplay) rmsDisplay.innerText = levelPercent + '%';
+
+          // If not in hands-free mode or if turn is currently processing, skip auto-dispatch
+          if (!isHandsFreeMode || isProcessingTurn) return;
+
+          const now = performance.now();
+
+          // 2. VAD: Speech Detection
+          if (rms >= VAD_SPEECH_THRESHOLD) {
+            // Caller voice detected -> interrupt agent if speaking (Barge-in)
+            interruptAgentIfSpeaking();
+
+            if (!isUserSpeaking) {
+              isUserSpeaking = true;
+              speechStartTimestamp = now;
+              currentTurnBuffers = [];
+              updateVadStateUI('caller_speaking');
+            }
+            silenceStartTimestamp = 0;
+            currentTurnBuffers.push(new Float32Array(input));
+          } else {
+            // Below threshold (silence/pause)
+            if (isUserSpeaking) {
+              // Capture trailing silence for sentence tail
+              currentTurnBuffers.push(new Float32Array(input));
+
+              if (silenceStartTimestamp === 0) {
+                silenceStartTimestamp = now;
+              } else if (now - silenceStartTimestamp >= VAD_SILENCE_TIMEOUT_MS) {
+                // Silence timeout expired -> User finished their sentence!
+                const speechDuration = now - speechStartTimestamp;
+                isUserSpeaking = false;
+                silenceStartTimestamp = 0;
+
+                if (speechDuration >= VAD_MIN_SPEECH_MS && currentTurnBuffers.length > 0) {
+                  // Valid turn: automatically dispatch
+                  triggerAutomaticHandsFreeTurn(currentTurnBuffers);
+                  currentTurnBuffers = [];
+                } else {
+                  currentTurnBuffers = [];
+                  updateVadStateUI('listening');
+                }
+              }
+            }
+          }
+        };
+
+        persistentSource.connect(persistentAnalyser);
+        persistentAnalyser.connect(persistentScriptNode);
+        persistentScriptNode.connect(persistentAudioCtx.destination);
+
+      } catch (err) {
+        console.warn('Microphone continuous access error:', err);
+        updateVadStateUI('manual', 'Microphone access denied. You can test using prompt chips.');
+      }
+    }
+
+    async function triggerAutomaticHandsFreeTurn(buffers) {
+      if (isProcessingTurn || !currentCallId) return;
+      isProcessingTurn = true;
+      updateVadStateUI('processing');
+      document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing Speech & RAG...';
+
+      // Merge buffers
+      let totalSamples = buffers.reduce((acc, b) => acc + b.length, 0);
+      let merged = new Float32Array(totalSamples);
+      let offset = 0;
+      for (let b of buffers) {
+        merged.set(b, offset);
+        offset += b.length;
+      }
+
+      const originalSampleRate = persistentAudioCtx ? persistentAudioCtx.sampleRate : 44100;
+      let samples16k = downsampleTo16k(merged, originalSampleRate);
+      let wavBlob = encodeWAV(samples16k, 16000);
+
+      const formData = new FormData();
+      formData.append('audio', wavBlob, 'caller_utterance.wav');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/v2/telephony/calls/${currentCallId}/turn/`, {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        // Render turn & play response spoken audio immediately
+        renderCognitiveTurn(data);
+        isProcessingTurn = false;
+
+        playAgentSpokenAudio(data.ai_response_audio_base64, () => {
+          if (currentCallId) updateVadStateUI('listening');
+        });
+
+      } catch (err) {
+        isProcessingTurn = false;
+        console.error('Hands-free turn error:', err);
+        updateVadStateUI('listening');
       }
     }
 
     async function endTelephonyCall() {
       if (!currentCallId) return;
       clearInterval(callTimerInterval);
-      stopAudioRecordingAndSend(true);
+      interruptAgentIfSpeaking();
+
+      // Clean up audio hardware
+      if (persistentMicStream) {
+        persistentMicStream.getTracks().forEach(t => t.stop());
+        persistentMicStream = null;
+      }
+      if (persistentScriptNode) {
+        persistentScriptNode.disconnect();
+        persistentScriptNode = null;
+      }
+      if (persistentAudioCtx) {
+        persistentAudioCtx.close();
+        persistentAudioCtx = null;
+      }
+
+      isUserSpeaking = false;
+      isProcessingTurn = false;
+      currentTurnBuffers = [];
 
       try {
         const res = await fetch(`${API_BASE}/api/v2/telephony/calls/${currentCallId}/end/`, {
@@ -2087,102 +2397,12 @@
         btnEnd.style.display = 'none';
         btnEnd.disabled = true;
 
-        document.getElementById('micRecordBtn').disabled = true;
+        const micBtn = document.getElementById('micRecordBtn');
+        if (micBtn) micBtn.disabled = true;
         document.getElementById('telephonyTextInput').disabled = true;
         document.getElementById('btnSendText').disabled = true;
-        document.getElementById('micStatusText').innerText = 'Call ended. Click Connect Incoming Call to start a new session.';
+        updateVadStateUI('on_hook', '⚪ Call ended. Click Connect Incoming Call to start a new session.');
       }
-    }
-
-    // ==========================================
-    // In-Browser 16kHz WAV Audio Capture
-    // ==========================================
-    async function toggleVoiceRecording() {
-      if (!currentCallId) return;
-      if (!isRecordingMic) {
-        await startAudioRecording();
-      } else {
-        await stopAudioRecordingAndSend(false);
-      }
-    }
-
-    async function startAudioRecording() {
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioContext = new AudioContextClass();
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const source = audioContext.createMediaStreamSource(micStream);
-
-        // 4096 buffer size, 1 channel mono
-        scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
-        pcmBuffers = [];
-
-        scriptProcessor.onaudioprocess = (e) => {
-          if (!isRecordingMic) return;
-          const input = e.inputBuffer.getChannelData(0);
-          pcmBuffers.push(new Float32Array(input));
-        };
-
-        source.connect(scriptProcessor);
-        scriptProcessor.connect(audioContext.destination);
-
-        isRecordingMic = true;
-        const micBtn = document.getElementById('micRecordBtn');
-        micBtn.classList.add('recording');
-        document.getElementById('micIcon').innerText = '🔴';
-        document.getElementById('micBtnText').innerText = 'Listening... Tap to Send';
-        document.getElementById('micStatusText').innerText = 'Speaking into microphone in Hindi or English...';
-      } catch (err) {
-        alert('Microphone access unavailable: ' + err.message + '\nYou can test using the prompt chips or text input.');
-      }
-    }
-
-    async function stopAudioRecordingAndSend(cancelUpload = false) {
-      if (!isRecordingMic) return;
-      isRecordingMic = false;
-
-      const micBtn = document.getElementById('micRecordBtn');
-      micBtn.classList.remove('recording');
-      document.getElementById('micIcon').innerText = '🎙️';
-      document.getElementById('micBtnText').innerText = 'Processing Speech...';
-      document.getElementById('micStatusText').innerText = 'Transcribing with Whisper and generating RAG response...';
-
-      // Clean up hardware streams
-      if (micStream) {
-        micStream.getTracks().forEach(t => t.stop());
-        micStream = null;
-      }
-      if (scriptProcessor) {
-        scriptProcessor.disconnect();
-        scriptProcessor = null;
-      }
-
-      const originalSampleRate = audioContext ? audioContext.sampleRate : 44100;
-      if (audioContext) {
-        audioContext.close();
-        audioContext = null;
-      }
-
-      if (cancelUpload || pcmBuffers.length === 0) {
-        document.getElementById('micBtnText').innerText = 'Tap to Speak';
-        document.getElementById('micStatusText').innerText = 'Ready for speech.';
-        return;
-      }
-
-      // Merge recorded buffers
-      let totalSamples = pcmBuffers.reduce((acc, b) => acc + b.length, 0);
-      let merged = new Float32Array(totalSamples);
-      let offset = 0;
-      for (let b of pcmBuffers) {
-        merged.set(b, offset);
-        offset += b.length;
-      }
-
-      // Downsample to 16,000 Hz if necessary
-      let samples16k = downsampleTo16k(merged, originalSampleRate);
-      let wavBlob = encodeWAV(samples16k, 16000);
-
-      await dispatchAudioTurn(wavBlob);
     }
 
     function downsampleTo16k(buffer, fromRate) {
@@ -2216,18 +2436,17 @@
       writeString(view, 8, 'WAVE');
       // fmt sub-chunk
       writeString(view, 12, 'fmt ');
-      view.setUint32(16, 16, true); // SubChunk1Size (16 for PCM)
-      view.setUint16(20, 1, true); // AudioFormat 1 = PCM
-      view.setUint16(22, 1, true); // NumChannels = 1 (mono)
-      view.setUint32(24, sampleRate, true); // SampleRate
-      view.setUint32(28, sampleRate * 2, true); // ByteRate (SampleRate * 1 * 16/8)
-      view.setUint16(32, 2, true); // BlockAlign (1 * 16/8)
-      view.setUint16(34, 16, true); // BitsPerSample = 16
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, 1, true); // Mono
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true); // 16-bit
       // data sub-chunk
       writeString(view, 36, 'data');
       view.setUint32(40, samples.length * 2, true);
 
-      // 16-bit PCM samples
       let offset = 44;
       for (let i = 0; i < samples.length; i++, offset += 2) {
         let s = Math.max(-1, Math.min(1, samples[i]));
@@ -2242,26 +2461,30 @@
       }
     }
 
-    async function dispatchAudioTurn(audioBlob) {
+    // Fallback Manual Push-to-Talk Trigger
+    let isManualRecording = false;
+    let manualBuffers = [];
+    async function toggleVoiceRecording() {
       if (!currentCallId) return;
-      document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing ASR + RAG...';
-
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'caller_turn.wav');
-
-      try {
-        const res = await fetch(`${API_BASE}/api/v2/telephony/calls/${currentCallId}/turn/`, {
-          method: 'POST',
-          body: formData
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        renderCognitiveTurn(data);
-      } catch (err) {
-        alert('Audio turn processing error: ' + err.message);
-      } finally {
-        document.getElementById('micBtnText').innerText = 'Tap to Speak';
-        document.getElementById('micStatusText').innerText = 'Ready for next utterance.';
+      if (!isManualRecording) {
+        isManualRecording = true;
+        manualBuffers = [];
+        const micBtn = document.getElementById('micRecordBtn');
+        if (micBtn) {
+          micBtn.classList.add('recording');
+          document.getElementById('micBtnText').innerText = 'Recording... Click to Send';
+        }
+      } else {
+        isManualRecording = false;
+        const micBtn = document.getElementById('micRecordBtn');
+        if (micBtn) {
+          micBtn.classList.remove('recording');
+          document.getElementById('micBtnText').innerText = 'Push to Speak';
+        }
+        if (currentTurnBuffers.length > 0) {
+          triggerAutomaticHandsFreeTurn(currentTurnBuffers);
+          currentTurnBuffers = [];
+        }
       }
     }
 
@@ -2272,6 +2495,9 @@
         await new Promise(r => setTimeout(r, 600));
       }
 
+      interruptAgentIfSpeaking();
+      isProcessingTurn = true;
+      updateVadStateUI('processing');
       document.getElementById('turnLatencyIndicator').innerText = '⚡ Processing Pipeline...';
 
       try {
@@ -2283,8 +2509,15 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         renderCognitiveTurn(data);
+        isProcessingTurn = false;
+
+        playAgentSpokenAudio(data.ai_response_audio_base64, () => {
+          if (currentCallId) updateVadStateUI('listening');
+        });
       } catch (err) {
+        isProcessingTurn = false;
         alert('Turn error: ' + err.message);
+        updateVadStateUI('listening');
       }
     }
 
@@ -2300,7 +2533,7 @@
       if (audioB64) {
         audioPlayerHtml = `
           <div class="chat-bubble-audio">
-            <audio controls autoplay style="width: 100%; height: 32px;">
+            <audio controls style="width: 100%; height: 32px;">
               <source src="data:audio/wav;base64,${audioB64}" type="audio/wav">
             </audio>
           </div>
@@ -2334,7 +2567,7 @@
       // 1. Append Caller Bubble
       appendChatBubble('caller', `👤 ${callerName}`, data.caller_transcript || '(Speech audio)');
 
-      // 2. Append AI Voice Agent Bubble with audio
+      // 2. Append AI Voice Agent Bubble
       appendChatBubble('agent', '🤖 AI Voice Agent', data.ai_response_text, data.ai_response_audio_base64);
 
       // 3. Update Latency Badge
