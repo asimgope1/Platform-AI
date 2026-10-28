@@ -13,7 +13,11 @@ def home_view(request):
     html_path = BASE_DIR / 'services' / 'api' / 'static' / 'index.html'
     if html_path.exists():
         with open(html_path, 'r', encoding='utf-8') as f:
-            return HttpResponse(f.read(), content_type='text/html')
+            resp = HttpResponse(f.read(), content_type='text/html')
+            resp['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            resp['Pragma'] = 'no-cache'
+            resp['Expires'] = '0'
+            return resp
     return HttpResponse("<h1>Com-one Platform v2.0 AI Intelligence Layer</h1>")
 
 def health_view(request):

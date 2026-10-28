@@ -56,6 +56,13 @@ class CognitiveVoicePipeline:
         import re
 
         phonetic_rules = [
+            (r"\bj\.?\s*o\.?\s*p\.?\s*[ai]\.?\b", "UPI"),
+            (r"\bjopa\b", "UPI"),
+            (r"\bdeflistate\.?\b", "refund status"),
+            (r"\bdefli\s*state\.?\b", "refund status"),
+            (r"\bdeflate\.?\b", "refund status"),
+            (r"\bdebit\s*state\.?\b", "debit status"),
+            (r"\bdepot\s*state\.?\b", "refund status"),
             (r"\bupa\s+reef\s+fund\b", "UPI refund status"),
             (r"\bupa\s+ree\s+fund\b", "UPI refund status"),
             (r"\bupa\s+reefund\b", "UPI refund status"),
@@ -150,6 +157,24 @@ class CognitiveVoicePipeline:
         # -------------------------------------------------------------
         t1 = time.time()
         intent, sentiment_score, emotion = cls._analyze_sentiment_and_intent(caller_text)
+
+        # Whisper Safety Net: If client transcript yielded generic inquiry but raw audio is present, run server Whisper STT
+        if intent == "GENERAL_INQUIRY" and audio_bytes and len(audio_bytes) > 2000:
+            try:
+                whisper_res = await ProviderBridge.transcribe_audio(audio_bytes, language=session.language)
+                whisper_text = cls._normalize_phonetic_transcription(whisper_res.get("text", "").strip())
+                if whisper_text and not cls._is_noise_hallucination(whisper_text):
+                    w_intent, w_sentiment, w_emotion = cls._analyze_sentiment_and_intent(whisper_text)
+                    if w_intent != "GENERAL_INQUIRY":
+                        logger.info(f"Whisper rescued turn intent from '{intent}' to '{w_intent}' (Whisper: '{whisper_text}')")
+                        caller_text = whisper_text
+                        result["caller_transcript"] = caller_text
+                        intent = w_intent
+                        sentiment_score = w_sentiment
+                        emotion = w_emotion
+            except Exception as e:
+                logger.warning(f"Whisper safety net fallback error: {e}")
+
         await sync_to_async(cls._update_session_intent_emotion)(session, intent, sentiment_score, emotion)
 
         # Check Escalation Signals (Deck Page 4):
@@ -249,7 +274,7 @@ class CognitiveVoicePipeline:
             if is_hindi_session and not has_hindi_response:
                 # Strictly enforce Hindi voice response when caller selected Hindi language
                 if "UPI" in intent or "REFUND" in intent or any(w in caller_text.lower() for w in [
-                    "refund", "reef fund", "reefund", "upa", "upi", "jubiai", "istiti", "sthiti", "रिफंड", "paise", "paisa", "cut", "kat", "debit"
+                    "refund", "reef fund", "reefund", "upa", "upi", "j.o.p.a", "jopa", "deflistate", "jubiai", "istiti", "sthiti", "रिफंड", "paise", "paisa", "cut", "kat", "debit"
                 ]):
                     ai_reply = f"जी बिल्कुल {hi_name}आप चिंता मत कीजिए! अगर बैंक खाते से यूपीआई पैसे कट गए हैं, तो 24 से 48 घंटे में वो स्वतः आपके खाते में वापस आ जाते हैं। आप अपनी यूपीआई ऐप में 12 अंकों के यूटीआर नंबर से भी स्टेटस चेक कर सकते हैं।"
                 elif "KYC" in intent or any(w in caller_text.lower() for w in ["kyc", "केवाईसी", "pan", "aadhaar"]):
@@ -370,6 +395,7 @@ class CognitiveVoicePipeline:
             "refund", "reef fund", "ree fund", "reefund", "reefend", "refand", "refun", "re fund", "rifund", "freefund", "free fund", "leaf fund",
             "रिफंड", "रीफंड", "रिफन्ड", "रीफ़ंड", "रिफ़ंड", "फ्रीफंड", "फ्रीफ़ंड", "फ्री फंड",
             "स्थिति", "stithi", "sthiti", "istiti", "स्टेटस", "status", "upi", "यूपीआई", "यूटीआर", "utr", "upa", "yupi", "you pi", "jubiai",
+            "j.o.p.a", "jopa", "deflistate", "defli state", "deflate",
             "कट गया", "kat gaya", "kat gya", "कट गए", "kat gaye", "cut ho gaya",
             "पैसा", "पैसे", "paise", "paisa", "debit", "debited", "failed", "fail",
             "ریفنڈ", "پیسے", "balance", "account se kat", "waapas", "wapas", "वापस", "kya hua"

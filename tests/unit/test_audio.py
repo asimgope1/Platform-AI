@@ -59,6 +59,14 @@ def test_phonetic_noise_normalization():
     intent, score, emotion = CognitiveVoicePipeline._analyze_sentiment_and_intent(raw_noisy_text)
     assert intent == "UPI_REFUND_INQUIRY"
 
+    # Test Chrome WebSpeech acoustic distortion: 'J.O.P.A. Deflistate.'
+    raw_jopa_text = "J.O.P.A. Deflistate."
+    normalized_jopa = CognitiveVoicePipeline._normalize_phonetic_transcription(raw_jopa_text)
+    assert "UPI" in normalized_jopa
+    assert "refund" in normalized_jopa
+    j_intent, _, _ = CognitiveVoicePipeline._analyze_sentiment_and_intent(raw_jopa_text)
+    assert j_intent == "UPI_REFUND_INQUIRY"
+
 
 def test_noise_hallucination_discard():
     import os, django
