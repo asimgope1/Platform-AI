@@ -222,6 +222,7 @@ class CognitiveVoicePipeline:
         system_instruction = (
             "You are Com-one AI Voice Agent for automated IVR call assistance. "
             "Keep replies concise, clear, polite, and under 2-3 sentences so it sounds natural on telephone calls. "
+            "If caller speaks Odia (ଓଡ଼ିଆ), reply in natural conversational Odia. "
             "If caller speaks Hindi, reply in natural conversational Hindi. "
             "Use the provided knowledge context accurately without guessing."
         )
@@ -243,40 +244,62 @@ class CognitiveVoicePipeline:
         first_name = cust_name.split()[0] if cust_name else ""
         hi_name = f"{first_name} जी, " if first_name else "जी, "
         en_name = f"{first_name}, " if first_name else ""
+        or_name = f"{first_name} ଆଜ୍ଞା, " if first_name else "ଆଜ୍ଞା, "
+        is_odia_session = (session.language in ("or", "or-IN", "ory", "odia"))
+        is_hindi_session = (session.language in ("hi", "hi-IN", "hindi"))
 
         if escalation_triggered:
-            ai_reply = (
-                f"जी बिल्कुल {hi_name}मैं आपकी परेशानी समझ सकता हूँ। मैं तुरंत आपकी कॉल हमारे सीनियर स्पेशलिस्ट को ट्रांसफर कर रहा हूँ। कृपया एक क्षण लाइन पर बने रहें।"
-                if session.language == "hi" else
-                f"I completely understand {en_name}Let me transfer your call directly to our senior customer care specialist right away. Please hold for just a moment."
-            )
+            if is_odia_session:
+                ai_reply = f"ଆଜ୍ଞା ନିଶ୍ଚୟ {or_name}ମୁଁ ଆପଣଙ୍କ ଅସୁବିଧା ବୁଝିପାରୁଛି। ମୁଁ ତୁରନ୍ତ ଆପଣଙ୍କ କଲ୍ ଆମର ବରିଷ୍ଠ ବିଶେଷଜ୍ଞଙ୍କୁ ଟ୍ରାନ୍ସଫର କରୁଛି। ଦୟାକରି କିଛି ସମୟ ଲାଇନ୍‌ରେ ରୁହନ୍ତୁ।"
+            elif is_hindi_session:
+                ai_reply = f"जी बिल्कुल {hi_name}मैं आपकी परेशानी समझ सकता हूँ। मैं तुरंत आपकी कॉल हमारे सीनियर स्पेशलिस्ट को ट्रांसफर कर रहा हूँ। कृपया एक क्षण लाइन पर बने रहें।"
+            else:
+                ai_reply = f"I completely understand {en_name}Let me transfer your call directly to our senior customer care specialist right away. Please hold for just a moment."
         else:
             chat_res = await ProviderBridge.generate_chat_response(messages=messages, max_tokens=150)
             raw_reply = chat_res.get("content", "")
             is_silent_turn = (caller_text == "..." or not caller_text)
 
             if is_silent_turn:
-                ai_reply = (
-                    "माफ़ कीजिए, मुझे आपकी आवाज़ साफ़ नहीं आई। कृपया एक बार फिर बताइए, मैं आपकी क्या मदद करूँ?"
-                    if session.language == "hi" else
-                    "Sorry, I couldn't hear you clearly. Could you please repeat how I can help you?"
-                )
-            elif any(w in caller_text.lower() for w in ["thank", "thanks", "धन्यवाद", "शुक्रिया", "shukriya"]):
-                ai_reply = (
-                    "अरे, आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी और चीज़ में मदद कर सकता हूँ?"
-                    if session.language == "hi" else
-                    "You are most welcome! Is there anything else I can help you with today?"
-                )
+                if is_odia_session:
+                    ai_reply = "କ୍ଷମା କରିବେ, ମୁଁ ଆପଣଙ୍କ ସ୍ୱର ସ୍ପଷ୍ଟ ଶୁଣିପାରିଲି ନାହିଁ। ଦୟାକରି ଆଉ ଥରେ କୁହନ୍ତୁ, ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?"
+                elif is_hindi_session:
+                    ai_reply = "माफ़ कीजिए, मुझे आपकी आवाज़ साफ़ नहीं आई। कृपया एक बार फिर बताइए, मैं आपकी क्या मदद करूँ?"
+                else:
+                    ai_reply = "Sorry, I couldn't hear you clearly. Could you please repeat how I can help you?"
+            elif any(w in caller_text.lower() for w in ["thank", "thanks", "धन्यवाद", "शुक्रिया", "shukriya", "ଧନ୍ୟବାଦ", "dhanyabad"]):
+                if is_odia_session:
+                    ai_reply = "ଆପଣଙ୍କୁ ବହୁତ ବହୁତ ଧନ୍ୟବାଦ! ମୁଁ କ'ଣ ଆପଣଙ୍କୁ ଆଉ କୌଣସି ବିଷୟରେ ସାହାଯ୍ୟ କରିପାରିବି?"
+                elif is_hindi_session:
+                    ai_reply = "अरे, आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी और चीज़ में मदद कर सकता हूँ?"
+                else:
+                    ai_reply = "You are most welcome! Is there anything else I can help you with today?"
             elif any(w in caller_text.lower() for w in ["haha", "hahaha", "हहा", "lol"]):
-                ai_reply = (
-                    "हाँजी बताइए! मैं आपकी रिफंड स्थिति, वीडियो केवाईसी, या ऑर्डर डिलीवरी में कैसे मदद करूँ?"
-                    if session.language == "hi" else
-                    "Glad to bring a smile! How may I help you with your refund, KYC, or order delivery today?"
-                )
-            is_hindi_session = (session.language == "hi")
-            has_hindi_response = any("\u0900" <= ch <= "\u097f" for ch in raw_reply)
+                if is_odia_session:
+                    ai_reply = "ଆଜ୍ଞା କୁହନ୍ତୁ! ମୁଁ ଆପଣଙ୍କ ରିଫଣ୍ଡ ସ୍ଥିତି, ଭିଡିଓ କେୱାଇସି, କିମ୍ବା ଅର୍ଡର ଡେଲିଭରିରେ କିପରି ସାହାଯ୍ୟ କରିବି?"
+                elif is_hindi_session:
+                    ai_reply = "हाँजी बताइए! मैं आपकी रिफंड स्थिति, वीडियो केवाईसी, या ऑर्डर डिलीवरी में कैसे मदद करूँ?"
+                else:
+                    ai_reply = "Glad to bring a smile! How may I help you with your refund, KYC, or order delivery today?"
+            
+            import re
+            clean_reply_without_quotes = re.sub(r"['\"].*?['\"]", "", raw_reply)
+            has_odia_response = any("\u0b00" <= ch <= "\u0b7f" for ch in clean_reply_without_quotes)
+            has_hindi_response = any("\u0900" <= ch <= "\u097f" for ch in clean_reply_without_quotes)
 
-            if is_hindi_session and not has_hindi_response:
+            if is_odia_session and (not has_odia_response or has_hindi_response or "मैंने आपकी" in raw_reply or "Mock response" in raw_reply):
+                # Strictly enforce Odia voice response when caller selected Odia language
+                if "UPI" in intent or "REFUND" in intent or any(w in caller_text.lower() for w in [
+                    "refund", "reef fund", "reefund", "upa", "upi", "debit", "ଟଙ୍କା", "କଟିଯାଇଛି", "ରିଫଣ୍ଡ", "ଫେରସ୍ତ", "ୟୁପିଆଇ", "ୟୁଟିଆର୍"
+                ]):
+                    ai_reply = f"ଆଜ୍ଞା ନିଶ୍ଚୟ {or_name}ଆପଣ ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ! ଯଦି ବ୍ୟାଙ୍କ ଖାତାରୁ ୟୁପିଆଇ ଟଙ୍କା କଟିଯାଇଛି, ତେବେ ୨୪ ରୁ ୪୮ ଘଣ୍ଟା ମଧ୍ୟରେ ତାହା ଆପଣଙ୍କ ଖାତାକୁ ଫେରିଆସିବ। ଆପଣ ନିଜ ୟୁପିଆଇ ଆପ୍‌ରେ ୧୨ ଅଙ୍କ ବିଶିଷ୍ଟ ୟୁଟିଆର୍ ନମ୍ବର ଦ୍ୱାରା ମଧ୍ୟ ଷ୍ଟାଟସ୍ ଯାଞ୍ଚ କରିପାରିବେ।"
+                elif "KYC" in intent or any(w in caller_text.lower() for w in ["kyc", "pan", "aadhaar", "କେୱାଇସି", "ପ୍ୟାନ୍", "ଆଧାର", "ଡକ୍ୟୁମେଣ୍ଟ"]):
+                    ai_reply = f"ଆଜ୍ଞା {or_name}ଭିଡିଓ କେୱାଇସି କରିବା ବହୁତ ସହଜ! କେବଳ ଆପଣଙ୍କର ମୂଳ ଫିଜିକାଲ୍ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ଲିଙ୍କ୍ ଥିବା ମୋବାଇଲ୍ ପାଖରେ ରଖନ୍ତୁ। ମାତ୍ର ୨ ମିନିଟର ଭିଡିଓ କଲ୍ ହେବ, ଏବଂ ୧ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଖାତା ଚାଲୁ ହୋଇଯିବ।"
+                elif "ORDER" in intent or any(w in caller_text.lower() for w in ["order", "delivery", "ଅର୍ଡର", "ଅର୍ଡ଼ର", "ଡେଲିଭରି", "ପାର୍ସଲ"]):
+                    ai_reply = f"ଆଜ୍ଞା {or_name}ଆପଣଙ୍କର ଅର୍ଡର ବାହାରିସାରିଛି ଏବଂ ଆଗାମୀ ୨ ରୁ ୪ ଦିନ ମଧ୍ୟରେ ସୁରକ୍ଷିତ ଭାବରେ ଆପଣଙ୍କ ଠିକଣାରେ ପହଞ୍ଚିଯିବ।"
+                else:
+                    ai_reply = f"ଆଜ୍ଞା {or_name}କୁହନ୍ତୁ ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି? ଆପଣ ମୋତେ ରିଫଣ୍ଡ ସ୍ଥିତି, ଭିଡିଓ କେୱାଇସି, କିମ୍ବା ଡେଲିଭରି ଟ୍ରାକିଂ ବିଷୟରେ ପଚାରିପାରିବେ।"
+            elif is_hindi_session and not has_hindi_response:
                 # Strictly enforce Hindi voice response when caller selected Hindi language
                 if "UPI" in intent or "REFUND" in intent or any(w in caller_text.lower() for w in [
                     "refund", "reef fund", "reefund", "upa", "upi", "j.o.p.a", "jopa", "deflistate", "jubiai", "istiti", "sthiti", "रिफंड", "paise", "paisa", "cut", "kat", "debit"
@@ -289,30 +312,41 @@ class CognitiveVoicePipeline:
                 else:
                     ai_reply = f"जी {hi_name}बताइए मैं आपकी क्या मदद करूँ? आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
             elif "Mock response" in raw_reply or not raw_reply:
-                if "UPI" in intent or "REFUND" in intent:
-                    ai_reply = (
-                        f"जी बिल्कुल {hi_name}आप चिंता मत कीजिए! अगर बैंक खाते से यूपीआई पैसे कट गए हैं, तो 24 से 48 घंटे में वो स्वतः आपके खाते में वापस आ जाते हैं। आप अपनी यूपीआई ऐप में 12 अंकों के यूटीआर नंबर से भी स्टेटस चेक कर सकते हैं।"
-                        if session.language == "hi" else
-                        f"Don't worry at all {en_name}! If your UPI payment was debited, the amount will be automatically refunded back to your bank account within 24 to 48 hours. You can also track it anytime using your 12-digit UTR reference."
-                    )
-                elif "KYC" in intent:
-                    ai_reply = (
-                        f"जी {hi_name}वीडियो केवाईसी करना बहुत ही आसान है! बस अपना ओरिजिनल पैन कार्ड और आधार से लिंक मोबाइल पास रखिएगा। सिर्फ 2 मिनट का वीडियो कॉल होगा, और 1 घंटे में आपका खाता चालू हो जाएगा।"
-                        if session.language == "hi" else
-                        f"Video KYC is super easy {en_name}! Just keep your original physical PAN card and Aadhaar-linked mobile ready. It takes only 2 minutes and your account will be activated within an hour."
-                    )
-                elif "ORDER" in intent:
-                    ai_reply = (
-                        f"जी {hi_name}आपका ऑर्डर निकल चुका है और अगले 2 से 4 दिनों में सुरक्षित आपके पते पर डिलीवर हो जाएगा।"
-                        if session.language == "hi" else
-                        f"Great news {en_name}! Your order has already been dispatched and will be safely delivered to your doorstep within 2 to 4 business days."
-                    )
+                if is_odia_session:
+                    if "UPI" in intent or "REFUND" in intent:
+                        ai_reply = f"ଆଜ୍ଞା ନିଶ୍ଚୟ {or_name}ଆପଣ ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ! ଯଦି ବ୍ୟାଙ୍କ ଖାତାରୁ ୟୁପିଆଇ ଟଙ୍କା କଟିଯାଇଛି, ତେବେ ୨୪ ରୁ ୪୮ ଘଣ୍ଟା ମଧ୍ୟରେ ତାହା ଆପଣଙ୍କ ଖାତାକୁ ଫେରିଆସିବ। ଆପଣ ନିଜ ୟୁପିଆଇ ଆପ୍‌ରେ ୧୨ ଅଙ୍କ ବିଶିଷ୍ଟ ୟୁଟିଆର୍ ନମ୍ବର ଦ୍ୱାରା ମଧ୍ୟ ଷ୍ଟାଟସ୍ ଯାଞ୍ଚ କରିପାରିବେ।"
+                    elif "KYC" in intent:
+                        ai_reply = f"ଆଜ୍ଞା {or_name}ଭିଡିଓ କେୱାଇସି କରିବା ବହୁତ ସହଜ! କେବଳ ଆପଣଙ୍କର ମୂଳ ଫିଜିକାଲ୍ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ଲିଙ୍କ୍ ଥିବା ମୋବାଇଲ୍ ପାଖରେ ରଖନ୍ତୁ। ମାତ୍ର ୨ ମିନିଟର ଭିଡିଓ କଲ୍ ହେବ, ଏବଂ ୧ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଖାତା ଚାଲୁ ହୋଇଯିବ।"
+                    elif "ORDER" in intent:
+                        ai_reply = f"ଆଜ୍ଞା {or_name}ଆପଣଙ୍କର ଅର୍ଡର ବାହାରିସାରିଛି ଏବଂ ଆଗାମୀ ୨ ରୁ ୪ ଦିନ ମଧ୍ୟରେ ସୁରକ୍ଷିତ ଭାବରେ ଆପଣଙ୍କ ଠିକଣାରେ ପହଞ୍ଚିଯିବ।"
+                    else:
+                        ai_reply = f"ଆଜ୍ଞା {or_name}କୁହନ୍ତୁ ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି? ଆପଣ ମୋତେ ରିଫଣ୍ଡ ସ୍ଥିତି, ଭିଡିଓ କେୱାଇସି, କିମ୍ବା ଡେଲିଭରି ଟ୍ରାକିଂ ବିଷୟରେ ପଚାରିପାରିବେ।"
+                elif is_hindi_session:
+                    if "UPI" in intent or "REFUND" in intent:
+                        ai_reply = (
+                            f"जी बिल्कुल {hi_name}आप चिंता मत कीजिए! अगर बैंक खाते से यूपीआई पैसे कट गए हैं, तो 24 से 48 घंटे में वो स्वतः आपके खाते में वापस आ जाते हैं। आप अपनी यूपीआई ऐप में 12 अंकों के यूटीआर नंबर से भी स्टेटस चेक कर सकते हैं।"
+                        )
+                    elif "KYC" in intent:
+                        ai_reply = (
+                            f"जी {hi_name}वीडियो केवाईसी करना बहुत ही आसान है! बस अपना ओरिजिनल पैन कार्ड और आधार से लिंक मोबाइल पास रखिएगा। सिर्फ 2 मिनट का वीडियो कॉल होगा, और 1 घंटे में आपका खाता चालू हो जाएगा।"
+                        )
+                    elif "ORDER" in intent:
+                        ai_reply = (
+                            f"जी {hi_name}आपका ऑर्डर निकल चुका है और अगले 2 से 4 दिनों में सुरक्षित आपके पते पर डिलीवर हो जाएगा।"
+                        )
+                    else:
+                        ai_reply = (
+                            f"जी {hi_name}बताइए मैं आपकी क्या मदद करूँ? आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
+                        )
                 else:
-                    ai_reply = (
-                        f"जी {hi_name}बताइए मैं आपकी क्या मदद करूँ? आप मुझसे रिफंड स्थिति, वीडियो केवाईसी, या डिलीवरी ट्रैकिंग के बारे में पूछ सकते हैं।"
-                        if session.language == "hi" else
-                        f"I am right here to help you {en_name}! You can ask me about your refund status, video KYC verification, or delivery tracking."
-                    )
+                    if "UPI" in intent or "REFUND" in intent:
+                        ai_reply = f"Don't worry at all {en_name}! If your UPI payment was debited, the amount will be automatically refunded back to your bank account within 24 to 48 hours. You can also track it anytime using your 12-digit UTR reference."
+                    elif "KYC" in intent:
+                        ai_reply = f"Video KYC is super easy {en_name}! Just keep your original physical PAN card and Aadhaar-linked mobile ready. It takes only 2 minutes and your account will be activated within an hour."
+                    elif "ORDER" in intent:
+                        ai_reply = f"Great news {en_name}! Your order has already been dispatched and will be safely delivered to your doorstep within 2 to 4 business days."
+                    else:
+                        ai_reply = f"I am right here to help you {en_name}! You can ask me about your refund status, video KYC verification, or delivery tracking."
             else:
                 ai_reply = raw_reply
 
@@ -395,10 +429,11 @@ class CognitiveVoicePipeline:
     def _analyze_sentiment_and_intent(cls, text: str) -> (str, float, str):
         """Analyze text to extract intent, sentiment score (-1.0 to 1.0) and emotion."""
         lower = text.lower()
-        # Robust Multi-Dialect & Phonetic Intent Detection (Hinglish, Hindi, English, and common ASR misspellings)
+        # Robust Multi-Dialect & Phonetic Intent Detection (Odia, Hinglish, Hindi, English, and common ASR misspellings)
         if any(w in lower for w in [
             "refund", "reef fund", "ree fund", "reefund", "reefend", "refand", "refun", "re fund", "rifund", "freefund", "free fund", "leaf fund",
             "रिफंड", "रीफंड", "रिफन्ड", "रीफ़ंड", "रिफ़ंड", "फ्रीफंड", "फ्रीफ़ंड", "फ्री फंड",
+            "ରିଫଣ୍ଡ", "ଟଙ୍କା", "କଟିଯାଇଛି", "କଟିଗଲା", "ଫେରସ୍ତ", "ଫେରିବ", "ୟୁପିଆଇ", "ୟୁଟିଆର୍", "ବ୍ୟାଙ୍କ ଖାତା", "ଖାତାରୁ",
             "स्थिति", "stithi", "sthiti", "istiti", "स्टेटस", "status", "upi", "यूपीआई", "यूटीआर", "utr", "upa", "yupi", "you pi", "jubiai",
             "j.o.p.a", "jopa", "deflistate", "defli state", "deflate",
             "कट गया", "kat gaya", "kat gya", "कट गए", "kat gaye", "cut ho gaya",
@@ -408,18 +443,21 @@ class CognitiveVoicePipeline:
             intent = "UPI_REFUND_INQUIRY"
         elif any(w in lower for w in [
             "kyc", "kaycee", "k y c", "kaivaisi", "ke vaai see", "केवाईसी", "वीडियो केवाईसी", "video kyc",
+            "କେୱାଇସି", "ଭିଡିଓ କେୱାଇସି", "ପ୍ୟାନ୍ କାର୍ଡ", "ପ୍ୟାନ୍", "ଆଧାର କାର୍ଡ", "ଆଧାର", "ପ୍ରମାଣପତ୍ର",
             "pan", "pan card", "पैन कार्ड", "aadhar", "adhar", "आधार", "verification", "verify",
             "document", "dastavez", "दस्तावेज़", "ویڈیو", "ویسی", "کے وائی سی"
         ]):
             intent = "VIDEO_KYC_VERIFICATION"
         elif any(w in lower for w in [
             "order", "ordr", "ऑर्डर", "tracking", "track", "ट्रैक", "ट्रैकिंग", "डिलीवरी", "delivery", "delivry", "delivary",
+            "ଅର୍ଡର", "ଅର୍ଡ଼ର", "ଡେଲିଭରି", "ପାର୍ସଲ", "ପହଞ୍ଚିବ", "କେବେ ଆସିବ", "କେଉଁଠି ଅଛି",
             "cancel", "cancellation", "dispatch", "parcel", "पार्सल", "package", "kab aayega",
             "कब आएगा", "पहुंचेगा", "कहाँ है", "kahan hai"
         ]):
             intent = "ORDER_TRACKING_CANCELLATION"
         elif any(w in lower for w in [
             "agent", "human", "representative", "executive", "person", "transfer", "talk to human",
+            "ଏଜେଣ୍ଟ", "କଥା ହେବାକୁ ଚାହେଁ", "ମଣିଷ", "କର୍ମଚାରୀ", "କଷ୍ଟମର କେୟାର", "ସିନିୟର", "କଥା କରାନ୍ତୁ", "ଟ୍ରାନ୍ସଫର କର",
             "बात", "प्रतिनिधि", "इंसान", "अधिकारी", "बात करवाओ", "कॉल ट्रांसफर", "कस्टमर केयर"
         ]):
             intent = "LIVE_AGENT_TRANSFER"
@@ -427,11 +465,11 @@ class CognitiveVoicePipeline:
             intent = "GENERAL_INQUIRY"
 
         # Emotion & sentiment scoring
-        if any(w in lower for w in ["गुस्सा", "बेकार", "stupid", "worst", "fraud", "bad", "धोखा", "लूट"]):
+        if any(w in lower for w in ["गुस्सा", "बेकार", "stupid", "worst", "fraud", "bad", "धोखा", "लूट", "ରାଗ", "ବେକାର", "ଠକ", "ଖରାପ", "ନଷ୍ଟ"]):
             return intent, -0.85, "angry"
-        elif any(w in lower for w in ["agent se baat karao", "talk to human", "not helping", "नहीं समझ रहे", "तुरंत बात"]):
+        elif any(w in lower for w in ["agent se baat karao", "talk to human", "not helping", "नहीं समझ रहे", "तुरंत बात", "କଥା କରାନ୍ତୁ", "ବୁଝୁନାହାନ୍ତି"]):
             return intent, -0.65, "frustrated"
-        elif any(w in lower for w in ["thank", "धन्यवाद", "शुक्रिया", "great", "good", "सहायक"]):
+        elif any(w in lower for w in ["thank", "धन्यवाद", "शुक्रिया", "great", "good", "सहायक", "ଧନ୍ୟବାଦ", "ଭଲ", "ସାହାଯ୍ୟ", "ଜୁହାର"]):
             return intent, 0.75, "calm"
         else:
             return intent, 0.05, "neutral"

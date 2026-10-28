@@ -118,7 +118,15 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         # Run whisper pipeline
         pipe = self._get_pipeline()
         kwargs = {}
-        target_lang = "hi" if language in ("hi", "hindi") else ("en" if language in ("en", "english") else language)
+        if language in ("or", "or-IN", "ory", "odia"):
+            target_lang = None  # Automatic multilingual detection without forcing nonexistent tokenizer code
+        elif language in ("hi", "hindi", "hi-IN"):
+            target_lang = "hi"
+        elif language in ("en", "english", "en-IN", "en-US"):
+            target_lang = "en"
+        else:
+            target_lang = language
+
         if target_lang:
             kwargs["generate_kwargs"] = {"language": target_lang, "task": "transcribe"}
 

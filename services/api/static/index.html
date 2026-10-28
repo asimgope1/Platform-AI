@@ -907,6 +907,7 @@
                 <select id="callLangSelect" class="form-control" style="font-size: 0.78rem; padding: 6px;">
                   <option value="en-IN" selected>🇮🇳 Hinglish / Indian English (UPI, KYC, Orders)</option>
                   <option value="hi-IN">🇮🇳 Hindi (हिंदी - शुद्ध भाषा)</option>
+                  <option value="or-IN">🇮🇳 Odia (ଓଡ଼ିଆ - ଓଡିଶା)</option>
                   <option value="en-US">🌐 English (US / Global)</option>
                 </select>
               </div>
@@ -973,10 +974,12 @@
           <div>
             <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">ONE-TAP TEST UTTERANCES:</div>
             <div class="suggestions" style="margin-bottom: 10px;">
+              <span class="suggestion-chip" onclick="simulateVoiceTurn('ମୋର ୟୁପିଆଇ ଟଙ୍କା କଟିଯାଇଛି, ରିଫଣ୍ଡ କେବେ ଆସିବ?')">💸 ୟୁପିଆଇ ରିଫଣ୍ଡ (Odia)</span>
+              <span class="suggestion-chip" onclick="simulateVoiceTurn('ଭିଡିଓ କେୱାଇସି ପାଇଁ କଣ ଡକ୍ୟୁମେଣ୍ଟ ଦରକାର?')">🆔 Video KYC (Odia)</span>
               <span class="suggestion-chip" onclick="simulateVoiceTurn('नमस्ते, मेरा UPI से ₹5,000 कट गया है लेकिन ऑर्डर नहीं बना। रिफंड कब तक आएगा?')">💸 UPI रिफंड स्थिति (Hindi)</span>
               <span class="suggestion-chip" onclick="simulateVoiceTurn('मुझे वीडियो केवाईसी पूरा करना है, क्या दस्तावेज लगेंगे?')">🆔 Video KYC नियम (Hindi)</span>
               <span class="suggestion-chip" onclick="simulateVoiceTurn('I would like to track my order delivery status.')">📦 Track Delivery (English)</span>
-              <span class="suggestion-chip" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="simulateVoiceTurn('बेकार सेवा है! मुझे तुरंत किसी एजेंट से बात करवाओ, इंसान से बात करनी है!')">😡 Talk to Agent (Test Escalation)</span>
+              <span class="suggestion-chip" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="simulateVoiceTurn('ବେକାର ସେବା! ମୋତେ ତୁରନ୍ତ କୌଣସି ଏଜେଣ୍ଟ ସହିତ କଥା କରାନ୍ତୁ!')">😡 Talk to Agent (Odia Escalation)</span>
             </div>
 
             <!-- Quiet Text Input Fallback -->
@@ -2201,7 +2204,7 @@
       const callerNumber = phoneSelect ? phoneSelect.value : '+91 98765 43210';
       const langSelect = document.getElementById('callLangSelect');
       const selectedSpeechLang = langSelect ? langSelect.value : 'en-IN';
-      const backendLang = (selectedSpeechLang === 'en-US') ? 'en' : 'hi';
+      const backendLang = (selectedSpeechLang === 'or-IN') ? 'or' : ((selectedSpeechLang === 'en-US') ? 'en' : 'hi');
       const btnStart = document.getElementById('btnStartCall');
       const btnEnd = document.getElementById('btnEndCall');
       const micBtn = document.getElementById('micRecordBtn');
