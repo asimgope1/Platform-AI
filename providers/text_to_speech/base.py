@@ -56,6 +56,34 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             return None
         return None
 
+    @classmethod
+    def _odia_to_phonetic(cls, text: str) -> str:
+        """Transliterates Odia (ଓଡ଼ିଆ) Unicode script to Brahmic phonetic equivalent for neural TTS voice engines."""
+        special = {
+            'ୟ': 'य', 'ଯ': 'ज', 'ୱ': 'व', 'ଳ': 'ल', 'ଡ଼': 'ड़', 'ଢ଼': 'ढ़',
+            'ଡ଼': 'ड़', 'ଢ଼': 'ढ़', 'ୠ': 'ॠ', 'ୡ': 'ॡ', 'ଵ': 'व', 'ଁ': 'ँ',
+            'ଂ': 'ं', 'ଃ': 'ः'
+        }
+        res = []
+        i = 0
+        while i < len(text):
+            matched = False
+            for k, v in special.items():
+                if text[i:i+len(k)] == k:
+                    res.append(v)
+                    i += len(k)
+                    matched = True
+                    break
+            if matched:
+                continue
+            cp = ord(text[i])
+            if 0x0B00 <= cp <= 0x0B7F:
+                res.append(chr(cp - 0x0200))
+            else:
+                res.append(text[i])
+            i += 1
+        return ''.join(res)
+
     async def synthesize(
         self,
         text: str,
@@ -69,14 +97,16 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             return _TTS_CACHE[cache_key]
 
         # Detect language / script for natural neural voice selection
-        has_hindi = any('\u0900' <= ch <= '\u097F' for ch in clean_text)
-        neural_voice = "hi-IN-SwaraNeural" if has_hindi else "en-IN-NeerjaNeural"
+        has_odia = any('\u0b00' <= ch <= '\u0b7f' for ch in clean_text)
+        has_hindi = any('\u0900' <= ch <= '\u097f' for ch in clean_text)
+        spoken_text = self._odia_to_phonetic(clean_text) if has_odia else clean_text
+        neural_voice = "hi-IN-SwaraNeural" if (has_hindi or has_odia) else "en-IN-NeerjaNeural"
 
         # Primary: Ultra-realistic neural speech with human breathing and natural intonation
         try:
             edge_audio = await asyncio.wait_for(
-                self._synthesize_edge_tts(clean_text, neural_voice),
-                timeout=3.0
+                self._synthesize_edge_tts(spoken_text, neural_voice),
+                timeout=4.0
             )
             if edge_audio:
                 if len(_TTS_CACHE) < 250:
@@ -86,8 +116,8 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             pass
 
         # Secondary Fallback: macOS system voice if edge-tts network is slow
-        say_voice = "Lekha" if has_hindi else "Samantha"
-        say_audio = await asyncio.to_thread(self._synthesize_say_sync, clean_text, say_voice)
+        say_voice = "Lekha" if (has_hindi or has_odia) else "Samantha"
+        say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, say_voice)
         if say_audio:
             if len(_TTS_CACHE) < 250:
                 _TTS_CACHE[cache_key] = say_audio
