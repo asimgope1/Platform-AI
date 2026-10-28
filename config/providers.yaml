@@ -72,8 +72,8 @@ providers:
 
   colab_gemma_gpu:
     type: openai_compatible
-    base_url: https://camel-treated-celebrity-nested.trycloudflare.com/v1
-    api_key: FzLKJi3Qp6wjfzrV4LC7UeDlP9Uwdyh8
+    base_url: https://caught-discount-width-sister.trycloudflare.com/v1
+    api_key: tbytHjZiSg_9Pd7zkt_avixkRuGG9wU_
     timeout_seconds: 30
 
   local_transformers:
@@ -94,8 +94,8 @@ embeddings:
 
   colab-embeddinggemma-2:
     provider: openai_compatible
-    base_url: https://camel-treated-celebrity-nested.trycloudflare.com/v1
-    api_key: FzLKJi3Qp6wjfzrV4LC7UeDlP9Uwdyh8
+    base_url: https://caught-discount-width-sister.trycloudflare.com/v1
+    api_key: tbytHjZiSg_9Pd7zkt_avixkRuGG9wU_
     model: google/embeddinggemma-2
     dimension: 768
 
