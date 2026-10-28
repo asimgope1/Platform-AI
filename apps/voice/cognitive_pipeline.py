@@ -161,7 +161,10 @@ class CognitiveVoicePipeline:
         # Whisper Safety Net: If client transcript yielded generic inquiry but raw audio is present, run server Whisper STT
         if intent == "GENERAL_INQUIRY" and audio_bytes and len(audio_bytes) > 2000:
             try:
-                whisper_res = await ProviderBridge.transcribe_audio(audio_bytes, language=session.language)
+                whisper_res = await asyncio.wait_for(
+                    ProviderBridge.transcribe_audio(audio_bytes, language=session.language),
+                    timeout=2.5
+                )
                 whisper_text = cls._normalize_phonetic_transcription(whisper_res.get("text", "").strip())
                 if whisper_text and not cls._is_noise_hallucination(whisper_text):
                     w_intent, w_sentiment, w_emotion = cls._analyze_sentiment_and_intent(whisper_text)
@@ -172,6 +175,8 @@ class CognitiveVoicePipeline:
                         intent = w_intent
                         sentiment_score = w_sentiment
                         emotion = w_emotion
+            except asyncio.TimeoutError:
+                logger.info("Whisper safety net skipped due to timeout (preserving low latency)")
             except Exception as e:
                 logger.warning(f"Whisper safety net fallback error: {e}")
 

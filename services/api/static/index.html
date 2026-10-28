@@ -903,10 +903,11 @@
                 </select>
               </div>
               <div>
-                <label style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">CALL LANGUAGE:</label>
+                <label style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">CALL LANGUAGE & SPEECH ENGINE:</label>
                 <select id="callLangSelect" class="form-control" style="font-size: 0.78rem; padding: 6px;">
-                  <option value="hi" selected>Hindi (हिंदी / Hinglish)</option>
-                  <option value="en">English</option>
+                  <option value="en-IN" selected>🇮🇳 Hinglish / Indian English (UPI, KYC, Orders)</option>
+                  <option value="hi-IN">🇮🇳 Hindi (हिंदी - शुद्ध भाषा)</option>
+                  <option value="en-US">🌐 English (US / Global)</option>
                 </select>
               </div>
             </div>
@@ -941,8 +942,13 @@
             </div>
 
             <!-- Dynamic State Badge -->
-            <div id="vadStateBadge" style="text-align: center; padding: 12px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); margin-bottom: 12px; transition: all 0.25s;">
+            <div id="vadStateBadge" style="text-align: center; padding: 12px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); margin-bottom: 8px; transition: all 0.25s;">
               ⚪ Call on hook. Connect incoming call to start talking.
+            </div>
+
+            <!-- Live Real-Time Speech Feedback Banner -->
+            <div id="liveHearingBanner" style="display: none; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.82rem; background: rgba(56, 189, 248, 0.12); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); margin-bottom: 12px; transition: all 0.2s;">
+              <span style="font-weight: 600;">👂 Live Speech:</span> <span id="liveHearingText" style="color: #ffffff; font-style: italic;">...</span>
             </div>
 
             <!-- Real-time Voice Energy Level Meter -->
@@ -2194,7 +2200,8 @@
       const phoneSelect = document.getElementById('callNumberSelect');
       const callerNumber = phoneSelect ? phoneSelect.value : '+91 98765 43210';
       const langSelect = document.getElementById('callLangSelect');
-      const lang = langSelect ? langSelect.value : 'hi';
+      const selectedSpeechLang = langSelect ? langSelect.value : 'en-IN';
+      const backendLang = (selectedSpeechLang === 'en-US') ? 'en' : 'hi';
       const btnStart = document.getElementById('btnStartCall');
       const btnEnd = document.getElementById('btnEndCall');
       const micBtn = document.getElementById('micRecordBtn');
@@ -2210,7 +2217,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             caller_number: callerNumber,
-            language: lang,
+            language: backendLang,
             tenant_id: '879e9bda-8049-4824-9aa0-fc5e9f0012d9'
           })
         });
@@ -2406,14 +2413,14 @@
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
             liveSpeechRecognizer = new SpeechRec();
             const langSelect = document.getElementById('callLangSelect');
-            const lang = langSelect ? langSelect.value : 'hi';
-            liveSpeechRecognizer.lang = (lang === 'hi') ? 'hi-IN' : 'en-IN';
+            const selectedSpeechLang = langSelect ? langSelect.value : 'en-IN';
+            liveSpeechRecognizer.lang = selectedSpeechLang;
             if (langSelect && !langSelect._hasSpeechRecListener) {
               langSelect._hasSpeechRecListener = true;
               langSelect.addEventListener('change', () => {
                 if (liveSpeechRecognizer) {
                   try {
-                    liveSpeechRecognizer.lang = (langSelect.value === 'hi') ? 'hi-IN' : 'en-IN';
+                    liveSpeechRecognizer.lang = langSelect.value;
                   } catch (err) {}
                 }
               });
@@ -2436,6 +2443,13 @@
                 } else {
                   interimSpeechTranscript = tr;
                 }
+              }
+              const liveText = (latestRecognizedTranscript + ' ' + interimSpeechTranscript).trim();
+              const hearingEl = document.getElementById('liveHearingText');
+              const bannerEl = document.getElementById('liveHearingBanner');
+              if (liveText && hearingEl && bannerEl) {
+                hearingEl.innerText = liveText;
+                bannerEl.style.display = 'block';
               }
             };
 
@@ -2464,9 +2478,28 @@
     async function triggerAutomaticHandsFreeTurn(buffers) {
       if (isProcessingTurn || !currentCallId) return;
 
+      const bannerEl = document.getElementById('liveHearingBanner');
+      if (bannerEl) bannerEl.style.display = 'none';
+
       // Extract high-accuracy transcript recognized directly by client browser
-      const recognizedText = (latestRecognizedTranscript || interimSpeechTranscript || '').trim();
+      let rawRecognized = (latestRecognizedTranscript || interimSpeechTranscript || '').trim();
       flushAndPauseSpeechRecognizer();
+
+      // Normalize phonetic ASR distortions immediately before evaluation & dispatch
+      const recognizedText = rawRecognized
+        .replace(/\bj\.?\s*o\.?\s*p\.?\s*[ai]\.?\b/gi, 'UPI')
+        .replace(/\bjopa\b/gi, 'UPI')
+        .replace(/\bupa\s+reef\s+fund\b/gi, 'UPI refund status')
+        .replace(/\bupa\s+reefund\b/gi, 'UPI refund status')
+        .replace(/\bupa\b/gi, 'UPI')
+        .replace(/\breef\s+fund\b/gi, 'refund')
+        .replace(/\breefund\b/gi, 'refund')
+        .replace(/\bdeflistate\.?\b/gi, 'refund status')
+        .replace(/\bdefli\s*state\.?\b/gi, 'refund status')
+        .replace(/\bdeflate\.?\b/gi, 'refund status')
+        .replace(/\bkaycee\b/gi, 'KYC')
+        .replace(/\bkaivaisi\b/gi, 'KYC')
+        .trim();
 
       // Calculate total samples and energy
       let totalSum = 0;
