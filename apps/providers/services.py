@@ -122,6 +122,15 @@ class ProviderBridge:
             emb = provider_registry.get_embedding_adapter("google-embeddings")
             if hasattr(emb, "warmup"):
                 emb.warmup()
+            from apps.knowledge_base.services import KnowledgeBaseService
+            import asyncio
+            emb_service = KnowledgeBaseService.get_embedding_service()
+            try:
+                loop = asyncio.new_event_loop()
+                loop.run_until_complete(emb_service.embed_query("warmup"))
+                loop.close()
+            except Exception:
+                pass
         except Exception as e:
             logger.warning(f"Embedding warmup notice: {e}")
 

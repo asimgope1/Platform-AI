@@ -2005,8 +2005,8 @@
     let interimSpeechTranscript = '';
 
     const VAD_SPEECH_THRESHOLD = 0.024;  // Base speech threshold (resists AC / fan noise)
-    const VAD_SILENCE_TIMEOUT_MS = 1350; // 1350ms natural pause before turn completion (gives caller time to pause/think)
-    const VAD_MIN_SPEECH_MS = 400;       // Minimum 400ms of speech (rejects clicks/breaths/sighs)
+    const VAD_SILENCE_TIMEOUT_MS = 950;  // 950ms natural pause before turn completion (fast snappy turn-taking)
+    const VAD_MIN_SPEECH_MS = 380;       // Minimum 380ms of speech (rejects clicks/breaths/sighs)
     let ambientNoiseFloor = 0.008;       // Dynamically tracks background room noise (fans, AC)
     let speechConsecutiveFrames = 0;     // Require 2 consecutive frames before triggering user speech
 

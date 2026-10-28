@@ -74,7 +74,7 @@ providers:
     type: openai_compatible
     base_url: https://caught-discount-width-sister.trycloudflare.com/v1
     api_key: tbytHjZiSg_9Pd7zkt_avixkRuGG9wU_
-    timeout_seconds: 30
+    timeout_seconds: 6
 
   local_transformers:
     type: transformers

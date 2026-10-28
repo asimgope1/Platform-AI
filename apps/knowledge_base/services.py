@@ -16,6 +16,13 @@ POSTGRES_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://localhost:5432/ai
 class KnowledgeBaseService:
     _engine = None
     _session_factory = None
+    _emb_service = None
+
+    @classmethod
+    def get_embedding_service(cls):
+        if cls._emb_service is None:
+            cls._emb_service = EmbeddingService(provider_id="google-embeddings")
+        return cls._emb_service
 
     @classmethod
     def get_session_factory(cls):
@@ -34,7 +41,7 @@ class KnowledgeBaseService:
         """Retrieve relevant IVR/CRM knowledge chunks using Google Embeddings + pgvector."""
         try:
             # 1. Embed query
-            emb_service = EmbeddingService(provider_id="google-embeddings")
+            emb_service = cls.get_embedding_service()
             query_vector = await emb_service.embed_query(query)
 
             # 2. Search database

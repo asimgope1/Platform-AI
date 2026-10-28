@@ -16,22 +16,25 @@ class SentenceTransformersEmbeddingAdapter(BaseEmbeddingAdapter):
             or "sentence-transformers/all-MiniLM-L6-v2"
         )
         self.dimension = int(config.get("dimension") or config.get("dimensions") or 384)
-        self._model = None
-        self._load_lock = Lock()
+
+    _GLOBAL_MODELS: Dict[str, Any] = {}
+    _GLOBAL_LOCK: Lock = Lock()
 
     def _get_model(self):
-        if self._model is None:
-            with self._load_lock:
-                if self._model is None:
+        if self.model_name not in self._GLOBAL_MODELS:
+            with self._GLOBAL_LOCK:
                     try:
                         from sentence_transformers import SentenceTransformer
-                        self._model = SentenceTransformer(self.model_name)
+                        try:
+                            self._GLOBAL_MODELS[self.model_name] = SentenceTransformer(self.model_name, local_files_only=True)
+                        except Exception:
+                            self._GLOBAL_MODELS[self.model_name] = SentenceTransformer(self.model_name)
                     except Exception as exc:
                         raise ProviderError(
                             self.provider_id,
                             f"Failed to load SentenceTransformer model '{self.model_name}': {exc}"
                         )
-        return self._model
+        return self._GLOBAL_MODELS[self.model_name]
 
     def warmup(self):
         """Pre-load model weights into RAM so first query takes 0.01s instead of 8s."""
