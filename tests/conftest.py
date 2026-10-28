@@ -1,9 +1,13 @@
 import pytest
 import os
+import sys
 import asyncio
 from typing import AsyncGenerator
 import httpx
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+
+# Ensure project root is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Set test environment
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"

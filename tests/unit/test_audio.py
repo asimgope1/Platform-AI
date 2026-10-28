@@ -45,3 +45,32 @@ async def test_whisper_local_stt():
     dummy_res = await adapter.transcribe(b"dummy_corrupt_bytes", filename="recording.wav")
     assert "recording.wav" in dummy_res["text"]
 
+
+def test_phonetic_noise_normalization():
+    import os, django
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comone.settings")
+    django.setup()
+    from apps.voice.cognitive_pipeline import CognitiveVoicePipeline
+    raw_noisy_text = "UPA Reef Fund is to take care about this."
+    normalized = CognitiveVoicePipeline._normalize_phonetic_transcription(raw_noisy_text)
+    assert "UPI" in normalized
+    assert "refund" in normalized
+
+    intent, score, emotion = CognitiveVoicePipeline._analyze_sentiment_and_intent(raw_noisy_text)
+    assert intent == "UPI_REFUND_INQUIRY"
+
+
+def test_noise_hallucination_discard():
+    import os, django
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comone.settings")
+    django.setup()
+    from apps.voice.cognitive_pipeline import CognitiveVoicePipeline
+    assert CognitiveVoicePipeline._is_noise_hallucination("") is True
+    assert CognitiveVoicePipeline._is_noise_hallucination("...") is True
+    assert CognitiveVoicePipeline._is_noise_hallucination("(Ambient noise)") is True
+    assert CognitiveVoicePipeline._is_noise_hallucination("the") is True
+    assert CognitiveVoicePipeline._is_noise_hallucination("uh") is True
+    assert CognitiveVoicePipeline._is_noise_hallucination("you you you you you") is True
+    assert CognitiveVoicePipeline._is_noise_hallucination("UPI refund status") is False
+
+

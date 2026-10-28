@@ -1998,10 +1998,11 @@
     let latestRecognizedTranscript = '';
     let interimSpeechTranscript = '';
 
-    const VAD_SPEECH_THRESHOLD = 0.018;  // Base speech threshold
-    const VAD_SILENCE_TIMEOUT_MS = 750;  // 750ms natural pause before turn completion
-    const VAD_MIN_SPEECH_MS = 260;       // Minimum 260ms of speech
+    const VAD_SPEECH_THRESHOLD = 0.024;  // Base speech threshold (resists AC / fan noise)
+    const VAD_SILENCE_TIMEOUT_MS = 1350; // 1350ms natural pause before turn completion (gives caller time to pause/think)
+    const VAD_MIN_SPEECH_MS = 400;       // Minimum 400ms of speech (rejects clicks/breaths/sighs)
     let ambientNoiseFloor = 0.008;       // Dynamically tracks background room noise (fans, AC)
+    let speechConsecutiveFrames = 0;     // Require 2 consecutive frames before triggering user speech
 
     const CALLER_PROFILES = {
       '+91 98765 43210': { name: 'Rahul Kumar', tier: 'VIP Customer', ltv: '₹ 2,48,750', badgeColor: 'rgba(16, 185, 129, 0.2)', badgeText: '#34d399' },
@@ -2342,25 +2343,30 @@
           if (!isHandsFreeMode || isProcessingTurn) return;
 
           // 3. Dynamic VAD Speech Detection: floats comfortably above ambient room noise
-          const dynamicThreshold = Math.max(VAD_SPEECH_THRESHOLD, ambientNoiseFloor * 2.3);
+          const dynamicThreshold = Math.max(VAD_SPEECH_THRESHOLD, ambientNoiseFloor * 2.8);
           const effectiveThreshold = isAgentSpeaking ? (dynamicThreshold * 2.2) : dynamicThreshold;
 
           if (rms >= effectiveThreshold) {
-            // Caller voice detected -> interrupt agent if speaking (Barge-in)
-            if (isAgentSpeaking) {
-              interruptAgentIfSpeaking();
-            }
+            speechConsecutiveFrames++;
+            // Require 2 consecutive frames (~180ms) above threshold to prevent short room clicks/transients from tripping speech
+            if (speechConsecutiveFrames >= 2) {
+              // Caller voice detected -> interrupt agent if speaking (Barge-in)
+              if (isAgentSpeaking) {
+                interruptAgentIfSpeaking();
+              }
 
-            if (!isUserSpeaking) {
-              isUserSpeaking = true;
-              speechStartTimestamp = now;
-              // Pre-seed with pre-speech audio history so the first syllable/word is completely preserved!
-              currentTurnBuffers = [...preSpeechRingBuffer];
-              updateVadStateUI('caller_speaking');
+              if (!isUserSpeaking) {
+                isUserSpeaking = true;
+                speechStartTimestamp = now;
+                // Pre-seed with pre-speech audio history so the first syllable/word is completely preserved!
+                currentTurnBuffers = [...preSpeechRingBuffer];
+                updateVadStateUI('caller_speaking');
+              }
+              silenceStartTimestamp = 0;
+              currentTurnBuffers.push(new Float32Array(input));
             }
-            silenceStartTimestamp = 0;
-            currentTurnBuffers.push(new Float32Array(input));
           } else {
+            speechConsecutiveFrames = 0;
             // Below threshold (silence/pause)
             if (isUserSpeaking) {
               currentTurnBuffers.push(new Float32Array(input));
@@ -2402,6 +2408,16 @@
             const langSelect = document.getElementById('callLangSelect');
             const lang = langSelect ? langSelect.value : 'hi';
             liveSpeechRecognizer.lang = (lang === 'hi') ? 'hi-IN' : 'en-IN';
+            if (langSelect && !langSelect._hasSpeechRecListener) {
+              langSelect._hasSpeechRecListener = true;
+              langSelect.addEventListener('change', () => {
+                if (liveSpeechRecognizer) {
+                  try {
+                    liveSpeechRecognizer.lang = (langSelect.value === 'hi') ? 'hi-IN' : 'en-IN';
+                  } catch (err) {}
+                }
+              });
+            }
             liveSpeechRecognizer.continuous = true;
             liveSpeechRecognizer.interimResults = true;
             liveSpeechRecognizer.maxAlternatives = 1;
@@ -2463,9 +2479,13 @@
       }
       const avgRms = Math.sqrt(totalSum / Math.max(1, totalSamples));
 
-      // Only discard if NO words were recognized AND raw audio is below speech threshold
-      if (!recognizedText && (avgRms < 0.016 || totalSamples < 16000 * 0.35)) {
-        console.log('Discarded low-volume ambient room noise (RMS:', avgRms.toFixed(4), ')');
+      // Reject empty words, ambient fillers, or below-threshold noise turns
+      const cleanRecognized = recognizedText.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+      const noiseFillers = ['the', 'this', 'a', 'an', 'is', 'it', 'so', 'and', 'uh', 'um', 'ah', 'ha', 'oh', 'hm', 'hmm', 'huh', 'shh', 'you'];
+      const isNoiseFiller = noiseFillers.includes(cleanRecognized) || (cleanRecognized.length <= 2 && !['up', 'ok'].includes(cleanRecognized));
+
+      if ((!recognizedText || isNoiseFiller) && (avgRms < 0.022 || totalSamples < 16000 * 0.45)) {
+        console.log('Discarded ambient room noise turn (RMS:', avgRms.toFixed(4), ')');
         resumeSpeechRecognizerForNewTurn();
         if (currentCallId && !isGreetingPlaying) {
           updateVadStateUI('listening');

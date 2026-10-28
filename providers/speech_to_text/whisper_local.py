@@ -118,8 +118,9 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         # Run whisper pipeline
         pipe = self._get_pipeline()
         kwargs = {}
-        if language:
-            kwargs["generate_kwargs"] = {"language": language}
+        target_lang = "hi" if language in ("hi", "hindi") else ("en" if language in ("en", "english") else language)
+        if target_lang:
+            kwargs["generate_kwargs"] = {"language": target_lang, "task": "transcribe"}
 
         raw_input = {"raw": audio_data.astype(np.float32), "sampling_rate": samplerate}
         result = pipe(raw_input, **kwargs)
