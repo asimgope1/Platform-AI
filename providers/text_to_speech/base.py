@@ -20,10 +20,10 @@ _TTS_CACHE: Dict[str, bytes] = {}
 class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
     """Produces ultra-natural neural spoken audio (Edge-TTS hi-IN-SwaraNeural / en-IN-NeerjaNeural) with caching and local fallback."""
 
-    async def _synthesize_edge_tts(self, text: str, voice: str) -> Optional[bytes]:
+    async def _synthesize_edge_tts(self, text: str, voice: str, rate: str = "+0%") -> Optional[bytes]:
         try:
             import edge_tts
-            communicate = edge_tts.Communicate(text, voice)
+            communicate = edge_tts.Communicate(text, voice, rate=rate)
             chunks = []
             async for chunk in communicate.stream():
                 if chunk["type"] == "audio":
@@ -58,19 +58,37 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
 
     @classmethod
     def _odia_to_phonetic(cls, text: str) -> str:
-        """Transliterates Odia (ଓଡ଼ିଆ) Unicode script to Brahmic phonetic equivalent for neural TTS voice engines."""
+        """Transliterates Odia (ଓଡ଼ିଆ) Unicode script to natural Brahmic phonetic equivalent for neural TTS voice engines."""
         special = {
+            'ଆଜ୍ଞା': 'आग्याँ',
+            'କ’ଣ': 'कण',
+            'କ\'ଣ': 'कण',
+            'କଣ': 'कण',
+            'ହୁଅନ୍ତୁନି': 'हुअन्तुनि',
+            'କରୁଛି': 'करुछि',
+            'ଶୁଭୁନି': 'शुभुनि',
+            'ଟିକେ': 'टिके',
+            'ପହଞ୍ଚିଯିବ': 'पहुँचियिब',
+            'ଘଣ୍ଟାଏ': 'घण्टाए',
+            'ଭିତରେ': 'भितरे',
+            'ୟୁପିଆଇ': 'यूपीआई',
+            'ୟୁଟିଆର୍': 'यूटीआर',
+            'କେୱାଇସି': 'केवाईसी',
+            'ପ୍ୟାନ୍': 'पैन',
+            'ଆଧାର': 'आधार',
+            'ବାବୁ': 'बाबू',
             'ୟ': 'य', 'ଯ': 'ज', 'ୱ': 'व', 'ଳ': 'ल', 'ଡ଼': 'ड़', 'ଢ଼': 'ढ़',
             'ଡ଼': 'ड़', 'ଢ଼': 'ढ़', 'ୠ': 'ॠ', 'ୡ': 'ॡ', 'ଵ': 'व', 'ଁ': 'ँ',
             'ଂ': 'ं', 'ଃ': 'ः'
         }
         res = []
         i = 0
+        keys = sorted(special.keys(), key=len, reverse=True)
         while i < len(text):
             matched = False
-            for k, v in special.items():
+            for k in keys:
                 if text[i:i+len(k)] == k:
-                    res.append(v)
+                    res.append(special[k])
                     i += len(k)
                     matched = True
                     break
@@ -101,11 +119,12 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         has_hindi = any('\u0900' <= ch <= '\u097f' for ch in clean_text)
         spoken_text = self._odia_to_phonetic(clean_text) if has_odia else clean_text
         neural_voice = "hi-IN-SwaraNeural" if (has_hindi or has_odia) else "en-IN-NeerjaNeural"
+        speech_rate = "-2%" if has_odia else "+0%"
 
         # Primary: Ultra-realistic neural speech with human breathing and natural intonation
         try:
             edge_audio = await asyncio.wait_for(
-                self._synthesize_edge_tts(spoken_text, neural_voice),
+                self._synthesize_edge_tts(spoken_text, neural_voice, rate=speech_rate),
                 timeout=4.0
             )
             if edge_audio:

@@ -38,9 +38,9 @@ class StartCallView(APIView):
         # Initial IVR greeting with warm, natural human phrasing
         if language in ("or", "or-IN", "ory", "odia"):
             if first_name:
-                greeting_text = f"ନମସ୍କାର {first_name} ଆଜ୍ଞା! ଆମର ହେଲ୍ପଲାଇନକୁ ସ୍ୱାଗତ। କୁହନ୍ତୁ, ଆଜି ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?"
+                greeting_text = f"ନମସ୍କାର {first_name} ବାବୁ! କୁହନ୍ତୁ ଆଜ୍ଞା, ଆଜି କ’ଣ ସାହାଯ୍ୟ କରିବି?"
             else:
-                greeting_text = "ନମସ୍କାର! ଆମର ଗ୍ରାହକ ସେବା ହେଲ୍ପଲାଇନକୁ ସ୍ୱାଗତ। କୁହନ୍ତୁ, ଆଜି ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?"
+                greeting_text = "ନମସ୍କାର ଆଜ୍ଞା! କୁହନ୍ତୁ, ଆଜି କ’ଣ ସାହାଯ୍ୟ କରିବି?"
         elif language in ("hi", "hi-IN", "hindi"):
             if first_name:
                 greeting_text = f"नमस्ते {first_name} जी! हमारी हेल्पलाइन में आपका स्वागत है। बताइए, आज मैं आपकी क्या मदद करूँ?"
