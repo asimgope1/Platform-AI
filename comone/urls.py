@@ -2,12 +2,15 @@
 Com-one Platform v2.0 - URL Configuration
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path, include
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import os
+import httpx
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+FASTAPI_BACKEND_URL = os.getenv("FASTAPI_BACKEND_URL", "http://127.0.0.1:8001")
 
 def home_view(request):
     html_path = BASE_DIR / 'services' / 'api' / 'static' / 'index.html'
@@ -34,9 +37,33 @@ def health_view(request):
         ]
     })
 
+@csrf_exempt
+def proxy_v1(request, path=""):
+    """Transparently proxy all OpenAI-compatible /v1/ calls from UI on port 8000 to FastAPI on port 8001."""
+    target_url = f"{FASTAPI_BACKEND_URL}/v1/{path}"
+    headers = {k: v for k, v in request.headers.items() if k.lower() not in ("host", "content-length")}
+    try:
+        with httpx.Client(timeout=60.0) as client:
+            resp = client.request(
+                method=request.method,
+                url=target_url,
+                headers=headers,
+                params=request.GET,
+                content=request.body,
+            )
+            django_resp = HttpResponse(
+                content=resp.content,
+                status=resp.status_code,
+                content_type=resp.headers.get("content-type", "application/json")
+            )
+            return django_resp
+    except Exception as e:
+        return JsonResponse({"error": f"AI Platform backend unreachable: {str(e)}"}, status=503)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),
     path('health/', health_view, name='health'),
+    re_path(r'^v1/(?P<path>.*)$', proxy_v1, name='proxy_v1'),
     path('api/v2/', include('apps.api.urls')),
 ]

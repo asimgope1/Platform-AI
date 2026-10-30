@@ -72,9 +72,11 @@ providers:
 
   colab_gemma_gpu:
     type: openai_compatible
-    base_url: https://caught-discount-width-sister.trycloudflare.com/v1
-    api_key: tbytHjZiSg_9Pd7zkt_avixkRuGG9wU_
-    timeout_seconds: 6
+    base_url_env: COLAB_GEMMA_BASE_URL
+    api_key_env: COLAB_GEMMA_API_KEY
+    base_url: https://chronic-myself-pdf-brought.trycloudflare.com/v1
+    api_key: _BQxQAgEeLAPEke1hKhotBfGeQItq79Z
+    timeout_seconds: 4.0
 
   local_transformers:
     type: transformers

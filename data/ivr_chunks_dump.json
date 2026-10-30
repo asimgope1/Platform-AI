@@ -1,0 +1,1051 @@
+{
+  "total_chunks": 109,
+  "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+  "tenant_name": "tenant-ivr-support",
+  "chunks": [
+    {
+      "chunk_id": "6bad8ea7-e185-4fe4-8d91-4840772b9117",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 0,
+      "content": "[VIDEO KYC & IDENTITY VERIFICATION GUIDELINES]\n\nAudio Prompt ID: IVR-PROMPT-KYC-01\nHindi Guidance:\n\"वीडियो केवाईसी और खाता सत्यापन प्रक्रिया:\nअपने खाते की सीमा बढ़ाने या पूर्ण केवाईसी पूरा करने के लिए:\n1. आवश्यक दस्तावेज: आपका मूल पैन कार्ड (Original Physical PAN Card) और आधार कार्ड।\n2. चैट सपोर्ट में 'START KYC' या 'केवाईसी शुरू करें' लिखकर भेजें।\n3. आपको एसएमएस और चैट में एक सुरक्षित वीडियो कॉल लिंक प्राप्त होगा।\n4. शांत और अच्छी रोशनी वाले कमरे में लिंक खोलें। हमारे प्रमाणित अधिकारी 2 मिनट क",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "8efbbe59-d23d-44dc-80d3-e1c6566c536e",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 1,
+      "content": "रे में लिंक खोलें। हमारे प्रमाणित अधिकारी 2 मिनट की वीडियो कॉल में आपके मूल पैन कार्ड की तस्वीर लेंगे और लाइव फेस मैच करेंगे।\n5. सत्यापन पूरा होने के 1 घंटे के भीतर खाता पूर्ण सक्रिय हो जाता है।\"\n\nAudio Prompt ID: IVR-PROMPT-KYC-02\nEnglish Guidance:\n\"Digital Video KYC and Identity Verification:\n- Purpose: Complete full identity verification to increase monthly transaction limits and enable international services.\n- Mandatory Prerequisites: Original physical PAN card, Aadhaar-linked registered mo",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "fadd4e5c-6c88-4142-b419-7304db7a6c8b",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 2,
+      "content": "al physical PAN card, Aadhaar-linked registered mobile for OTP, well-lit environment, and front camera access.\n- How to Initiate: Request 'Start Video KYC' in chat or press 4 on the IVR. A secure one-time video conference link will be dispatched via SMS.\n- Turnaround Time: The call takes 2 to 3 minutes. Your account is fully unlocked within 1 hour post-verification.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "a2222222-2222-4222-a222-222222222222",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 101,
+      "content": "[ଭିଡିଓ କେୱାଇସି ଯାଞ୍ଚ ପ୍ରକ୍ରିୟା - Video KYC Verification Protocol in Odia]\nଭିଡିଓ କେୱାଇସି (Video KYC) ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଗ୍ରାହକଙ୍କ ପାଖରେ ମୂଳ ଫିଜିକାଲ୍ ପ୍ୟାନ୍ କାର୍ଡ (Physical PAN Card), ଆଧାର କାର୍ଡ ସହିତ ଲିଙ୍କ୍ ଥିବା ସକ୍ରିୟ ମୋବାଇଲ୍ ନମ୍ବର (OTP ଯାଞ୍ଚ ପାଇଁ), ଏବଂ ଉତ୍ତମ ଆଲୋକ ଥିବା ଏକ ଶାନ୍ତ ସ୍ଥାନ ଆବଶ୍ୟକ। ଭିଡିଓ କଲ୍ ପ୍ରକ୍ରିୟା ମାତ୍ର ୨ ରୁ ୩ ମିନିଟ୍ ସମୟ ନିଏ ଏବଂ ଯାଞ୍ଚ ସଫଳ ହେବା ପରେ ୧ ରୁ ୨ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଖାତା ସକ୍ରିୟ ହୋଇଯାଏ।",
+      "metadata": {
+        "language": "or",
+        "category": "ivr_policy"
+      }
+    },
+    {
+      "chunk_id": "ae2373a4-587f-4ba9-b9a6-39765bd12c36",
+      "document_title": "Internet Banking, Mobile App Login & MPIN Reset Guidelines",
+      "source_type": "digital_banking_faq",
+      "chunk_index": 0,
+      "content": "[NETBANKING, MOBILE APP ACCESS & PASSWORD RESET]\n\nMobile App & NetBanking Troubleshooting (Hindi):\n\"इंटरनेट बैंकिंग और मोबाइल ऐप लॉगिन समाधान:\n1. यदि आपका खाता गलत पासवर्ड या MPIN डालने के कारण लॉक हो गया है, तो सुरक्षा कारणों से यह 24 घंटे के लिए अस्थाई रूप से ब्लॉक हो जाता है।\n2. तुरंत अनलॉक करने के लिए: ऐप की लॉगिन स्क्रीन पर 'Forgot MPIN' या 'पासवर्ड भूल गए' पर क्लिक करें।\n3. अपने पंजीकृत मोबाइल पर आया 6-अंकों का ओटीपी दर्ज करें और अपने डेबिट कार्ड के अंतिम 4 अंक व एटीएम पिन डालकर 1 मिनट मे",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "c5023146-3ad3-4754-b7b9-e57702c40e52",
+      "document_title": "Internet Banking, Mobile App Login & MPIN Reset Guidelines",
+      "source_type": "digital_banking_faq",
+      "chunk_index": 1,
+      "content": "ट कार्ड के अंतिम 4 अंक व एटीएम पिन डालकर 1 मिनट में नया पासवर्ड बना लें।\n4. ऐप क्रैश या बायोमेट्रिक फिंगरप्रिंट समस्या: ऐप को प्ले स्टोर से नवीनतम संस्करण में अपडेट करें या 'Clear Cache' करें।\"\n\nMobile App & NetBanking Troubleshooting (English):\n\"Digital Banking Access & MPIN Recovery:\n- Account Lockout: If your mobile banking profile is locked due to consecutive incorrect MPIN entries, it will automatically reset after 24 hours.\n- Instant Password Reset: Open the mobile banking login screen, ta",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "8240d975-8bbe-42ce-8d6a-072ad55ad46c",
+      "document_title": "Internet Banking, Mobile App Login & MPIN Reset Guidelines",
+      "source_type": "digital_banking_faq",
+      "chunk_index": 2,
+      "content": "rd Reset: Open the mobile banking login screen, tap 'Forgot Login Password / MPIN', enter your registered mobile number, and authenticate with the SMS OTP.\n- Debit Card Verification: Enter your active debit card's last 4 digits and ATM PIN to establish a new 6-digit MPIN in under 60 seconds.\n- Biometric & Face ID: Biometric login can be re-enabled under App Settings -> Security -> Biometric Authentication.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "08756a71-ad55-4406-aa18-60f500508bbe",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 0,
+      "content": "[ORDER SHIPMENT, CANCELLATION & BILLING POLICY]\n\nAudio Prompt ID: IVR-PROMPT-ORD-01\nHindi Voice & Chat Rules:\n\"ऑर्डर डिलीवरी, रद्दीकरण और रिफंड नीतियां:\n1. डिलीवरी स्थिति: ऑर्डर डिस्पैच होते ही लाइव जीपीएस ट्रैकिंग लिंक आपके फोन पर एसएमएस द्वारा भेजा जाता है। डिलीवरी का सामान्य समय 2 से 4 कार्यदिवस है।\n2. ऑर्डर रद्दीकरण: गोदाम से निकलने (Dispatch) से पहले आप ऐप में 'Cancel Order' दबाकर या चैट में 'CANCEL <OrderID>' लिखकर बिना किसी शुल्क के ऑर्डर रद्द कर सकते हैं।\n3. रिफंड की समय-सीमा:\n   - यूपी",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "5f7f0e72-261d-42e2-8c8d-3b8dc02cf164",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 1,
+      "content": "रद्द कर सकते हैं।\n3. रिफंड की समय-सीमा:\n   - यूपीआई (UPI) और वॉलेट भुगतान: 24 घंटे के भीतर रिफंड।\n   - क्रेडिट/डेबिट कार्ड या नेट बैंकिंग: 5 से 7 कार्यदिवस (Business Days)।\n4. क्षतिग्रस्त उत्पाद या रिटर्न: यदि पार्सल क्षतिग्रस्त है या गलत सामान मिला है, तो 7 दिनों के भीतर चैट में फोटो अपलोड करके मुफ्त रिप्लेसमेंट प्राप्त करें।\"\n\nAudio Prompt ID: IVR-PROMPT-ORD-02\nEnglish Voice & Chat Rules:\n\"Shipment Tracking, Cancellation, and Refund Terms:\n- Tracking: Type 'TRACK <Order_ID>' in chat or press",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "06f82d29-f6e7-4a3f-b5fa-d198221e710c",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 2,
+      "content": "racking: Type 'TRACK <Order_ID>' in chat or press 3 on the IVR. Real-time courier partner tracking and OTP details are sent via SMS.\n- Free Cancellation: You can cancel orders free of charge at any moment prior to dispatch.\n- Refund SLAs:\n  - UPI & Digital Wallets: Within 24 hours.\n  - Credit/Debit Cards & NetBanking: 5 to 7 business days depending on the card-issuing bank.\n- Returns: 7-day hassle-free return window for damaged, defective, or incorrect items with zero pickup fees.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "a3333333-3333-4333-a333-333333333333",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 102,
+      "content": "[ଅର୍ଡର ଟ୍ରାକିଂ ଏବଂ ଡେଲିଭରି ସୂଚନା - Order Tracking Protocol in Odia]\nଗ୍ରାହକ ନିଜର ଅର୍ଡର ସ୍ଥିତି ଏବଂ କ୍ୟାନ୍ସଲେସନ୍ ପାଇଁ ସୂଚନା ପାଇପାରିବେ। ଥରେ ଅର୍ଡର ପଠାଯିବା ପରେ (Dispatched), ତାହା ସାଧାରଣତଃ ୨ ରୁ ୪ କାର୍ଯ୍ୟଦିବସ ମଧ୍ୟରେ ଆପଣଙ୍କ ପଞ୍ଜୀକୃତ ଠିକଣାରେ ଡେଲିଭର ହୋଇଥାଏ। କ୍ୟାନ୍ସଲ୍ ହୋଇଥିବା ଅର୍ଡରର ଟଙ୍କା ୫ ରୁ ୭ ଦିନ ମଧ୍ୟରେ ମୂଳ ପେମେଣ୍ଟ ମାଧ୍ୟମକୁ ଫେରସ୍ତ ଆସିଥାଏ।",
+      "metadata": {
+        "language": "or",
+        "category": "ivr_policy"
+      }
+    },
+    {
+      "chunk_id": "252ea501-f80b-4c30-a835-9f27fa6c2508",
+      "document_title": "UPI Payment Failures, NPCI Auto-Refund SLA & UTR Tracking",
+      "source_type": "upi_refund_master",
+      "chunk_index": 0,
+      "content": "[UPI PAYMENT RESOLUTION, NPCI SETTLEMENT & AUTO-REFUND SLA]\n\nUPI Transaction Failure & Money Deducted (Hindi):\n\"यूपीआई पेमेंट फेल और पैसे कटने का त्वरित समाधान:\n1. यदि PhonePe, Google Pay, Paytm या BHIM से भुगतान करते समय बैंक से पैसे कट गए पर मर्चेंट को नहीं मिले, तो घबराएं नहीं। आपका पैसा एनपीसीआई (NPCI) के सुरक्षित क्लियरिंग हाउस में होल्ड रहता है।\n2. आरबीआई और एनपीसीआई की आधिकारिक समय-सीमा के अनुसार, ऐसा पैसा 24 से 48 बैंकिंग घंटों (24 to 48 hours) के भीतर स्वतः आपके उसी बैंक खाते में वापस",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "8821becf-4ab5-47ab-8f63-b063a7c74ff0",
+      "document_title": "UPI Payment Failures, NPCI Auto-Refund SLA & UTR Tracking",
+      "source_type": "upi_refund_master",
+      "chunk_index": 1,
+      "content": "hours) के भीतर स्वतः आपके उसी बैंक खाते में वापस (Auto-Credit) आ जाता है।\n3. रिफंड स्थिति ट्रैक करने के लिए: अपनी ऐप के लेन-देन विवरण में 12-अंकों का यूटीआर नंबर (UTR: 12-digit Unique Transaction Reference) देखें।\n4. यदि 48 घंटे के बाद भी पैसा न आए, तो हमें यूटीआर नंबर बताएं, हमारी सिस्टम तुरंत आपके बैंक के नोडल अधिकारी के साथ विवाद टिकट (Dispute Ticket) दर्ज कर देगी।\"\n\nUPI Transaction Failure & Money Deducted (English):\n\"UPI Transaction Failure and Refund SLAs:\n- Money Debited for Failed Payme",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "62a21aee-6136-45b6-b6b1-b8e0a980ea04",
+      "document_title": "UPI Payment Failures, NPCI Auto-Refund SLA & UTR Tracking",
+      "source_type": "upi_refund_master",
+      "chunk_index": 2,
+      "content": "and Refund SLAs:\n- Money Debited for Failed Payment: If money was debited from your bank account but the recipient did not receive credit, the transaction is marked as pending in the NPCI inter-bank settlement network.\n- Official SLA: Under RBI and NPCI regulatory guidelines, 100% of failed UPI debits are automatically reversed and credited back to your originating bank account within 24 to 48 business hours.\n- Tracking via 12-Digit UTR: Check your UPI transaction receipt for the 12-digit UTR (",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "6cc1b8cd-623c-4eb2-b752-19a26e8e81f1",
+      "document_title": "UPI Payment Failures, NPCI Auto-Refund SLA & UTR Tracking",
+      "source_type": "upi_refund_master",
+      "chunk_index": 3,
+      "content": "our UPI transaction receipt for the 12-digit UTR (Unique Transaction Reference) number.\n- Escalation: If funds are not credited back after 48 business hours, our automated system generates a chargeback dispute ticket directly with your bank's regulatory nodal desk.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "074f26ba-c2a4-4cba-8334-043af1e43566",
+      "document_title": "Digital Video KYC, Document Requirements & Account Activation",
+      "source_type": "kyc_verification_protocol",
+      "chunk_index": 0,
+      "content": "[DIGITAL VIDEO KYC & IDENTITY VERIFICATION STANDARDS]\n\nVideo KYC Procedure & Requirements (Hindi):\n\"डिजिटल वीडियो केवाईसी और खाता सत्यापन:\n1. वीडियो केवाईसी क्यों जरूरी है? खाते की दैनिक लेनदेन सीमा बढ़ाने, अंतरराष्ट्रीय भुगतान सक्षम करने और खाते को पूर्ण सक्रिय करने के लिए वीडियो केवाईसी अनिवार्य है।\n2. आवश्यक दस्तावेज:\n   - आपका मूल भौतिक पैन कार्ड (Original Physical PAN Card) - फोटोकॉपी या डिजिटल कॉपी मान्य नहीं है।\n   - आधार से लिंक पंजीकृत मोबाइल नंबर (जिस पर सत्यापन ओटीपी आएगा)।\n   - एक स",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "b3d3db60-3af0-4100-9df2-29535cd94820",
+      "document_title": "Digital Video KYC, Document Requirements & Account Activation",
+      "source_type": "kyc_verification_protocol",
+      "chunk_index": 1,
+      "content": "मोबाइल नंबर (जिस पर सत्यापन ओटीपी आएगा)।\n   - एक सादा सफेद कागज़ और नीला/काला पेन (लाइव हस्ताक्षर के लिए)।\n3. प्रक्रिया: चैट में 'केवाईसी शुरू करें' कहें या फोन पर 4 दबाएं। आपके मोबाइल पर एक सुरक्षित वीडियो कॉल लिंक एसएमएस द्वारा भेजा जाएगा।\n4. कॉल का समय: केवल 2 से 3 मिनट। कॉल संपन्न होने के 1 घंटे के भीतर खाता पूर्ण सक्रिय हो जाता है।\"\n\nVideo KYC Procedure & Requirements (English):\n\"Digital Video KYC Verification Protocol:\n- Purpose: Complete mandatory full-KYC compliance to remove account hol",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "64d1bd7e-7d89-42ac-a486-9b05f8febf2e",
+      "document_title": "Digital Video KYC, Document Requirements & Account Activation",
+      "source_type": "kyc_verification_protocol",
+      "chunk_index": 2,
+      "content": "andatory full-KYC compliance to remove account holding caps, upgrade monthly transaction limits, and enable international cards.\n- Mandatory Prerequisites:\n  - Original physical PAN card (scans, laminations, or soft copies are rejected by regulatory rules).\n  - Active Aadhaar-linked mobile device to receive and input the live OTP.\n  - Plain white paper and pen for live signature capture during the video call.\n  - Well-lit, quiet room with stable front camera connectivity.\n- Duration: The video s",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "0d344bdb-d5ee-4894-962d-a94c1f325c5d",
+      "document_title": "Digital Video KYC, Document Requirements & Account Activation",
+      "source_type": "kyc_verification_protocol",
+      "chunk_index": 3,
+      "content": "front camera connectivity.\n- Duration: The video session with our certified verification officer takes 2 to 3 minutes.\n- Activation SLA: Your profile is fully approved and unlocked within 1 hour post-call.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "f4776918-dacf-4cb2-9333-3accc9680c19",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 0,
+      "content": "[LIVE AGENT ESCALATION & CALL TRANSFER PROTOCOL]\n\nAudio Prompt ID: IVR-PROMPT-ESC-01\nHindi Voice & Chat Support Script:\n\"कस्टमर केयर एक्जीक्यूटिव से लाइव बातचीत (Agent Transfer):\nयदि आप हमारे किसी सहायता विशेषज्ञ से सीधे बात करना चाहते हैं, तो:\n1. IVR कॉल पर 9 दबाएं या स्पष्ट स्वर में 'कस्टमर केयर' या 'एजेंट' बोलें।\n2. हमारी लाइव सपोर्ट टीम सप्ताह के सातों दिन (सोमवार से रविवार) सुबह 8:00 बजे से रात 11:00 बजे तक उपलब्ध रहती है।\n3. कॉल ट्रांसफर से पहले कृपया अपना 4-अंकीय टेलीफोन पिन (T-PIN) या प",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "7938c2d8-1bf1-49f3-9a1d-d5ccc278423d",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 1,
+      "content": "े पहले कृपया अपना 4-अंकीय टेलीफोन पिन (T-PIN) या पंजीकृत मोबाइल नंबर पर आया ओटीपी (OTP) तैयार रखें।\n4. किसी भी वित्तीय धोखाधड़ी या कार्ड/खाता तुरंत ब्लॉक करने के लिए IVR पर 0 दबाएं, यह कॉल बिना किसी प्रतीक्षा के आपातकालीन सुरक्षा डेस्क पर ट्रांसफर हो जाएगी।\"\n\nAudio Prompt ID: IVR-PROMPT-ESC-02\nEnglish Voice & Chat Support Script:\n\"Connecting to a Live Customer Support Specialist:\n- To speak with a human support agent at any time, press 9 on your dial pad or speak 'Agent' or 'Representative'.\n- O",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "c90e3c2e-de5a-4d38-a078-b947fd8a9b23",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 2,
+      "content": "dial pad or speak 'Agent' or 'Representative'.\n- Operating Hours: Live phone and chat assistance is available 7 days a week, 8:00 AM to 11:00 PM IST.\n- Average Queue Wait Time: Under 2 minutes during peak hours.\n- Verification Requirement: You will be asked to confirm the last 4 digits of your registered mobile number or enter a 4-digit IVR T-PIN.\n- Emergency Fraud Hotkey: Press 0 immediately to report unauthorized activity or freeze your account with zero queue delay.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "a4444444-4444-4444-a444-444444444444",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 103,
+      "content": "[ମାନବ ଏଜେଣ୍ଟ ଏସ୍କାଲେସନ୍ ପ୍ରୋଟୋକଲ୍ - Live Agent Escalation in Odia]\nଗ୍ରାହକ ଯଦି ସିଧାସଳଖ ଆମର ବରିଷ୍ଠ କଷ୍ଟମର କେୟାର ଏକଜିକ୍ୟୁଟିଭ୍ କିମ୍ବା ପ୍ରତିନିଧିଙ୍କ ସହିତ କଥା ହେବାକୁ ଚାହାଁନ୍ତି, ତେବେ ଯେକୌଣସି ସମୟରେ 'ଏଜେଣ୍ଟ ସହିତ କଥା କରାନ୍ତୁ' କହିପାରିବେ କିମ୍ବା କୀପ୍ୟାଡ୍‌ରେ ୯ ଦବାଇପାରିବେ। ଆମର ସ୍ୱୟଂଚାଳିତ ସିଷ୍ଟମ୍ ତୁରନ୍ତ ସମସ୍ତ କଲ୍ ହିଷ୍ଟ୍ରି ସହିତ ବରିଷ୍ଠ ଅଧିକାରୀଙ୍କୁ କଲ୍ ଟ୍ରାନ୍ସଫର କରିବ।",
+      "metadata": {
+        "language": "or",
+        "category": "ivr_policy"
+      }
+    },
+    {
+      "chunk_id": "9c67b06a-4ab7-45ca-8e19-48842db8bf64",
+      "document_title": "E-Commerce Orders, Live Delivery Tracking, Returns & Cancellations",
+      "source_type": "ecommerce_fulfillment_policy",
+      "chunk_index": 0,
+      "content": "[ORDERS, LIVE SHIPMENT TRACKING, CANCELLATIONS & RETURNS]\n\nOrder Tracking & Delayed Deliveries (Hindi):\n\"ऑर्डर स्थिति, डिलीवरी ट्रैकिंग और कैंसिलेशन नियम:\n1. लाइव डिलीवरी ट्रैकिंग: जैसे ही आपका पार्सल कूरियर पार्टनर (Delhivery, BlueDart, Ecom Express) को सौंपा जाता है, ट्रैकिंग लिंक व ओटीपी एसएमएस द्वारा भेज दिया जाता है। सामान्य डिलीवरी 2 से 4 कार्यदिवसों में हो जाती है।\n2. ऑर्डर कैंसल करना: गोदाम से निकलने (Dispatch) से पहले आप बिना किसी पेनल्टी के ऑर्डर रद्द कर सकते हैं।\n3. रिफंड की समय-सीमा",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "dd5da854-cef3-4913-9b6a-cd11c726553a",
+      "document_title": "E-Commerce Orders, Live Delivery Tracking, Returns & Cancellations",
+      "source_type": "ecommerce_fulfillment_policy",
+      "chunk_index": 1,
+      "content": "टी के ऑर्डर रद्द कर सकते हैं।\n3. रिफंड की समय-सीमा:\n   - यदि भुगतान यूपीआई या वॉलेट से किया था: 24 घंटे के भीतर रिफंड।\n   - यदि क्रेडिट या डेबिट कार्ड से किया था: 5 से 7 बैंकिंग दिनों में रिफंड।\n   - कैश ऑन डिलीवरी (COD): रिफंड प्राप्त करने के लिए ऐप में अपना यूपीआई आईडी या बैंक खाता विवरण दर्ज करें।\n4. 7-दिवसीय रिटर्न व रिप्लेसमेंट: यदि सामान टूटा-फूटा, दोषपूर्ण या गलत निकला है, तो डिलीवरी के 7 दिनों के भीतर निःशुल्क पिकअप व एक्सचेंज का अनुरोध करें।\"\n\nOrder Tracking & Delayed Deliveries (Englis",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "5f872d3c-a680-4758-a65e-a513c5086347",
+      "document_title": "E-Commerce Orders, Live Delivery Tracking, Returns & Cancellations",
+      "source_type": "ecommerce_fulfillment_policy",
+      "chunk_index": 2,
+      "content": "रें।\"\n\nOrder Tracking & Delayed Deliveries (English):\n\"Shipment Tracking, Cancellation, and Returns Protocol:\n- Tracking: Real-time courier tracking links and delivery OTPs are dispatched via SMS upon shipment. Standard delivery window is 2 to 4 business days.\n- Free Cancellation: Orders can be cancelled instantly with zero cancellation fee prior to warehouse dispatch.\n- Refund Crediting SLA:\n  - UPI and digital wallets: Processed within 24 hours.\n  - Credit/Debit cards & Net Banking: Processed",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "b1d666f6-b536-427a-a723-6f816949fc03",
+      "document_title": "E-Commerce Orders, Live Delivery Tracking, Returns & Cancellations",
+      "source_type": "ecommerce_fulfillment_policy",
+      "chunk_index": 3,
+      "content": ".\n  - Credit/Debit cards & Net Banking: Processed within 5 to 7 banking business days.\n  - Cash on Delivery (COD): Add your preferred UPI ID or Bank account in the app for instant direct-to-bank transfer.\n- 7-Day Hassle-Free Returns: Free door-step reverse pickup and replacement for any damaged, defective, or incorrect items.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "8ed2a97d-bd00-448d-b0f6-12e281c24516",
+      "document_title": "Live Customer Care Agent Transfer, Support Queues & Operating Hours",
+      "source_type": "agent_escalation_protocol",
+      "chunk_index": 0,
+      "content": "[LIVE AGENT ESCALATION, HUMAN QUEUE MANAGEMENT & HOURS]\n\nConnecting to a Live Representative (Hindi):\n\"कस्टमर केयर एक्जीक्यूटिव से लाइव बातचीत (Agent Transfer):\n1. यदि आप हमारे किसी मानव सहायता विशेषज्ञ या सुपरवाइजर से सीधे बात करना चाहते हैं, तो:\n   - फोन डायल पैड पर '9' दबाएं या स्पष्ट स्वर में 'कस्टमर केयर' या 'एजेंट' बोलें।\n2. हमारी लाइव टेलीफोन सपोर्ट टीम सप्ताह के सातों दिन (सोमवार से रविवार) सुबह 8:00 बजे से रात 11:00 बजे तक उपलब्ध रहती है।\n3. औसत प्रतीक्षा समय (Wait Time) व्यस्ततम घंटों",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "592df033-94c0-4002-958c-10f758dba199",
+      "document_title": "Live Customer Care Agent Transfer, Support Queues & Operating Hours",
+      "source_type": "agent_escalation_protocol",
+      "chunk_index": 1,
+      "content": "ै।\n3. औसत प्रतीक्षा समय (Wait Time) व्यस्ततम घंटों में भी 2 मिनट से कम रहता है।\n4. सत्यापन: कॉल ट्रांसफर होने पर अधिकारी आपकी पहचान के लिए पंजीकृत मोबाइल नंबर या सुरक्षा पिन की पुष्टि कर सकते हैं।\n5. कॉल बैक सेवा: यदि लाइनें व्यस्त हैं, तो 'CALL ME' कहें; हमारे विशेषज्ञ 15 मिनट के भीतर आपको स्वतः कॉल बैक करेंगे।\"\n\nConnecting to a Live Representative (English):\n\"Live Human Specialist Escalation Protocol:\n- Immediate Transfer: To transfer your voice call or chat session to a live human customer su",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "a8e06ef6-3441-4d6e-ae44-01650a5c4fdb",
+      "document_title": "Live Customer Care Agent Transfer, Support Queues & Operating Hours",
+      "source_type": "agent_escalation_protocol",
+      "chunk_index": 2,
+      "content": "e call or chat session to a live human customer support specialist, press 9 on your dial pad or say 'Agent' or 'Representative'.\n- Operating Hours: Live human phone and chat assistance is active 7 days a week from 8:00 AM to 11:00 PM IST.\n- Average Queue Wait Time: Under 2 minutes during normal operating hours.\n- Automated Callback Option: If queues are busy, simply state 'Call me back' and our next available supervisor will return your call within 15 minutes.\n- Verification: Keep the last 4 dig",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "c824c18b-dbc2-4901-b798-25bbf3457a27",
+      "document_title": "Live Customer Care Agent Transfer, Support Queues & Operating Hours",
+      "source_type": "agent_escalation_protocol",
+      "chunk_index": 3,
+      "content": "in 15 minutes.\n- Verification: Keep the last 4 digits of your registered mobile number or your 4-digit IVR T-PIN handy for quick authorization.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "fba4cfd2-d5a4-4486-8e2c-e98ffef3b08d",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 0,
+      "content": "Customer Spoken Inquiry: \"Hello, hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (2eefa6a4-7e87-410c-91fb-433805c2c4d1)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "2eefa6a4-7e87-410c-91fb-433805c2c4d1",
+        "caller_query": "Hello, hello."
+      }
+    },
+    {
+      "chunk_id": "03e181da-4714-4a15-85b7-08f99a89fe49",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 1,
+      "content": "Call Interaction Summary [Session 2eefa6a4-7e87-410c-91fb-433805c2c4d1]:\nCaller: Hello, hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nKey Inquiries: Hello, hello.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "2eefa6a4-7e87-410c-91fb-433805c2c4d1",
+        "turn_count": 2
+      }
+    },
+    {
+      "chunk_id": "e059487d-e558-45c5-8382-a8fbe40d900c",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 2,
+      "content": "Customer Spoken Inquiry: \"Thank you very much.\"\nVerified Resolution: \"Could you please tell me what type of video evaluation you are referring to? I can check the specific documents needed for you.\"\nSource: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "caller_query": "Thank you very much."
+      }
+    },
+    {
+      "chunk_id": "d7568152-ee7f-4199-bb6a-36702d8483dd",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 3,
+      "content": "Customer Spoken Inquiry: \"Tell me about the you clearly fund the filter.\"\nVerified Resolution: \"I'm sorry, I'm not quite sure what you mean by \"clearly fund the filter.\" Could you please rephrase that for me?\"\nSource: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "caller_query": "Tell me about the you clearly fund the filter."
+      }
+    },
+    {
+      "chunk_id": "f00dc09e-ef79-43b4-8464-4e093274ab6c",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 4,
+      "content": "Customer Spoken Inquiry: \"What documents are needed for video KYC?\"\nVerified Resolution: \"डिजिटल वीडियो केवाईसी के लिए आपको मूल पैन कार्ड और आधार से लिंक सक्रिय मोबाइल नंबर चाहिए। यह सत्यापन सिर्फ 2 मिनट में पूरा हो जाता है।\"\nSource: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "caller_query": "What documents are needed for video KYC?"
+      }
+    },
+    {
+      "chunk_id": "5e59280f-b1c4-4127-b4d1-2a7754fd53e8",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 5,
+      "content": "Customer Spoken Inquiry: \"What is the difference between debit card and credit card?\"\nVerified Resolution: \"Debit cards use money directly from your bank account, while credit cards allow you to borrow funds up to a certain limit.\"\nSource: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "caller_query": "What is the difference between debit card and credit card?"
+      }
+    },
+    {
+      "chunk_id": "b8361084-3319-4352-ae05-84116d393a52",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 6,
+      "content": "Customer Spoken Inquiry: \"you pay refund status fee by the end of the day.\"\nVerified Resolution: \"यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\"\nSource: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "caller_query": "you pay refund status fee by the end of the day."
+      }
+    },
+    {
+      "chunk_id": "132fc19a-bf0c-4972-b05d-63c42ba0feee",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 7,
+      "content": "Customer Spoken Inquiry: \"Hello, hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "caller_query": "Hello, hello."
+      }
+    },
+    {
+      "chunk_id": "ff06668a-939e-428b-8453-ff23d1edecc1",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 8,
+      "content": "Call Interaction Summary [Session 556f4f95-212b-4281-98bb-f6ba3b8d1606]:\nCaller: Thank you.\nCaller: Hello.\nAssistant: Hello! How may I assist you today?\nCaller: Tell me about the you clearly fund the filter.\nAssistant: I'm sorry, I'm not quite sure what you mean by \"clearly fund the filter.\" Could you please rephrase that for me?\nCaller: Hello.\nAssistant: Hello! How may I assist you today?\nCaller: What documents are needed for video KYC?\nAssistant: डिजिटल वीडियो केवाईसी के लिए आपको मूल पैन कार्ड और आधार से लिंक सक्रिय मोबाइल नंबर चाहिए। यह सत्यापन सिर्फ 2 मिनट में पूरा हो जाता है।\nCaller: What is the difference between debit card and credit card?\nAssistant: Debit cards use money directly from your bank account, while credit cards allow you to borrow funds up to a certain limit.\nCaller: Hello.\nAssistant: Hello! How may I assist you today?\nCaller: Okay, thank you.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: you pay refund status fee by the end of the day.\nAssistant: यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\nCaller: But maybe a good card or a good card in a different spot.\nCaller: Hello, hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nKey Inquiries: Thank you., Hello., Tell me about the you clearly fund the filter.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "556f4f95-212b-4281-98bb-f6ba3b8d1606",
+        "turn_count": 20
+      }
+    },
+    {
+      "chunk_id": "da6f4180-e3ac-407f-9c87-4e43eb3eb82e",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 9,
+      "content": "Call Interaction Summary [Session 59e6e16b-4810-47be-8d7c-be0d4110c3c0]:\nCaller: Hello, hello.\nCaller: Hello, hello, hello, hello.\nCaller: So what do you think?\nKey Inquiries: Hello, hello., Hello, hello, hello, hello., So what do you think?",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "59e6e16b-4810-47be-8d7c-be0d4110c3c0",
+        "turn_count": 3
+      }
+    },
+    {
+      "chunk_id": "00e1b26b-c6dd-4b11-b39d-349b09b1bab8",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 10,
+      "content": "Customer Spoken Inquiry: \"Hello, mic testing 1, 2, 3.\"\nVerified Resolution: \"Caller: Hello, hello. Assistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं। क्या मैं इसमें आपकी और कोई सहायता कर सकता हूँ?\"\nSource: Live Telephone Interaction (a8cb8164-fd8d-4b4c-9f27-4c2209cd32b5)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "a8cb8164-fd8d-4b4c-9f27-4c2209cd32b5",
+        "caller_query": "Hello, mic testing 1, 2, 3."
+      }
+    },
+    {
+      "chunk_id": "33adf34a-e50f-4bff-bb7c-6eee8820f666",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 11,
+      "content": "Call Interaction Summary [Session a8cb8164-fd8d-4b4c-9f27-4c2209cd32b5]:\nCaller: Hello, mic testing 1, 2, 3.\nAssistant: Caller: Hello, hello. Assistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं। क्या मैं इसमें आपकी और कोई सहायता कर सकता हूँ?\nCaller: So what do you think?\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Hello, mic testing 1, 2, 3., So what do you think?",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "a8cb8164-fd8d-4b4c-9f27-4c2209cd32b5",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "cc384cd2-17cb-4dd7-a79b-a2912048649c",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 12,
+      "content": "Call Interaction Summary [Session 081110ae-5347-43fb-bfa9-531b81aa14cf]:\nCaller: Thank you very much.\nCaller: Hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nKey Inquiries: Thank you very much., Hello.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "081110ae-5347-43fb-bfa9-531b81aa14cf",
+        "turn_count": 3
+      }
+    },
+    {
+      "chunk_id": "6314a886-9df4-43de-a717-4597a1af179d",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 13,
+      "content": "Customer Spoken Inquiry: \"Hello. Hello. Hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (e8d008c5-2670-44c3-bfb6-593650b4c35b)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "e8d008c5-2670-44c3-bfb6-593650b4c35b",
+        "caller_query": "Hello. Hello. Hello."
+      }
+    },
+    {
+      "chunk_id": "f4b70c89-4d51-4222-baa6-0a08e9418845",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 14,
+      "content": "Customer Spoken Inquiry: \"Hello, Ghibana.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (e8d008c5-2670-44c3-bfb6-593650b4c35b)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "e8d008c5-2670-44c3-bfb6-593650b4c35b",
+        "caller_query": "Hello, Ghibana."
+      }
+    },
+    {
+      "chunk_id": "704b7047-2bb5-441d-80f3-78ab58451275",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 15,
+      "content": "Call Interaction Summary [Session e8d008c5-2670-44c3-bfb6-593650b4c35b]:\nCaller: Thank you very much. Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: Hello. Hello. Hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nCaller: Hello, Ghibana.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nCaller: Thank you very much. Thank you very much. Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Thank you very much. Thank you very much., Hello. Hello. Hello., Hello, Ghibana.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "e8d008c5-2670-44c3-bfb6-593650b4c35b",
+        "turn_count": 10
+      }
+    },
+    {
+      "chunk_id": "a66d66c6-0a87-4d1a-bc88-840f85256f45",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 16,
+      "content": "Customer Spoken Inquiry: \"Hold to cut take off for a while.\"\nVerified Resolution: \"यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\"\nSource: Live Telephone Interaction (2b2d7e8b-4b22-4475-b4e6-1ec66f798cf3)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "2b2d7e8b-4b22-4475-b4e6-1ec66f798cf3",
+        "caller_query": "Hold to cut take off for a while."
+      }
+    },
+    {
+      "chunk_id": "47251f2f-38fd-43c3-ae67-fed7882f3289",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 17,
+      "content": "Call Interaction Summary [Session 2b2d7e8b-4b22-4475-b4e6-1ec66f798cf3]:\nCaller: Oh, no, no, no.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: Hold to cut take off for a while.\nAssistant: यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\nCaller: Shafun. Shafun.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: I'm in the water also.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Oh, no, no, no., Hold to cut take off for a while., Shafun. Shafun.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "2b2d7e8b-4b22-4475-b4e6-1ec66f798cf3",
+        "turn_count": 8
+      }
+    },
+    {
+      "chunk_id": "3266ff38-01b0-4d03-bb3d-efb0cf77b7f5",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 18,
+      "content": "Customer Spoken Inquiry: \"Hello, hello, hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (ad68b9ec-f0b6-4c40-8d57-49a5cd87cbdc)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "ad68b9ec-f0b6-4c40-8d57-49a5cd87cbdc",
+        "caller_query": "Hello, hello, hello."
+      }
+    },
+    {
+      "chunk_id": "131fd563-06c8-48b0-919f-a53b71c3a6d9",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 19,
+      "content": "Call Interaction Summary [Session ad68b9ec-f0b6-4c40-8d57-49a5cd87cbdc]:\nCaller: Hello, hello, hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nCaller: Hello.\nCaller: I don't know.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Hello, hello, hello., Hello., I don't know.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "ad68b9ec-f0b6-4c40-8d57-49a5cd87cbdc",
+        "turn_count": 5
+      }
+    },
+    {
+      "chunk_id": "92ff3dd1-449e-4869-a319-d587e38b6b7c",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 20,
+      "content": "Call Interaction Summary [Session d3e57059-fb09-44cf-b428-b9f1efd23cf0]:\nCaller: I would really like to talk about this as well.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: See you next time.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: I would really like to talk about this as well., See you next time.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "d3e57059-fb09-44cf-b428-b9f1efd23cf0",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "c9212815-d988-4bc9-a0b5-685fcc8b6f87",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 21,
+      "content": "Customer Spoken Inquiry: \"Hello, hello, hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (7685d0d5-f03c-4ef2-bf1f-9775c4d8719f)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "7685d0d5-f03c-4ef2-bf1f-9775c4d8719f",
+        "caller_query": "Hello, hello, hello."
+      }
+    },
+    {
+      "chunk_id": "a340455a-06ae-4944-ac24-63c420acd9c5",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 22,
+      "content": "Customer Spoken Inquiry: \"Hello. Hello. Hello. Hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (548eb588-b0f9-4b30-ade9-21e86d8372bf)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "548eb588-b0f9-4b30-ade9-21e86d8372bf",
+        "caller_query": "Hello. Hello. Hello. Hello."
+      }
+    },
+    {
+      "chunk_id": "655d1097-c9c2-4228-91d6-a8cc30673d0f",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 23,
+      "content": "Customer Spoken Inquiry: \"Hello, hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (2fe51723-2692-4ae2-8940-e6d4a855e5bd)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "2fe51723-2692-4ae2-8940-e6d4a855e5bd",
+        "caller_query": "Hello, hello."
+      }
+    },
+    {
+      "chunk_id": "00d4da02-824d-492a-a8fb-52726697f0cc",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 24,
+      "content": "Call Interaction Summary [Session 1f5ee61c-4019-4210-9e04-a38a846e23d8]:\nCaller: If you don't get it, you will get it. If you don't get it, you will get it. If you don't get it, you will get it completely.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: So, 404, 400 bad hookest.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: If you don't get it, you will get it. If you don't get it, you will get it. If you don't get it, you will get it completely., So, 404, 400 bad hookest.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "1f5ee61c-4019-4210-9e04-a38a846e23d8",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "97fbb51a-d305-46c4-98c7-523ea8bfb0a0",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 25,
+      "content": "Call Interaction Summary [Session unknown]:\nCaller: Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: Oh my god.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, Oh my god.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "unknown",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "27cc2299-e56b-4f2f-978c-22e8baf9bd55",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 26,
+      "content": "Call Interaction Summary [Session 0834ecda-eea4-461f-b5ab-4123ffed9a27]:\nCaller: So everything is really good, not good.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: So everything is really good, not good., Thank you very much.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "0834ecda-eea4-461f-b5ab-4123ffed9a27",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "d5295ac7-1e96-4975-8254-87f9d8d52592",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 27,
+      "content": "Call Interaction Summary [Session unknown]:\nCaller: Thank you.\nCaller: Thank you.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Thank you., Thank you.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "unknown",
+        "turn_count": 3
+      }
+    },
+    {
+      "chunk_id": "641a37c8-107e-4f17-999c-3727b57568b3",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 28,
+      "content": "Call Interaction Summary [Session a8de694f-845e-46c3-a5f6-40a695f84eed]:\nCaller: Have you ever heard of that? Have you ever heard of that?\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: So, how do we hold the whole thing?\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Have you ever heard of that? Have you ever heard of that?, So, how do we hold the whole thing?",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "a8de694f-845e-46c3-a5f6-40a695f84eed",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "d0f24b9a-d203-4eb8-951b-1c729893af0a",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 29,
+      "content": "Customer Spoken Inquiry: \"Hello. Hello.\"\nVerified Resolution: \"नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\"\nSource: Live Telephone Interaction (c8763276-2567-4281-951b-7898a2a58690)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "c8763276-2567-4281-951b-7898a2a58690",
+        "caller_query": "Hello. Hello."
+      }
+    },
+    {
+      "chunk_id": "0a21b7a5-1b70-44d9-81c8-b83c0054bc85",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 30,
+      "content": "Call Interaction Summary [Session c8763276-2567-4281-951b-7898a2a58690]:\nCaller: Hello. Hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nKey Inquiries: Hello. Hello.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "c8763276-2567-4281-951b-7898a2a58690",
+        "turn_count": 2
+      }
+    },
+    {
+      "chunk_id": "d8a0e86a-b094-4864-940b-4a33991a70f9",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 31,
+      "content": "Call Interaction Summary [Session f3968e63-818f-4bb3-8e8f-d82f632f7626]:\nCaller: Bye!\nCaller: Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Bye!, Thank you very much.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "f3968e63-818f-4bb3-8e8f-d82f632f7626",
+        "turn_count": 3
+      }
+    },
+    {
+      "chunk_id": "9cd4ab54-6e17-4181-a749-0faab40a2346",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 32,
+      "content": "Customer Spoken Inquiry: \"I will tell you about the video.\"\nVerified Resolution: \"Verified Resolution: \"Could you please tell me what type of video evaluation you are referring to? I can check the specific documents needed for you.\" Source: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606) क्या मैं इसमें आपकी और कोई सहायता कर सकता हूँ?\"\nSource: Live Telephone Interaction (cfdbd079-c081-4259-a8eb-ae7f823ddb75)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "cfdbd079-c081-4259-a8eb-ae7f823ddb75",
+        "caller_query": "I will tell you about the video."
+      }
+    },
+    {
+      "chunk_id": "668c25ad-c855-4207-9d45-ffb80dd75c92",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 33,
+      "content": "Customer Spoken Inquiry: \"UPA refund status bar in Batavia.\"\nVerified Resolution: \"यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\"\nSource: Live Telephone Interaction (cfdbd079-c081-4259-a8eb-ae7f823ddb75)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "cfdbd079-c081-4259-a8eb-ae7f823ddb75",
+        "caller_query": "UPA refund status bar in Batavia."
+      }
+    },
+    {
+      "chunk_id": "2e73adcf-fd8a-4aa0-9b8a-48308e707f7c",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 34,
+      "content": "Customer Spoken Inquiry: \"Video KYC document list again.\"\nVerified Resolution: \"डिजिटल वीडियो केवाईसी के लिए आपको मूल पैन कार्ड और आधार से लिंक सक्रिय मोबाइल नंबर चाहिए। यह सत्यापन सिर्फ 2 मिनट में पूरा हो जाता है।\"\nSource: Live Telephone Interaction (cfdbd079-c081-4259-a8eb-ae7f823ddb75)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "cfdbd079-c081-4259-a8eb-ae7f823ddb75",
+        "caller_query": "Video KYC document list again."
+      }
+    },
+    {
+      "chunk_id": "5fb0623d-94f0-4287-b0f6-40372bd534b7",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 35,
+      "content": "Call Interaction Summary [Session cfdbd079-c081-4259-a8eb-ae7f823ddb75]:\nCaller: Thank you very much. Thank you very much. Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: I will tell you about the video.\nAssistant: Verified Resolution: \"Could you please tell me what type of video evaluation you are referring to? I can check the specific documents needed for you.\" Source: Live Telephone Interaction (556f4f95-212b-4281-98bb-f6ba3b8d1606) क्या मैं इसमें आपकी और कोई सहायता कर सकता हूँ?\nCaller: I have to refer me to myself.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: UPA refund status bar in Batavia.\nAssistant: यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\nCaller: Video KYC document list again.\nAssistant: डिजिटल वीडियो केवाईसी के लिए आपको मूल पैन कार्ड और आधार से लिंक सक्रिय मोबाइल नंबर चाहिए। यह सत्यापन सिर्फ 2 मिनट में पूरा हो जाता है।\nKey Inquiries: Thank you very much. Thank you very much. Thank you very much., I will tell you about the video., I have to refer me to myself.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "cfdbd079-c081-4259-a8eb-ae7f823ddb75",
+        "turn_count": 10
+      }
+    },
+    {
+      "chunk_id": "2b92891d-1f1e-4ead-a029-7f3cd6ae37db",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 36,
+      "content": "Call Interaction Summary [Session bf6e85c8-77da-4727-9a3c-33be69b93401]:\nCaller: I'm going to go to the toilet.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: I'm going to go to the toilet.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "bf6e85c8-77da-4727-9a3c-33be69b93401",
+        "turn_count": 2
+      }
+    },
+    {
+      "chunk_id": "1ecf80aa-e0b1-4e6c-a1fe-80be90099177",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 37,
+      "content": "Call Interaction Summary [Session unknown]:\nCaller: Thank you.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nCaller: Thank you very much.\nAssistant: माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।\nKey Inquiries: Thank you., Thank you very much.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "unknown",
+        "turn_count": 4
+      }
+    },
+    {
+      "chunk_id": "f452f54e-4ae6-47cc-9f30-860a246f58c8",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 38,
+      "content": "Customer Spoken Inquiry: \"UPI refund.\"\nVerified Resolution: \"यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\"\nSource: Live Telephone Interaction (8e4e424b-4284-4f25-a63e-064bdbb6f481)",
+      "metadata": {
+        "type": "voice_interaction_turn",
+        "call_uuid": "8e4e424b-4284-4f25-a63e-064bdbb6f481",
+        "caller_query": "UPI refund."
+      }
+    },
+    {
+      "chunk_id": "26c3e981-7724-4635-95bb-285179a2aee7",
+      "document_title": "Continuous Voice Call Learnings",
+      "source_type": "voice_call",
+      "chunk_index": 39,
+      "content": "Call Interaction Summary [Session 8e4e424b-4284-4f25-a63e-064bdbb6f481]:\nCaller: Thank you very much.\nCaller: Hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nCaller: Hello.\nAssistant: नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।\nCaller: UPI refund.\nAssistant: यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।\nKey Inquiries: Thank you very much., Hello., Hello.",
+      "metadata": {
+        "type": "call_summary",
+        "call_uuid": "8e4e424b-4284-4f25-a63e-064bdbb6f481",
+        "turn_count": 7
+      }
+    },
+    {
+      "chunk_id": "ed7ad929-7a0b-42f9-9d8a-3bda3df5bd2f",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 0,
+      "content": "[VIDEO KYC & IDENTITY VERIFICATION GUIDELINES]\n\nAudio Prompt ID: IVR-PROMPT-KYC-01\nHindi Guidance:\n\"वीडियो केवाईसी और खाता सत्यापन प्रक्रिया:\nअपने खाते की सीमा बढ़ाने या पूर्ण केवाईसी पूरा करने के लिए:\n1. आवश्यक दस्तावेज: आपका मूल पैन कार्ड (Original Physical PAN Card) और आधार कार्ड।\n2. चैट सपोर्ट में 'START KYC' या 'केवाईसी शुरू करें' लिखकर भेजें।\n3. आपको एसएमएस और चैट में एक सुरक्षित वीडियो कॉल लिंक प्राप्त होगा।\n4. शांत और अच्छी रोशनी वाले कमरे में लिंक खोलें। हमारे प्रमाणित अधिकारी 2 मिनट क",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "de0e05c0-b9cc-44da-b3e4-2547049bb97a",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 1,
+      "content": "रे में लिंक खोलें। हमारे प्रमाणित अधिकारी 2 मिनट की वीडियो कॉल में आपके मूल पैन कार्ड की तस्वीर लेंगे और लाइव फेस मैच करेंगे।\n5. सत्यापन पूरा होने के 1 घंटे के भीतर खाता पूर्ण सक्रिय हो जाता है।\"\n\nAudio Prompt ID: IVR-PROMPT-KYC-02\nEnglish Guidance:\n\"Digital Video KYC and Identity Verification:\n- Purpose: Complete full identity verification to increase monthly transaction limits and enable international services.\n- Mandatory Prerequisites: Original physical PAN card, Aadhaar-linked registered mo",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "551432bc-46e4-41f5-9431-05bdbb79f8f8",
+      "document_title": "Digital Video KYC & Document Verification (Hindi & English)",
+      "source_type": "kyc_procedure",
+      "chunk_index": 2,
+      "content": "al physical PAN card, Aadhaar-linked registered mobile for OTP, well-lit environment, and front camera access.\n- How to Initiate: Request 'Start Video KYC' in chat or press 4 on the IVR. A secure one-time video conference link will be dispatched via SMS.\n- Turnaround Time: The call takes 2 to 3 minutes. Your account is fully unlocked within 1 hour post-verification.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "3e9fb8ce-eb28-4e47-a784-49ab9ddc39bd",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 0,
+      "content": "[ORDER SHIPMENT, CANCELLATION & BILLING POLICY]\n\nAudio Prompt ID: IVR-PROMPT-ORD-01\nHindi Voice & Chat Rules:\n\"ऑर्डर डिलीवरी, रद्दीकरण और रिफंड नीतियां:\n1. डिलीवरी स्थिति: ऑर्डर डिस्पैच होते ही लाइव जीपीएस ट्रैकिंग लिंक आपके फोन पर एसएमएस द्वारा भेजा जाता है। डिलीवरी का सामान्य समय 2 से 4 कार्यदिवस है।\n2. ऑर्डर रद्दीकरण: गोदाम से निकलने (Dispatch) से पहले आप ऐप में 'Cancel Order' दबाकर या चैट में 'CANCEL <OrderID>' लिखकर बिना किसी शुल्क के ऑर्डर रद्द कर सकते हैं।\n3. रिफंड की समय-सीमा:\n   - यूपी",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "0a98913a-30ef-4c19-8880-d038a75d68e1",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 1,
+      "content": "रद्द कर सकते हैं।\n3. रिफंड की समय-सीमा:\n   - यूपीआई (UPI) और वॉलेट भुगतान: 24 घंटे के भीतर रिफंड।\n   - क्रेडिट/डेबिट कार्ड या नेट बैंकिंग: 5 से 7 कार्यदिवस (Business Days)।\n4. क्षतिग्रस्त उत्पाद या रिटर्न: यदि पार्सल क्षतिग्रस्त है या गलत सामान मिला है, तो 7 दिनों के भीतर चैट में फोटो अपलोड करके मुफ्त रिप्लेसमेंट प्राप्त करें।\"\n\nAudio Prompt ID: IVR-PROMPT-ORD-02\nEnglish Voice & Chat Rules:\n\"Shipment Tracking, Cancellation, and Refund Terms:\n- Tracking: Type 'TRACK <Order_ID>' in chat or press",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "3416b89e-10b3-44a4-a8dd-96222465b51a",
+      "document_title": "Order Tracking, Cancellation & Refund Policy (Hindi & English)",
+      "source_type": "order_billing_policy",
+      "chunk_index": 2,
+      "content": "racking: Type 'TRACK <Order_ID>' in chat or press 3 on the IVR. Real-time courier partner tracking and OTP details are sent via SMS.\n- Free Cancellation: You can cancel orders free of charge at any moment prior to dispatch.\n- Refund SLAs:\n  - UPI & Digital Wallets: Within 24 hours.\n  - Credit/Debit Cards & NetBanking: 5 to 7 business days depending on the card-issuing bank.\n- Returns: 7-day hassle-free return window for damaged, defective, or incorrect items with zero pickup fees.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "60281572-853d-4657-8051-e44a341976ac",
+      "document_title": "Telephony Greetings, Agent Capabilities & Conversational Dialogue",
+      "source_type": "conversational_dialogue",
+      "chunk_index": 0,
+      "content": "[GREETINGS, IDENTITY & CAPABILITY KNOWLEDGE]\n\nVoice Greeting (Hindi):\n\"नमस्ते! हमारी एआई सहायता सेवा में आपका स्वागत है। मैं आपका डिजिटल असिस्टेंट हूँ।\nमैं आपकी यूपीआई रिफंड स्थिति, बैंक खाता बैलेंस, डेबिट कार्ड ब्लॉकिंग, वीडियो केवाईसी, या ऑर्डर डिलीवरी ट्रैकिंग में पूरी मदद कर सकता हूँ।\nयदि आप किसी मानव अधिकारी (Live Agent) से बात करना चाहते हैं, तो आप कभी भी 'एजेंट' कह सकते हैं। आज मैं आपकी क्या सहायता करूँ?\"\n\nVoice Greeting (English):\n\"Hello! Welcome to our 24/7 AI Customer Support helpline",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "7bd4c89a-ca49-484c-8c99-64a622672ede",
+      "document_title": "Telephony Greetings, Agent Capabilities & Conversational Dialogue",
+      "source_type": "conversational_dialogue",
+      "chunk_index": 1,
+      "content": "! Welcome to our 24/7 AI Customer Support helpline. I am your automated virtual assistant.\nI can help you with your UPI refund status, account balance inquiries, debit or credit card blocking, digital Video KYC verification, and order shipment tracking.\nYou can also ask to speak with a human support agent at any time by pressing 9 or saying 'Agent'. How may I assist you today?\"\n\nConversational Speech & Audio Clarifications:\n- If caller says 'Awaaz nahi aa rahi' or 'Can you hear me?':\n  \"हाँजी, म",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "d1549cba-0028-45b2-883c-ad9ebc8a3d9b",
+      "document_title": "Telephony Greetings, Agent Capabilities & Conversational Dialogue",
+      "source_type": "conversational_dialogue",
+      "chunk_index": 2,
+      "content": "z nahi aa rahi' or 'Can you hear me?':\n  \"हाँजी, मुझे आपकी आवाज़ बिल्कुल साफ़ और स्पष्ट आ रही है। कृपया अपनी समस्या बताइए, मैं तुरंत समाधान करूँगा।\"\n  \"Yes, I can hear you loud and clear! Please go ahead with your question and I will assist you right away.\"\n- If caller says 'Slow down' or 'Thoda dheere bolo':\n  \"जी बिल्कुल, मैं थोड़ा धीरे बोलता हूँ। आप आराम से अपनी बात बताइए।\"\n  \"Certainly! I will speak more slowly for you. Please tell me how I can help.\"\n- If caller says 'Thank you' or 'Dhanyaw",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "dd1a2259-a886-4b6f-8068-65e85d27c4dc",
+      "document_title": "Telephony Greetings, Agent Capabilities & Conversational Dialogue",
+      "source_type": "conversational_dialogue",
+      "chunk_index": 3,
+      "content": "an help.\"\n- If caller says 'Thank you' or 'Dhanyawad' or 'Shukriya':\n  \"अरे, आपका बहुत-बहुत धन्यवाद! क्या मैं आपकी किसी अन्य सेवा में सहायता कर सकता हूँ?\"\n  \"You are most welcome! Is there anything else I can assist you with today?\"\n- If caller says 'Bye' or 'Tata' or 'Alvida':\n  \"हमारे साथ संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो! अलविदा।\"\n  \"Thank you for contacting Customer Support. Have a wonderful day ahead! Goodbye.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "277041f1-4f5f-4e22-a58b-e16c7cf01fee",
+      "document_title": "Debit Card, Credit Card, ATM & Emergency Fraud Resolution",
+      "source_type": "card_security_policy",
+      "chunk_index": 0,
+      "content": "[CARD SERVICES, ATM & EMERGENCY ACCOUNT FREEZE PROTOCOL]\n\nEmergency Lost/Stolen Card Blocking (Hindi):\n\"खोए या चोरी हुए डेबिट/क्रेडिट कार्ड को तुरंत ब्लॉक करने के लिए:\n1. किसी भी अनधिकृत लेनदेन (Fraud Transaction) को रोकने के लिए तुरंत 'BLOCK CARD' बोलें या IVR पर '0' दबाएं। यह कॉल बिना किसी प्रतीक्षा के 24x7 इमरजेंसी सुरक्षा डेस्क पर स्थानांतरित कर दी जाती है।\n2. कार्ड ब्लॉक होते ही आपके खाते से सभी एटीएम, ऑनलाइन पीओएस और अंतरराष्ट्रीय लेन-देन तुरंत फ्रीज हो जाते हैं।\n3. नया रिप्लेसमेंट कार्ड",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "653af4fb-63bc-4b2e-97bc-c23f7cfe2fdf",
+      "document_title": "Debit Card, Credit Card, ATM & Emergency Fraud Resolution",
+      "source_type": "card_security_policy",
+      "chunk_index": 1,
+      "content": "तुरंत फ्रीज हो जाते हैं।\n3. नया रिप्लेसमेंट कार्ड आपके पंजीकृत डाक पते पर 5 से 7 कार्यदिवसों में बिना किसी अतिरिक्त शुल्क के डिलीवर कर दिया जाएगा।\"\n\nEmergency Lost/Stolen Card Blocking (English):\n\"Emergency Card Blocking and Fraud Prevention:\n- To immediately block a lost, stolen, or compromised debit or credit card, press 0 on your dial pad or speak 'Block Card' or 'Fraud'.\n- Emergency security requests bypass all queues and immediately freeze all ATM, online eCommerce, POS, and contactless tra",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "e30fb213-9a61-4c0c-a0a4-f612100f70b6",
+      "document_title": "Debit Card, Credit Card, ATM & Emergency Fraud Resolution",
+      "source_type": "card_security_policy",
+      "chunk_index": 2,
+      "content": "ll ATM, online eCommerce, POS, and contactless transactions.\n- A new chip-and-PIN replacement card will be dispatched to your registered communication address within 5 to 7 business days.\"\n\nATM PIN Generation & Daily Limits:\n- ATM PIN Reset: You can generate a Green PIN instantly via Mobile Banking app or by visiting any nearby bank ATM with your registered mobile OTP.\n- Daily Cash Withdrawal Limit: Standard debit cards have a daily ATM cash limit of ₹40,000 to ₹1,00,000 depending on your card v",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "6caf3c89-980e-4cd9-ab07-1a64e6fdb276",
+      "document_title": "Debit Card, Credit Card, ATM & Emergency Fraud Resolution",
+      "source_type": "card_security_policy",
+      "chunk_index": 3,
+      "content": "t of ₹40,000 to ₹1,00,000 depending on your card variant.\n- Unblocking Temporarily Locked Card: If your card was locked due to 3 incorrect PIN attempts, it unlocks automatically after 24 hours, or you can unlock it immediately in Mobile Banking under 'Manage Cards'.",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "3517e737-80c1-4170-a115-0fdafc0b5743",
+      "document_title": "Account Balance, Mini Statements, Passbook & Bank Timings",
+      "source_type": "banking_account_policy",
+      "chunk_index": 0,
+      "content": "[ACCOUNT BALANCE, STATEMENTS & BRANCH TIMINGS]\n\nAccount Balance & Statement Check (Hindi):\n\"बैंक खाता शेष और मिनी स्टेटमेंट की जानकारी:\n1. खाता शेष (Balance): अपने पंजीकृत मोबाइल नंबर से बैलेंस जानने के लिए 'BALANCE' बोलें या IVR पर 1 दबाएं। आपके खाते का उपलब्ध बैलेंस और अंतिम 3 लेन-देन का विवरण तुरंत एसएमएस द्वारा भेज दिया जाएगा।\n2. बैंक स्टेटमेंट (e-Statement): पिछले 1 महीने, 3 महीने या 1 साल का स्टेटमेंट सीधे आपकी पंजीकृत ईमेल आईडी पर पासवर्ड-सुरक्षित पीडीएफ (PDF) के रूप में 5 मिनट के भीतर भ",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "7591b9b3-1162-451b-aee8-035693258c55",
+      "document_title": "Account Balance, Mini Statements, Passbook & Bank Timings",
+      "source_type": "banking_account_policy",
+      "chunk_index": 1,
+      "content": "-सुरक्षित पीडीएफ (PDF) के रूप में 5 मिनट के भीतर भेज दिया जाता है।\n3. शाखा का समय (Branch Timings): हमारी सभी बैंक शाखाएं सोमवार से शुक्रवार सुबह 10:00 बजे से शाम 4:00 बजे तक और महीने के पहले, तीसरे और पांचवें शनिवार को खुली रहती हैं। दूसरे और चौथे शनिवार तथा रविवार को अवकाश रहता है।\"\n\nAccount Balance & Statement Check (English):\n\"Account Balance Inquiries and Bank Working Hours:\n- Balance & Mini Statement: Inquire about your available account balance by pressing 1 or speaking 'Balance'. A real-",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "552965c3-7142-468e-8a2f-10587771e63d",
+      "document_title": "Account Balance, Mini Statements, Passbook & Bank Timings",
+      "source_type": "banking_account_policy",
+      "chunk_index": 2,
+      "content": "lance by pressing 1 or speaking 'Balance'. A real-time SMS summary of your available balance and last 3 transactions will be delivered instantly.\n- Detailed Statement: Monthly or annual account statements in password-protected PDF format can be delivered to your registered email address within 5 minutes.\n- Branch Timings: Physical branches operate Monday through Friday from 10:00 AM to 4:00 PM IST, and on the 1st, 3rd, and 5th Saturdays of the month. Branches remain closed on the 2nd and 4th Sat",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "a69e3718-50f2-4762-a5f3-97907768c128",
+      "document_title": "Account Balance, Mini Statements, Passbook & Bank Timings",
+      "source_type": "banking_account_policy",
+      "chunk_index": 3,
+      "content": "nth. Branches remain closed on the 2nd and 4th Saturdays, public holidays, and Sundays.\"\n\nIFSC Code & Bank Transfers:\n- IMPS (Immediate Payment Service): 24x7 instant transfer up to ₹5,00,000 with zero waiting time.\n- NEFT & RTGS: Available 24x7 with zero processing charges for retail internet banking users.\n- IFSC Code Verification: Check your branch IFSC code printed on your chequebook front page or ask our assistant with your branch city name.",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "f79942cb-9871-4b97-b21a-0bec3158a106",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 0,
+      "content": "[IVR SYSTEM GREETING - HINDI & ENGLISH VOICE SCRIPTS]\n\nAudio Prompt ID: IVR-PROMPT-001\nHindi Voice Transcript:\n\"नमस्ते! हमारी 24x7 ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। \nहिंदी में जारी रखने के लिए 1 दबाएं। \nTo continue in English, press 2.\nखाता शेष और बिलिंग पूछताछ के लिए 3 दबाएं।\nयूपीआई भुगतान विफलता या रिफंड स्थिति के लिए 4 दबाएं।\nऑर्डर और कूरियर ट्रैकिंग के लिए 5 दबाएं।\nवीडियो केवाईसी और खाता अनब्लॉक के लिए 6 दबाएं।\nहमारे ग्राहक सेवा प्रतिनिधि (Customer Care Executive) से सीधे बात करने क",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "519138f9-2a61-4d7b-8ad0-3328c16e8b97",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 1,
+      "content": "िनिधि (Customer Care Executive) से सीधे बात करने के लिए किसी भी समय 9 दबाएं या 'एजेंट' बोलें।\"\n\nAudio Prompt ID: IVR-PROMPT-002\nEnglish Voice Transcript:\n\"Thank you for calling Customer Support.\nFor Account Balance and Billing inquiries, press 1.\nFor UPI transaction failure, deduction issues, and refund status, press 2.\nTo track your recent delivery or shipment, press 3.\nFor Video KYC verification and profile unlock, press 4.\nTo transfer your call directly to a live customer service specialist,",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "f98ea158-c524-405c-8b67-fde8e31f59e4",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 2,
+      "content": "l directly to a live customer service specialist, press 9 or say 'Representative' at any prompt.\"\n\n[DTMF KEYPAD ROUTING LOGIC]\n- Key 1 / Hindi Key 3: Routes to Account Balance & Billing sub-menu.\n- Key 2 / Hindi Key 4: Routes to Instant UPI & Refund automated resolution engine.\n- Key 3 / Hindi Key 5: Requests 10-digit Order ID or Registered Mobile number for live shipment tracking.\n- Key 4 / Hindi Key 6: Triggers automated SMS with a secure Video KYC link.\n- Key 9: Bypasses automated voice promp",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "ed6dd038-0759-48d7-88ef-0006534cfaa4",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 3,
+      "content": "KYC link.\n- Key 9: Bypasses automated voice prompts and places call in human executive queue. Average wait time is under 2 minutes.",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "83f5bb78-20d4-41af-8e08-060e6b28d07a",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 0,
+      "content": "[UPI PAYMENT FAILURE & AUTO-REFUND RESOLUTION PROTOCOL]\n\nAudio Prompt ID: IVR-PROMPT-UPI-01\nHindi Voice & Chat Guidance:\n\"यूपीआई पेमेंट विफलता और रिफंड दिशानिर्देश:\nयदि आपके बैंक खाते से पैसे कट गए हैं परंतु मर्चेंट या ऑर्डर को भुगतान प्राप्त नहीं हुआ है, तो घबराएं नहीं। \nभारतीय राष्ट्रीय भुगतान निगम (NPCI) और भारतीय रिजर्व बैंक (RBI) के नियमानुसार, ऐसी सभी विफल लेनदेन की राशि 24 से 48 बैंकिंग घंटों (24 to 48 Banking Hours) के भीतर स्वतः आपके मूल बैंक खाते में वापस (Auto-Refund) जमा कर दी जाती",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "f46d3558-a8a0-4397-9074-9b82a581f9bb",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 1,
+      "content": "ल बैंक खाते में वापस (Auto-Refund) जमा कर दी जाती है।\nरिफंड की स्थिति ट्रैक करने के लिए:\n1. अपने बैंक या यूपीआई ऐप (GPay, PhonePe, Paytm) में 12-अंकों का यूपीआई यूटीआर नंबर (UTR - Unique Transaction Reference) देखें।\n2. चैट में 'REFUND <12-अंकों का UTR>' लिखकर भेजें या IVR पर 4 दबाएं।\n3. यदि 48 घंटे के बाद भी पैसा वापस न आए, तो चैट में 'DISPUTE' टाइप करें या 9 दबाकर बैंक विवाद निपटान अधिकारी से बात करें।\"\n\nAudio Prompt ID: IVR-PROMPT-UPI-02\nEnglish Voice & Chat Guidance:\n\"UPI Transaction Failure",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "4e813cee-1d47-4cee-99b4-a4687629cf74",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 2,
+      "content": "sh Voice & Chat Guidance:\n\"UPI Transaction Failure and Refund Protocol:\nIf funds have been debited from your account via UPI but the transaction displays as pending or failed, the amount is held securely in the NPCI inter-bank settlement pool.\nUnder official RBI guidelines, debited amounts from failed UPI transactions are automatically refunded to your originating bank account within 24 to 48 business hours.\nHow to track or escalate:\n- Locate the 12-digit UTR (Unique Transaction Reference) numbe",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "21cc62ae-f1b0-4947-b2e6-c429bc849ffe",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 3,
+      "content": "12-digit UTR (Unique Transaction Reference) number from your bank statement or UPI application.\n- In support chat, message 'REFUND <12-digit UTR>' or enter it on the IVR keypad after selecting option 2.\n- If funds are not credited after 48 banking hours, an automated dispute ticket is created and routed directly to the bank nodal officer.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "a1111111-1111-4111-a111-111111111111",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 100,
+      "content": "[ୟୁପିଆଇ ପେମେଣ୍ଟ ବିଫଳତା ଏବଂ ସ୍ୱୟଂଚାଳିତ ରିଫଣ୍ଡ ନିୟମାବଳୀ - UPI Refund Protocol in Odia]\nଯଦି ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଖାତାରୁ ୟୁପିଆଇ (UPI) ମାଧ୍ୟମରେ ଟଙ୍କା କଟିଯାଇଛି କିନ୍ତୁ କାରବାର ବିଫଳ (failed) ହୋଇଛି, ତେବେ ଭାରତୀୟ ରିଜର୍ଭ ବ୍ୟାଙ୍କ (RBI) ଏବଂ NPCI ର ନିୟମ ଅନୁଯାୟୀ ୨୪ ରୁ ୪୮ ବ୍ୟାଙ୍କିଙ୍ଗ୍ କାର୍ଯ୍ୟଦିବସ ମଧ୍ୟରେ ସମ୍ପୂର୍ଣ୍ଣ ଟଙ୍କା ସ୍ୱୟଂଚାଳିତ ଭାବରେ ଆପଣଙ୍କ ମୂଳ ବ୍ୟାଙ୍କ ଖାତାକୁ ଫେରସ୍ତ (Auto-Refund) ଆସିଥାଏ। ଆପଣ ନିଜ ବ୍ୟାଙ୍କ ଷ୍ଟେଟମେଣ୍ଟ କିମ୍ବା ୟୁପିଆଇ ଆପ୍‌ରୁ ୧୨ ଅଙ୍କ ବିଶିଷ୍ଟ ୟୁଟିଆର୍ (UTR) ନମ୍ବର ସାହାଯ୍ୟରେ ରିଫଣ୍ଡ ସ୍ଥିତି ଯାଞ୍ଚ କରିପାରିବେ।",
+      "metadata": {
+        "language": "or",
+        "category": "ivr_policy"
+      }
+    },
+    {
+      "chunk_id": "2fbfcc5f-d89f-477a-87d2-74b33e8600bd",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 0,
+      "content": "[LIVE AGENT ESCALATION & CALL TRANSFER PROTOCOL]\n\nAudio Prompt ID: IVR-PROMPT-ESC-01\nHindi Voice & Chat Support Script:\n\"कस्टमर केयर एक्जीक्यूटिव से लाइव बातचीत (Agent Transfer):\nयदि आप हमारे किसी सहायता विशेषज्ञ से सीधे बात करना चाहते हैं, तो:\n1. IVR कॉल पर 9 दबाएं या स्पष्ट स्वर में 'कस्टमर केयर' या 'एजेंट' बोलें।\n2. हमारी लाइव सपोर्ट टीम सप्ताह के सातों दिन (सोमवार से रविवार) सुबह 8:00 बजे से रात 11:00 बजे तक उपलब्ध रहती है।\n3. कॉल ट्रांसफर से पहले कृपया अपना 4-अंकीय टेलीफोन पिन (T-PIN) या प",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "2749316e-5689-4010-8d8c-cc0e7eb258c4",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 1,
+      "content": "े पहले कृपया अपना 4-अंकीय टेलीफोन पिन (T-PIN) या पंजीकृत मोबाइल नंबर पर आया ओटीपी (OTP) तैयार रखें।\n4. किसी भी वित्तीय धोखाधड़ी या कार्ड/खाता तुरंत ब्लॉक करने के लिए IVR पर 0 दबाएं, यह कॉल बिना किसी प्रतीक्षा के आपातकालीन सुरक्षा डेस्क पर ट्रांसफर हो जाएगी।\"\n\nAudio Prompt ID: IVR-PROMPT-ESC-02\nEnglish Voice & Chat Support Script:\n\"Connecting to a Live Customer Support Specialist:\n- To speak with a human support agent at any time, press 9 on your dial pad or speak 'Agent' or 'Representative'.\n- O",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "e5d0fb23-09cb-4d96-bf9f-29f541b58b92",
+      "document_title": "Live Agent Transfer & Customer Care Escalation (Hindi & English)",
+      "source_type": "escalation_guide",
+      "chunk_index": 2,
+      "content": "dial pad or speak 'Agent' or 'Representative'.\n- Operating Hours: Live phone and chat assistance is available 7 days a week, 8:00 AM to 11:00 PM IST.\n- Average Queue Wait Time: Under 2 minutes during peak hours.\n- Verification Requirement: You will be asked to confirm the last 4 digits of your registered mobile number or enter a 4-digit IVR T-PIN.\n- Emergency Fraud Hotkey: Press 0 immediately to report unauthorized activity or freeze your account with zero queue delay.\"",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "b36a0b74-2d7c-4b69-b19a-72c8afe16bfe",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 0,
+      "content": "[IVR SYSTEM GREETING - HINDI & ENGLISH VOICE SCRIPTS]\n\nAudio Prompt ID: IVR-PROMPT-001\nHindi Voice Transcript:\n\"नमस्ते! हमारी 24x7 ग्राहक सेवा हेल्पलाइन में आपका स्वागत है। \nहिंदी में जारी रखने के लिए 1 दबाएं। \nTo continue in English, press 2.\nखाता शेष और बिलिंग पूछताछ के लिए 3 दबाएं।\nयूपीआई भुगतान विफलता या रिफंड स्थिति के लिए 4 दबाएं।\nऑर्डर और कूरियर ट्रैकिंग के लिए 5 दबाएं।\nवीडियो केवाईसी और खाता अनब्लॉक के लिए 6 दबाएं।\nहमारे ग्राहक सेवा प्रतिनिधि (Customer Care Executive) से सीधे बात करने क",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "8de19b83-928a-43e1-9d55-95b3d7e6514d",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 1,
+      "content": "िनिधि (Customer Care Executive) से सीधे बात करने के लिए किसी भी समय 9 दबाएं या 'एजेंट' बोलें।\"\n\nAudio Prompt ID: IVR-PROMPT-002\nEnglish Voice Transcript:\n\"Thank you for calling Customer Support.\nFor Account Balance and Billing inquiries, press 1.\nFor UPI transaction failure, deduction issues, and refund status, press 2.\nTo track your recent delivery or shipment, press 3.\nFor Video KYC verification and profile unlock, press 4.\nTo transfer your call directly to a live customer service specialist,",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "6724cf09-c7ae-414a-ba9f-b56516469bf8",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 2,
+      "content": "l directly to a live customer service specialist, press 9 or say 'Representative' at any prompt.\"\n\n[DTMF KEYPAD ROUTING LOGIC]\n- Key 1 / Hindi Key 3: Routes to Account Balance & Billing sub-menu.\n- Key 2 / Hindi Key 4: Routes to Instant UPI & Refund automated resolution engine.\n- Key 3 / Hindi Key 5: Requests 10-digit Order ID or Registered Mobile number for live shipment tracking.\n- Key 4 / Hindi Key 6: Triggers automated SMS with a secure Video KYC link.\n- Key 9: Bypasses automated voice promp",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "64dea926-16c1-4e15-aaeb-6a794c28afbd",
+      "document_title": "IVR Call Routing & Voice Menu Prompts (Hindi & English)",
+      "source_type": "ivr_audio_script",
+      "chunk_index": 3,
+      "content": "KYC link.\n- Key 9: Bypasses automated voice prompts and places call in human executive queue. Average wait time is under 2 minutes.",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "3a144e7b-4e5d-43e5-8b77-4ecd52d279f8",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 0,
+      "content": "[UPI PAYMENT FAILURE & AUTO-REFUND RESOLUTION PROTOCOL]\n\nAudio Prompt ID: IVR-PROMPT-UPI-01\nHindi Voice & Chat Guidance:\n\"यूपीआई पेमेंट विफलता और रिफंड दिशानिर्देश:\nयदि आपके बैंक खाते से पैसे कट गए हैं परंतु मर्चेंट या ऑर्डर को भुगतान प्राप्त नहीं हुआ है, तो घबराएं नहीं। \nभारतीय राष्ट्रीय भुगतान निगम (NPCI) और भारतीय रिजर्व बैंक (RBI) के नियमानुसार, ऐसी सभी विफल लेनदेन की राशि 24 से 48 बैंकिंग घंटों (24 to 48 Banking Hours) के भीतर स्वतः आपके मूल बैंक खाते में वापस (Auto-Refund) जमा कर दी जाती",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "5c3dbc01-4dea-4321-b901-649d4d8c207d",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 1,
+      "content": "ल बैंक खाते में वापस (Auto-Refund) जमा कर दी जाती है।\nरिफंड की स्थिति ट्रैक करने के लिए:\n1. अपने बैंक या यूपीआई ऐप (GPay, PhonePe, Paytm) में 12-अंकों का यूपीआई यूटीआर नंबर (UTR - Unique Transaction Reference) देखें।\n2. चैट में 'REFUND <12-अंकों का UTR>' लिखकर भेजें या IVR पर 4 दबाएं।\n3. यदि 48 घंटे के बाद भी पैसा वापस न आए, तो चैट में 'DISPUTE' टाइप करें या 9 दबाकर बैंक विवाद निपटान अधिकारी से बात करें।\"\n\nAudio Prompt ID: IVR-PROMPT-UPI-02\nEnglish Voice & Chat Guidance:\n\"UPI Transaction Failure",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "9ba85df7-53dc-4488-b842-e5bf8b994e3f",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 2,
+      "content": "sh Voice & Chat Guidance:\n\"UPI Transaction Failure and Refund Protocol:\nIf funds have been debited from your account via UPI but the transaction displays as pending or failed, the amount is held securely in the NPCI inter-bank settlement pool.\nUnder official RBI guidelines, debited amounts from failed UPI transactions are automatically refunded to your originating bank account within 24 to 48 business hours.\nHow to track or escalate:\n- Locate the 12-digit UTR (Unique Transaction Reference) numbe",
+      "metadata": {}
+    },
+    {
+      "chunk_id": "2ee866f1-2a1f-48b4-95bf-05ceb7ab1ed5",
+      "document_title": "UPI Payment Failures & Refund Timelines (Hindi & English)",
+      "source_type": "support_policy",
+      "chunk_index": 3,
+      "content": "12-digit UTR (Unique Transaction Reference) number from your bank statement or UPI application.\n- In support chat, message 'REFUND <12-digit UTR>' or enter it on the IVR keypad after selecting option 2.\n- If funds are not credited after 48 banking hours, an automated dispute ticket is created and routed directly to the bank nodal officer.\"",
+      "metadata": {}
+    }
+  ]
+}

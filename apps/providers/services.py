@@ -136,6 +136,8 @@ class ProviderBridge:
 
         try:
             tts = provider_registry.get_tts_adapter("mock_tts")
+            if hasattr(tts, "warmup"):
+                tts.warmup()
             if hasattr(tts, "synthesize"):
                 import asyncio
                 phrases = [

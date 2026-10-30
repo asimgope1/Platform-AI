@@ -26,9 +26,9 @@ class SentenceTransformersEmbeddingAdapter(BaseEmbeddingAdapter):
                     try:
                         from sentence_transformers import SentenceTransformer
                         try:
-                            self._GLOBAL_MODELS[self.model_name] = SentenceTransformer(self.model_name, local_files_only=True)
+                            self._GLOBAL_MODELS[self.model_name] = SentenceTransformer(self.model_name, device="cpu", local_files_only=True)
                         except Exception:
-                            self._GLOBAL_MODELS[self.model_name] = SentenceTransformer(self.model_name)
+                            self._GLOBAL_MODELS[self.model_name] = SentenceTransformer(self.model_name, device="cpu")
                     except Exception as exc:
                         raise ProviderError(
                             self.provider_id,

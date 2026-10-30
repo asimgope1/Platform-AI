@@ -36,7 +36,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["services*", "platform_core*", "api*", "orchestration*", "providers*", "tools*", "retrieval*", "audio*", "storage*"]
+include = ["services*", "platform_core*", "api*", "orchestration*", "providers*", "tools*", "retrieval*", "audio*", "storage*", "telephony*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

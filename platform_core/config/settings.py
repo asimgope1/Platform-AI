@@ -31,6 +31,12 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     OPENAI_BASE_URL: Optional[str] = "https://api.openai.com/v1"
 
+    # Telephony / PBX
+    PBX_WS_URL: Optional[str] = None
+    PBX_IGNORE_TRANSCRIPT: bool = True
+    IVR_CHAT_MODEL: str = "mock-chat"
+    IVR_LANGUAGE: str = "en"
+
 
 def validate_master_key(cfg: Settings) -> None:
     """Validates that production environments enforce a secure, non-placeholder MASTER_API_KEY."""

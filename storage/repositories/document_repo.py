@@ -130,3 +130,60 @@ class DocumentRepository:
 
         scored_chunks.sort(key=lambda x: x[1], reverse=True)
         return scored_chunks[:top_k]
+
+    async def get_or_create_document(
+        self,
+        tenant_id: str,
+        title: str,
+        source_type: str = "voice_call",
+    ) -> Document:
+        """Find an existing document by title for the tenant, or create a new one."""
+        stmt = select(Document).where(
+            Document.tenant_id == tenant_id,
+            Document.title == title,
+        )
+        res = await self.session.execute(stmt)
+        doc = res.scalar_one_or_none()
+        if not doc:
+            doc = Document(tenant_id=tenant_id, title=title, source_type=source_type)
+            self.session.add(doc)
+            await self.session.commit()
+            await self.session.refresh(doc)
+        return doc
+
+    async def append_chunk(
+        self,
+        document_id: str,
+        tenant_id: str,
+        content: str,
+        embedding: List[float],
+        meta: Optional[dict] = None,
+    ) -> DocumentChunk:
+        """Append a single newly learned knowledge chunk into pgvector."""
+        stmt = select(DocumentChunk).where(DocumentChunk.document_id == document_id)
+        res = await self.session.execute(stmt)
+        existing_chunks = list(res.scalars().all())
+        next_idx = len(existing_chunks)
+
+        emb_384 = embedding if len(embedding) == 384 else None
+        emb_768 = embedding if len(embedding) == 768 else None
+
+        chunk = DocumentChunk(
+            document_id=document_id,
+            tenant_id=tenant_id,
+            chunk_index=next_idx,
+            content=content,
+            embedding=emb_384,
+            embedding_768=emb_768,
+            embedding_json=json.dumps(embedding),
+            meta_json=json.dumps(meta) if meta else None,
+        )
+        self.session.add(chunk)
+
+        doc = await self.session.get(Document, document_id)
+        if doc:
+            doc.total_chunks = next_idx + 1
+
+        await self.session.commit()
+        await self.session.refresh(chunk)
+        return chunk

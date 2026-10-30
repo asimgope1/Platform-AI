@@ -7,6 +7,7 @@ from platform_core.errors.api_errors import platform_error_handler, create_error
 from api.middleware.request_id import RequestIdMiddleware
 from api.middleware.rate_limit import RateLimitMiddleware
 from api.routes import health, models, chat_completions, embeddings, documents, audio_transcriptions, audio_speech
+from api.routes import ivr_websocket
 from services.api.lifespan import lifespan
 
 
@@ -50,6 +51,7 @@ def create_app() -> FastAPI:
     app.include_router(documents.router)
     app.include_router(audio_transcriptions.router)
     app.include_router(audio_speech.router)
+    app.include_router(ivr_websocket.router)
 
     # Mount Interactive Test UI Console
     static_file = os.path.join(os.path.dirname(__file__), "static", "index.html")

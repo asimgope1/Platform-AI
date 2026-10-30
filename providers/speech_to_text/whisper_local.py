@@ -118,7 +118,9 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         # Run whisper pipeline
         pipe = self._get_pipeline()
         kwargs = {}
-        if language in ("or", "or-IN", "ory", "odia"):
+        if language in ("auto", "any", "multilingual", None, "", "all"):
+            target_lang = None  # Automatic multilingual detection across 99+ languages
+        elif language in ("or", "or-IN", "ory", "odia"):
             target_lang = None  # Automatic multilingual detection without forcing nonexistent tokenizer code
         elif language in ("hi", "hindi", "hi-IN"):
             target_lang = "hi"

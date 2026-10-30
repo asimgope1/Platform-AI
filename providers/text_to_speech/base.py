@@ -16,9 +16,72 @@ import wave
 
 
 _TTS_CACHE: Dict[str, bytes] = {}
+_ODIA_VITS_MODEL = None
+_ODIA_VITS_TOKENIZER = None
+
+def _get_odia_vits():
+    global _ODIA_VITS_MODEL, _ODIA_VITS_TOKENIZER
+    if _ODIA_VITS_MODEL is None:
+        try:
+            import torch
+            from transformers import VitsModel, AutoTokenizer
+            model_id = "facebook/mms-tts-ory"
+            _ODIA_VITS_TOKENIZER = AutoTokenizer.from_pretrained(model_id)
+            _ODIA_VITS_MODEL = VitsModel.from_pretrained(model_id)
+            _ODIA_VITS_MODEL.eval()
+        except Exception:
+            _ODIA_VITS_MODEL = False
+    return _ODIA_VITS_MODEL, _ODIA_VITS_TOKENIZER
 
 class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
-    """Produces ultra-natural neural spoken audio (Edge-TTS hi-IN-SwaraNeural / en-IN-NeerjaNeural) with caching and local fallback."""
+    """Produces native Odia VITS neural speech (facebook/mms-tts-ory) and Edge-TTS voices with caching."""
+
+    @classmethod
+    def warmup(cls):
+        """Pre-warm native Odia VITS model so first turn is instant."""
+        try:
+            _get_odia_vits()
+        except Exception:
+            pass
+
+    def _synthesize_native_odia_vits_sync(self, text: str) -> Optional[bytes]:
+        """Synthesizes authentic native Odia speech directly from Odia Unicode text."""
+        model, tokenizer = _get_odia_vits()
+        if not model or not tokenizer:
+            return None
+        try:
+            import re
+            import torch
+            import numpy as np
+
+            # Expand numbers/digits to spoken native Odia words so the acoustic model pronounces them
+            odia_digits = {
+                '0': ' ଶୂନ ', '1': ' ଏକ ', '2': ' ଦୁଇ ', '3': ' ତିନି ', '4': ' ଚାରି ',
+                '5': ' ପାଞ୍ଚ ', '6': ' ଛଅ ', '7': ' ସାତ ', '8': ' ଆଠ ', '9': ' ନଅ ',
+                '୦': ' ଶୂନ ', '୧': ' ଏକ ', '୨': ' ଦୁଇ ', '୩': ' ତିନି ', '୪': ' ଚାରି ',
+                '୫': ' ପାଞ୍ଚ ', '୬': ' ଛଅ ', '୭': ' ସାତ ', '୮': ' ଆଠ ', '୯': ' ନଅ ',
+            }
+            clean_text = text
+            for d, w in odia_digits.items():
+                clean_text = clean_text.replace(d, w)
+            clean_text = re.sub(r"\s+", " ", clean_text).strip()
+
+            inputs = tokenizer(clean_text, return_tensors="pt")
+            with torch.no_grad():
+                output = model(**inputs).waveform
+            arr = (output.squeeze().cpu().numpy() * 32767).clip(-32768, 32767).astype(np.int16)
+            buf = io.BytesIO()
+            with wave.open(buf, "wb") as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(model.config.sampling_rate)
+                wf.writeframes(arr.tobytes())
+            wav_bytes = buf.getvalue()
+            if wav_bytes and len(wav_bytes) > 100:
+                return wav_bytes
+        except Exception:
+            return None
+        return None
 
     async def _synthesize_edge_tts(self, text: str, voice: str, rate: str = "+0%") -> Optional[bytes]:
         try:
@@ -42,7 +105,7 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
                 out_path = tf.name
             subprocess.run(
-                ["say", "-v", voice, "-r", "185", "-o", out_path, "--data-format=LEI16@22050", text],
+                ["say", "-v", voice, "-r", "165", "-o", out_path, "--data-format=LEI16@22050", text],
                 check=True,
                 timeout=5,
             )
@@ -58,7 +121,7 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
 
     @classmethod
     def _odia_to_phonetic(cls, text: str) -> str:
-        """Transliterates Odia (ଓଡ଼ିଆ) Unicode script to natural Brahmic phonetic equivalent for neural TTS voice engines."""
+        """Transliterates Odia (ଓଡ଼ିଆ) Unicode script to natural Brahmic phonetic equivalent for fallback neural TTS engines."""
         special = {
             'ଆଜ୍ଞା': 'आग्याँ',
             'କ’ଣ': 'कण',
@@ -114,18 +177,35 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         if cache_key in _TTS_CACHE:
             return _TTS_CACHE[cache_key]
 
-        # Detect language / script for natural neural voice selection
+        # Detect language / script
         has_odia = any('\u0b00' <= ch <= '\u0b7f' for ch in clean_text)
         has_hindi = any('\u0900' <= ch <= '\u097f' for ch in clean_text)
-        spoken_text = self._odia_to_phonetic(clean_text) if has_odia else clean_text
-        neural_voice = "hi-IN-SwaraNeural" if (has_hindi or has_odia) else "en-IN-NeerjaNeural"
-        speech_rate = "-2%" if has_odia else "+0%"
+        has_tamil = any('\u0b80' <= ch <= '\u0bff' for ch in clean_text)
+        has_telugu = any('\u0c00' <= ch <= '\u0c7f' for ch in clean_text)
+        has_kannada = any('\u0c80' <= ch <= '\u0cff' for ch in clean_text)
 
-        # Primary: Ultra-realistic neural speech with human breathing and natural intonation
+        # Primary for pure Odia text: Native Odia neural VITS model (facebook/mms-tts-ory)
+        is_pure_odia = has_odia and not any('a' <= ch.lower() <= 'z' for ch in clean_text)
+        if is_pure_odia:
+            try:
+                native_odia_audio = await asyncio.to_thread(self._synthesize_native_odia_vits_sync, clean_text)
+                if native_odia_audio and len(native_odia_audio) > 500:
+                    if len(_TTS_CACHE) < 250:
+                        _TTS_CACHE[cache_key] = native_odia_audio
+                    return native_odia_audio
+            except Exception:
+                pass
+
+        has_indian_context = has_hindi or has_odia or any(w in clean_text.lower() for w in ("namaste", "dabayein", "dabantu", "paayein", "odia", "hindi"))
+        spoken_text = self._odia_to_phonetic(clean_text) if has_odia else clean_text
+        neural_voice = "hi-IN-SwaraNeural" if has_indian_context else "en-IN-NeerjaNeural"
+        speech_rate = "-6%"
+
+        # Secondary: Ultra-realistic neural speech
         try:
             edge_audio = await asyncio.wait_for(
                 self._synthesize_edge_tts(spoken_text, neural_voice, rate=speech_rate),
-                timeout=4.0
+                timeout=7.0
             )
             if edge_audio:
                 if len(_TTS_CACHE) < 250:
@@ -134,9 +214,22 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         except Exception:
             pass
 
-        # Secondary Fallback: macOS system voice if edge-tts network is slow
-        say_voice = "Lekha" if (has_hindi or has_odia) else "Samantha"
+        # Secondary Fallback: native macOS system voice for respective Indian languages
+        if has_tamil:
+            say_voice = "Vani"
+        elif has_telugu:
+            say_voice = "Geeta"
+        elif has_kannada:
+            say_voice = "Soumya"
+        elif has_hindi or has_odia:
+            say_voice = "Lekha"
+        else:
+            say_voice = "Tara"
+
         say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, say_voice)
+        if not say_audio:
+            # Fallback to Rishi or Samantha
+            say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, "Rishi") or await asyncio.to_thread(self._synthesize_say_sync, spoken_text, "Samantha")
         if say_audio:
             if len(_TTS_CACHE) < 250:
                 _TTS_CACHE[cache_key] = say_audio

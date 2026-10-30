@@ -8,6 +8,8 @@ from storage.database import init_db, async_session
 from storage.models.tenant import Tenant
 from storage.models.api_key import ApiKey
 from providers.registry import provider_registry
+from telephony.pbx_connector import pbx_connector
+from telephony.pbx_connector import pbx_connector
 
 
 @asynccontextmanager
@@ -54,6 +56,16 @@ async def lifespan(app: FastAPI):
             await session.commit()
             logger.info(f"Bootstrapped default tenant '{tenant.id}' with demo key: {demo_key}")
 
+    # Start persistent PBX WebSocket connector (dials out to Asterisk)
+    pbx_ws_url = settings.PBX_WS_URL or os.getenv("PBX_WS_URL", "")
+    if pbx_ws_url:
+        pbx_connector.start()
+        logger.info(f"PBX connector started → {pbx_ws_url}")
+    else:
+        logger.info("PBX_WS_URL not set — PBX connector disabled (set it in .env to enable)")
+
     yield
 
+    # Shutdown
+    pbx_connector.stop()
     logger.info("AI Platform API service shutting down.")
