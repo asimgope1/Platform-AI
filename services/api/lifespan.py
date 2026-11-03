@@ -64,6 +64,16 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("PBX_WS_URL not set — PBX connector disabled (set it in .env to enable)")
 
+    # Pre-warm IVR prompts in the background so incoming callers never experience delays
+    try:
+        from audio.service import AudioService
+        from telephony.ivr_audio_cache import warm_up_ivr_prompts
+        audio_service = AudioService()
+        asyncio.create_task(warm_up_ivr_prompts(audio_service))
+        logger.info("[IVR] Audio prompt cache warmup initiated in background.")
+    except Exception as cache_err:
+        logger.warning(f"[IVR] Failed to initiate audio cache warmup: {cache_err}")
+
     yield
 
     # Shutdown

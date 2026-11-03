@@ -70,3 +70,4 @@ On any other machine running the platform, simply run:
 python scripts/restore_learned_knowledge.py
 ```
 This merges and embeds the new chunks into `pgvector` without re-indexing duplicates.
+

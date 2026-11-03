@@ -1,9 +1,12 @@
 import os
 import asyncio
+import logging
 from typing import Dict, Any, Optional
 import httpx
 from platform_core.contracts.providers import BaseTextToSpeechAdapter
 from platform_core.errors.exceptions import ProviderError
+
+logger = logging.getLogger(__name__)
 
 
 import io
@@ -94,7 +97,11 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             audio = b"".join(chunks)
             if audio and len(audio) > 100:
                 return audio
-        except Exception:
+        except ImportError:
+            logger.error("[TTS] 'edge-tts' package is NOT installed in Python environment! Run: pip install edge-tts")
+            return None
+        except Exception as exc:
+            logger.warning(f"[TTS] Edge-TTS error for voice '{voice}': {exc}")
             return None
         return None
 
