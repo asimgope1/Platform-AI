@@ -118,3 +118,29 @@ class TestChunkPcm:
         chunks = list(chunk_pcm(b""))
         assert chunks == []
 
+
+class TestClosingTurnDetection:
+    def test_english_thank_you(self):
+        from telephony.ivr_session import is_closing_turn
+        assert is_closing_turn("Thank you", "You are welcome!") is True
+        assert is_closing_turn("thanks so much", "Have a wonderful day!") is True
+        assert is_closing_turn("that is all thank you", "You are welcome!") is True
+
+    def test_hindi_dhanyawad(self):
+        from telephony.ivr_session import is_closing_turn
+        assert is_closing_turn("धन्यवाद", "आपका दिन शुभ हो!") is True
+        assert is_closing_turn("बहुत बहुत धन्यवाद", "आपका दिन शुभ हो!") is True
+        assert is_closing_turn("dhanyawad", "koi baat nahi") is True
+        assert is_closing_turn("shukriya", "alvida") is True
+
+    def test_odia_dhanyabad(self):
+        from telephony.ivr_session import is_closing_turn
+        assert is_closing_turn("ଧନ୍ୟବାଦ", "ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!") is True
+        assert is_closing_turn("dhanyabad", "aagnya") is True
+
+    def test_non_closing_queries(self):
+        from telephony.ivr_session import is_closing_turn
+        assert is_closing_turn("What is video KYC?", "Video KYC is online verification.") is False
+        assert is_closing_turn("Mera UPI refund nahi aaya", "UPI refund takes 3-5 days.") is False
+
+

@@ -178,7 +178,9 @@ class IVRCallSession:
         asyncio.create_task(self._play_welcome_and_language_menu())
 
     def on_call_end(self, event: dict[str, Any]) -> None:
-        """Invoked when PBX or caller hangs up."""
+        """Invoked when PBX or caller hangs up, or upon automated closing."""
+        if self.menu_machine.state == IVRState.CALL_END:
+            return  # Already concluded
         logger.info(f"[IVR] 📵 Call ended: uuid={self.call_uuid}")
         self.menu_machine.state = IVRState.CALL_END
         self._is_playing = False
@@ -649,6 +651,26 @@ class IVRCallSession:
             self._pcm_buffer.clear()
             self._last_voice_ts = time.monotonic()
 
+        # 5. Auto Cut after Thank You / Closing turn
+        if is_closing_turn(user_text, reply_text):
+            logger.info(
+                f"[IVR] 📞 Closing farewell turn detected ('{user_text}' → '{reply_text[:50]}...'). "
+                f"Auto-cutting call (uuid={self.call_uuid})..."
+            )
+            # Comfort pause so Asterisk and SIP phone speaker buffer plays the final words completely
+            await asyncio.sleep(0.8)
+            try:
+                if self.call_uuid:
+                    await self._ws.send_text(json.dumps({"event": "hangup", "uuid": self.call_uuid}))
+                    await self._ws.send_text(json.dumps({"command": "hangup", "uuid": self.call_uuid}))
+                    await self._ws.send_text(json.dumps({"action": "hangup", "uuid": self.call_uuid}))
+                else:
+                    await self._ws.send_text(json.dumps({"event": "hangup"}))
+            except Exception as hangup_err:
+                logger.warning(f"[IVR] Failed to send hangup signal to PBX: {hangup_err}")
+
+            self.on_call_end({"uuid": self.call_uuid, "reason": "auto_cut_after_closing"})
+
     async def _send_pcm_reply(self, pcm: bytes) -> None:
         """
         Stream raw PCM frames to PBX over WebSocket with jitter-buffer pre-filling
@@ -711,6 +733,39 @@ class IVRCallSession:
 # ──────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────────────────────────────────────
+
+def is_closing_turn(user_text: str, reply_text: str) -> bool:
+    """
+    Detects if this conversational turn is a closing/farewell turn
+    (e.g. caller saying 'thank you', 'thanks', 'dhanyawad', 'bye', or AI delivering closing greeting).
+    """
+    u = (user_text or "").lower().strip()
+    r = (reply_text or "").lower().strip()
+
+    closing_user_keywords = [
+        "thank", "thanks", "thx", "dhanyawad", "dhanyavad", "shukriya", "dhanyabad",
+        "धन्यवाद", "शुक्रिया", "bye", "goodbye", "alvida", "अलविदा", "ଧନ୍ୟବାଦ",
+        "nothing else", "no more", "that is all", "thats all", "that's all",
+        "kuch nahi", "kuch nhi", "aur nahi", "bas itna", "bas thank", "aur kuch nahi",
+        "ଆଉ କିଛି ନାହିଁ", "କିଛି ନାହିଁ", "कुछ नहीं", "बस इतना ही", "नो थैंक", "थैंक यू"
+    ]
+    if any(k in u for k in closing_user_keywords):
+        return True
+
+    closing_reply_keywords = [
+        "have a wonderful day", "have a great day",
+        "दिन शुभ हो", "शुभ दिन",
+        "ଦିନଟି ଶୁଭମୟ",
+        "हमारी ग्राहक सेवा में संपर्क करने के लिए आभार",
+        "thank you for contacting our customer support",
+        "ଆମ ଗ୍ରାହକ ସେବା ସହିତ ଯୋଗାଯୋଗ କରିଥିବାରୁ କୃତଜ୍ଞତା",
+        "you are most welcome"
+    ]
+    if any(k.lower() in r for k in closing_reply_keywords):
+        return True
+
+    return False
+
 
 def _clean_spoken_text(text: str) -> str:
     """

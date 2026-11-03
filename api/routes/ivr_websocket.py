@@ -26,6 +26,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from audio.service import AudioService
 from orchestration.chat_orchestrator import ChatOrchestrator
 from telephony.ivr_session import IVRCallSession
+from telephony.ivr_menu import IVRState
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +106,10 @@ async def ivr_websocket(ws: WebSocket):
 
                 else:
                     logger.debug(f"[IVR] Unknown event type '{event_type}' — ignored")
+
+            if session.menu_machine.state == IVRState.CALL_END:
+                logger.info(f"[IVR] Call ended / auto-cut (uuid={session.call_uuid}). Closing WebSocket.")
+                break
 
     except WebSocketDisconnect:
         logger.info(f"[IVR] WebSocket disconnected (call={session.call_uuid})")
