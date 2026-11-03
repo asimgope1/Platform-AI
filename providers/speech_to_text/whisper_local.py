@@ -1,5 +1,6 @@
 import io
 import os
+import shutil
 import tempfile
 import subprocess
 import asyncio
@@ -48,16 +49,34 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         filename: str = "audio.wav",
         language: Optional[str] = None,
     ) -> Dict[str, Any]:
-        import soundfile as sf
-
+        import wave
         audio_data = None
         samplerate = 16000
 
-        # Try reading directly from memory using soundfile
+        # 1. Primary: Read directly from standard RIFF WAV in memory (zero external dependencies)
         try:
-            audio_data, samplerate = sf.read(io.BytesIO(audio_bytes))
+            with wave.open(io.BytesIO(audio_bytes), "rb") as wf:
+                channels = wf.getnchannels()
+                samplerate = wf.getframerate()
+                sampwidth = wf.getsampwidth()
+                frames = wf.readframes(wf.getnframes())
+                if sampwidth == 2:
+                    audio_data = np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
+                    if channels > 1:
+                        audio_data = audio_data.reshape(-1, channels).mean(axis=1)
         except Exception:
-            # If format requires conversion (e.g., m4a, mp3, aiff), use macOS afconvert
+            pass
+
+        # 2. Secondary: If not basic PCM WAV, try soundfile
+        if audio_data is None:
+            try:
+                import soundfile as sf
+                audio_data, samplerate = sf.read(io.BytesIO(audio_bytes))
+            except Exception:
+                pass
+
+        # 3. Tertiary: Fallback for macOS audio conversion if afconvert exists
+        if audio_data is None and shutil.which("afconvert"):
             ext = os.path.splitext(filename)[1].lower() or ".wav"
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as in_f:
                 in_path = in_f.name
@@ -72,6 +91,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                     capture_output=True,
                     check=True,
                 )
+                import soundfile as sf
                 audio_data, samplerate = sf.read(out_path)
             except Exception as conv_err:
                 logger.warning(f"Audio conversion failed ({conv_err}); using mock fallback.")
