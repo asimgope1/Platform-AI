@@ -230,6 +230,7 @@ class MockChatAdapter(BaseChatAdapter):
         # If RAG context was injected with verified text, synthesize naturally without bot boilerplate
         if context_corpus.strip():
             clean_lines = []
+            seen_lines = set()
             for line in context_corpus.splitlines():
                 l = line.strip()
                 if not l or l.startswith("---") or l.startswith("[") or "Relevant Context" in l or "You have access" in l:
@@ -242,6 +243,10 @@ class MockChatAdapter(BaseChatAdapter):
                     "prompt id:", "transcript:"
                 )):
                     continue
+                # Clean bullet markers and quotes from line
+                l = re.sub(r"^\s*[-*#\d\.\)]+\s*", "", l).strip("\"' ")
+                if not l:
+                    continue
                 # Ensure the selected line strictly matches the requested session language
                 if wants_english and any('\u0900' <= ch <= '\u097f' for ch in l):
                     continue
@@ -249,10 +254,15 @@ class MockChatAdapter(BaseChatAdapter):
                     continue
                 if wants_odia and any('\u0900' <= ch <= '\u097f' for ch in l):
                     continue
-                clean_lines.append(l)
+                # Deduplicate identical lines
+                norm = l.lower().strip()
+                if norm not in seen_lines and len(norm) > 10:
+                    seen_lines.add(norm)
+                    clean_lines.append(l)
 
             if clean_lines:
-                summary = " ".join(clean_lines[:2])
+                # Take exactly 1 concise, unique sentence (prevent duplicate sentence stacking)
+                summary = clean_lines[0]
                 if wants_odia:
                     return f"{summary} ମୁଁ ଆପଣଙ୍କୁ ଏଥିରେ ଆଉ କିଛି ସାହାଯ୍ୟ କରିପାରିବି କି?"
                 elif wants_hindi:

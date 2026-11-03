@@ -739,6 +739,14 @@ def _clean_spoken_text(text: str) -> str:
     text = re.sub(r"(?i)(?:English|Hindi|Odia)\s*Voice\s*Transcript\s*:\s*", "", text)
     text = re.sub(r"(?i)(?:Document\s*ID|Category|Source|Title)\s*:\s*[^\n\.,]+", "", text)
 
+    # Strip quotes and stray numbering anywhere in the speech
+    text = text.replace('"', '').replace("'", '')
+    text = re.sub(r'(?:^|\s+)\d+[\.\)]\s*', ' ', text).strip()
+
+    # Deduplicate consecutive identical sentences (e.g. "Sentence A. Sentence A." -> "Sentence A.")
+    pattern = r'([^.!?।\n]+[.!?।])\s*(?:\1\s*)+'
+    text = re.sub(pattern, r'\1 ', text).strip()
+
     # Phonetic normalization for Hindi speech (convert Latin acronyms to Devanagari)
     has_hindi = any('\u0900' <= ch <= '\u097f' for ch in text)
     if has_hindi:
