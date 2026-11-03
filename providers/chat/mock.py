@@ -220,10 +220,12 @@ class MockChatAdapter(BaseChatAdapter):
             return "Yes, I can hear you loud and clear! I will speak slowly and clearly. How can I assist you with your request today?"
 
         # Appreciation & Closing
-        if any(w in lower_query for w in ["thank", "thanks", "dhanyawad", "shukriya", "धन्यवाद", "शुक्रिया", "bye", "alvida", "अलविदा"]):
-            if wants_hindi:
-                return "आपका बहुत-बहुत धन्यवाद! हमारी सहायता सेवा में संपर्क करने के लिए आभार। आपका दिन शुभ हो!"
-            return "You are most welcome! Thank you for contacting our support service. Have a wonderful day ahead!"
+        if any(w in lower_query for w in ["thank", "thanks", "dhanyawad", "dhanyavad", "shukriya", "धन्यवाद", "शुक्रिया", "bye", "alvida", "अलविदा", "ଧନ୍ୟବାଦ"]):
+            if wants_odia:
+                return "ଆପଣଙ୍କୁ ବହୁତ ବହୁତ ଧନ୍ୟବାଦ! ଆମ ଗ୍ରାହକ ସେବା ସହିତ ଯୋଗାଯୋଗ କରିଥିବାରୁ କୃତଜ୍ଞତା। ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!"
+            elif wants_hindi:
+                return "आपका बहुत-बहुत धन्यवाद! हमारी ग्राहक सेवा में संपर्क करने के लिए आभार। आपका दिन शुभ हो!"
+            return "You are most welcome! Thank you for contacting our customer support service. Have a wonderful day ahead!"
 
         # If RAG context was injected with verified text, synthesize naturally without bot boilerplate
         if context_corpus.strip():
