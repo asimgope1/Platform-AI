@@ -125,6 +125,14 @@ async def restore():
 
     # 4. Audio prompt cache check
     print("\nChecking audio cache directory...")
+    zip_path = Path(__file__).resolve().parent.parent / "data" / "ivr_audio_cache.zip"
+    if zip_path.exists() and len(list(CACHE_DIR.glob("*.pcm"))) < 10:
+        import zipfile
+        print(f"Extracting bundled audio cache from {zip_path.name}...")
+        with zipfile.ZipFile(zip_path, 'r') as zf:
+            zf.extractall(Path(__file__).resolve().parent.parent)
+        print("✓ Bundled audio cache extracted.")
+
     cached_pcm_files = list(CACHE_DIR.glob("*.pcm"))
     print(f"Found {len(cached_pcm_files)} pre-rendered audio prompts in {CACHE_DIR.name}/.")
     if len(cached_pcm_files) < 10:

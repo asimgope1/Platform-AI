@@ -117,7 +117,19 @@ async def warm_up_ivr_prompts(audio_service) -> None:
     """
     Background worker that pre-renders any uncached IVR prompts
     so callers never experience network delays during calls.
+    First checks if a pre-bundled data/ivr_audio_cache.zip exists and unpacks it!
     """
+    # 0. Check if bundled zip archive exists and unpack it
+    zip_path = Path(__file__).resolve().parent.parent / "data" / "ivr_audio_cache.zip"
+    if zip_path.exists():
+        try:
+            import zipfile
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                zf.extractall(CACHE_DIR.parent.parent)
+            logger.info(f"[IVR Cache] Successfully extracted pre-bundled prompts from {zip_path.name}")
+        except Exception as zerr:
+            logger.warning(f"[IVR Cache] Could not extract {zip_path.name}: {zerr}")
+
     from telephony.ivr_prompts import (
         WELCOME_AND_LANGUAGE,
         SERVICE_MENUS,
