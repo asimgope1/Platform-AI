@@ -94,7 +94,8 @@ BASE_SYSTEM_PROMPT = (
     "4. Be polite, warm, direct, and empathetic.\n"
     "5. Do NOT use markdown, bullet points, asterisks, numbered lists, or URLs. Speak plain conversational sentences.\n"
     "6. If the caller asks to talk to a person or representative, warmly inform them that you can transfer them.\n"
-    "7. Female Speaker Grammatical Gender: You are speaking with a female voice. In Hindi and any gendered language, ALWAYS use feminine first-person grammatical forms for yourself (e.g. 'कर सकती हूँ', 'सुन रही हूँ', 'मदद करूँगी', 'समझ रही हूँ', 'चेक कर रही हूँ' — NEVER use masculine forms like 'सकता हूँ' or 'रहा हूँ')."
+    "7. Female Speaker Grammatical Gender: You are speaking with a female voice. In Hindi and any gendered language, ALWAYS use feminine first-person grammatical forms for yourself (e.g. 'कर सकती हूँ', 'सुन रही हूँ', 'मदद करूँगी', 'समझ रही हूँ', 'चेक कर रही हूँ' — NEVER use masculine forms like 'सकता हूँ' or 'रहा हूँ').\n"
+    "8. Native Script Pronunciation: When speaking in Hindi or Odia, ALWAYS write technical terms, banking acronyms, and loan words in the native script itself (e.g. in Hindi: 'केवाईसी', 'यूपीआई', 'ओटीपी', 'पैन कार्ड', 'आधार'; in Odia: 'କେୱାଇସି', 'ୟୁପିଆଇ', 'ଓଟିପି', 'ପ୍ୟାନ୍ କାର୍ଡ', 'ଆଧାର'). NEVER write English/Latin letters or parenthetical translations like '(Video KYC)' in Hindi or Odia responses."
 )
 
 
@@ -333,7 +334,8 @@ class IVRCallSession:
             f"4. Keep responses brief: exactly 1 to 2 spoken sentences (under 35 words) so it sounds natural over the phone.\n"
             f"5. Never use markdown, bullet points, asterisks, numbered steps, or URLs. Speak in plain spoken sentences.\n"
             f"6. If the caller asks to speak to an agent or representative, warmly say you are connecting them.\n"
-            f"7. Female Speaker Grammatical Gender: You are a female support specialist speaking with a female voice. In Hindi and any gendered language, ALWAYS use feminine first-person grammatical forms for yourself (e.g. 'कर सकती हूँ', 'सुन रही हूँ', 'मदद करूँगी', 'समझ रही हूँ', 'चेक कर रही हूँ' — NEVER use masculine forms like 'सकता हूँ' or 'रहा हूँ')."
+            f"7. Female Speaker Grammatical Gender: You are a female support specialist speaking with a female voice. In Hindi and any gendered language, ALWAYS use feminine first-person grammatical forms for yourself (e.g. 'कर सकती हूँ', 'सुन रही हूँ', 'मदद करूँगी', 'समझ रही हूँ', 'चेक कर रही हूँ' — NEVER use masculine forms like 'सकता हूँ' or 'रहा हूँ').\n"
+            f"8. Native Script Pronunciation: When speaking in Hindi or Odia, write all technical terms and acronyms in the native script itself (e.g. in Hindi: 'केवाईसी', 'यूपीआई', 'ओटीपी', 'पैन कार्ड', 'आधार'; in Odia: 'କେୱାଇସି', 'ୟୁପିଆଇ', 'ଓଟିପି', 'ପ୍ୟାନ୍ କାର୍ଡ', 'ଆଧାର'). NEVER write Latin/English characters or parenthetical translations like '(Video KYC)' in Hindi or Odia responses."
         )
         self._history = [ChatMessage(role="system", content=service_system_prompt)]
         self._language = self.selected_language
@@ -694,8 +696,9 @@ class IVRCallSession:
 
 def _clean_spoken_text(text: str) -> str:
     """
-    Cleans text of markdown markers, asterisks, bullet points, brackets, and URLs
-    so that TTS speaks smoothly and naturally without robotic pauses or pronouncing punctuation.
+    Cleans text of markdown markers, asterisks, bullet points, brackets, URLs,
+    and parenthetical English translations in Indian language sentences
+    so that TTS speaks smoothly, naturally, and with flawless native pronunciation.
     """
     import re
     # Remove markdown bold/italic
@@ -708,8 +711,37 @@ def _clean_spoken_text(text: str) -> str:
     # Remove robotic bracket tags like [Source 1], (Note: ...)
     text = re.sub(r"\[.*?\]", "", text)
     text = re.sub(r"\(Note:.*?\)", "", text, flags=re.IGNORECASE)
+    # Remove parenthetical English translations like (Video KYC), (Physical PAN Card)
+    text = re.sub(r"\([A-Za-z0-9\s/\-_\.]+\)", "", text)
     # Remove URLs
     text = re.sub(r"https?://\S+", "", text)
+
+    # Phonetic normalization for Hindi speech (convert Latin acronyms to Devanagari)
+    has_hindi = any('\u0900' <= ch <= '\u097f' for ch in text)
+    if has_hindi:
+        hindi_loanwords = [
+            (r"\bvideo\s*kyc\b", "वीडियो केवाईसी"),
+            (r"\bkyc\b", "केवाईसी"),
+            (r"\bupi\b", "यूपीआई"),
+            (r"\botp\b", "ओटीपी"),
+            (r"\bpan\s*card\b", "पैन कार्ड"),
+            (r"\bpan\b", "पैन"),
+            (r"\baadhaar\b", "आधार"),
+            (r"\baadhar\b", "आधार"),
+            (r"\batm\b", "एटीएम"),
+            (r"\bpin\b", "पिन"),
+            (r"\bsms\b", "एसएमएस"),
+            (r"\butr\b", "यूटीआर"),
+            (r"\bemi\b", "ईएमआई"),
+            (r"\bnetbanking\b", "नेटबैंकिंग"),
+            (r"\bapp\b", "ऐप"),
+            (r"\bpassword\b", "पासवर्ड"),
+            (r"\brefund\b", "रिफंड"),
+            (r"\bpayment\b", "पेमेंट"),
+        ]
+        for pat, rep in hindi_loanwords:
+            text = re.sub(pat, rep, text, flags=re.IGNORECASE)
+
     # Collapse multiple spaces and newlines into natural sentence flow
     text = re.sub(r"\s+", " ", text).strip()
     return text

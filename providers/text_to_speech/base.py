@@ -57,16 +57,81 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             import torch
             import numpy as np
 
-            # Expand numbers/digits to spoken native Odia words so the acoustic model pronounces them
+            # 1. Remove redundant parenthetical English e.g. (Video KYC) or (Physical PAN)
+            clean_text = re.sub(r"\([A-Za-z0-9\s/\-_]+\)", "", text)
+
+            # 2. Convert common compound numbers (hours, SLAs) to spoken Odia words
+            compounds = [
+                (r"\b24\b", "ଚବିଶ"),
+                (r"\b48\b", "ଅଠଚାଳିଶ"),
+                (r"\b72\b", "ବାସ୍ତରି"),
+                (r"\b10\b", "ଦଶ"),
+                (r"\b12\b", "ବାର"),
+                (r"\b100\b", "ଶହେ"),
+            ]
+            for pat, rep in compounds:
+                clean_text = re.sub(pat, f" {rep} ", clean_text)
+
+            # 3. Single digits to Odia spoken words
             odia_digits = {
                 '0': ' ଶୂନ ', '1': ' ଏକ ', '2': ' ଦୁଇ ', '3': ' ତିନି ', '4': ' ଚାରି ',
                 '5': ' ପାଞ୍ଚ ', '6': ' ଛଅ ', '7': ' ସାତ ', '8': ' ଆଠ ', '9': ' ନଅ ',
                 '୦': ' ଶୂନ ', '୧': ' ଏକ ', '୨': ' ଦୁଇ ', '୩': ' ତିନି ', '୪': ' ଚାରି ',
                 '୫': ' ପାଞ୍ଚ ', '୬': ' ଛଅ ', '୭': ' ସାତ ', '୮': ' ଆଠ ', '୯': ' ନଅ ',
             }
-            clean_text = text
             for d, w in odia_digits.items():
                 clean_text = clean_text.replace(d, w)
+
+            # 4. Convert English acronyms & loanwords to authentic native Odia Unicode
+            # so the facebook/mms-tts-ory tokenizer never drops them
+            odia_loanwords = [
+                (r"\bvideo\s*kyc\b", "ଭିଡିଓ କେୱାଇସି"),
+                (r"\bkyc\b", "କେୱାଇସି"),
+                (r"\bupi\b", "ୟୁପିଆଇ"),
+                (r"\botp\b", "ଓଟିପି"),
+                (r"\bpan\s*card\b", "ପ୍ୟାନ କାର୍ଡ"),
+                (r"\bpan\b", "ପ୍ୟାନ"),
+                (r"\baadhaar\b", "ଆଧାର"),
+                (r"\baadhar\b", "ଆଧାର"),
+                (r"\batm\b", "ଏଟିଏମ"),
+                (r"\bpin\b", "ପିନ"),
+                (r"\bsms\b", "ଏସଏମଏସ"),
+                (r"\butr\b", "ୟୁଟିଆର"),
+                (r"\bemi\b", "ଇଏମଆଇ"),
+                (r"\bphysical\b", "ଫିଜିକାଲ"),
+                (r"\bdocuments?\b", "ଡକ୍ୟୁମେଣ୍ଟ"),
+                (r"\bmobile\b", "ମୋବାଇଲ"),
+                (r"\bnumbers?\b", "ନମ୍ବର"),
+                (r"\baccounts?\b", "ଖାତା"),
+                (r"\bbanks?\b", "ବ୍ୟାଙ୍କ"),
+                (r"\bcalls?\b", "କଲ"),
+                (r"\blinks?\b", "ଲିଙ୍କ"),
+                (r"\bonline\b", "ଅନଲାଇନ"),
+                (r"\bapps?\b", "ଆପ"),
+                (r"\bpasswords?\b", "ପାସୱାର୍ଡ"),
+                (r"\brefunds?\b", "ରିଫଣ୍ଡ"),
+                (r"\bpayments?\b", "ପେମେଣ୍ଟ"),
+                (r"\bcards?\b", "କାର୍ଡ"),
+                (r"\bhours?\b", "ଘଣ୍ଟା"),
+                (r"\bminutes?\b", "ମିନିଟ"),
+                (r"\bsupport\b", "ସହାୟତା"),
+                (r"\bcustomers?\b", "ଗ୍ରାହକ"),
+                (r"\bfailed\b", "ବିଫଳ"),
+                (r"\bsuccess\b", "ସଫଳ"),
+                (r"\bstatus\b", "ସ୍ଥିତି"),
+                (r"\bbalance\b", "ବାଲାନ୍ସ"),
+                (r"\bnetbanking\b", "ନେଟବ୍ୟାଙ୍କିଙ୍ଗ"),
+                (r"\blogin\b", "ଲଗଇନ"),
+                (r"\bticket\b", "ଟିକେଟ"),
+                (r"\bcomplaints?\b", "ଅଭିଯୋଗ"),
+                (r"\brepresentatives?\b", "ପ୍ରତିନିଧି"),
+                (r"\bagents?\b", "ଏଜେଣ୍ଟ"),
+            ]
+            for pat, rep in odia_loanwords:
+                clean_text = re.sub(pat, f" {rep} ", clean_text, flags=re.IGNORECASE)
+
+            # 5. Clean punctuation and collapse whitespace
+            clean_text = re.sub(r"[a-zA-Z]+", "", clean_text)
             clean_text = re.sub(r"\s+", " ", clean_text).strip()
 
             inputs = tokenizer(clean_text, return_tensors="pt")

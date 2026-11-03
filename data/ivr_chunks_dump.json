@@ -1,5 +1,5 @@
 {
-  "total_chunks": 109,
+  "total_chunks": 117,
   "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
   "tenant_name": "tenant-ivr-support",
   "chunks": [
@@ -1046,6 +1046,94 @@
       "chunk_index": 3,
       "content": "12-digit UTR (Unique Transaction Reference) number from your bank statement or UPI application.\n- In support chat, message 'REFUND <12-digit UTR>' or enter it on the IVR keypad after selecting option 2.\n- If funds are not credited after 48 banking hours, an automated dispute ticket is created and routed directly to the bank nodal officer.\"",
       "metadata": {}
+    },
+    {
+      "chunk_id": "d734996e-593e-4290-a6fa-eb9d65660fc3",
+      "document_title": "ଭିଡିଓ କେୱାଇସି ଯାଞ୍ଚ ପ୍ରକ୍ରିୟା ଏବଂ ଡକ୍ୟୁମେଣ୍ଟ (Video KYC in Odia)",
+      "source_type": "odia_kyc_procedure",
+      "chunk_index": 109,
+      "content": "[ଭିଡିଓ କେୱାଇସି ଯାଞ୍ଚ ପ୍ରକ୍ରିୟା ଏବଂ ଡକ୍ୟୁମେଣ୍ଟ ତାଲିକା - Odia Video KYC Guide]\n\nଭିଡିଓ କେୱାଇସି ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ମୂଳ ଅସଲି ପ୍ୟାନ କାର୍ଡ, ଆଧାର କାର୍ଡ ସହିତ ଲିଙ୍କ୍ ଥିବା ସକ୍ରିୟ ମୋବାଇଲ ନମ୍ବର (ଓଟିପି ଯାଞ୍ଚ ପାଇଁ) ଏବଂ ଉତ୍ତମ ଆଲୋକ ଥିବା ଏକ ଶାନ୍ତ ସ୍ଥାନ ରହିବା ଆବଶ୍ୟକ। ଆମର ପ୍ରମାଣିତ ବ୍ୟାଙ୍କ ଅଧିକାରୀ ୨ ମିନିଟର ଭିଡିଓ କଲ ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରିବେ ଏବଂ ୧ ରୁ ୨ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଖାତା ସକ୍ରିୟ ହୋଇଯିବ। କୌଣସି ଅତିରିକ୍ତ ଦସ୍ତାବିଜ ଦରକାର ନାହିଁ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_kyc_procedure"
+      }
+    },
+    {
+      "chunk_id": "a9a2570b-b612-4456-b4ad-86e81e8233a3",
+      "document_title": "ୟୁପିଆଇ ପେମେଣ୍ଟ ବିଫଳତା ଏବଂ ସ୍ୱୟଂଚାଳିତ ରିଫଣ୍ଡ (Odia UPI Refund SLA)",
+      "source_type": "odia_upi_policy",
+      "chunk_index": 110,
+      "content": "[ୟୁପିଆଇ ପେମେଣ୍ଟ ବିଫଳତା, ଟଙ୍କା କଟିବା ଏବଂ ସ୍ୱୟଂଚାଳିତ ରିଫଣ୍ଡ - Odia UPI Refund SLA]\n\nଯଦି ୟୁପିଆଇ ମାଧ୍ୟମରେ ଟଙ୍କା କଟିଯାଇଛି କିନ୍ତୁ କାରବାର ବିଫଳ ହୋଇଛି, ତେବେ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ। ଏନପିସିଆଇ ନିୟମ ଅନୁସାରେ ୨୪ ରୁ ୪୮ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଟଙ୍କା ସ୍ୱୟଂଚାଳିତ ଭାବରେ ସେହି ବ୍ୟାଙ୍କ ଖାତାକୁ ଫେରିଆସିବ। ଆପଣ ୟୁପିଆଇ ଆପ୍ ରୁ ୧୨ ଅଙ୍କ ବିଶିଷ୍ଟ ୟୁଟିଆର ନମ୍ବର ଦେଖି ଷ୍ଟାଟସ ଯାଞ୍ଚ କରିପାରିବେ। ୪୮ ଘଣ୍ଟା ପରେ ମଧ୍ୟ ଟଙ୍କା ନ ଆସିଲେ ଅଭିଯୋଗ ଦାୟର କରିପାରିବେ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_upi_policy"
+      }
+    },
+    {
+      "chunk_id": "2a07f78f-5248-4039-94ed-d9724761b9ae",
+      "document_title": "ବ୍ୟାଙ୍କ ଖାତା ବାଲାନ୍ସ ଏବଂ ମିନି ଷ୍ଟେଟମେଣ୍ଟ ଯାଞ୍ଚ (Odia Balance Enquiry)",
+      "source_type": "odia_banking_service",
+      "chunk_index": 111,
+      "content": "[ବ୍ୟାଙ୍କ ଖାତା ବାଲାନ୍ସ ଏବଂ ମିନି ଷ୍ଟେଟମେଣ୍ଟ ଯାଞ୍ଚ - Odia Balance Enquiry]\n\nଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଖାତାର ବାଲାନ୍ସ ଯାଞ୍ଚ କରିବା ପାଇଁ ନିଜର ପଞ୍ଜୀକୃତ ମୋବାଇଲ ନମ୍ବରରୁ ଆମର ଟୋଲ-ଫ୍ରି ନମ୍ବରକୁ ମିସଡ କଲ ଦିଅନ୍ତୁ କିମ୍ବା ଆମର ମୋବାଇଲ ବ୍ୟାଙ୍କିଙ୍ଗ ଆପ୍ ରେ ଲଗଇନ କରି ତୁରନ୍ତ ବାଲାନ୍ସ ଏବଂ ଶେଷ ୫ଟି କାରବାରର ମିନି ଷ୍ଟେଟମେଣ୍ଟ ଦେଖିପାରିବେ। ଏସଏମଏସ ବ୍ୟାଙ୍କିଙ୍ଗ ମାଧ୍ୟମରେ ମଧ୍ୟ ବାଲାନ୍ସ ଉପଲବ୍ଧ ଅଟେ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_banking_service"
+      }
+    },
+    {
+      "chunk_id": "0794311d-9ee5-4e36-b00d-f9b73da0eb59",
+      "document_title": "ଡେବିଟ୍ କାର୍ଡ ବ୍ଲକ ଏବଂ ନୂତନ ଏଟିଏମ ପିନ ପ୍ରସ୍ତୁତି (Odia Card Hotlisting)",
+      "source_type": "odia_card_service",
+      "chunk_index": 112,
+      "content": "[ଡେବିଟ୍ କାର୍ଡ ବ୍ଲକ ଏବଂ ନୂତନ ଏଟିଏମ ପିନ ପ୍ରସ୍ତୁତି - Odia Card Hotlisting & ATM PIN]\n\nଯଦି ଆପଣଙ୍କ ଏଟିଏମ କିମ୍ବା ଡେବିଟ୍ କାର୍ଡ ହଜିଯାଇଛି କିମ୍ବା ଚୋରି ହୋଇଯାଇଛି, ତେବେ ସୁରକ୍ଷା ପାଇଁ ତୁରନ୍ତ ଆମର ଆଇଭିଆର ରେ ୫ ଦବାଇ କାର୍ଡ ବ୍ଲକ କରନ୍ତୁ କିମ୍ବା ମୋବାଇଲ ଆପ୍ ମାଧ୍ୟମରେ ନୂଆ ଏଟିଏମ ପିନ ୧ ମିନିଟରେ ପ୍ରସ୍ତୁତ କରିପାରିବେ। ନୂଆ କାର୍ଡ ୫ ରୁ ୭ କାର୍ଯ୍ୟଦିବସ ମଧ୍ୟରେ ଘରେ ପହଞ୍ଚିବ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_card_service"
+      }
+    },
+    {
+      "chunk_id": "68d85d45-fd93-43d9-b422-376d4f0fbfd0",
+      "document_title": "ଗ୍ରାହକ ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ ଏବଂ ଟିକେଟ ସମାଧାନ (Odia Complaint Registration)",
+      "source_type": "odia_complaint_service",
+      "chunk_index": 113,
+      "content": "[ଗ୍ରାହକ ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ ଏବଂ ଟିକେଟ ସମାଧାନ - Odia Complaint Registration SLA]\n\nଯଦି ଆପଣ କୌଣସି ସେବା ବିଷୟରେ ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ ଆମେ ତୁରନ୍ତ ଆପଣଙ୍କୁ ଏକ ଅଭିଯୋଗ ଟିକେଟ ନମ୍ବର ପ୍ରଦାନ କରିବୁ। ଆମର ସହାୟତା ଟିମ ୨୪ ରୁ ୪୮ ଘଣ୍ଟା ମଧ୍ୟରେ ଏହାର ଉଚିତ ସମାଧାନ କରିବେ। ଟିକେଟ ନମ୍ବର ଆପଣଙ୍କ ମୋବାଇଲରେ ଏସଏମଏସ ଯୋଗେ ପଠାଯିବ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_complaint_service"
+      }
+    },
+    {
+      "chunk_id": "1e133df9-af92-42da-b8d2-b8f5851ae509",
+      "document_title": "ଋଣ ଏବଂ ଇଏମଆଇ ପରାମର୍ଶ (Odia Loan and EMI Guidance)",
+      "source_type": "odia_loan_service",
+      "chunk_index": 114,
+      "content": "[ଋଣ ଏବଂ ଇଏମଆଇ ପରାମର୍ଶ - Odia Loan and EMI Guidance]\n\nବ୍ୟକ୍ତିଗତ ଋଣ, ଗୃହ ଋଣ କିମ୍ବା ଇଏମଆଇ ସମ୍ପର୍କିତ ସୂଚନା ପାଇଁ ଆମର ବ୍ୟାଙ୍କ ଆପ୍ ରେ ପ୍ରି-ଆପ୍ରୁଭଡ ଅଫର ଯାଞ୍ଚ କରିପାରିବେ କିମ୍ବା ଇଏମଆଇ କଟିବା ତାରିଖ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଆମର ଗ୍ରାହକ ସେବା ପ୍ରତିନିଧିଙ୍କ ସହ କଥା ହୁଅନ୍ତୁ। ସୁଧ ହାର ଏବଂ ସମୟ ସୀମା ବିଷୟରେ ବିସ୍ତୃତ ସୂଚନା ମିଳିପାରିବ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_loan_service"
+      }
+    },
+    {
+      "chunk_id": "a04928f6-2e35-4c1c-9ac1-530689966570",
+      "document_title": "ଅର୍ଡର ଟ୍ରାକିଂ ଏବଂ ଡେଲିଭରି ସୂଚନା (Odia Order Delivery Tracking)",
+      "source_type": "odia_order_service",
+      "chunk_index": 115,
+      "content": "[ଅର୍ଡର ଟ୍ରାକିଂ ଏବଂ ଡେଲିଭରି ସୂଚନା - Odia Order Tracking Protocol]\n\nଗ୍ରାହକ ନିଜର ଅର୍ଡର ସ୍ଥିତି ଜାଣିବା ପାଇଁ ଚାଟ୍ ରେ ନିଜର ଅର୍ଡର ଆଇଡି ପ୍ରଦାନ କରିପାରିବେ କିମ୍ବା ଫୋନରେ ୩ ଦବାଇ ରିଅଲ-ଟାଇମ କୁରିଅର ଲାଇଭ ଟ୍ରାକିଂ ଲିଙ୍କ ପାଇପାରିବେ। ଡେଲିଭରି ସାଧାରଣତଃ ୩ ରୁ ୫ ଦିନ ମଧ୍ୟରେ ସମ୍ପୂର୍ଣ୍ଣ ହୁଏ ଏବଂ ଡେଲିଭରି ପୂର୍ବରୁ ଓଟିପି ଯାଞ୍ଚ କରାଯାଏ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_order_service"
+      }
+    },
+    {
+      "chunk_id": "9c1cc9bb-27df-4fe7-9362-e52c1d4a1e41",
+      "document_title": "ମାନବ ଏଜେଣ୍ଟ ଏସ୍କାଲେସନ୍ (Odia Live Representative)",
+      "source_type": "odia_agent_service",
+      "chunk_index": 116,
+      "content": "[ମାନବ ପ୍ରତିନିଧି ଏସ୍କାଲେସନ୍ - Odia Human Agent Escalation]\n\nଯଦି ଆପଣ ସିଧାସଳଖ ଆମର ଗ୍ରାହକ ସେବା ପ୍ରତିନିଧିଙ୍କ ସହିତ କଥା ହେବାକୁ ଚାହାଁନ୍ତି, ତେବେ ମୁଁ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ କଲ୍ କୁ ଆମର ଅଧିକାରୀଙ୍କ ପାଖକୁ ସଂଯୋଗ କରୁଛି। ଦୟାକରି ଲାଇନରେ ରୁହନ୍ତୁ, କିଛି ସମୟ ମଧ୍ୟରେ ଆମର ପ୍ରତିନିଧି କଲ୍ ଉଠାଇବେ। ଆପଣଙ୍କ ସହଯୋଗ ପାଇଁ ଧନ୍ୟବାଦ।",
+      "metadata": {
+        "language": "or",
+        "category": "odia_agent_service"
+      }
     }
   ]
 }
