@@ -459,16 +459,12 @@ class IVRCallSession:
 
     async def on_transcript(self, event: dict[str, Any]) -> None:
         """
-        PBX already ran STT and sent us the transcript text.
-        If PBX_IGNORE_TRANSCRIPT is enabled, ignore external PBX transcript
-        and use local high-accuracy Whisper STT instead.
+        Handle external transcript from Asterisk PBX.
+        If local PCM buffer has speech, local Whisper STT takes precedence.
+        If local PCM buffer is empty or short, use PBX transcript directly
+        so caller query is never dropped!
         """
         if self.menu_machine.state != IVRState.AI_CONVERSATION:
-            return
-
-        if PBX_IGNORE_TRANSCRIPT:
-            text = (event.get("text") or event.get("transcript") or "").strip()
-            logger.info(f"[IVR] PBX external transcript ignored: '{text}' (using local Whisper STT)")
             return
 
         if self._is_playing:
@@ -476,14 +472,27 @@ class IVRCallSession:
             return
 
         text = (event.get("text") or event.get("transcript") or "").strip()
-        if text:
-            self._pcm_buffer.clear()
-            if self._silence_task and not self._silence_task.done():
-                self._silence_task.cancel()
+        if not text:
+            return
 
-            logger.info(f"[IVR] PBX transcript: '{text}'")
-            async with self._pipeline_lock:
-                await self._run_ai_and_reply(text)
+        if PBX_IGNORE_TRANSCRIPT:
+            # If local PCM buffer does not have enough speech, don't drop the caller's turn!
+            if len(self._pcm_buffer) < MIN_SPEECH_BYTES:
+                logger.info(f"[IVR] 🎙️ Processing PBX transcript directly (pcm_buffer < {MIN_SPEECH_BYTES}b): '{text}'")
+                async with self._pipeline_lock:
+                    await self._run_ai_and_reply(text)
+                return
+            else:
+                logger.info(f"[IVR] PBX transcript '{text}' bypassed in favor of local Whisper PCM STT.")
+                return
+
+        self._pcm_buffer.clear()
+        if self._silence_task and not self._silence_task.done():
+            self._silence_task.cancel()
+
+        logger.info(f"[IVR] PBX transcript: '{text}'")
+        async with self._pipeline_lock:
+            await self._run_ai_and_reply(text)
 
     # ── Conversational AI Pipeline ───────────────────────────────────────────
 
