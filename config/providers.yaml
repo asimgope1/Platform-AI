@@ -109,7 +109,7 @@ embeddings:
 speech_to_text:
   default:
     provider: whisper_local
-    model: openai/whisper-tiny
+    model: openai/whisper-base
 
 text_to_speech:
   default:

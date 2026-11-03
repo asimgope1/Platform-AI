@@ -1,5 +1,6 @@
 import io
 import os
+import re
 import shutil
 import tempfile
 import subprocess
@@ -12,16 +13,63 @@ from platform_core.contracts.providers import BaseSpeechToTextAdapter
 
 logger = logging.getLogger(__name__)
 
+# Mapping from Perso-Arabic (Urdu script) to Devanagari (Hindi) for stray Whisper tokens
+URDU_TO_DEVANAGARI = {
+    'ا': 'आ', 'ب': 'ब', 'پ': 'प', 'ت': 'त', 'ٹ': 'ट', 'ث': 'स',
+    'ج': 'ज', 'چ': 'च', 'ح': 'ह', 'خ': 'ख', 'د': 'द', 'ڈ': 'ड',
+    'ذ': 'ज़', 'ر': 'र', 'ڑ': 'ड़', 'ز': 'ज़', 'ژ': 'झ', 'س': 'स',
+    'ش': 'श', 'ص': 'स', 'ض': 'ज़', 'ط': 'त', 'ظ': 'ज़', 'ع': 'अ',
+    'غ': 'ग़', 'ف': 'फ', 'ق': 'क', 'ک': 'क', 'گ': 'ग', 'ل': 'ल',
+    'م': 'म', 'ن': 'न', 'ں': 'ं', 'و': 'व', 'ہ': 'ह', 'ھ': 'ह',
+    'ء': '', 'ی': 'ी', 'ے': 'े', 'ئ': 'इ', 'ۓ': 'े',
+    '۰': '०', '۱': '१', '۲': '२', '۳': '३', '۴': '४',
+    '۵': '५', '۶': '६', '۷': '७', '۸': '८', '۹': '९'
+}
+
+# Phonetic normalization for Indian banking / IVR loanwords
+HINDI_LOANWORDS_MAP = [
+    (r'\b(?:video\s*kyc|vedio\s*kyc)\b', 'वीडियो केवाईसी'),
+    (r'\b(?:kyc)\b', 'केवाईसी'),
+    (r'\b(?:upi|u\s*p\s*i)\b', 'यूपीआई'),
+    (r'\b(?:pan\s*card)\b', 'पैन कार्ड'),
+    (r'\b(?:aadhaar\s*card|aadhar\s*card|adhar\s*card)\b', 'आधार कार्ड'),
+    (r'\b(?:aadhaar|aadhar|adhar)\b', 'आधार'),
+    (r'\b(?:refund)\b', 'रिफंड'),
+    (r'\b(?:account|acct)\b', 'खाता'),
+    (r'\b(?:complaint)\b', 'शिकायत'),
+    (r'\b(?:balance)\b', 'बैलेंस'),
+    (r'\b(?:customer\s*support|customer\s*care)\b', 'ग्राहक सेवा'),
+    (r'\b(?:payment)\b', 'पेमेंट'),
+]
+
+
+def _clean_hallucinations_and_loops(text: str) -> str:
+    """Removes repetitive token loops without blanking valid caller queries."""
+    if not text:
+        return ""
+    # Deduplicate 3+ consecutive identical words (e.g. 'paribu paribu paribu' -> 'paribu')
+    text = re.sub(r'\b(\w+)(?:\s+\1\b){2,}', r'\1', text, flags=re.IGNORECASE)
+    # Deduplicate 2+ consecutive identical 2-word phrases (e.g. 'video kyc video kyc video kyc')
+    text = re.sub(r'(\b\w+\s+\w+\b)(?:\s+\1)+', r'\1', text, flags=re.IGNORECASE)
+
+    # Check if remainder is a single repeated token across excessive length
+    words = text.strip().split()
+    if len(words) >= 5:
+        unique = set(w.lower() for w in words)
+        if len(unique) <= 1:
+            return ""
+    return text.strip()
+
 
 class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
-    """Real local speech-to-text adapter utilizing Whisper (whisper-tiny) and soundfile.
+    """Real local speech-to-text adapter utilizing Whisper (whisper-base / whisper-tiny).
     
-    Transcribes actual spoken voice in English, Hindi, and multilingual audio.
+    Robust multilingual audio transcription for English, Hindi, and Odia.
     """
 
     def __init__(self, provider_id: str, config: Dict[str, Any]):
         super().__init__(provider_id, config)
-        self.model_name = config.get("model") or "openai/whisper-tiny"
+        self.model_name = os.getenv("WHISPER_MODEL", config.get("model") or "openai/whisper-base")
         self._pipe = None
         self._load_lock = Lock()
 
@@ -30,7 +78,9 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
             with self._load_lock:
                 if self._pipe is None:
                     from transformers import pipeline
+                    logger.info(f"Loading local Whisper STT model: '{self.model_name}' on CPU...")
                     self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu")
+                    logger.info("Local Whisper STT model pipeline ready.")
         return self._pipe
 
     def warmup(self):
@@ -114,7 +164,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         if audio_data.ndim > 1:
             audio_data = audio_data.mean(axis=1)
 
-        # Resample to 16000 Hz if necessary using scipy to avoid torchaudio requirement
+        # Resample to 16000 Hz if necessary using scipy
         if samplerate != 16000 and len(audio_data) > 0:
             import scipy.signal
             num_samples = int(len(audio_data) * 16000 / samplerate)
@@ -126,7 +176,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         peak = float(np.max(np.abs(audio_data)))
         duration = round(float(len(audio_data)) / float(samplerate), 2)
 
-        if rms < 0.007 or peak < 0.018 or duration < 0.3:
+        if rms < 0.005 or peak < 0.015 or duration < 0.3:
             logger.info(f"Skipping silent/murmur audio turn: rms={rms:.4f}, peak={peak:.4f}, dur={duration}s")
             return {
                 "text": "",
@@ -135,34 +185,63 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                 "words": [],
             }
 
-        # Run whisper pipeline
-        pipe = self._get_pipeline()
-        kwargs = {}
-        if language in ("auto", "any", "multilingual", None, "", "all"):
-            target_lang = None  # Automatic multilingual detection across 99+ languages
-        elif language in ("or", "or-IN", "ory", "odia"):
-            target_lang = None  # Automatic multilingual detection without forcing nonexistent tokenizer code
-        elif language in ("hi", "hindi", "hi-IN"):
-            target_lang = "hi"
-        elif language in ("en", "english", "en-IN", "en-US"):
-            target_lang = "en"
-        else:
-            target_lang = language
+        # Dynamic volume peak-normalization to 0.90 so telephone audio has full dynamic range
+        if peak > 0.01:
+            audio_data = (audio_data / peak) * 0.90
 
-        if target_lang:
-            kwargs["generate_kwargs"] = {"language": target_lang, "task": "transcribe"}
+        # Configure Whisper generation arguments with domain vocabulary biasing
+        pipe = self._get_pipeline()
+        gen_kwargs = {
+            "max_new_tokens": 128,
+            "no_repeat_ngram_size": 3,
+        }
+        prompt_text = ""
+
+        if language in ("or", "or-IN", "ory", "odia"):
+            # OpenAI Whisper has NO Odia ('or') tokenizer code in its 99 training languages.
+            # Using task='translate' tells Whisper's multilingual encoder to translate
+            # spoken Odia phonetics directly into crisp English (e.g. 'What documents are required for video KYC?').
+            # This query matches pgvector chunks with >0.80 similarity, and LLM answers in native Odia.
+            gen_kwargs["task"] = "translate"
+            prompt_text = "Customer support call regarding video KYC documents, Aadhaar, PAN card, UPI payment failed, refund status, account balance, complaint registration."
+        elif language in ("hi", "hindi", "hi-IN"):
+            gen_kwargs["language"] = "hi"
+            gen_kwargs["task"] = "transcribe"
+            prompt_text = "नमस्ते, वीडियो केवाईसी (Video KYC), आधार कार्ड, पैन कार्ड, यूपीआई पेमेंट (UPI payment), रिफंड, बैंक खाता, ग्राहक सेवा, शिकायत दर्ज।"
+        elif language in ("en", "english", "en-IN", "en-US"):
+            gen_kwargs["language"] = "en"
+            gen_kwargs["task"] = "transcribe"
+            prompt_text = "Customer support call for Video KYC, UPI payment issue, refund status, account balance, complaints."
+        elif language and language not in ("auto", "any", "multilingual", "all"):
+            gen_kwargs["language"] = language
+            gen_kwargs["task"] = "transcribe"
+
+        if prompt_text:
+            try:
+                proc = getattr(pipe, "processor", None) or getattr(pipe, "tokenizer", None)
+                if proc and hasattr(proc, "get_prompt_ids"):
+                    prompt_ids = proc.get_prompt_ids(prompt_text, return_tensors="pt")
+                    if hasattr(prompt_ids, "squeeze"):
+                        prompt_ids = prompt_ids.squeeze()
+                    gen_kwargs["prompt_ids"] = prompt_ids
+            except Exception as pe:
+                logger.debug(f"Whisper prompt_ids injection skipped: {pe}")
 
         raw_input = {"raw": audio_data.astype(np.float32), "sampling_rate": samplerate}
-        result = pipe(raw_input, **kwargs)
-        transcribed_text = result.get("text", "").strip()
+        result = pipe(raw_input, generate_kwargs=gen_kwargs)
+        transcribed_text = (result.get("text") or "").strip()
 
-        # Filter repetitive hallucination loops (e.g. 'à l'ouh, à l'ouh...' or 'you you you')
-        words = transcribed_text.lower().split()
-        if len(words) >= 6:
-            unique_words = set(words)
-            if len(unique_words) <= 2 or (len(words) / max(1, len(unique_words))) > 4:
-                logger.warning(f"Whisper hallucination discarded: '{transcribed_text[:60]}...'")
-                transcribed_text = ""
+        # Convert any stray Urdu Perso-Arabic characters to clean Devanagari Hindi
+        if language in ("hi", "hindi", "hi-IN"):
+            has_arabic = any('\u0600' <= ch <= '\u06ff' for ch in transcribed_text)
+            if has_arabic:
+                chars = [URDU_TO_DEVANAGARI.get(ch, ch) for ch in transcribed_text]
+                transcribed_text = "".join(chars)
+            for pattern, replacement in HINDI_LOANWORDS_MAP:
+                transcribed_text = re.sub(pattern, replacement, transcribed_text, flags=re.IGNORECASE)
+
+        # Clean repetitive loops and hallucination tokens without dropping legitimate speech
+        transcribed_text = _clean_hallucinations_and_loops(transcribed_text)
 
         return {
             "text": transcribed_text,

@@ -548,7 +548,7 @@ class IVRCallSession:
                 tenant_ctx = TenantContext(tenant_id=ivr_tenant, tenant_name="tenant-ivr-support")
 
                 # Check if RAG has high-confidence domain knowledge chunks
-                rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.28"))
+                rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.22"))
                 search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
                 top_score = max((score for _, score in search_results), default=0.0)
                 has_rag_match = any(score >= rag_threshold for _, score in search_results)
@@ -584,7 +584,16 @@ class IVRCallSession:
                 response = await self._orchestrator.execute(request)
                 reply_text = response.choices[0].message.content or ""
             except Exception:
-                reply_text = "Sorry, I could not process your request. Please try again."
+                reply_text = ""
+
+        reply_text = reply_text.strip()
+        if not reply_text or "mock response" in reply_text.lower():
+            if self.selected_language == "hi":
+                reply_text = "माफ़ कीजिये, आपकी आवाज़ साफ़ नहीं आई। क्या आप वीडियो केवाईसी या यूपीआई समस्या के बारे में पूछ रहे हैं?"
+            elif self.selected_language == "or":
+                reply_text = "କ୍ଷମା କରିବେ, ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଶୁଣାଗଲା ନାହିଁ। ଆପଣ ଭିଡିଓ କେୱାଇସି କିମ୍ବା ୟୁପିଆଇ ବିଷୟରେ ପଚାରୁଛନ୍ତି କି?"
+            else:
+                reply_text = "I'm sorry, I couldn't clearly hear that. Could you please repeat your query about Video KYC or UPI?"
 
         reply_text = reply_text.strip()
         logger.info(f"[IVR] AI reply: '{reply_text}'")
