@@ -25,17 +25,36 @@ def _get_cache_path(text: str) -> Path:
 
 def get_cached_prompt_pcm(text: str) -> Optional[bytes]:
     """Retrieves 8kHz PCM bytes for a prompt with 0ms latency."""
+    from telephony.ivr_prompts import WELCOME_AND_LANGUAGE
     clean = text.strip()
+    is_welcome = (clean == WELCOME_AND_LANGUAGE.strip())
+
     # 1. RAM Cache
     if clean in _PROMPT_PCM_CACHE:
-        return _PROMPT_PCM_CACHE[clean]
+        cached = _PROMPT_PCM_CACHE[clean]
+        if not is_welcome or len(cached) >= 250000:
+            return cached
+        # Corrupt welcome in RAM, purge it
+        _PROMPT_PCM_CACHE.pop(clean, None)
 
     # 2. Disk Cache
     disk_path = _get_cache_path(clean)
     if disk_path.exists():
         try:
             pcm = disk_path.read_bytes()
-            if pcm and len(pcm) > 100:
+            if is_welcome and len(pcm) < 250000:
+                logger.warning(
+                    f"[IVR Cache] ⚠️ Detected truncated welcome prompt on disk ({len(pcm)} bytes < 250000). "
+                    "Auto-restoring genuine 21s multilingual audio from ivr_audio_cache.zip..."
+                )
+                zip_path = Path(__file__).resolve().parent.parent / "data" / "ivr_audio_cache.zip"
+                if zip_path.exists():
+                    import zipfile
+                    with zipfile.ZipFile(zip_path, "r") as zf:
+                        zf.extractall(Path(__file__).resolve().parent.parent)
+                    pcm = disk_path.read_bytes()
+
+            if pcm and (len(pcm) >= 250000 if is_welcome else len(pcm) > 100):
                 _PROMPT_PCM_CACHE[clean] = pcm
                 return pcm
         except Exception as e:
@@ -49,6 +68,10 @@ def store_cached_prompt_pcm(text: str, pcm: bytes) -> None:
     if not pcm or len(pcm) < 100:
         return
     clean = text.strip()
+    from telephony.ivr_prompts import WELCOME_AND_LANGUAGE
+    if clean == WELCOME_AND_LANGUAGE.strip() and len(pcm) < 250000:
+        logger.warning(f"[IVR Cache] Refusing to store truncated welcome prompt ({len(pcm)} bytes < 250000).")
+        return
     _PROMPT_PCM_CACHE[clean] = pcm
     try:
         disk_path = _get_cache_path(clean)
