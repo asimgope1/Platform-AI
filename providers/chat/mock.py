@@ -115,24 +115,30 @@ class MockChatAdapter(BaseChatAdapter):
         lower_query = clean_query.lower()
         lower_context = context_corpus.lower()
 
-        # Detect if caller/user session requested English, Odia, or Hindi
+        # Detect strict session language: English, Odia, or Hindi
         sys_text = ""
         for m in request.messages:
             if m.role == "system" and m.content:
                 sys_text += " " + str(m.content).lower()
 
-        wants_english = "conversational english" in sys_text or "in english" in sys_text
-        wants_odia = "conversational odia" in sys_text or "in odia" in sys_text or any("\u0b00" <= ch <= "\u0b7f" for ch in clean_query)
-        
-        has_devanagari = any("\u0900" <= ch <= "\u097f" for ch in clean_query)
-        has_hinglish = any(re.search(rf"\b{w}\b", lower_query) for w in ["jubiai", "istiti", "sthiti", "paisa", "paise", "kat", "gaya", "karo", "batao", "batae", "kya", "kaise", "kab", "kripya", "namaste", "madad", "chahiye", "hai", "hu", "kijiye"])
-        
-        wants_hindi = not wants_english and not wants_odia and (
-            has_devanagari
-            or has_hinglish
-            or "conversational hindi" in sys_text
-            or "reply in natural conversational hindi" in lower_context
-        )
+        if "always respond in conversational english" in sys_text:
+            target_lang = "en"
+        elif "always respond in conversational odia" in sys_text:
+            target_lang = "or"
+        elif "always respond in conversational hindi" in sys_text:
+            target_lang = "hi"
+        else:
+            # Script detection fallback from user query
+            if any("\u0b00" <= ch <= "\u0b7f" for ch in clean_query):
+                target_lang = "or"
+            elif any("\u0900" <= ch <= "\u097f" for ch in clean_query):
+                target_lang = "hi"
+            else:
+                target_lang = "en"
+
+        wants_english = (target_lang == "en")
+        wants_odia = (target_lang == "or")
+        wants_hindi = (target_lang == "hi")
 
         # 2. Check for pure greetings using strict word boundaries on isolated user query
         is_greeting = bool(re.search(r"\b(hi|hello|hey|namaste|नमस्ते|hii|heya|hlo|good morning|good afternoon|good evening)\b", lower_query))
@@ -234,8 +240,10 @@ class MockChatAdapter(BaseChatAdapter):
                 return f"{summary} Is there anything else I can help you with today?"
 
         # Fallback response - natural, polite IVR prompt
+        if wants_odia:
+            return "କ୍ଷମା କରିବେ, ମୁଁ ଆପଣଙ୍କ କଥା ସମ୍ପୂର୍ଣ୍ଣ ବୁଝିପାରିଲି ନାହିଁ। ଆପଣ ଦୟାକରି ଆଉଥରେ କହିପାରିବେ କି? ଆପଣ ୟୁପିଆଇ ରିଫଣ୍ଡ, ଭିଡିଓ କେୱାଇସି, କିମ୍ବା ଏଜେଣ୍ଟ ସହିତ କଥା ହେବା ପାଇଁ ପଚାରି ପାରିବେ।"
         if wants_hindi:
-            return "माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाया। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।"
+            return "माफ़ कीजिए, मैं आपकी बात पूरी तरह समझ नहीं पाई। क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या एजेंट से बात करने के लिए कह सकते हैं।"
         return "I'm sorry, I didn't quite catch that. Could you please repeat? You can ask me about your UPI refund status, Video KYC documents, or speak with an agent."
 
     async def stream_chat_completion(
