@@ -1,4 +1,5 @@
 import os
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from platform_core.config.settings import settings, validate_master_key
@@ -8,7 +9,6 @@ from storage.database import init_db, async_session
 from storage.models.tenant import Tenant
 from storage.models.api_key import ApiKey
 from providers.registry import provider_registry
-from telephony.pbx_connector import pbx_connector
 from telephony.pbx_connector import pbx_connector
 
 
