@@ -232,12 +232,31 @@ class MockChatAdapter(BaseChatAdapter):
                 l = line.strip()
                 if not l or l.startswith("---") or l.startswith("[") or "Relevant Context" in l or "You have access" in l:
                     continue
+                # Skip technical metadata header lines
+                lower_l = l.lower()
+                if any(lower_l.startswith(p) for p in (
+                    "audio prompt id:", "english voice transcript:", "hindi voice transcript:",
+                    "odia voice transcript:", "document id:", "category:", "source:", "title:",
+                    "prompt id:", "transcript:"
+                )):
+                    continue
+                # Ensure the selected line strictly matches the requested session language
+                if wants_english and any('\u0900' <= ch <= '\u097f' for ch in l):
+                    continue
+                if wants_hindi and not any('\u0900' <= ch <= '\u097f' for ch in l):
+                    continue
+                if wants_odia and any('\u0900' <= ch <= '\u097f' for ch in l):
+                    continue
                 clean_lines.append(l)
+
             if clean_lines:
                 summary = " ".join(clean_lines[:2])
-                if wants_hindi:
-                    return f"{summary} क्या मैं इसमें आपकी और कोई सहायता कर सकता हूँ?"
-                return f"{summary} Is there anything else I can help you with today?"
+                if wants_odia:
+                    return f"{summary} ମୁଁ ଆପଣଙ୍କୁ ଏଥିରେ ଆଉ କିଛି ସାହାଯ୍ୟ କରିପାରିବି କି?"
+                elif wants_hindi:
+                    return f"{summary} क्या मैं इसमें आपकी और कोई सहायता कर सकती हूँ?"
+                else:
+                    return f"{summary} Is there anything else I can help you with today?"
 
         # Fallback response - natural, polite IVR prompt
         if wants_odia:

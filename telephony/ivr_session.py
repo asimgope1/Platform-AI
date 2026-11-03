@@ -734,6 +734,11 @@ def _clean_spoken_text(text: str) -> str:
     # Remove URLs
     text = re.sub(r"https?://\S+", "", text)
 
+    # Remove technical metadata headers from spoken speech
+    text = re.sub(r"(?i)Audio\s*Prompt\s*ID\s*:\s*[A-Z0-9\-_]+", "", text)
+    text = re.sub(r"(?i)(?:English|Hindi|Odia)\s*Voice\s*Transcript\s*:\s*", "", text)
+    text = re.sub(r"(?i)(?:Document\s*ID|Category|Source|Title)\s*:\s*[^\n\.,]+", "", text)
+
     # Phonetic normalization for Hindi speech (convert Latin acronyms to Devanagari)
     has_hindi = any('\u0900' <= ch <= '\u097f' for ch in text)
     if has_hindi:
