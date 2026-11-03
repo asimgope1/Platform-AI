@@ -115,43 +115,60 @@ class MockChatAdapter(BaseChatAdapter):
         lower_query = clean_query.lower()
         lower_context = context_corpus.lower()
 
-        # Detect if caller/user asks in Hindi or Hinglish or if system requested Hindi
+        # Detect if caller/user session requested English, Odia, or Hindi
+        sys_text = ""
+        for m in request.messages:
+            if m.role == "system" and m.content:
+                sys_text += " " + str(m.content).lower()
+
+        wants_english = "conversational english" in sys_text or "in english" in sys_text
+        wants_odia = "conversational odia" in sys_text or "in odia" in sys_text or any("\u0b00" <= ch <= "\u0b7f" for ch in clean_query)
+        
         has_devanagari = any("\u0900" <= ch <= "\u097f" for ch in clean_query)
         has_hinglish = any(re.search(rf"\b{w}\b", lower_query) for w in ["jubiai", "istiti", "sthiti", "paisa", "paise", "kat", "gaya", "karo", "batao", "batae", "kya", "kaise", "kab", "kripya", "namaste", "madad", "chahiye", "hai", "hu", "kijiye"])
-        wants_hindi = (
+        
+        wants_hindi = not wants_english and not wants_odia and (
             has_devanagari
             or has_hinglish
+            or "conversational hindi" in sys_text
             or "reply in natural conversational hindi" in lower_context
-            or any(m.role == "system" and "hindi" in str(m.content).lower() for m in request.messages)
         )
 
         # 2. Check for pure greetings using strict word boundaries on isolated user query
         is_greeting = bool(re.search(r"\b(hi|hello|hey|namaste|नमस्ते|hii|heya|hlo|good morning|good afternoon|good evening)\b", lower_query))
         if is_greeting and len(clean_query.split()) <= 4:
+            if wants_odia:
+                return "ନମସ୍କାର! ଆମେ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରି ପାରିବୁ? ଆପଣ ୟୁପିଆଇ ରିଫଣ୍ଡ, ଭିଡିଓ କେୱାଇସି, ବା ଗ୍ରାହକ ସେବା ପ୍ରତିନିଧିଙ୍କ ସହ କଥା ହେବା ପାଇଁ ପଚାରି ପାରିବେ।"
             if wants_hindi:
-                return "नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।"
+                return "नमस्ते! मैं आपकी क्या सहायता कर सकती हूँ? आप यूपीआई रिफंड, वीडियो केवाईसी, या कस्टमर केयर से बात करने के लिए कह सकते हैं।"
             return "Hello! How can I help you today? You can ask me about your UPI refund status, Video KYC documents, or speak with an agent."
 
         # 3. Domain & Knowledge Base matching:
         # IVR Keypad / Live Support
-        if any(w in lower_query for w in ["ivr", "keypad", "key", "press", "representative", "agent", "live support", "executive", "human", "person", "operator", "talk to", "speak to", "दबाएं", "एजेंट", "प्रतिनिधि"]):
+        if any(w in lower_query for w in ["ivr", "keypad", "key", "press", "representative", "agent", "live support", "executive", "human", "person", "operator", "talk to", "speak to", "दबाएं", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
+            if wants_odia:
+                return "ଗ୍ରାହକ ସେବା ପ୍ରତିନିଧିଙ୍କ ସହିତ ସିଧାସଳଖ କଥା ହେବା ପାଇଁ ଆପଣଙ୍କ ଡାଏଲ୍ ପ୍ୟାଡରେ '୯' ଦବାନ୍ତୁ କିମ୍ବା 'ଏଜେଣ୍ଟ' କୁହନ୍ତୁ।"
             if wants_hindi:
                 return "कस्टमर केयर प्रतिनिधि से सीधे बात करने के लिए अपने डायल पैड पर '9' दबाएं या 'एजेंट' बोलें। औसत प्रतीक्षा समय 2 मिनट से कम है।"
             return "To connect directly with a live customer care representative, press 9 on your dial pad or say agent. The wait time is under 2 minutes."
 
         # Video KYC / Documents Required
-        if any(w in lower_query for w in ["kyc", "केवाईसी", "video kyc", "documents", "pan", "aadhaar", "document", "verification", "id proof"]):
+        if any(w in lower_query for w in ["kyc", "केवाईसी", "video kyc", "documents", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି"]):
+            if wants_odia:
+                return "ଭିଡିଓ କେୱାଇସି ସତ୍ୟାପନ ପାଇଁ ଆପଣଙ୍କର ମୂଳ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ଲିଙ୍କ୍ ଥିବା ସକ୍ରିୟ ମୋବାଇଲ୍ ନମ୍ବର ଆବଶ୍ୟକ। ଏହା ମାତ୍ର ଦୁଇ ମିନିଟରେ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଥାଏ।"
             if wants_hindi:
                 return "डिजिटल वीडियो केवाईसी के लिए आपको मूल पैन कार्ड और आधार से लिंक सक्रिय मोबाइल नंबर चाहिए। यह सत्यापन सिर्फ 2 मिनट में पूरा हो जाता है।"
             return "For Video KYC, you will need your original physical PAN card and an active Aadhaar-linked mobile number for OTP. The verification takes just 2 minutes."
 
         # UPI Refund / Payment failure
         if any(w in lower_query for w in [
-            "refund", "upi", "jubiai", "रिफंड", "cut", "kat gaya", "paisa", "paise", "debited",
+            "refund", "upi", "upa", "jubiai", "रिफंड", "cut", "kat gaya", "paisa", "paise", "debited",
             "failed", "विफलता", "istiti", "sthiti", "you pay", "hundred acre", "you pay a hundred acre",
             "u p", "up", "money deducted", "amount deducted", "deducted", "transaction failed",
-            "payment failed", "utr", "pending payment"
+            "payment failed", "utr", "pending payment", "ୟୁପିଆଇ", "ରିଫଣ୍ଡ"
         ]):
+            if wants_odia:
+                return "ଯଦି ବିଫଳ ୟୁପିଆଇ କାରବାରରେ ଆପଣଙ୍କ ଟଙ୍କା କଟିଯାଇଛି, ତେବେ ଚବିଶ ରୁ ଅଠଚାଳିଶ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଖାତାକୁ ଫେରସ୍ତ ଆସିଯିବ।"
             if wants_hindi:
                 return "यदि असफल यूपीआई ट्रांजेक्शन में आपके पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में सीधे आपके बैंक खाते में रिफंड आ जाता है। आप अपने 12 अंकों के यूटीआर नंबर से भी स्टेटस ट्रैक कर सकते हैं।"
             return "If your money was debited for a failed UPI transaction, it will be automatically refunded to your bank account within 24 to 48 banking hours. You can also track the status using your 12-digit UPI UTR reference number."
