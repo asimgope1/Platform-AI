@@ -490,19 +490,7 @@ class IVRCallSession:
         if not text:
             return
 
-        self._latest_pbx_transcript = text
-
-        if PBX_IGNORE_TRANSCRIPT:
-            # If local PCM buffer does not have enough speech, don't drop the caller's turn!
-            if len(self._pcm_buffer) < MIN_SPEECH_BYTES:
-                logger.info(f"[IVR] 🎙️ Processing PBX transcript directly (pcm_buffer < {MIN_SPEECH_BYTES}b): '{text}'")
-                async with self._pipeline_lock:
-                    await self._run_ai_and_reply(text)
-                return
-            else:
-                logger.info(f"[IVR] PBX transcript '{text}' buffered as fallback for local Whisper.")
-                return
-
+        # Clear PCM buffer and cancel silence timer since PBX already gave us the full transcript
         self._pcm_buffer.clear()
         self._preroll_buffer.clear()
         if self._silence_task and not self._silence_task.done():
