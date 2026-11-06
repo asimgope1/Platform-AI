@@ -199,6 +199,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         pipe = self._get_pipeline()
         gen_kwargs = {
             "max_new_tokens": 128,
+            "max_length": None,
             "no_repeat_ngram_size": 3,
             "temperature": 0.0,
         }

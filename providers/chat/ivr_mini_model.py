@@ -104,9 +104,9 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ହଁ ଆଜ୍ଞା, ମୁଁ ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଶୁଣିପାରୁଛି। କୁହନ୍ତୁ, ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
     "appreciation": {
-        "en": "You are welcome! Thank you for contacting customer support. Have a wonderful day ahead!",
-        "hi": "आपका स्वागत है! हमारी ग्राहक सेवा में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!",
-        "or": "ଆପଣଙ୍କୁ ସ୍ୱାଗତ! ଆମ ସେବାକୁ ଯୋଗାଯୋଗ କରିଥିବାରୁ ଧନ୍ୟବାଦ। ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
+        "en": "You're welcome! Have a wonderful day!",
+        "hi": "आपका स्वागत है! आपका दिन शुभ हो!",
+        "or": "ଆପଣଙ୍କୁ ସ୍ୱାଗତ! ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
     },
     "fallback": {
         "en": "Could you please clarify? You can ask me about UPI refund status, Video KYC documents, or card services.",
