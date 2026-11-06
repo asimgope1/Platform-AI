@@ -235,6 +235,19 @@ class MockChatAdapter(BaseChatAdapter):
                 l = line.strip()
                 if not l or l.startswith("---") or l.startswith("[") or "Relevant Context" in l or "You have access" in l:
                     continue
+
+                # Skip caller questions / inquiries to prevent repeating the user's question
+                lower_raw = l.lower()
+                if any(lower_raw.startswith(p) for p in (
+                    "caller:", "caller :", "user:", "user :", "customer:", "customer :",
+                    "customer spoken inquiry:", "customer inquiry:", "caller query:",
+                    "question:", "q:", "key inquiries:", "inquiry:"
+                )):
+                    continue
+
+                # Strip resolution prefixes to extract the actual answer
+                l = re.sub(r"(?i)^(?:assistant|verified resolution|resolution|answer|bot|agent)\s*:\s*", "", l)
+
                 # Skip technical metadata header lines
                 lower_l = l.lower()
                 if any(lower_l.startswith(p) for p in (
@@ -247,6 +260,14 @@ class MockChatAdapter(BaseChatAdapter):
                 l = re.sub(r"^\s*[-*#\d\.\)]+\s*", "", l).strip("\"' ")
                 if not l:
                     continue
+
+                # Echo Guard: reject lines that repeat the caller's spoken words (>60% word overlap)
+                cand_words = set(re.findall(r'\w+', l.lower()))
+                query_words = set(re.findall(r'\w+', lower_query))
+                if cand_words and query_words:
+                    overlap = len(cand_words.intersection(query_words)) / len(cand_words)
+                    if overlap >= 0.60:
+                        continue
                 # Ensure the selected line strictly matches the requested session language
                 if wants_english and any('\u0900' <= ch <= '\u097f' for ch in l):
                     continue
