@@ -10,6 +10,14 @@ model_aliases:
       - streaming
       - tool_calling
 
+  ivr-rag-mini:
+    provider: ivr_mini_brain
+    model: ivr-rag-mini-v1
+    description: "Autonomous self-contained IVR RAG conversational mini-model"
+    capabilities:
+      - chat
+      - streaming
+
   mock-chat:
     provider: mock_provider
     model: mock-instant-1
@@ -55,6 +63,10 @@ providers:
     base_url_env: HOSTED_AI_BASE_URL
     api_key_env: HOSTED_AI_API_KEY
     timeout_seconds: 60
+
+  ivr_mini_brain:
+    type: ivr_mini
+    timeout_seconds: 5
 
   mock_provider:
     type: mock

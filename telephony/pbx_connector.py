@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # ── config ────────────────────────────────────────────────────────────────────
 PBX_WS_URL      = os.getenv("PBX_WS_URL",      "ws://192.168.1.133:9093")
-IVR_CHAT_MODEL  = os.getenv("IVR_CHAT_MODEL",  "mock-chat")
+IVR_CHAT_MODEL  = os.getenv("IVR_CHAT_MODEL",  "ivr-rag-mini")
 IVR_LANGUAGE    = os.getenv("IVR_LANGUAGE",    "en")
 
 RECONNECT_MIN   = 2.0    # seconds before first retry

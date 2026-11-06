@@ -15,6 +15,7 @@ from providers.chat.mock import MockChatAdapter
 from providers.chat.openai_compatible import OpenAICompatibleChatAdapter
 from providers.chat.transformers_local import TransformersLocalChatAdapter
 from providers.chat.gemma_transformers import GemmaTransformersChatAdapter
+from providers.chat.ivr_mini_model import IVRRAGMiniModelAdapter
 from providers.embeddings.base import MockEmbeddingAdapter, OpenAICompatibleEmbeddingAdapter
 from providers.embeddings.sentence_transformers import SentenceTransformersEmbeddingAdapter
 from providers.embeddings.google_genai import GoogleGenAIEmbeddingAdapter
@@ -84,6 +85,8 @@ class ProviderRegistry:
                 self.chat_adapters[p_id] = OpenAICompatibleChatAdapter(p_id, p_cfg.model_dump())
             elif adapter_type == "gemma_transformers":
                 self.chat_adapters[p_id] = GemmaTransformersChatAdapter(p_id, p_cfg.model_dump())
+            elif adapter_type in ("ivr_mini", "mini_rag", "ivr_rag_mini"):
+                self.chat_adapters[p_id] = IVRRAGMiniModelAdapter(p_id, p_cfg.model_dump())
             elif adapter_type == "transformers":
                 self.chat_adapters[p_id] = TransformersLocalChatAdapter(p_id, p_cfg.model_dump())
             else:

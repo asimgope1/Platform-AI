@@ -164,3 +164,4 @@ Look for these operational log signatures:
 | **Keypad press ignored** | DTMF signalling mode in softphone is set incorrectly. | Set DTMF mode in MizoDroid / Linphone to **RFC 2833** or **SIP INFO**. |
 | **Agent speaks incorrect language** | Inadvertent keypress during Menu 1. | Press `*` to go back to language selection or redial and select `1` (EN), `2` (HI), or `3` (OR). |
 | **Agent doesn't respond to speech** | Microphone input level too low (below VAD threshold). | Speak at normal conversational volume close to microphone. |
+

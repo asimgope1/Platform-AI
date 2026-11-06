@@ -62,7 +62,7 @@ async def ivr_websocket(ws: WebSocket):
     """
     await ws.accept()
 
-    chat_model = os.getenv("IVR_CHAT_MODEL", "mock-chat")
+    chat_model = os.getenv("IVR_CHAT_MODEL", "ivr-rag-mini")
     language   = os.getenv("IVR_LANGUAGE", "en")
 
     session = IVRCallSession(

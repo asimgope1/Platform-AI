@@ -22,6 +22,7 @@ from typing import Any, Optional
 
 from fastapi import WebSocket
 
+from providers.chat.ivr_mini_model import ivr_mini_brain
 from audio.service import AudioService
 from orchestration.chat_orchestrator import ChatOrchestrator
 from platform_core.contracts.requests import ChatMessage, NormalizedChatRequest
@@ -79,8 +80,8 @@ SILENCE_GAP_SECONDS = 0.8
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
 
 # Model used for chat; override via env / config
-DEFAULT_CHAT_MODEL = "mock-chat"
-GEMMA_MODEL_ALIAS = os.getenv("GEMMA_MODEL_ALIAS", "gemma-gpu")
+DEFAULT_CHAT_MODEL = os.getenv("IVR_CHAT_MODEL", "ivr-rag-mini")
+GEMMA_MODEL_ALIAS = os.getenv("GEMMA_MODEL_ALIAS", "ivr-rag-mini")
 
 # Ignore PBX transcript events by default; rely on local high-accuracy Whisper STT
 PBX_IGNORE_TRANSCRIPT = os.getenv("PBX_IGNORE_TRANSCRIPT", "true").lower() in ("true", "1", "yes")
@@ -548,49 +549,39 @@ class IVRCallSession:
         )
 
         try:
-            # 1. Query pgvector RAG chunks for IVR knowledge
-            async with async_session() as session:
-                doc_repo = DocumentRepository(session)
-                emb_service = EmbeddingService(provider_id="semantic-default")
-                search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
-                rag_pipeline = RAGPipeline(search_service=search_service)
+            # 1. Retrieve domain chunks from pgvector (if available)
+            rag_context_str = ""
+            try:
+                async with async_session() as session:
+                    doc_repo = DocumentRepository(session)
+                    emb_service = EmbeddingService(provider_id="semantic-default")
+                    search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
 
-                ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
-                tenant_ctx = TenantContext(tenant_id=ivr_tenant, tenant_name="tenant-ivr-support")
+                    ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
+                    rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.22"))
+                    search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
+                    top_score = max((score for _, score in search_results), default=0.0)
 
-                # Check if RAG has high-confidence domain knowledge chunks
-                rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.22"))
-                search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
-                top_score = max((score for _, score in search_results), default=0.0)
-                has_rag_match = any(score >= rag_threshold for _, score in search_results)
+                    relevant_chunks = [c.content for c, score in search_results if score >= rag_threshold]
+                    if relevant_chunks:
+                        logger.info(f"[IVR] ✓ Found {len(relevant_chunks)} relevant RAG chunks in pgvector (top score: {top_score:.3f} >= {rag_threshold}).")
+                        rag_context_str = "\n\n".join(relevant_chunks)
+                    else:
+                        logger.info(f"[IVR] 🧠 Query '{user_text[:40]}' handled by IVR Mini-Model autonomous knowledge (top score: {top_score:.3f} < {rag_threshold}).")
+            except Exception as rag_err:
+                logger.warning(f"[IVR] pgvector search warning ({rag_err}); operating with autonomous mini-model brain.")
 
-                if has_rag_match:
-                    logger.info(f"[IVR] ✓ Found {len(search_results)} relevant RAG chunks in pgvector (top score: {top_score:.3f} >= {rag_threshold}).")
-                    rag_orchestrator = ChatOrchestrator(rag_pipeline=rag_pipeline)
-                    response = await rag_orchestrator.execute(request, context=tenant_ctx, enable_rag=True)
-                    reply_text = response.choices[0].message.content or ""
-                else:
-                    # RAG does not have this! Take help of Gemma to respond intelligently
-                    logger.info(
-                        f"[IVR] 🌐 Query '{user_text[:40]}' not in RAG chunks (top score: {top_score:.3f} < {rag_threshold}). "
-                        f"Taking help of Gemma ({GEMMA_MODEL_ALIAS})..."
-                    )
-                    gemma_request = request.model_copy(update={"model_alias": GEMMA_MODEL_ALIAS})
-                    try:
-                        rag_orchestrator = ChatOrchestrator(rag_pipeline=rag_pipeline)
-                        # Tight 3.5s timeout: IVR callers cannot wait in silence if Colab hangs/crashes
-                        response = await asyncio.wait_for(
-                            rag_orchestrator.execute(gemma_request, context=tenant_ctx, enable_rag=False),
-                            timeout=3.5,
-                        )
-                        reply_text = response.choices[0].message.content or ""
-                    except Exception as gemma_err:
-                        logger.warning(f"[IVR] Gemma model unavailable or timed out ({gemma_err}); using instant fallback orchestrator.")
-                        response = await self._orchestrator.execute(request)
-                        reply_text = response.choices[0].message.content or ""
+            # 2. Autonomous Mini-Model synthesizes natural, multi-turn dialogue (100% local, <20ms)
+            reply_text = ivr_mini_brain.synthesize(
+                user_query=user_text,
+                messages=self._history,
+                rag_context=rag_context_str,
+                language=self.selected_language,
+                service_category=self.selected_service,
+            )
 
         except Exception as exc:
-            logger.error(f"[IVR] LLM/RAG error: {exc}")
+            logger.error(f"[IVR] Mini-Model error: {exc}")
             try:
                 response = await self._orchestrator.execute(request)
                 reply_text = response.choices[0].message.content or ""
