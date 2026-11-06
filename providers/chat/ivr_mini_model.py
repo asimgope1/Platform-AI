@@ -44,74 +44,79 @@ logger = logging.getLogger(__name__)
 
 AUTONOMOUS_KNOWLEDGE = {
     "greeting": {
-        "en": "Hello! Thank you for calling customer support. How can I assist you with your banking request today?",
-        "hi": "नमस्ते! ग्राहक सेवा में आपका स्वागत है। मैं आज आपकी क्या सहायता कर सकती हूँ?",
-        "or": "ନମସ୍କାର! ଆମ ଗ୍ରାହକ ସେବାକୁ ସ୍ୱାଗତ। ଆଜି ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରି ପାରିବି?",
+        "en": "Hello! Welcome to customer support. How can I assist you with your request today?",
+        "hi": "नमस्ते! ग्राहक सेवा में आपका स्वागत है। बताइए मैं आपकी क्या सहायता कर सकती हूँ?",
+        "or": "ନମସ୍କାର! ଆମ ଗ୍ରାହକ ସେବାକୁ ସ୍ୱାଗତ। କୁହନ୍ତୁ ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
     "video_kyc": {
-        "en": "For Video KYC, please keep your original physical PAN card and an Aadhaar-linked mobile phone ready. The digital verification takes just 2 minutes.",
-        "hi": "वीडियो केवाईसी के लिए कृपया अपना मूल भौतिक पैन कार्ड और आधार लिंक मोबाइल तैयार रखें। यह डिजिटल सत्यापन केवल 2 मिनट में पूरा हो जाता है।",
-        "or": "ଭିଡିଓ କେୱାଇସି ପାଇଁ ଦୟାକରି ଆପଣଙ୍କର ମୂଳ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ଲିଙ୍କ୍ ଥିବା ମୋବାଇଲ୍ ପ୍ରସ୍ତୁତ ରଖନ୍ତୁ। ଏହା ମାତ୍ର ଦୁଇ ମିନିଟରେ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଥାଏ।",
+        "en": "For Video KYC, please keep your physical PAN card and Aadhaar phone ready. It takes 2 minutes.",
+        "hi": "वीडियो केवाईसी के लिए कृपया अपना मूल भौतिक पैन कार्ड और आधार लिंक मोबाइल तैयार रखें।",
+        "or": "ଭିଡିଓ କେୱାଇସି ପାଇଁ ଆପଣଙ୍କର ମୂଳ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ମୋବାଇଲ୍ ପ୍ରସ୍ତୁତ ରଖନ୍ତୁ।",
     },
     "upi_refund": {
-        "en": "If money was debited for a failed UPI transaction, it will be automatically refunded to your account within 24 to 48 banking hours. You can track it using your 12-digit UTR number.",
-        "hi": "यदि असफल यूपीआई लेन-देन में पैसे कट गए हैं, तो 24 से 48 बैंकिंग घंटों में राशि आपके खाते में वापस आ जाएगी। आप अपने 12 अंकों के यूटीआर नंबर से स्थिति देख सकते हैं।",
-        "or": "ବିଫଳ ୟୁପିଆଇ କାରବାରରେ କଟିଥିବା ଟଙ୍କା ୨୪ ରୁ ୪୮ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଖାତାକୁ ସ୍ୱୟଂଚାଳିତ ଭାବରେ ଫେରିଆସିବ।",
+        "en": "Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.",
+        "hi": "असफल यूपीआई लेन-देन का रिफंड 24 से 48 बैंकिंग घंटों में आपके खाते में वापस आ जाएगा।",
+        "or": "ବିଫଳ ୟୁପିଆଇ କାରବାର ଟଙ୍କା ୨୪ ରୁ ୪୮ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଖାତାକୁ ଫେରିଆସିବ।",
     },
     "card_block": {
-        "en": "To protect your account, your card can be immediately frozen. A new replacement card will be dispatched to your registered address within 5 to 7 business days.",
-        "hi": "सुरक्षा के लिए आपका कार्ड तुरंत ब्लॉक किया जा सकता है। नया रिप्लेसमेंट कार्ड 5 से 7 कार्यदिवसों में आपके पंजीकृत पते पर भेज दिया जाएगा।",
-        "or": "ସୁରକ୍ଷା ପାଇଁ ଆପଣଙ୍କ କାର୍ଡକୁ ତୁରନ୍ତ ବ୍ଲକ୍ କରାଯାଇପାରିବ। ନୂଆ କାର୍ଡ ୫ ରୁ ୭ କାର୍ଯ୍ୟଦିବସ ମଧ୍ୟରେ ଆପଣଙ୍କ ଠିକଣାକୁ ପଠାଯିବ।",
+        "en": "Your card is frozen for security. A replacement will be dispatched in 5 to 7 business days.",
+        "hi": "सुरक्षा के लिए आपका कार्ड तुरंत ब्लॉक कर दिया गया है। नया कार्ड 5 से 7 कार्यदिवसों में मिलेगा।",
+        "or": "ସୁରକ୍ଷା ପାଇଁ ଆପଣଙ୍କ କାର୍ଡକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ନୂଆ କାର୍ଡ ୫ ରୁ ୭ କାର୍ଯ୍ୟଦିବସରେ ପହଞ୍ଚିବ।",
     },
     "card_pin": {
-        "en": "You can instantly generate or reset your ATM PIN using our mobile banking app or at any nearby bank ATM using an OTP sent to your registered mobile number.",
-        "hi": "आप मोबाइल बैंकिंग ऐप से या किसी भी नजदीकी एटीएम पर अपने पंजीकृत मोबाइल नंबर पर आए ओटीपी द्वारा तुरंत नया एटीएम पिन बना सकते हैं।",
-        "or": "ଆପଣ ମୋବାଇଲ୍ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଆପ୍ ବ୍ୟବହାର କରି କିମ୍ବା ନିକଟସ୍ଥ ଏଟିଏମ୍‌ରେ ଓଟିପି ମାଧ୍ୟମରେ ତୁରନ୍ତ ନୂଆ ପିନ୍ ତିଆରି କରିପାରିବେ।",
+        "en": "You can instantly generate your ATM PIN using our mobile banking app or any nearby bank ATM.",
+        "hi": "आप मोबाइल बैंकिंग ऐप या किसी नजदीकी एटीएम पर ओटीपी से तुरंत नया पिन बना सकते हैं।",
+        "or": "ଆପଣ ମୋବାଇଲ୍ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଆପ୍ ବା ଏଟିଏମ୍‌ରେ ଓଟିପି ମାଧ୍ୟମରେ ତୁରନ୍ତ ନୂଆ ପିନ୍ ସେଟ୍ କରିପାରିବେ।",
     },
     "account_balance": {
-        "en": "Your current account balance and mini-statement have been sent via SMS to your registered mobile number.",
-        "hi": "आपके बैंक खाते का उपलब्ध बैलेंस और अंतिम लेन-देन का विवरण आपके पंजीकृत मोबाइल नंबर पर एसएमएस द्वारा भेज दिया गया है।",
-        "or": "ଆପଣଙ୍କ ଖାତାର ବାଲାନ୍ସ ଏବଂ ଶେଷ କାରବାରର ବିବରଣୀ ଆପଣଙ୍କ ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବରକୁ ଏସଏମଏସ ଯୋଗେ ପଠାଯାଇଛି।",
+        "en": "Your account balance and mini-statement have been sent via SMS to your registered mobile number.",
+        "hi": "आपके बैंक खाते का बैलेंस विवरण आपके पंजीकृत मोबाइल नंबर पर एसएमएस द्वारा भेज दिया गया है।",
+        "or": "ଆପଣଙ୍କ ଖାତାର ବାଲାନ୍ସ ବିବରଣୀ ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବରକୁ ଏସଏମଏସ ଯୋଗେ ପଠାଯାଇଛି।",
     },
     "cheque_book": {
-        "en": "A new 25-leaf cheque book can be requested. It will be delivered to your registered address within 3 to 5 working days.",
-        "hi": "आप 25 पन्नों की नई चेकबुक का अनुरोध कर सकते हैं। यह 3 से 5 कार्यदिवसों में आपके पंजीकृत पते पर डिलीवर कर दी जाएगी।",
-        "or": "ଆପଣ ନୂଆ ଚେକ୍ ବହି ପାଇଁ ଅନୁରୋଧ କରିପାରିବେ। ଏହା ୩ ରୁ ୫ କାର୍ଯ୍ୟଦିବସ ମଧ୍ୟରେ ଆପଣଙ୍କ ଠିକଣାରେ ପହଞ୍ଚିବ।",
+        "en": "Your cheque book request is placed. Delivery takes 3 to 5 working days to your address.",
+        "hi": "नई चेकबुक का अनुरोध दर्ज कर लिया गया है। यह 3 से 5 कार्यदिवसों में आपके पते पर पहुंचेगी।",
+        "or": "ଚେକ୍ ବହି ଅନୁରୋଧ ଗ୍ରହଣ କରାଯାଇଛି। ଏହା ୩ ରୁ ୫ କାର୍ଯ୍ୟଦିବସରେ ଆପଣଙ୍କ ଠିକଣାରେ ପହଞ୍ଚିବ।",
     },
     "loans_emi": {
-        "en": "We offer personal, home, and vehicle loans starting at competitive interest rates. Your monthly EMI is auto-debited on your chosen due date.",
-        "hi": "हम आकर्षक ब्याज दरों पर व्यक्तिगत, गृह और वाहन ऋण प्रदान करते हैं। आपकी मासिक ईएमआई आपके द्वारा चुनी गई तारीख को स्वचालित रूप से कट जाती है।",
-        "or": "ଆମେ ସୁବିଧାଜନକ ସୁଧ ହାରରେ ବ୍ୟକ୍ତିଗତ ଏବଂ ଗୃହ ଋଣ ପ୍ରଦାନ କରୁ। ପ୍ରତି ମାସର ନିର୍ଦ୍ଦିଷ୍ଟ ତାରିଖରେ ଇଏମଆଇ କଟିଥାଏ।",
+        "en": "We offer personal, home, and vehicle loans starting at competitive interest rates with easy EMIs.",
+        "hi": "हम आकर्षक ब्याज दरों और आसान ईएमआई पर व्यक्तिगत, गृह और वाहन ऋण प्रदान करते हैं।",
+        "or": "ଆମେ ସୁବିଧାଜନକ ସୁଧ ହାର ଏବଂ ସହଜ ଇଏମଆଇରେ ଋଣ ପ୍ରଦାନ କରୁ।",
     },
     "netbanking_mpin": {
-        "en": "To reset your NetBanking password or MPIN, tap 'Forgot Password' on the mobile login screen and verify with your debit card and OTP in 1 minute.",
-        "hi": "अपना नेटबैंकिंग पासवर्ड या MPIN रीसेट करने के लिए ऐप पर 'Forgot MPIN' चुनें और अपने डेबिट कार्ड तथा ओटीपी से 1 मिनट में नया पिन बनाएं।",
-        "or": "ନେଟ୍ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ପାସୱାର୍ଡ ବା ଏମପିନ୍ ରିସେଟ୍ କରିବା ପାଇଁ ମୋବାଇଲ୍ ଆପ୍‌ରେ 'Forgot MPIN' ବ୍ୟବହାର କରି ଓଟିପି ମାଧ୍ୟମରେ ନୂଆ ପିନ୍ ସେଟ୍ କରନ୍ତୁ।",
+        "en": "Tap 'Forgot MPIN' on the mobile login screen to reset your password with your debit card.",
+        "hi": "ऐप पर 'Forgot MPIN' चुनकर अपने डेबिट कार्ड और ओटीपी से तुरंत नया पासवर्ड बनाएं।",
+        "or": "ଆପ୍‌ରେ 'Forgot MPIN' ବ୍ୟବହାର କରି ଡେବିଟ୍ କାର୍ଡ ଏବଂ ଓଟିପି ଦ୍ୱାରା ନୂଆ ପାସୱାର୍ଡ ସେଟ୍ କରନ୍ତୁ।",
     },
     "branch_hours": {
-        "en": "Our bank branches operate Monday through Friday from 10:00 AM to 4:00 PM, and on the 1st, 3rd, and 5th Saturdays of each month.",
-        "hi": "हमारी शाखाएं सोमवार से शुक्रवार सुबह 10:00 बजे से शाम 4:00 बजे तक तथा महीने के पहले, तीसरे और पांचवें शनिवार को खुली रहती हैं।",
-        "or": "ଆମ ବ୍ୟାଙ୍କ ଶାଖା ସୋମବାରରୁ ଶୁକ୍ରବାର ସକାଳ ୧୦:୦୦ ରୁ ଅପରାହ୍ନ ୪:୦୦ ପର୍ଯ୍ୟନ୍ତ ଏବଂ ପ୍ରଥମ, ତୃତୀୟ ଓ ପଞ୍ଚମ ଶନିବାରରେ ଖୋଲା ରହିଥାଏ।",
+        "en": "Our bank branches operate Monday through Friday from 10:00 AM to 4:00 PM.",
+        "hi": "हमारी शाखाएं सोमवार से शुक्रवार सुबह 10:00 से शाम 4:00 बजे तक खुली रहती हैं।",
+        "or": "ଆମ ଶାଖା ସୋମବାରରୁ ଶୁକ୍ରବାର ସକାଳ ୧୦:୦୦ ରୁ ଅପରାହ୍ନ ୪:୦୦ ପର୍ଯ୍ୟନ୍ତ ଖୋଲା ରହିଥାଏ।",
     },
     "human_agent": {
-        "en": "I am connecting you with a live customer care representative right away. Please hold the line, the average wait time is under 2 minutes.",
-        "hi": "मैं आपको तुरंत हमारे ग्राहक सेवा प्रतिनिधि से कनेक्ट कर रही हूँ। कृपया लाइन पर बने रहें, औसत प्रतीक्षा समय 2 मिनट से कम है।",
-        "or": "ମୁଁ ଆପଣଙ୍କୁ ତୁରନ୍ତ ଆମ ଗ୍ରାହକ ସେବା ପ୍ରତିନିଧିଙ୍କ ସହିତ ସଂଯୋଗ କରୁଛି। ଦୟାକରି ଲାଇନରେ ରୁହନ୍ତୁ।",
+        "en": "Connecting you with a live customer care representative right away. Please hold the line.",
+        "hi": "मैं आपको तुरंत हमारे ग्राहक सेवा प्रतिनिधि से कनेक्ट कर रही हूँ। कृपया लाइन पर बने रहें।",
+        "or": "ମୁଁ ଆପଣଙ୍କୁ ତୁରନ୍ତ ଆମ ପ୍ରତିନିଧିଙ୍କ ସହିତ ସଂଯୋଗ କରୁଛି। ଦୟାକରି ଲାଇନରେ ରୁହନ୍ତୁ।",
     },
     "voice_clarification": {
-        "en": "Yes, I can hear you loud and clear! I will speak slowly and clearly. How can I assist you with your request?",
-        "hi": "हाँजी, मुझे आपकी आवाज़ बिल्कुल साफ़ और स्पष्ट सुनाई दे रही है। मैं धीरे-धीरे बोलूँगी, बताइए मैं आपकी क्या सहायता कर सकती हूँ?",
-        "or": "ହଁ ଆଜ୍ଞା, ମୁଁ ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଭାବରେ ଶୁଣିପାରୁଛି। କୁହନ୍ତୁ, ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?",
+        "en": "Yes, I can hear you clearly! How can I assist you with your request?",
+        "hi": "हाँजी, मुझे आपकी आवाज़ बिल्कुल साफ़ सुनाई दे रही है। बताइए मैं क्या सहायता करूँ?",
+        "or": "ହଁ ଆଜ୍ଞା, ମୁଁ ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଶୁଣିପାରୁଛି। କୁହନ୍ତୁ, ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
     "appreciation": {
-        "en": "You are most welcome! Thank you for contacting our customer support service. Have a wonderful day ahead!",
-        "hi": "आपका बहुत-बहुत धन्यवाद! हमारी ग्राहक सेवा में संपर्क करने के लिए आभार। आपका दिन शुभ हो!",
-        "or": "ଆପଣଙ୍କୁ ବହୁତ ବହୁତ ଧନ୍ୟବାଦ! ଆମ ଗ୍ରାହକ ସେବା ସହିତ ଯୋଗାଯୋଗ କରିଥିବାରୁ କୃତଜ୍ଞତା। ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
+        "en": "You are welcome! Thank you for contacting customer support. Have a wonderful day ahead!",
+        "hi": "आपका स्वागत है! हमारी ग्राहक सेवा में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!",
+        "or": "ଆପଣଙ୍କୁ ସ୍ୱାଗତ! ଆମ ସେବାକୁ ଯୋଗାଯୋଗ କରିଥିବାରୁ ଧନ୍ୟବାଦ। ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
     },
     "fallback": {
-        "en": "Could you please clarify? You can ask me about UPI refund status, Video KYC documents, card services, or to speak with an agent.",
-        "hi": "माफ़ कीजिए, क्या आप कृपया दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, कार्ड समस्या, या एजेंट से बात करने के लिए कह सकते हैं।",
-        "or": "କ୍ଷମା କରିବେ, ଆପଣ ଦୟାକରି ଆଉଥରେ କହିପାରିବେ କି? ଆପଣ ୟୁପିଆଇ ରିଫଣ୍ଡ, ଭିଡିଓ କେୱାଇସି, ବା ଏଜେଣ୍ଟଙ୍କ ସହ କଥା ହେବା ପାଇଁ ପଚାରି ପାରିବେ।",
+        "en": "Could you please clarify? You can ask me about UPI refund status, Video KYC documents, or card services.",
+        "hi": "माफ़ कीजिए, क्या आप दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या कार्ड के बारे में पूछ सकते हैं।",
+        "or": "କ୍ଷମା କରିବେ, ଆପଣ ଦୟାକରି ଆଉଥରେ କହିବେ କି? ଆପଣ ୟୁପିଆଇ ରିଫଣ୍ଡ, ଭିଡିଓ କେୱାଇସି, ବା କାର୍ଡ ବିଷୟରେ ପଚାରି ପାରିବେ।",
+    },
+    "capabilities": {
+        "en": "I can assist you with Video KYC, UPI refunds, card blocking, ATM PIN, and account balance.",
+        "hi": "मैं वीडियो केवाईसी, यूपीआई रिफंड, कार्ड ब्लॉक, एटीएम पिन और बैलेंस चेक में आपकी मदद कर सकती हूँ।",
+        "or": "ମୁଁ ଭିଡିଓ କେୱାଇସି, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍ ଏବଂ ବାଲାନ୍ସ ସେବାରେ ସାହାଯ୍ୟ କରିପାରିବି।",
     },
 }
 
@@ -152,6 +157,14 @@ class IVRRAGMiniModel:
 
         # 2. Check for pure greetings
         if self._is_greeting_intent(lower_query):
+            # If call is already in progress (> 1 turn), do not replay welcome greeting
+            if messages and len(messages) > 2:
+                if lang == "hi":
+                    return "हाँजी, मैं सुन रही हूँ। बताइए क्या मदद करूँ?"
+                elif lang == "or":
+                    return "ହଁ ଆଜ୍ଞା, ମୁଁ ଶୁଣୁଛି। କୁହନ୍ତୁ କିପରି ସାହାଯ୍ୟ କରିବି?"
+                else:
+                    return "Yes, I am listening. How can I help you today?"
             return AUTONOMOUS_KNOWLEDGE["greeting"][lang]
 
         # 3. Check for voice clarity / hearing check
@@ -235,11 +248,23 @@ class IVRRAGMiniModel:
         return any(k in clean for k in keywords)
 
     def _is_greeting_intent(self, lower_query: str) -> bool:
-        words = lower_query.split()
-        if len(words) > 5:
-            return False
-        greeting_words = ["hi", "hello", "hey", "namaste", "नमस्ते", "hlo", "heya", "good morning", "good afternoon", "good evening", "ନମସ୍କାର"]
-        return any(w in lower_query for w in greeting_words)
+        # Split on whitespace and punctuation to preserve Indic/Unicode characters (virama, matras)
+        tokens = set(re.findall(r'[^\s.,!?।॥]+', lower_query))
+        greeting_tokens = {
+            "hi", "hello", "hey", "namaste", "namaskar", "heya", "hlo",
+            "नमस्ते", "नमस्कार", "ନମସ୍କାର"
+        }
+        # Check discrete greeting token match (exact whole-word, NOT substring match!)
+        if bool(tokens.intersection(greeting_tokens)):
+            # If query has question or content words (e.g. "hi what can you do", "hi tell me upi"),
+            # do NOT treat it as a pure greeting!
+            content_tokens = tokens - greeting_tokens - {"there", "ji", "mam", "sir", "please", "to", "you"}
+            if len(content_tokens) > 1:
+                return False
+            return True
+
+        greeting_phrases = ["good morning", "good afternoon", "good evening"]
+        return any(p in lower_query for p in greeting_phrases)
 
     def _infer_intent_with_history(
         self,
@@ -249,6 +274,14 @@ class IVRRAGMiniModel:
         """
         Classifies user query intent using query semantics and preceding dialogue history.
         """
+        # Capabilities / What can you do
+        if any(w in lower_query for w in [
+            "what can you do", "what do you do", "what think you can do",
+            "help me with", "your services", "what services", "capabilities",
+            "kya kar sakte", "kya kar sakti", "क्या कर सकती", "क्या सहायता", "କଣ କରିପାରିବ"
+        ]):
+            return "capabilities"
+
         # Direct intent keywords
         if any(w in lower_query for w in ["kyc", "केवाईसी", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି"]):
             return "video_kyc"

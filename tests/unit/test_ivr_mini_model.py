@@ -83,6 +83,21 @@ class TestIVRRAGMiniModel:
         hi_reply = brain.synthesize("धन्यवाद", language="hi")
         assert "धन्यवाद" in hi_reply or "शुभ हो" in hi_reply
 
+    def test_substring_hi_does_not_trigger_greeting(self, brain):
+        reply = brain.synthesize("what think you can do", language="en")
+        assert "welcome to customer support" not in reply.lower()
+        assert "video kyc" in reply.lower() or "assist" in reply.lower()
+
+    def test_mid_dialogue_greeting_does_not_repeat_welcome(self, brain):
+        history = [
+            ChatMessage(role="user", content="I have a question about UPI"),
+            ChatMessage(role="assistant", content="Failed UPI refunds are credited back in 24 to 48 hours."),
+            ChatMessage(role="user", content="hello"),
+        ]
+        reply = brain.synthesize("hello", messages=history, language="en")
+        assert "welcome to customer support" not in reply.lower()
+        assert "listening" in reply.lower()
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

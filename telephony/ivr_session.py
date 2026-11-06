@@ -21,6 +21,7 @@ import time
 from collections import deque
 from typing import Any, Optional
 
+import numpy as np
 from fastapi import WebSocket
 
 from providers.chat.ivr_mini_model import ivr_mini_brain
@@ -210,6 +211,13 @@ class IVRCallSession:
 
     # ── DTMF & Menu Navigation ───────────────────────────────────────────────
 
+    def _stop_playback(self, reason: str = "barge_in") -> None:
+        """Immediately interrupts active audio playback to Asterisk."""
+        if self._playback_task and not self._playback_task.done():
+            logger.info(f"[IVR] ⚡ Barge-in: cancelling playback task ({reason})")
+            self._playback_task.cancel()
+        self._is_playing = False
+
     async def on_dtmf(self, digit: str, event: Optional[dict[str, Any]] = None) -> None:
         """
         Processes a keypad digit pressed by the caller.
@@ -224,10 +232,7 @@ class IVRCallSession:
         self._cancel_menu_timeout()
 
         # Interrupt active audio prompt playback immediately (barge-in)
-        if self._playback_task and not self._playback_task.done():
-            logger.info("[IVR] Barge-in: interrupting active prompt playback for DTMF.")
-            self._playback_task.cancel()
-            self._is_playing = False
+        self._stop_playback(reason="dtmf_keypad")
 
         new_state, action = self.menu_machine.process_dtmf(digit)
         logger.info(f"[IVR] Menu Transition -> State={new_state}, Action={action}")
@@ -435,8 +440,22 @@ class IVRCallSession:
         if self.menu_machine.state != IVRState.AI_CONVERSATION:
             return
 
-        # When bot is actively speaking back to user, ignore echoed audio frames
+        # When bot is actively speaking back to user, detect voice barge-in interruption
         if self._is_playing:
+            if len(data) >= 4:
+                samples = np.frombuffer(data, dtype="<i2").astype(np.float32)
+                rms = float(np.sqrt(np.mean(samples ** 2)))
+                if rms > 650.0:
+                    self._barge_in_voice_frames = getattr(self, "_barge_in_voice_frames", 0) + 1
+                    if self._barge_in_voice_frames >= 2:  # ~40 ms of active speech
+                        logger.info(f"[IVR] ⚡ Voice Barge-in detected (RMS={rms:.1f}): interrupting playback!")
+                        self._stop_playback(reason="voice_barge_in")
+                        self._barge_in_voice_frames = 0
+                        self._pcm_buffer.clear()
+                        self._pcm_buffer.extend(data)
+                        self._last_voice_ts = time.monotonic()
+                else:
+                    self._barge_in_voice_frames = 0
             return
 
         silent = is_silence(data)
@@ -483,8 +502,8 @@ class IVRCallSession:
             return
 
         if self._is_playing:
-            logger.debug("[IVR] Ignoring transcript while AI is speaking.")
-            return
+            logger.info("[IVR] ⚡ Barge-in by PBX transcript while playing: interrupting audio!")
+            self._stop_playback(reason="transcript_barge_in")
 
         text = (event.get("text") or event.get("transcript") or "").strip()
         if not text:
@@ -558,43 +577,54 @@ class IVRCallSession:
         )
 
         try:
-            # 1. Retrieve domain chunks from pgvector (if available)
-            rag_context_str = ""
-            try:
-                async with async_session() as session:
-                    doc_repo = DocumentRepository(session)
-                    emb_service = EmbeddingService(provider_id="semantic-default")
-                    search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
+            from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE
 
-                    ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
-                    rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.22"))
-                    search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
-                    top_score = max((score for _, score in search_results), default=0.0)
-
-                    relevant_chunks = [c.content for c, score in search_results if score >= rag_threshold]
-                    if relevant_chunks:
-                        logger.info(f"[IVR] ✓ Found {len(relevant_chunks)} relevant RAG chunks in pgvector (top score: {top_score:.3f} >= {rag_threshold}).")
-                        rag_context_str = "\n\n".join(relevant_chunks)
-                    else:
-                        logger.info(f"[IVR] 🧠 Query '{user_text[:40]}' handled by IVR Mini-Model autonomous knowledge (top score: {top_score:.3f} < {rag_threshold}).")
-            except Exception as rag_err:
-                logger.warning(f"[IVR] pgvector search warning ({rag_err}); operating with autonomous mini-model brain.")
-
-            # 2. Autonomous Mini-Model synthesizes natural, multi-turn dialogue (100% local, <20ms)
+            # 1. Fast Path: Autonomous Mini-Model synthesizes natural response in microsecond latency (<1ms)
             reply_text = ivr_mini_brain.synthesize(
                 user_query=user_text,
                 messages=self._history,
-                rag_context=rag_context_str,
+                rag_context="",
                 language=self.selected_language,
                 service_category=self.selected_service,
             )
 
-            # 3. Open-Domain Handling with Gemma (if query was unhandled by mini-brain or model is gemma)
-            from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE
             is_mini_fallback = any(
                 reply_text == AUTONOMOUS_KNOWLEDGE.get("fallback", {}).get(l)
                 for l in ("en", "hi", "or")
             )
+
+            # 2. If query was unhandled by autonomous rules, search pgvector RAG chunks
+            rag_context_str = ""
+            if is_mini_fallback:
+                try:
+                    async with async_session() as session:
+                        doc_repo = DocumentRepository(session)
+                        emb_service = EmbeddingService(provider_id="semantic-default")
+                        search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
+
+                        ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
+                        rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.22"))
+                        search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
+                        top_score = max((score for _, score in search_results), default=0.0)
+
+                        relevant_chunks = [c.content for c, score in search_results if score >= rag_threshold]
+                        if relevant_chunks:
+                            logger.info(f"[IVR] ✓ Found {len(relevant_chunks)} relevant RAG chunks in pgvector (top score: {top_score:.3f} >= {rag_threshold}).")
+                            rag_context_str = "\n\n".join(relevant_chunks)
+                            rag_reply = ivr_mini_brain.synthesize(
+                                user_query=user_text,
+                                messages=self._history,
+                                rag_context=rag_context_str,
+                                language=self.selected_language,
+                                service_category=self.selected_service,
+                            )
+                            if rag_reply and not any(rag_reply == AUTONOMOUS_KNOWLEDGE.get("fallback", {}).get(l) for l in ("en", "hi", "or")):
+                                reply_text = rag_reply
+                                is_mini_fallback = False
+                except Exception as rag_err:
+                    logger.warning(f"[IVR] pgvector search warning ({rag_err}); operating with autonomous mini-model brain.")
+
+            # 3. Open-Domain Handling with Gemma (if query was unhandled by mini-brain or model is gemma)
             enable_gemma = os.getenv("ENABLE_GEMMA_OPEN_DOMAIN", "true").lower() in ("1", "true", "yes")
 
             if (is_mini_fallback and enable_gemma) or self._chat_model == "gemma":
@@ -602,8 +632,8 @@ class IVRCallSession:
                     lang_name = {"en": "English", "hi": "Hindi", "or": "Odia"}.get(self.selected_language, "English")
                     system_prompt = (
                         f"You are a helpful and polite telephone voice assistant. "
-                        f"Respond strictly in conversational {lang_name} in 1 short spoken sentence (under 25 words). "
-                        "Do not use markdown, bullet points, or numbering."
+                        f"Respond strictly in conversational {lang_name} in 1 short spoken sentence under 15 words. "
+                        "Never repeat greetings. Do not use markdown, bullet points, or numbering."
                     )
                     gemma_req = NormalizedChatRequest(
                         model_alias="gemma",
@@ -612,8 +642,8 @@ class IVRCallSession:
                             ChatMessage(role="user", content=user_text),
                         ],
                         stream=False,
-                        max_tokens=60,
-                        temperature=0.6,
+                        max_tokens=35,
+                        temperature=0.5,
                     )
                     logger.info(f"[IVR] 🌐 Forwarding open-domain query to Gemma: '{user_text[:50]}'...")
                     gemma_res = await asyncio.wait_for(
@@ -681,12 +711,16 @@ class IVRCallSession:
             logger.error(f"[IVR] TTS error: {exc}")
             return
 
-        # 4. Send reply over WebSocket
+        # 4. Send reply over WebSocket as cancellable playback task (supports voice barge-in)
         self._is_playing = True
+        self._playback_task = asyncio.create_task(self._send_pcm_reply(pcm_reply))
         try:
-            await self._send_pcm_reply(pcm_reply)
+            await self._playback_task
+        except asyncio.CancelledError:
+            logger.info(f"[IVR] ⚡ AI reply playback interrupted by caller barge-in (uuid={self.call_uuid}).")
         finally:
             self._is_playing = False
+            self._playback_task = None
             self._pcm_buffer.clear()
             self._last_voice_ts = time.monotonic()
 
