@@ -171,13 +171,19 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
             audio_data = scipy.signal.resample(audio_data, num_samples)
             samplerate = 16000
 
+        # Remove DC bias and low-frequency rumble
+        if len(audio_data) > 0:
+            mean_val = float(np.mean(audio_data))
+            if abs(mean_val) > 1e-4:
+                audio_data = audio_data - mean_val
+
         # Check for near-silence before running heavy whisper pipeline
         rms = float(np.sqrt(np.mean(audio_data ** 2)))
         peak = float(np.max(np.abs(audio_data)))
         duration = round(float(len(audio_data)) / float(samplerate), 2)
 
-        if rms < 0.005 or peak < 0.015 or duration < 0.3:
-            logger.info(f"Skipping silent/murmur audio turn: rms={rms:.4f}, peak={peak:.4f}, dur={duration}s")
+        if rms < 0.0015 or peak < 0.006 or duration < 0.15:
+            logger.info(f"Skipping silent/empty audio turn: rms={rms:.4f}, peak={peak:.4f}, dur={duration}s")
             return {
                 "text": "",
                 "language": language or "en",
@@ -185,37 +191,29 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                 "words": [],
             }
 
-        # Dynamic volume peak-normalization to 0.90 so telephone audio has full dynamic range
-        if peak > 0.01:
-            audio_data = (audio_data / peak) * 0.90
+        # Dynamic volume peak-normalization to 0.95 for maximum phonetic clarity and SNR
+        if peak > 0.006:
+            audio_data = (audio_data / peak) * 0.95
 
         # Configure Whisper generation arguments with domain vocabulary biasing
         pipe = self._get_pipeline()
         gen_kwargs = {
             "max_new_tokens": 128,
             "no_repeat_ngram_size": 3,
+            "temperature": 0.0,
         }
         prompt_text = ""
 
         if language in ("or", "or-IN", "ory", "odia"):
-            # OpenAI Whisper has NO Odia ('or') tokenizer code in its 99 training languages.
-            # Using task='translate' tells Whisper's multilingual encoder to translate
-            # spoken Odia phonetics directly into crisp English (e.g. 'What documents are required for video KYC?').
-            # This query matches pgvector chunks with >0.80 similarity, and LLM answers in native Odia.
             gen_kwargs["task"] = "translate"
-            prompt_text = "Customer support call regarding video KYC documents, Aadhaar, PAN card, UPI payment failed, refund status, account balance, complaint registration."
+            prompt_text = "Customer support call regarding Video KYC, Aadhaar, PAN card, UPI refund, failed payment, account balance, card block, ATM PIN reset, loan EMI, dhanyabad."
         elif language in ("hi", "hindi", "hi-IN"):
-            # Telephone Hindi audio frequently mixes Hinglish and English loanwords (UPI, Video KYC).
-            # Using task='translate' enables Whisper's multilingual encoder to decode spoken Hindi/Hinglish
-            # directly into clear English semantics, completely eliminating Perso-Arabic (Urdu) hallucinations
-            # and corrupted tokens like 'उप्यदे में'. This matches pgvector with >0.80 similarity,
-            # and the LLM responds back to the caller in 100% native conversational Hindi!
             gen_kwargs["task"] = "translate"
-            prompt_text = "Customer support call regarding video KYC documents, Aadhaar, PAN card, UPI payment failed, refund status, account balance, complaint registration."
+            prompt_text = "Customer support call regarding Video KYC, Aadhaar, PAN card, UPI refund, failed payment, khata balance, card block, ATM PIN reset, loan EMI, shukriya, dhanyawad."
         elif language in ("en", "english", "en-IN", "en-US"):
             gen_kwargs["language"] = "en"
             gen_kwargs["task"] = "transcribe"
-            prompt_text = "Customer support call for Video KYC, UPI payment issue, refund status, account balance, complaints."
+            prompt_text = "Customer support call for Video KYC documents, original physical PAN card, Aadhaar, UPI refund status, failed payment, account balance, card block, ATM PIN, complaints, thank you."
         elif language and language not in ("auto", "any", "multilingual", "all"):
             gen_kwargs["language"] = language
             gen_kwargs["task"] = "transcribe"

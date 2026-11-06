@@ -18,6 +18,7 @@ import asyncio
 import json
 import logging
 import time
+from collections import deque
 from typing import Any, Optional
 
 from fastapi import WebSocket
@@ -69,12 +70,12 @@ logger = logging.getLogger(__name__)
 # Tuning constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-# How much PCM to accumulate before running STT (avoid sending tiny slivers)
-MIN_SPEECH_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.4)    # 0.4 second minimum (6,400 bytes)
+# How much PCM to accumulate before running STT (avoid dropping crisp short words like 'yes'/'no')
+MIN_SPEECH_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.25)    # 0.25 second minimum (4,000 bytes)
 MAX_SPEECH_BYTES = PBX_SAMPLE_RATE * 2 * 8           # 8 seconds hard cap
 
-# Silence gap before we "close" an utterance and run STT
-SILENCE_GAP_SECONDS = 0.8
+# Silence gap before we "close" an utterance and run STT (gives natural breathing headroom)
+SILENCE_GAP_SECONDS = 0.9
 
 # Delay between sending 20 ms PCM reply frames (throttles playback to real-time)
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
@@ -138,6 +139,7 @@ class IVRCallSession:
 
         # PCM accumulator (active only in AI_CONVERSATION)
         self._pcm_buffer: bytearray = bytearray()
+        self._preroll_buffer: deque[bytes] = deque(maxlen=4)   # 80ms speech-onset preservation buffer
         self._last_voice_ts: float = 0.0
         self._silence_task: Optional[asyncio.Task] = None
 
@@ -439,6 +441,12 @@ class IVRCallSession:
         silent = is_silence(data)
 
         if not silent:
+            # If starting a new utterance, prepend pre-roll frames to preserve leading consonants (/p/, /t/, /k/, /s/)
+            if len(self._pcm_buffer) == 0 and self._preroll_buffer:
+                for frame in self._preroll_buffer:
+                    self._pcm_buffer.extend(frame)
+                self._preroll_buffer.clear()
+
             self._pcm_buffer.extend(data)
             self._last_voice_ts = time.monotonic()
 
@@ -450,8 +458,11 @@ class IVRCallSession:
             if len(self._pcm_buffer) >= MAX_SPEECH_BYTES:
                 await self._flush_utterance()
         else:
+            # Maintain rolling 80ms pre-roll buffer when caller is paused/idle
+            if len(self._pcm_buffer) == 0:
+                self._preroll_buffer.append(data)
+
             # Schedule a flush after SILENCE_GAP_SECONDS of quiet
-            gap = time.monotonic() - self._last_voice_ts
             if (
                 len(self._pcm_buffer) >= MIN_SPEECH_BYTES
                 and (self._silence_task is None or self._silence_task.done())
@@ -511,6 +522,7 @@ class IVRCallSession:
 
         pcm_snapshot = bytes(self._pcm_buffer)
         self._pcm_buffer.clear()
+        self._preroll_buffer.clear()
 
         async with self._pipeline_lock:
             await self._run_stt_ai_tts(pcm_snapshot)

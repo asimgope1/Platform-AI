@@ -103,6 +103,8 @@ def crossfade_concat_pcm(segments: list[bytes], silence_gap_ms: int = 250) -> by
 def pcm_bytes_to_float32(pcm: bytes, source_rate: int = PBX_SAMPLE_RATE) -> np.ndarray:
     """
     Convert raw s16le PCM bytes → float32 numpy array resampled to 16 kHz.
+    Cleans telephone audio with DC removal, anti-aliased resampling,
+    and adaptive voice gain boost for maximum Whisper phonetic clarity.
 
     Parameters
     ----------
@@ -115,17 +117,32 @@ def pcm_bytes_to_float32(pcm: bytes, source_rate: int = PBX_SAMPLE_RATE) -> np.n
     """
     samples = np.frombuffer(pcm, dtype="<i2").astype(np.float32) / 32768.0
 
+    # Remove DC bias and baseline wander
+    if len(samples) > 0:
+        mean_val = float(np.mean(samples))
+        if abs(mean_val) > 1e-4:
+            samples = samples - mean_val
+
     # Resample to 16 kHz for Whisper using polyphase filter
     if source_rate != WHISPER_SAMPLE_RATE and len(samples) > 0:
         samples = resample_audio(samples, source_rate, WHISPER_SAMPLE_RATE)
 
+    # Adaptive voice clarity gain boost for soft or distant phone microphones
+    if len(samples) > 0:
+        peak = float(np.max(np.abs(samples)))
+        if 0.015 < peak < 0.65:
+            # Bring quiet speech up to optimal Whisper clarity range (~0.88)
+            gain = min(0.88 / peak, 4.0)
+            samples = samples * gain
+
     return np.clip(samples, -1.0, 1.0)
 
 
-def is_silence(pcm: bytes, rms_threshold: float = 100.0) -> bool:
+def is_silence(pcm: bytes, rms_threshold: float = 45.0) -> bool:
     """
-    Quick silence gate on raw s16le bytes.
-    Keeps CPU usage near-zero for muted/hold channels.
+    High-sensitivity silence gate on raw s16le bytes.
+    Threshold tuned to 45.0 to catch soft caller voices, quiet consonants,
+    and word endings while rejecting line hiss and muted background.
     """
     if len(pcm) < PBX_SAMPLE_WIDTH * 2:
         return True
