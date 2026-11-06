@@ -69,7 +69,7 @@ providers:
   windows_ollama:
     type: openai_compatible
     base_url_env: OLLAMA_BASE_URL
-    base_url: http://192.168.1.45:8080/v1
+    base_url: http://192.168.1.141:8080/v1
     api_key: ollama
     timeout_seconds: 15.0
 
