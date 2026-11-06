@@ -36,6 +36,10 @@ TRIVIAL_GREETINGS = re.compile(
     r"^(hi|hello|hey|namaste|नमस्ते|hii|heya|hlo|good morning|good afternoon|good evening)[!.,? ]*$",
     re.IGNORECASE,
 )
+CLOSING_PATTERNS = re.compile(
+    r"^(thank you|thanks|thank u|dhanyawad|dhanyavad|shukriya|bye|goodbye|no|nope|no thanks|nahin|nahi|ok|okay|kuch nahi|not really|nothing)[!.,? ]*$",
+    re.IGNORECASE,
+)
 APOLOGY_PATTERNS = [
     "didn't quite catch that",
     "could not process",
@@ -43,6 +47,10 @@ APOLOGY_PATTERNS = [
     "माफ़ कीजिए",
     "समझ नहीं पाया",
     "sorry, i could not",
+    "you are most welcome",
+    "thank you for contacting",
+    "आपका बहुत-बहुत धन्यवाद",
+    "ଧନ୍ୟବାଦ",
 ]
 
 
@@ -55,8 +63,8 @@ def is_informative_interaction(user_text: str, reply_text: str) -> bool:
     if len(u.split()) < 2 or len(r.split()) < 3:
         return False
 
-    # Skip pure greetings
-    if TRIVIAL_GREETINGS.match(u):
+    # Skip pure greetings and closings/pleasantries
+    if TRIVIAL_GREETINGS.match(u) or CLOSING_PATTERNS.match(u):
         return False
 
     # Skip bot apology fallbacks

@@ -220,6 +220,11 @@ class IVRRAGMiniModel:
         return default_lang if default_lang in ("en", "hi", "or") else "en"
 
     def _is_closing_intent(self, lower_query: str) -> bool:
+        clean = lower_query.strip().strip(".,!?").lower()
+        # Direct exact negative / completion phrases
+        if clean in ("no", "nope", "no thanks", "no thank you", "nahi", "nahin", "na", "kuch nahi", "nhi", "not really", "nothing", "all good", "i am good", "im good"):
+            return True
+
         keywords = [
             "thank", "thanks", "dhanyawad", "dhanyavad", "shukriya", "dhanyabad",
             "धन्यवाद", "शुक्रिया", "bye", "goodbye", "alvida", "अलविदा", "ଧନ୍ୟବାଦ",
@@ -227,7 +232,7 @@ class IVRRAGMiniModel:
             "kuch nahi", "kuch nhi", "aur nahi", "bas itna", "bas thank", "aur kuch nahi",
             "ଆଉ କିଛି ନାହିଁ", "କିଛି ନାହିଁ", "कुछ नहीं", "बस इतना ही", "नो थैंक", "थैंक यू"
         ]
-        return any(k in lower_query for k in keywords)
+        return any(k in clean for k in keywords)
 
     def _is_greeting_intent(self, lower_query: str) -> bool:
         words = lower_query.split()
