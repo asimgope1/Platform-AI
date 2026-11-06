@@ -147,6 +147,7 @@ class IVRCallSession:
         self._pipeline_lock = asyncio.Lock()
         self._playback_task: Optional[asyncio.Task] = None
         self._is_playing: bool = False
+        self._latest_pbx_transcript: str = ""
 
     # ── call lifecycle handlers ───────────────────────────────────────────────
 
@@ -489,6 +490,8 @@ class IVRCallSession:
         if not text:
             return
 
+        self._latest_pbx_transcript = text
+
         if PBX_IGNORE_TRANSCRIPT:
             # If local PCM buffer does not have enough speech, don't drop the caller's turn!
             if len(self._pcm_buffer) < MIN_SPEECH_BYTES:
@@ -497,14 +500,15 @@ class IVRCallSession:
                     await self._run_ai_and_reply(text)
                 return
             else:
-                logger.info(f"[IVR] PBX transcript '{text}' bypassed in favor of local Whisper PCM STT.")
+                logger.info(f"[IVR] PBX transcript '{text}' buffered as fallback for local Whisper.")
                 return
 
         self._pcm_buffer.clear()
+        self._preroll_buffer.clear()
         if self._silence_task and not self._silence_task.done():
             self._silence_task.cancel()
 
-        logger.info(f"[IVR] PBX transcript: '{text}'")
+        logger.info(f"[IVR] 🎙️ Processing PBX transcript directly: '{text}'")
         async with self._pipeline_lock:
             await self._run_ai_and_reply(text)
 
@@ -542,8 +546,13 @@ class IVRCallSession:
             return
 
         if not user_text:
-            logger.debug("[IVR] STT returned empty/silence, skipping turn.")
-            return
+            if self._latest_pbx_transcript:
+                user_text = self._latest_pbx_transcript
+                self._latest_pbx_transcript = ""
+                logger.info(f"[IVR] 🎙️ Local STT returned empty; fell back to PBX transcript: '{user_text}'")
+            else:
+                logger.debug("[IVR] STT returned empty/silence, skipping turn.")
+                return
 
         logger.info(f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): '{user_text}'")
         await self._run_ai_and_reply(user_text)
