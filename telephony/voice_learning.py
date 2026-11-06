@@ -51,6 +51,16 @@ APOLOGY_PATTERNS = [
     "thank you for contacting",
     "आपका बहुत-बहुत धन्यवाद",
     "ଧନ୍ୟବାଦ",
+    "ready to help",
+    "what can i do for you",
+    "how can i help you",
+    "is there anything else",
+    "what did you want to know",
+    "can i help you with today",
+    "anything else i can help",
+    "माफ़ कीजिये",
+    "आपकी आवाज़",
+    "could not clearly hear",
 ]
 
 

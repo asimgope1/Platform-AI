@@ -603,7 +603,7 @@ class IVRCallSession:
                         search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
 
                         ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
-                        rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.22"))
+                        rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.55"))
                         search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
                         top_score = max((score for _, score in search_results), default=0.0)
 

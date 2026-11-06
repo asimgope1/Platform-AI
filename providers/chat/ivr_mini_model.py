@@ -385,6 +385,15 @@ class IVRRAGMiniModel:
             if l.startswith("[") and l.endswith("]"):
                 continue
 
+            # Filter generic filler phrases that should never be spoken as factual answers
+            lower_l = l.lower()
+            if any(filler in lower_l for filler in [
+                "what can i do for you", "how can i help you", "ready to help",
+                "anything else i can help", "anything else i can do", "what did you want to know",
+                "is there anything else", "क्या मैं आपकी और कोई सहायता", "କିଛି ସାହାଯ୍ୟ"
+            ]):
+                continue
+
             # Echo Guard: reject lines that repeat the caller's spoken words (>60% word overlap)
             cand_words = set(re.findall(r'\w+', l.lower()))
             query_words = set(re.findall(r'\w+', lower_query))
@@ -423,12 +432,8 @@ class IVRRAGMiniModel:
             # If no candidate line matches query keywords, this chunk does not answer the question
             return None
 
-        # Append conversational closure
-        if lang == "hi":
-            return f"{best_line} क्या मैं इसमें आपकी और कोई सहायता कर सकती हूँ?"
-        elif lang == "or":
-            return f"{best_line} ମୁଁ ଆପଣଙ୍କୁ ଏଥିରେ ଆଉ କିଛି ସାହାଯ୍ୟ କରିପାରିବି କି?"
-        return f"{best_line} Is there anything else I can help you with today?"
+        # Return single clean, factual sentence for natural spoken telephone delivery
+        return best_line.strip()
 
 
 # Module-level singleton
