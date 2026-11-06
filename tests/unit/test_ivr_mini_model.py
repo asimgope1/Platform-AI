@@ -109,3 +109,13 @@ class TestIVRRAGMiniModelAdapter:
                 chunks.append(chunk.choices[0].delta.content)
         full_text = "".join(chunks)
         assert "10:00" in full_text or "branch" in full_text.lower()
+
+    async def test_fallback_intent_detected_for_unknown_queries(self):
+        adapter = IVRRAGMiniModelAdapter()
+        req = NormalizedChatRequest(
+            model_alias="ivr-rag-mini",
+            messages=[ChatMessage(role="user", content="What is quantum mechanics?")],
+        )
+        resp = await adapter.chat_completion(req)
+        # Should return polite clarification fallback
+        assert "clarify" in resp.choices[0].message.content.lower() or "video kyc" in resp.choices[0].message.content.lower()

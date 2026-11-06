@@ -27,6 +27,14 @@ model_aliases:
       - streaming
       - tool_calling
 
+  gemma:
+    provider: windows_ollama
+    model: gemma2:2b
+    description: "Gemma model running via Ollama on Windows host"
+    capabilities:
+      - chat
+      - streaming
+
   gemma-local:
     provider: gemma_transformers
     model: google/gemma-4-E2B-it
@@ -58,6 +66,13 @@ model_aliases:
       - tool_calling
 
 providers:
+  windows_ollama:
+    type: openai_compatible
+    base_url_env: OLLAMA_BASE_URL
+    base_url: http://192.168.1.138:11434/v1
+    api_key: ollama
+    timeout_seconds: 6.0
+
   hosted_chat:
     type: openai_compatible
     base_url_env: HOSTED_AI_BASE_URL

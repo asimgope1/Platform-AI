@@ -592,6 +592,45 @@ class IVRCallSession:
                 service_category=self.selected_service,
             )
 
+            # 3. Open-Domain Handling with Gemma (if query was unhandled by mini-brain or model is gemma)
+            from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE
+            is_mini_fallback = any(
+                reply_text == AUTONOMOUS_KNOWLEDGE.get("fallback", {}).get(l)
+                for l in ("en", "hi", "or")
+            )
+            enable_gemma = os.getenv("ENABLE_GEMMA_OPEN_DOMAIN", "true").lower() in ("1", "true", "yes")
+
+            if (is_mini_fallback and enable_gemma) or self._chat_model == "gemma":
+                try:
+                    lang_name = {"en": "English", "hi": "Hindi", "or": "Odia"}.get(self.selected_language, "English")
+                    system_prompt = (
+                        f"You are a helpful and polite telephone voice assistant. "
+                        f"Respond strictly in conversational {lang_name} in 1 short spoken sentence (under 25 words). "
+                        "Do not use markdown, bullet points, or numbering."
+                    )
+                    gemma_req = NormalizedChatRequest(
+                        model_alias="gemma",
+                        messages=[
+                            ChatMessage(role="system", content=system_prompt),
+                            ChatMessage(role="user", content=user_text),
+                        ],
+                        stream=False,
+                        max_tokens=60,
+                        temperature=0.6,
+                    )
+                    logger.info(f"[IVR] 🌐 Forwarding open-domain query to Gemma: '{user_text[:50]}'...")
+                    gemma_res = await asyncio.wait_for(
+                        self._orchestrator.execute(gemma_req),
+                        timeout=5.0,
+                    )
+                    gemma_reply = (gemma_res.choices[0].message.content or "").strip()
+                    if gemma_reply:
+                        logger.info(f"[IVR] 🌟 Gemma answered open-domain query: '{gemma_reply}'")
+                        reply_text = gemma_reply
+                except Exception as gemma_err:
+                    logger.warning(f"[IVR] Gemma passthrough unavailable ({gemma_err}); using mini-brain fallback.")
+
+
         except Exception as exc:
             logger.error(f"[IVR] Mini-Model error: {exc}")
             try:
