@@ -621,7 +621,7 @@ class IVRCallSession:
                     logger.info(f"[IVR] 🌐 Forwarding open-domain query to Gemma: '{user_text[:50]}'...")
                     gemma_res = await asyncio.wait_for(
                         self._orchestrator.execute(gemma_req),
-                        timeout=5.0,
+                        timeout=8.0,
                     )
                     gemma_reply = (gemma_res.choices[0].message.content or "").strip()
                     if gemma_reply:

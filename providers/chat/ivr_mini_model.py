@@ -175,8 +175,8 @@ class IVRRAGMiniModel:
         if inferred_intent and inferred_intent in AUTONOMOUS_KNOWLEDGE:
             return AUTONOMOUS_KNOWLEDGE[inferred_intent][lang]
 
-        # 8. Service-category guided response
-        if service_category:
+        # 8. Service-category guided response (only if user query is an acknowledgment or relates to the menu)
+        if service_category and (not clean_query or any(w in lower_query for w in ["yes", "ha", "haan", "tell me", "batao", "bataiye", "help", "information", "details", "service", "option", "okay", "ok"])):
             cat_lower = service_category.lower()
             if "upi" in cat_lower or "payment" in cat_lower:
                 return AUTONOMOUS_KNOWLEDGE["upi_refund"][lang]
@@ -348,6 +348,10 @@ class IVRRAGMiniModel:
             if not l:
                 continue
 
+            # Filter bracket headers e.g. [ACCOUNT BALANCE, STATEMENTS & BRANCH TIMINGS]
+            if l.startswith("[") and l.endswith("]"):
+                continue
+
             # Echo Guard: reject lines that repeat the caller's spoken words (>60% word overlap)
             cand_words = set(re.findall(r'\w+', l.lower()))
             query_words = set(re.findall(r'\w+', lower_query))
@@ -373,14 +377,18 @@ class IVRRAGMiniModel:
             return None
 
         # Prioritize line matching query terms
-        best_line = clean_lines[0]
-        query_words = set(w for w in lower_query.split() if len(w) > 3)
+        best_line = None
+        query_words = set(w for w in re.findall(r'\w+', lower_query) if len(w) > 3)
         if query_words:
             for candidate in clean_lines:
                 cand_lower = candidate.lower()
                 if any(w in cand_lower for w in query_words):
                     best_line = candidate
                     break
+
+        if not best_line:
+            # If no candidate line matches query keywords, this chunk does not answer the question
+            return None
 
         # Append conversational closure
         if lang == "hi":

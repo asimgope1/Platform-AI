@@ -282,14 +282,23 @@ class MockChatAdapter(BaseChatAdapter):
                     clean_lines.append(l)
 
             if clean_lines:
-                # Take exactly 1 concise, unique sentence (prevent duplicate sentence stacking)
-                summary = clean_lines[0]
-                if wants_odia:
-                    return f"{summary} ମୁଁ ଆପଣଙ୍କୁ ଏଥିରେ ଆଉ କିଛି ସାହାଯ୍ୟ କରିପାରିବି କି?"
-                elif wants_hindi:
-                    return f"{summary} क्या मैं इसमें आपकी और कोई सहायता कर सकती हूँ?"
-                else:
-                    return f"{summary} Is there anything else I can help you with today?"
+                # Prioritize line matching query terms; do not select arbitrary lines if query does not match
+                summary = None
+                query_words = set(w for w in re.findall(r'\w+', lower_query) if len(w) > 3)
+                if query_words:
+                    for candidate in clean_lines:
+                        cand_lower = candidate.lower()
+                        if any(w in cand_lower for w in query_words):
+                            summary = candidate
+                            break
+
+                if summary:
+                    if wants_odia:
+                        return f"{summary} ମୁଁ ଆପଣଙ୍କୁ ଏଥିରେ ଆଉ କିଛି ସାହାଯ୍ୟ କରିପାରିବି କି?"
+                    elif wants_hindi:
+                        return f"{summary} क्या मैं इसमें आपकी और कोई सहायता कर सकती हूँ?"
+                    else:
+                        return f"{summary} Is there anything else I can help you with today?"
 
         # Fallback response - natural, polite IVR prompt
         if wants_odia:
