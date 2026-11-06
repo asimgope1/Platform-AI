@@ -565,108 +565,135 @@ class IVRCallSession:
         await self._run_ai_and_reply(user_text)
 
     async def _run_ai_and_reply(self, user_text: str) -> None:
-        # 2. Build message history and call LLM with RAG retrieval from vector store
-        self._history.append(ChatMessage(role="user", content=user_text))
+        """
+        Conversational Phone Agent Core:
+        1. Fast Telephony Protocols: handles pure greetings, closing farewells, hearing checks,
+           and agent transfers instantly (<1ms).
+        2. Dynamic Conversational Brain (Gemma 2B): conducts warm, empathetic, multi-turn
+           conversation with full dialogue history and injected RAG banking knowledge.
+        3. Resilient Fallback: if remote GPU/gateway is unavailable, falls back gracefully to
+           the local IVR mini-model so the caller never experiences silence.
+        """
+        clean_user = (user_text or "").strip()
+        lower_user = clean_user.lower()
+        self._history.append(ChatMessage(role="user", content=clean_user))
 
-        request = NormalizedChatRequest(
-            model_alias=self._chat_model,
-            messages=self._history,
-            stream=False,
-            max_tokens=120,      # short for IVR
-            temperature=0.7,
+        from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE, ivr_mini_brain
+
+        # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
+        # A. Appreciation / Closing turn (auto-hangup trigger)
+        if ivr_mini_brain._is_closing_intent(lower_user):
+            reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
+            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{clean_user}' -> '{reply_text}'")
+            return await self._finalize_and_speak(user_text, reply_text)
+
+        # B. Voice clarity / Hearing check
+        if any(w in lower_user for w in ["hear me", "loud and clear", "awaaz", "awaz", "sound", "आवाज़", "slow down", "dheere", "धीरे", "ଶୁଣା"]):
+            reply_text = AUTONOMOUS_KNOWLEDGE["voice_clarification"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["voice_clarification"]["en"])
+            logger.info(f"[IVR] 🔊 Voice clarity check: '{clean_user}' -> '{reply_text}'")
+            return await self._finalize_and_speak(user_text, reply_text)
+
+        # C. Representative / Live human agent transfer
+        if any(w in lower_user for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
+            reply_text = AUTONOMOUS_KNOWLEDGE["human_agent"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["human_agent"]["en"])
+            logger.info(f"[IVR] 👤 Live human agent requested: '{clean_user}' -> '{reply_text}'")
+            return await self._finalize_and_speak(user_text, reply_text)
+
+        # D. Opening greeting on very first turn
+        user_turn_count = len([m for m in self._history if m.role == "user"])
+        if ivr_mini_brain._is_greeting_intent(lower_user) and user_turn_count <= 1:
+            reply_text = AUTONOMOUS_KNOWLEDGE["greeting"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["greeting"]["en"])
+            logger.info(f"[IVR] 👋 Opening greeting turn: '{clean_user}' -> '{reply_text}'")
+            return await self._finalize_and_speak(user_text, reply_text)
+
+        # ── 2. Conversational LLM Brain (Gemma with Multi-Turn Memory & RAG) ───
+        reply_text = ""
+        rag_context_str = ""
+
+        # Step 2A: Query domain knowledge from pgvector
+        try:
+            async with async_session() as session:
+                doc_repo = DocumentRepository(session)
+                emb_service = EmbeddingService(provider_id="semantic-default")
+                search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
+
+                ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
+                rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.55"))
+                search_results = await search_service.search(tenant_id=ivr_tenant, query=clean_user, top_k=2)
+                relevant_chunks = [c.content for c, score in search_results if score >= rag_threshold]
+                if relevant_chunks:
+                    rag_context_str = "\n\n".join(relevant_chunks)
+                    logger.info(f"[IVR] ✓ Injected {len(relevant_chunks)} pgvector RAG chunks into prompt.")
+        except Exception as rag_err:
+            logger.debug(f"[IVR] pgvector lookup skipped: {rag_err}")
+
+        # Ingest autonomous banking reference hint if relevant
+        inferred_topic = ivr_mini_brain._infer_intent_with_history(lower_user, self._history)
+        if inferred_topic and inferred_topic in AUTONOMOUS_KNOWLEDGE:
+            topic_fact = AUTONOMOUS_KNOWLEDGE[inferred_topic].get(self.selected_language, AUTONOMOUS_KNOWLEDGE[inferred_topic]["en"])
+            rag_context_str = f"{rag_context_str}\n\nBank Knowledge: {topic_fact}".strip()
+
+        # Step 2B: Build Conversational Multi-Turn Prompt
+        lang_name = {"en": "English", "hi": "Hindi", "or": "Odia"}.get(self.selected_language, "English")
+        reference_block = f"\nRelevant Bank Reference:\n{rag_context_str}\nUse the above information to answer accurately." if rag_context_str else ""
+
+        conversational_system_prompt = (
+            f"You are a friendly, warm, and natural customer support specialist on a live phone call.\n"
+            f"Guidelines for natural phone conversation:\n"
+            f"1. Respond in conversational {lang_name} naturally like a real human customer care representative.\n"
+            f"2. Keep responses brief, natural, and helpful (1 to 2 spoken sentences, under 28 words).\n"
+            f"3. Use natural conversational markers when appropriate (e.g. 'Sure!', 'I understand', 'I would be glad to help', 'Ji bilkul', 'Haanji', 'Aap chinta mat kijiye').\n"
+            f"4. Never use markdown, asterisks, bullet points, or numbering. Speak plain conversational sentences.\n"
+            f"5. Maintain multi-turn context: refer to what the caller said earlier in the conversation.\n"
+            f"6. When speaking Hindi or Odia, use feminine first-person grammatical forms for yourself (कर सकती हूँ, सुन रही हूँ) and write in the native script.\n"
+            f"{reference_block}"
         )
 
-        try:
-            from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE
+        # Build rolling conversation history (last 6 turns) so Gemma has multi-turn memory!
+        dialogue_messages = [ChatMessage(role="system", content=conversational_system_prompt)]
+        recent_turns = [m for m in self._history if m.role in ("user", "assistant")][-6:]
+        dialogue_messages.extend(recent_turns)
 
-            # 1. Fast Path: Autonomous Mini-Model synthesizes natural response in microsecond latency (<1ms)
+        gemma_req = NormalizedChatRequest(
+            model_alias="gemma",
+            messages=dialogue_messages,
+            stream=False,
+            max_tokens=45,
+            temperature=0.6,
+        )
+
+        # Step 2C: Execute Conversational Turn via Gemma Gateway
+        enable_gemma = os.getenv("ENABLE_GEMMA_OPEN_DOMAIN", "true").lower() in ("1", "true", "yes")
+        if enable_gemma:
+            try:
+                logger.info(f"[IVR] 🗣️ Conversational turn with Gemma (history_len={len(recent_turns)}): '{clean_user[:60]}'...")
+                gemma_res = await asyncio.wait_for(
+                    self._orchestrator.execute(gemma_req),
+                    timeout=3.5,
+                )
+                candidate = (gemma_res.choices[0].message.content or "").strip()
+                if candidate and "mock response" not in candidate.lower():
+                    reply_text = candidate
+                    logger.info(f"[IVR] 🌟 Gemma conversational reply: '{reply_text}'")
+            except Exception as gemma_err:
+                logger.warning(f"[IVR] Gemma conversational turn error ({gemma_err}); falling back to mini-brain.")
+
+        # Step 2D: Resilient Fallback to local mini-brain
+        if not reply_text:
             reply_text = ivr_mini_brain.synthesize(
-                user_query=user_text,
+                user_query=clean_user,
                 messages=self._history,
-                rag_context="",
+                rag_context=rag_context_str,
                 language=self.selected_language,
                 service_category=self.selected_service,
             )
+            logger.info(f"[IVR] 🧠 Mini-brain fallback reply: '{reply_text}'")
 
-            is_mini_fallback = any(
-                reply_text == AUTONOMOUS_KNOWLEDGE.get("fallback", {}).get(l)
-                for l in ("en", "hi", "or")
-            )
+        await self._finalize_and_speak(user_text, reply_text)
 
-            # 2. If query was unhandled by autonomous rules, search pgvector RAG chunks
-            rag_context_str = ""
-            if is_mini_fallback:
-                try:
-                    async with async_session() as session:
-                        doc_repo = DocumentRepository(session)
-                        emb_service = EmbeddingService(provider_id="semantic-default")
-                        search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
-
-                        ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
-                        rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.55"))
-                        search_results = await search_service.search(tenant_id=ivr_tenant, query=user_text, top_k=3)
-                        top_score = max((score for _, score in search_results), default=0.0)
-
-                        relevant_chunks = [c.content for c, score in search_results if score >= rag_threshold]
-                        if relevant_chunks:
-                            logger.info(f"[IVR] ✓ Found {len(relevant_chunks)} relevant RAG chunks in pgvector (top score: {top_score:.3f} >= {rag_threshold}).")
-                            rag_context_str = "\n\n".join(relevant_chunks)
-                            rag_reply = ivr_mini_brain.synthesize(
-                                user_query=user_text,
-                                messages=self._history,
-                                rag_context=rag_context_str,
-                                language=self.selected_language,
-                                service_category=self.selected_service,
-                            )
-                            if rag_reply and not any(rag_reply == AUTONOMOUS_KNOWLEDGE.get("fallback", {}).get(l) for l in ("en", "hi", "or")):
-                                reply_text = rag_reply
-                                is_mini_fallback = False
-                except Exception as rag_err:
-                    logger.warning(f"[IVR] pgvector search warning ({rag_err}); operating with autonomous mini-model brain.")
-
-            # 3. Open-Domain Handling with Gemma (if query was unhandled by mini-brain or model is gemma)
-            enable_gemma = os.getenv("ENABLE_GEMMA_OPEN_DOMAIN", "true").lower() in ("1", "true", "yes")
-
-            if (is_mini_fallback and enable_gemma) or self._chat_model == "gemma":
-                try:
-                    lang_name = {"en": "English", "hi": "Hindi", "or": "Odia"}.get(self.selected_language, "English")
-                    system_prompt = (
-                        f"You are a helpful and polite telephone voice assistant. "
-                        f"Respond strictly in conversational {lang_name} in 1 short spoken sentence under 15 words. "
-                        "Never repeat greetings. Do not use markdown, bullet points, or numbering."
-                    )
-                    gemma_req = NormalizedChatRequest(
-                        model_alias="gemma",
-                        messages=[
-                            ChatMessage(role="system", content=system_prompt),
-                            ChatMessage(role="user", content=user_text),
-                        ],
-                        stream=False,
-                        max_tokens=35,
-                        temperature=0.5,
-                    )
-                    logger.info(f"[IVR] 🌐 Forwarding open-domain query to Gemma: '{user_text[:50]}'...")
-                    gemma_res = await asyncio.wait_for(
-                        self._orchestrator.execute(gemma_req),
-                        timeout=8.0,
-                    )
-                    gemma_reply = (gemma_res.choices[0].message.content or "").strip()
-                    if gemma_reply:
-                        logger.info(f"[IVR] 🌟 Gemma answered open-domain query: '{gemma_reply}'")
-                        reply_text = gemma_reply
-                except Exception as gemma_err:
-                    logger.warning(f"[IVR] Gemma passthrough unavailable ({gemma_err}); using mini-brain fallback.")
-
-
-        except Exception as exc:
-            logger.error(f"[IVR] Mini-Model error: {exc}")
-            try:
-                response = await self._orchestrator.execute(request)
-                reply_text = response.choices[0].message.content or ""
-            except Exception:
-                reply_text = ""
-
-        reply_text = reply_text.strip()
+    async def _finalize_and_speak(self, user_text: str, reply_text: str) -> None:
+        """Sanitizes text, updates history, triggers learning, and streams PCM audio."""
+        reply_text = (reply_text or "").strip()
         if not reply_text or "mock response" in reply_text.lower():
             if self.selected_language == "hi":
                 reply_text = "माफ़ कीजिये, आपकी आवाज़ साफ़ नहीं आई। क्या आप वीडियो केवाईसी या यूपीआई समस्या के बारे में पूछ रहे हैं?"
@@ -691,11 +718,11 @@ class IVRCallSession:
             )
         )
 
-        # Trim to last 10 turns (+ system) to avoid context explosion
+        # Trim history to avoid context explosion
         if len(self._history) > 21:
             self._history = self._history[:1] + self._history[-20:]
 
-        # 3. TTS → raw PCM 8 kHz (clean spoken text of markdown/bullets)
+        # 3. TTS → raw PCM 8 kHz (clean spoken text of markdown/bullets/emojis)
         spoken_reply = _clean_spoken_text(reply_text)
         try:
             logger.info(f"[IVR] Synthesizing speech for reply ({len(spoken_reply)} chars)...")
@@ -730,7 +757,6 @@ class IVRCallSession:
                 f"[IVR] 📞 Closing farewell turn detected ('{user_text}' → '{reply_text[:50]}...'). "
                 f"Auto-cutting call (uuid={self.call_uuid})..."
             )
-            # Comfort pause so Asterisk and SIP phone speaker buffer plays the final words completely
             await asyncio.sleep(0.8)
             try:
                 if self.call_uuid:
@@ -861,6 +887,9 @@ def _clean_spoken_text(text: str) -> str:
     text = re.sub(r"\([A-Za-z0-9\s/\-_\.]+\)", "", text)
     # Remove URLs
     text = re.sub(r"https?://\S+", "", text)
+
+    # Remove emojis and miscellaneous symbols so TTS speaks cleanly
+    text = re.sub(r'[\U00010000-\U0010ffff]', '', text)
 
     # Remove technical metadata headers from spoken speech
     text = re.sub(r"(?i)Audio\s*Prompt\s*ID\s*:\s*[A-Z0-9\-_]+", "", text)
