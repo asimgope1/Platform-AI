@@ -134,9 +134,9 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରି ମୁଁ ଖୁସି! ଆପଣଙ୍କ ସମସ୍ୟାର ସମାଧାନ ହୋଇଗଲା କି?",
     },
     "unrelated_general": {
-        "en": "That's an interesting question! By the way, how can I assist you with your banking services today?",
-        "hi": "यह एक दिलचस्प सवाल है! वैसे, आज मैं आपके बैंक खाते या बैंकिंग सेवाओं में क्या मदद कर सकती हूँ?",
-        "or": "ଏହା ଏକ ଭଲ ପ୍ରଶ୍ନ! ଆଜି ମୁଁ ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଖାତା ବା ସେବାରେ କିପରି ସାହାଯ୍ୟ କରିବି?",
+        "en": "I specialize exclusively in bank customer support. How can I assist you with your account, UPI, or KYC services today?",
+        "hi": "मैं विशेष रूप से बैंक ग्राहक सेवा के लिए हूँ। बताइए मैं आपके बैंक खाते, यूपीआई या केवाईसी में क्या सहायता कर सकती हूँ?",
+        "or": "ମୁଁ କେବଳ ବ୍ୟାଙ୍କ ଗ୍ରାହକ ସେବା ପାଇଁ ଉପଲବ୍ଧ। ଆଜି ଆପଣଙ୍କ ଖାତା, ୟୁପିଆଇ ବା କେୱାଇସିରେ ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
 }
 

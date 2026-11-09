@@ -657,9 +657,9 @@ class IVRCallSession:
             f"5. Feedback: Graciously welcome and acknowledge customer feedback, compliments, or suggestions.\n"
             f"6. Confirmation: Confirm key requests and details before proceeding (e.g., 'Just to confirm, you would like help with your UPI payment?').\n"
             f"7. Background Context: Remember the customer's selected service domain ({service_name}) and prior conversation turns so they never have to repeat themselves.\n"
-            f"8. Handling Unrelated / Off-Topic Questions: If the caller asks general knowledge, casual, or unrelated questions (e.g. about history, science, weather, sports, general facts), answer directly and politely in one crisp, friendly sentence, and then smoothly bridge back to how you can assist with their banking needs today (e.g., 'Paris is the capital of France! By the way, how can I assist you with your banking needs today?').\n\n"
+            f"8. Strict Limitation on Unrelated / Off-Topic Questions: You are strictly and exclusively a bank customer support agent. You MUST NOT entertain, elaborate on, or discuss off-topic queries (such as general knowledge, history, geography, weather, sports, politics, or coding). If the caller asks anything unrelated to banking, politely decline in exactly one sentence and steer them immediately back to banking services (e.g., 'I specialize exclusively in bank customer support. How can I assist you with your account, UPI, or KYC today?').\n\n"
             f"Telephony Spoken Constraints:\n"
-            f"- Keep responses brief and conversational: 1 to 2 spoken sentences (under 30 words).\n"
+            f"- Keep responses brief and conversational: 1 to 2 spoken sentences (under 28 words).\n"
             f"- Never use markdown, asterisks, bullet points, numbers, or URLs. Speak plain conversational sentences.\n"
             f"{reference_block}"
         )
@@ -673,8 +673,8 @@ class IVRCallSession:
             model_alias="gemma",
             messages=dialogue_messages,
             stream=False,
-            max_tokens=85,
-            temperature=0.6,
+            max_tokens=65,
+            temperature=0.5,
         )
 
         # Step 2C: Execute Conversational Turn via Gemma Gateway

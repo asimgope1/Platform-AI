@@ -122,7 +122,7 @@ class TestIVRRAGMiniModel:
 
     def test_unrelated_general_knowledge_handling(self, brain):
         reply = brain.synthesize("What is the capital of France?", language="en")
-        assert "interesting question" in reply.lower() or "banking services" in reply.lower()
+        assert "exclusively in bank customer support" in reply.lower() or "banking" in reply.lower()
 
     def test_closing_with_followup_question_does_not_close(self, brain):
         # User says thank you but immediately asks another question
