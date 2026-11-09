@@ -14,6 +14,7 @@ Manages:
 from __future__ import annotations
 
 import os
+import re
 import asyncio
 import json
 import logging
@@ -506,7 +507,8 @@ class IVRCallSession:
             self._stop_playback(reason="transcript_barge_in")
 
         text = (event.get("text") or event.get("transcript") or "").strip()
-        if not text:
+        if not text or not re.search(r'\w', text):
+            logger.debug(f"[IVR] Ignoring empty or noise/punctuation PBX transcript: '{text}'")
             return
 
         # Clear PCM buffer and cancel silence timer since PBX already gave us the full transcript
@@ -552,13 +554,13 @@ class IVRCallSession:
             logger.error(f"[IVR] STT error: {exc}")
             return
 
-        if not user_text:
-            if self._latest_pbx_transcript:
+        if not user_text or not re.search(r'\w', user_text):
+            if self._latest_pbx_transcript and re.search(r'\w', self._latest_pbx_transcript):
                 user_text = self._latest_pbx_transcript
                 self._latest_pbx_transcript = ""
-                logger.info(f"[IVR] 🎙️ Local STT returned empty; fell back to PBX transcript: '{user_text}'")
+                logger.info(f"[IVR] 🎙️ Local STT returned empty/noise; fell back to PBX transcript: '{user_text}'")
             else:
-                logger.debug("[IVR] STT returned empty/silence, skipping turn.")
+                logger.debug(f"[IVR] STT returned noise/silence ('{user_text}'), skipping turn.")
                 return
 
         logger.info(f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): '{user_text}'")
@@ -575,6 +577,10 @@ class IVRCallSession:
            the local IVR mini-model so the caller never experiences silence.
         """
         clean_user = (user_text or "").strip()
+        if not clean_user or not re.search(r'\w', clean_user):
+            logger.debug(f"[IVR] Ignoring empty or noise/punctuation transcript: '{clean_user}'")
+            return
+
         lower_user = clean_user.lower()
         self._history.append(ChatMessage(role="user", content=clean_user))
 

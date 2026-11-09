@@ -80,3 +80,28 @@ class TestIVRVoiceBargeIn:
         assert ivr_mini_brain._is_greeting_intent("hi")
         assert ivr_mini_brain._is_greeting_intent("hello there")
         assert ivr_mini_brain._is_greeting_intent("नमस्ते")
+
+    @pytest.mark.asyncio
+    async def test_punctuation_and_noise_transcripts_ignored(self):
+        mock_ws = AsyncMock()
+        mock_audio = AsyncMock()
+        mock_orch = AsyncMock()
+
+        session = IVRCallSession(
+            ws=mock_ws,
+            orchestrator=mock_orch,
+            audio_service=mock_audio,
+        )
+        session.menu_machine.state = IVRState.AI_CONVERSATION
+        session._run_ai_and_reply = AsyncMock()
+
+        # Pure punctuation, noise or whitespace must be discarded
+        await session.on_transcript({"text": "."})
+        await session.on_transcript({"text": "..."})
+        await session.on_transcript({"text": "   "})
+        await session.on_transcript({"text": "!?"})
+        session._run_ai_and_reply.assert_not_called()
+
+        # Real speech passes through
+        await session.on_transcript({"text": "Hello"})
+        session._run_ai_and_reply.assert_awaited_once_with("Hello")
