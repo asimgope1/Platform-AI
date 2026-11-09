@@ -98,6 +98,38 @@ class TestIVRRAGMiniModel:
         assert "welcome to customer support" not in reply.lower()
         assert "listening" in reply.lower()
 
+    def test_emotion_frustration_empathy(self, brain):
+        reply = brain.synthesize("I am so stressed and frustrated my money was debited!", language="en")
+        assert "understand your concern" in reply.lower() or "don't worry" in reply.lower()
+
+        hi_reply = brain.synthesize("मैं बहुत परेशान हूँ मेरे पैसे कट गए!", language="hi")
+        assert "परेशानी समझ सकती हूँ" in hi_reply or "चिंता मत कीजिए" in hi_reply
+
+    def test_feedback_handling(self, brain):
+        reply = brain.synthesize("I want to give feedback about your service", language="en")
+        assert "feedback" in reply.lower() or "appreciate" in reply.lower()
+
+        hi_reply = brain.synthesize("मेरा एक सुझाव है", language="hi")
+        assert "प्रतिक्रिया" in hi_reply or "सुझाव" in hi_reply
+
+    def test_satisfaction_acknowledgment(self, brain):
+        reply = brain.synthesize("That was very helpful and I am satisfied", language="en")
+        assert "glad to hear that" in reply.lower() or "help with anything else" in reply.lower()
+
+    def test_confirmation_handling(self, brain):
+        reply = brain.synthesize("Are you sure? Please confirm", language="en")
+        assert "confirm" in reply.lower() or "proceed" in reply.lower()
+
+    def test_unrelated_general_knowledge_handling(self, brain):
+        reply = brain.synthesize("What is the capital of France?", language="en")
+        assert "interesting question" in reply.lower() or "banking services" in reply.lower()
+
+    def test_closing_with_followup_question_does_not_close(self, brain):
+        # User says thank you but immediately asks another question
+        assert not brain._is_closing_intent("thank you, but what about home loans?")
+        assert not brain._is_closing_intent("thanks, can you tell me more?")
+        assert not brain._is_closing_intent("धन्यवाद, लेकिन क्या आप मदद करेंगे?")
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

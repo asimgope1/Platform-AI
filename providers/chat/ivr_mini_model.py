@@ -118,6 +118,26 @@ AUTONOMOUS_KNOWLEDGE = {
         "hi": "मैं वीडियो केवाईसी, यूपीआई रिफंड, कार्ड ब्लॉक, एटीएम पिन और बैलेंस चेक में आपकी मदद कर सकती हूँ।",
         "or": "ମୁଁ ଭିଡିଓ କେୱାଇସି, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍ ଏବଂ ବାଲାନ୍ସ ସେବାରେ ସାହାଯ୍ୟ କରିପାରିବି।",
     },
+    "feedback": {
+        "en": "Thank you for your valuable feedback! We truly appreciate you sharing your thoughts with us.",
+        "hi": "आपकी बहुमूल्य प्रतिक्रिया के लिए बहुत-बहुत धन्यवाद! हम आपके सुझाव की सराहना करते हैं।",
+        "or": "ଆପଣଙ୍କ ମୂଲ୍ୟବାନ ମତାମତ ପାଇଁ ଅଶେଷ ଧନ୍ୟବାଦ! ଆମେ ଆପଣଙ୍କ ପରାମର୍ଶକୁ ସମ୍ମାନ କରୁଛୁ।",
+    },
+    "confirmation": {
+        "en": "Understood. Just to confirm, would you like me to proceed with this request for you?",
+        "hi": "समझ गई। पुष्टि करने के लिए, क्या आप चाहते हैं कि मैं इस अनुरोध पर आगे बढ़ूँ?",
+        "or": "ବୁଝିପାରିଲି। ନିଶ୍ଚିତ କରିବା ପାଇଁ, ଆପଣ ଚାହାଁନ୍ତି କି ମୁଁ ଏହି ଅନୁରୋଧରେ ଆଗକୁ ବଢ଼ିବି?",
+    },
+    "satisfaction": {
+        "en": "I'm so glad to hear that! Did that completely answer your question, or can I help with anything else?",
+        "hi": "मुझे आपकी मदद करके बहुत खुशी हुई! क्या आपको अपनी समस्या का पूरा समाधान मिल गया?",
+        "or": "ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରି ମୁଁ ଖୁସି! ଆପଣଙ୍କ ସମସ୍ୟାର ସମାଧାନ ହୋଇଗଲା କି?",
+    },
+    "unrelated_general": {
+        "en": "That's an interesting question! By the way, how can I assist you with your banking services today?",
+        "hi": "यह एक दिलचस्प सवाल है! वैसे, आज मैं आपके बैंक खाते या बैंकिंग सेवाओं में क्या मदद कर सकती हूँ?",
+        "or": "ଏହା ଏକ ଭଲ ପ୍ରଶ୍ନ! ଆଜି ମୁଁ ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଖାତା ବା ସେବାରେ କିପରି ସାହାଯ୍ୟ କରିବି?",
+    },
 }
 
 
@@ -175,6 +195,40 @@ class IVRRAGMiniModel:
         if any(w in lower_query for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
             return AUTONOMOUS_KNOWLEDGE["human_agent"][lang]
 
+        # 4b. Feedback intent
+        if any(w in lower_query for w in ["feedback", "rating", "suggestion", "service is good", "service is bad", "complaint", "सुझाव", "शिकायत", "प्रतिक्रिया", "ମତାମତ", "ଅଭିଯୋଗ"]):
+            return AUTONOMOUS_KNOWLEDGE["feedback"][lang]
+
+        # 4c. Satisfaction acknowledgment
+        if any(w in lower_query for w in ["satisfied", "helpful", "good service", "theek ho gaya", "kaam ho gaya", "kam ho gaya", "all sorted", "problem solved", "issue resolved", "ସମାଧାନ"]):
+            return AUTONOMOUS_KNOWLEDGE["satisfaction"][lang]
+
+        # 4d. Explicit Confirmation check
+        if any(w in lower_query for w in ["confirm", "sure?", "pukka", "pakka", "right?", "correct?", "पुष्टि", "पक्का", "सच में", "ସତରେ"]):
+            return AUTONOMOUS_KNOWLEDGE["confirmation"][lang]
+
+        # 4e. Detect caller emotional frustration/stress to inject empathetic reassurance
+        empathy_prefix = ""
+        if any(w in lower_query for w in [
+            "frustrated", "angry", "terrible", "worst", "stress", "pareshan", "chinta",
+            "fas gaya", "parisan", "gussa", "tension", "bekaar", "worry", "worried", "urgent",
+            "चिंता", "परेशान", "गुस्सा", "फंस गया", "तनाव", "ଠକେଇ", "ଚିନ୍ତା"
+        ]):
+            empathy_map = {
+                "en": "I completely understand your concern, please don't worry. ",
+                "hi": "मैं आपकी परेशानी समझ सकती हूँ, आप बिल्कुल चिंता मत कीजिए। ",
+                "or": "ମୁଁ ଆପଣଙ୍କ ଚିନ୍ତା ବୁଝିପାରୁଛି, ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ। ",
+            }
+            empathy_prefix = empathy_map.get(lang, empathy_map["en"])
+
+        # 4f. Check unrelated / general knowledge queries
+        if any(w in lower_query for w in [
+            "capital of", "weather", "who is", "who won", "tell me a joke", "cricket", "football",
+            "prime minister", "president", "meaning of life", "how old are you", "what is ai",
+            "मौसम", "राजधानी", "क्रिकेट", "जोक", "ଭାରତ", "ପାଣିପାଗ"
+        ]):
+            return AUTONOMOUS_KNOWLEDGE["unrelated_general"][lang]
+
         # 5. Extract multi-turn context (e.g. "how much time?", "and what about documents?")
         inferred_intent = self._infer_intent_with_history(lower_query, messages)
 
@@ -182,11 +236,12 @@ class IVRRAGMiniModel:
         if rag_context.strip():
             rag_answer = self._synthesize_from_rag_chunks(rag_context, lower_query, lang)
             if rag_answer:
-                return rag_answer
+                return f"{empathy_prefix}{rag_answer}" if empathy_prefix else rag_answer
 
         # 7. Autonomous Knowledge Base Fallback
         if inferred_intent and inferred_intent in AUTONOMOUS_KNOWLEDGE:
-            return AUTONOMOUS_KNOWLEDGE[inferred_intent][lang]
+            ans = AUTONOMOUS_KNOWLEDGE[inferred_intent][lang]
+            return f"{empathy_prefix}{ans}" if empathy_prefix else ans
 
         # 8. Service-category guided response (only if user query is an acknowledgment or relates to the menu)
         if service_category and (not clean_query or any(w in lower_query for w in ["yes", "ha", "haan", "tell me", "batao", "bataiye", "help", "information", "details", "service", "option", "okay", "ok"])):
@@ -201,7 +256,8 @@ class IVRRAGMiniModel:
                 return AUTONOMOUS_KNOWLEDGE["account_balance"][lang]
 
         # 9. Polite general fallback
-        return AUTONOMOUS_KNOWLEDGE["fallback"][lang]
+        ans = AUTONOMOUS_KNOWLEDGE["fallback"][lang]
+        return f"{empathy_prefix}{ans}" if empathy_prefix else ans
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -237,6 +293,16 @@ class IVRRAGMiniModel:
         # Direct exact negative / completion phrases
         if clean in ("no", "nope", "no thanks", "no thank you", "nahi", "nahin", "na", "kuch nahi", "nhi", "not really", "nothing", "all good", "i am good", "im good"):
             return True
+
+        # If user asks a question or has follow-up words, it is NOT a closing turn!
+        followup_words = [
+            "what", "how", "why", "when", "where", "can you", "could you", "tell me",
+            "also", "and", "but", "lekin", "aur", "kya", "kaise", "kab", "kyun",
+            "लेकिन", "क्या", "कैसे", "कब", "क्यों", "और", "बताइए", "मदद",
+            "କଣ", "କିପରି", "କାହିଁକି", "ଆଉ", "କିନ୍ତୁ",
+        ]
+        if any(w in clean for w in followup_words):
+            return False
 
         keywords = [
             "thank", "thanks", "dhanyawad", "dhanyavad", "shukriya", "dhanyabad",
