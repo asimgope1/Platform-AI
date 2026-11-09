@@ -130,6 +130,15 @@ class TestIVRRAGMiniModel:
         assert not brain._is_closing_intent("thanks, can you tell me more?")
         assert not brain._is_closing_intent("धन्यवाद, लेकिन क्या आप मदद करेंगे?")
 
+    def test_phonetic_misrecognition_resolution(self, brain):
+        # Transcripts where Whisper mishears UPI as 'you be a' or batao as 'better'
+        reply = brain.synthesize("you be a payment better", language="en")
+        assert "refund" in reply.lower() or "24 to 48" in reply.lower()
+
+        # Service category guided resolution
+        cat_reply = brain.synthesize("better details", language="en", service_category="upi_payments")
+        assert "refund" in cat_reply.lower() or "24 to 48" in cat_reply.lower()
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

@@ -42,6 +42,21 @@ HINDI_LOANWORDS_MAP = [
     (r'\b(?:payment)\b', 'पेमेंट'),
 ]
 
+UNIVERSAL_PHONETIC_NORMALIZATION = [
+    # UPI phonetic misrecognitions: "you be a", "you be i", "you pay", "u p i", "up i", "yupi"
+    (r'\b(?:you\s*be\s*[ai]|you\s*pay|u\s*p\s*i|up\s*i|yupi|u\s*b\s*i)\b', 'UPI'),
+    # Video KYC phonetic misrecognitions: "vedio kyc", "video k y c", "kay why see", "k y c"
+    (r'\b(?:vedio\s*kyc|video\s*k\s*y\s*c|kay\s*why\s*see)\b', 'Video KYC'),
+    (r'\b(?:k\s*y\s*c)\b', 'KYC'),
+    # PAN / Aadhaar card misrecognitions
+    (r'\b(?:pen\s*card|pan\s*car)\b', 'PAN card'),
+    (r'\b(?:aadhar\s*card|adhar\s*card)\b', 'Aadhaar card'),
+    (r'\b(?:aadhar|adhar)\b', 'Aadhaar'),
+    # Common mishearings of Hindi "batao" / "bataiye" in Hinglish audio
+    (r'\bpayment\s+(?:better|butter|battle)\b', 'UPI payment refund status'),
+    (r'\bkyc\s+(?:better|butter)\b', 'KYC details'),
+]
+
 
 def _clean_hallucinations_and_loops(text: str) -> str:
     """Removes repetitive token loops without blanking valid caller queries."""
@@ -233,6 +248,10 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         raw_input = {"raw": audio_data.astype(np.float32), "sampling_rate": samplerate}
         result = pipe(raw_input, generate_kwargs=gen_kwargs)
         transcribed_text = (result.get("text") or "").strip()
+
+        # Apply universal phonetic normalization for banking terms
+        for pattern, replacement in UNIVERSAL_PHONETIC_NORMALIZATION:
+            transcribed_text = re.sub(pattern, replacement, transcribed_text, flags=re.IGNORECASE)
 
         # Convert any stray Urdu Perso-Arabic characters to clean Devanagari Hindi
         if language in ("hi", "hindi", "hi-IN"):

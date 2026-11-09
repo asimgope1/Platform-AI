@@ -109,9 +109,9 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ଆପଣଙ୍କୁ ସ୍ୱାଗତ! ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
     },
     "fallback": {
-        "en": "Could you please clarify? You can ask me about UPI refund status, Video KYC documents, or card services.",
-        "hi": "माफ़ कीजिए, क्या आप दोहरा सकते हैं? आप मुझसे यूपीआई रिफंड, वीडियो केवाईसी, या कार्ड के बारे में पूछ सकते हैं।",
-        "or": "କ୍ଷମା କରିବେ, ଆପଣ ଦୟାକରି ଆଉଥରେ କହିବେ କି? ଆପଣ ୟୁପିଆଇ ରିଫଣ୍ଡ, ଭିଡିଓ କେୱାଇସି, ବା କାର୍ଡ ବିଷୟରେ ପଚାରି ପାରିବେ।",
+        "en": "Could you please clarify? How can I help with your Video KYC, UPI refund, or account today?",
+        "hi": "माफ़ कीजिए, क्या आप दोहरा सकते हैं? मैं आपकी क्या मदद करूँ?",
+        "or": "କ୍ଷମା କରିବେ, ଆଉଥରେ କହିବେ କି? ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
     "capabilities": {
         "en": "I can assist you with Video KYC, UPI refunds, card blocking, ATM PIN, and account balance.",
@@ -243,16 +243,18 @@ class IVRRAGMiniModel:
             ans = AUTONOMOUS_KNOWLEDGE[inferred_intent][lang]
             return f"{empathy_prefix}{ans}" if empathy_prefix else ans
 
-        # 8. Service-category guided response (only if user query is an acknowledgment or relates to the menu)
-        if service_category and (not clean_query or any(w in lower_query for w in ["yes", "ha", "haan", "tell me", "batao", "bataiye", "help", "information", "details", "service", "option", "okay", "ok"])):
+        # 8. Service-category guided response
+        if service_category:
             cat_lower = service_category.lower()
-            if "upi" in cat_lower or "payment" in cat_lower:
+            if "upi" in cat_lower or "payment" in cat_lower or "1" in cat_lower:
                 return AUTONOMOUS_KNOWLEDGE["upi_refund"][lang]
-            elif "card" in cat_lower:
+            elif "card" in cat_lower or "2" in cat_lower:
                 return AUTONOMOUS_KNOWLEDGE["card_block"][lang]
-            elif "loan" in cat_lower:
+            elif "kyc" in cat_lower:
+                return AUTONOMOUS_KNOWLEDGE["video_kyc"][lang]
+            elif "loan" in cat_lower or "3" in cat_lower:
                 return AUTONOMOUS_KNOWLEDGE["loans_emi"][lang]
-            elif "account" in cat_lower:
+            elif "account" in cat_lower or "4" in cat_lower:
                 return AUTONOMOUS_KNOWLEDGE["account_balance"][lang]
 
         # 9. Polite general fallback
@@ -349,19 +351,25 @@ class IVRRAGMiniModel:
             return "capabilities"
 
         # Direct intent keywords
-        if any(w in lower_query for w in ["kyc", "केवाईसी", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି"]):
+        if any(w in lower_query for w in [
+            "kyc", "केवाईसी", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି",
+            "vedio", "video", "कागजात", "पहचान पत्र", "दस्तावेज"
+        ]):
             return "video_kyc"
 
         if any(w in lower_query for w in [
             "refund", "upi", "यूपीआई", "कट गया", "कट गए", "kat gaya", "पैसे कट", "पैसे", "paisa", "paise",
-            "debited", "failed", "utr", "pending payment", "वापस", "ୟୁପିଆଇ", "ରିଫଣ୍ଡ"
+            "debited", "failed", "utr", "pending payment", "वापस", "ୟୁପିଆଇ", "ରିଫଣ୍ଡ",
+            "payment", "पेमेंट", "पैमेंट", "transaction", "transfer", "you be a", "you be i", "gpay", "phonepe", "paytm"
         ]):
             return "upi_refund"
 
         if any(w in lower_query for w in ["pin", "atm pin", "mpin", "पिन", "एमपिन"]):
             return "card_pin"
 
-        if any(w in lower_query for w in ["card", "debit card", "credit card", "atm", "block", "खो गया", "चोरी", "कार्ड", "ब्लॉक"]):
+        if any(w in lower_query for w in [
+            "card", "debit card", "credit card", "atm", "block", "खो गया", "चोरी", "कार्ड", "ब्लॉक", "freeze", "stolen", "lost"
+        ]):
             return "card_block"
 
         if any(w in lower_query for w in ["balance", "statement", "बैलेंस", "खाता शेष", "स्टेटमेंट", "passbook"]):
