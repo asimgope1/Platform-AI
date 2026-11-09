@@ -687,7 +687,14 @@ class IVRCallSession:
                     timeout=3.5,
                 )
                 candidate = (gemma_res.choices[0].message.content or "").strip()
-                if candidate and "mock response" not in candidate.lower():
+                # Filter out generic mock or placeholder responses
+                if (
+                    candidate
+                    and "mock response" not in candidate.lower()
+                    and "didn't quite catch that" not in candidate.lower()
+                    and "पूरी तरह समझ नहीं" not in candidate
+                    and "ସମ୍ପୂର୍ଣ୍ଣ ବୁଝିପାରିଲି ନାହିଁ" not in candidate
+                ):
                     reply_text = candidate
                     logger.info(f"[IVR] 🌟 Gemma conversational reply: '{reply_text}'")
             except Exception as gemma_err:

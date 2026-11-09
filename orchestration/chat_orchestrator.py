@@ -101,7 +101,10 @@ class ChatOrchestrator:
         except Exception as e:
             logger.warning(f"Primary model {model_meta.alias} failed ({e}); falling back to local fallback provider.")
             try:
-                fallback_meta = self.model_resolver.resolve("mock-chat")
+                try:
+                    fallback_meta = self.model_resolver.resolve("ivr-rag-mini")
+                except Exception:
+                    fallback_meta = self.model_resolver.resolve("mock-chat")
                 fallback_adapter = provider_registry.get_chat_adapter(fallback_meta.provider_id)
                 response = await fallback_adapter.chat_completion(current_request, fallback_meta)
             except Exception:
