@@ -275,11 +275,20 @@ class IVRRAGMiniModel:
             for m in messages:
                 if m.role == "system" and m.content:
                     c = str(m.content).lower()
-                    if "always respond in conversational odia" in c:
+                    lang_match = re.search(r'language:\s*(?:always\s*respond\s*in\s*(?:natural,\s*)?conversational\s*)?(hindi|odia|english)', c)
+                    if lang_match:
+                        matched = lang_match.group(1).lower()
+                        if matched == "hindi":
+                            return "hi"
+                        elif matched == "odia":
+                            return "or"
+                        elif matched == "english":
+                            return "en"
+                    if "always respond in conversational odia" in c or "conversational odia" in c:
                         return "or"
-                    if "always respond in conversational hindi" in c:
+                    if "always respond in conversational hindi" in c or "conversational hindi" in c:
                         return "hi"
-                    if "always respond in conversational english" in c:
+                    if "always respond in conversational english" in c or "conversational english" in c:
                         return "en"
 
         # 2. Check native script characters in user query
@@ -555,10 +564,12 @@ class IVRRAGMiniModelAdapter(BaseChatAdapter):
                 if "relevant context" in s.lower() or "untrusted retrieved context" in s.lower():
                     rag_context += "\n" + s
 
+        detected_lang = self.brain._detect_language(user_query, request.messages)
         reply_content = self.brain.synthesize(
             user_query=user_query,
             messages=request.messages,
             rag_context=rag_context,
+            language=detected_lang,
         )
 
         model_name = model_meta.alias if model_meta else "ivr-rag-mini"

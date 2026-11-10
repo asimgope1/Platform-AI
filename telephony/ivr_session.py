@@ -695,8 +695,14 @@ class IVRCallSession:
                     and "पूरी तरह समझ नहीं" not in candidate
                     and "ସମ୍ପୂର୍ଣ୍ଣ ବୁଝିପାରିଲି ନାହିଁ" not in candidate
                 ):
-                    reply_text = candidate
-                    logger.info(f"[IVR] 🌟 Gemma conversational reply: '{reply_text}'")
+                    # Strict Language Enforcement: if caller chose Hindi, candidate must not be pure English
+                    if self.selected_language == "hi" and not any('\u0900' <= ch <= '\u097f' for ch in candidate):
+                        logger.warning(f"[IVR] Rejecting English candidate for Hindi session: '{candidate}'")
+                    elif self.selected_language == "or" and any('\u0900' <= ch <= '\u097f' for ch in candidate):
+                        logger.warning(f"[IVR] Rejecting Hindi candidate for Odia session: '{candidate}'")
+                    else:
+                        reply_text = candidate
+                        logger.info(f"[IVR] 🌟 Gemma conversational reply: '{reply_text}'")
             except Exception as gemma_err:
                 logger.warning(f"[IVR] Gemma conversational turn error ({gemma_err}); falling back to mini-brain.")
 
@@ -716,6 +722,16 @@ class IVRCallSession:
     async def _finalize_and_speak(self, user_text: str, reply_text: str) -> None:
         """Sanitizes text, updates history, triggers learning, and streams PCM audio."""
         reply_text = (reply_text or "").strip()
+        # Strict Language Guard: If session is Hindi, force Devanagari Hindi text
+        if self.selected_language == "hi" and not any('\u0900' <= ch <= '\u097f' for ch in reply_text):
+            logger.warning(f"[IVR] Enforcing Hindi language on reply text: '{reply_text}'")
+            reply_text = ivr_mini_brain.synthesize(
+                user_query=user_text,
+                messages=self._history,
+                language="hi",
+                service_category=self.selected_service,
+            )
+
         if not reply_text or "mock response" in reply_text.lower():
             if self.selected_language == "hi":
                 reply_text = "माफ़ कीजिये, आपकी आवाज़ साफ़ नहीं आई। क्या आप वीडियो केवाईसी या यूपीआई समस्या के बारे में पूछ रहे हैं?"

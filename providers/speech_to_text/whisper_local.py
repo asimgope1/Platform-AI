@@ -221,11 +221,13 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         prompt_text = ""
 
         if language in ("or", "or-IN", "ory", "odia"):
-            gen_kwargs["task"] = "translate"
-            prompt_text = "Customer support call regarding Video KYC, Aadhaar, PAN card, UPI refund, failed payment, account balance, card block, ATM PIN reset, loan EMI, dhanyabad."
+            gen_kwargs["language"] = "hi"
+            gen_kwargs["task"] = "transcribe"
+            prompt_text = "ଗ୍ରାହକ ସେବା କଲ୍: ଭିଡିଓ କେୱାଇସି, ଆଧାର କାର୍ଡ, ପ୍ୟାନ୍ କାର୍ଡ, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍, ବାଲାନ୍ସ, ଧନ୍ୟବାଦ, ନମସ୍କାର।"
         elif language in ("hi", "hindi", "hi-IN"):
-            gen_kwargs["task"] = "translate"
-            prompt_text = "Customer support call regarding Video KYC, Aadhaar, PAN card, UPI refund, failed payment, khata balance, card block, ATM PIN reset, loan EMI, shukriya, dhanyawad."
+            gen_kwargs["language"] = "hi"
+            gen_kwargs["task"] = "transcribe"
+            prompt_text = "ग्राहक सहायता कॉल: वीडियो केवाईसी, आधार कार्ड, पैन कार्ड, यूपीआई रिफंड, विफल भुगतान, खाता शेष, कार्ड ब्लॉक, एटीएम पिन, ऋण, धन्यवाद, नमस्ते।"
         elif language in ("en", "english", "en-IN", "en-US"):
             gen_kwargs["language"] = "en"
             gen_kwargs["task"] = "transcribe"
