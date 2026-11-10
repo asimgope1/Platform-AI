@@ -511,6 +511,17 @@ class IVRCallSession:
             logger.debug(f"[IVR] Ignoring empty or noise/punctuation PBX transcript: '{text}'")
             return
 
+        # For non-English calls (Hindi, Odia), Asterisk PBX transcripts are English-only and must be ignored
+        if self.selected_language in ("hi", "or"):
+            logger.info(f"[IVR] 🛑 Discarding external English PBX transcript for {self.selected_language} session: '{text}' (relying on local Whisper)")
+            return
+
+        # If local PCM buffer has speech accumulated, preserve caller's audio for local Whisper STT
+        if len(self._pcm_buffer) >= MIN_SPEECH_BYTES:
+            logger.info(f"[IVR] 🎙️ Preserving local PCM speech ({len(self._pcm_buffer)} bytes) over PBX transcript '{text}'")
+            self._latest_pbx_transcript = text
+            return
+
         # Clear PCM buffer and cancel silence timer since PBX already gave us the full transcript
         self._pcm_buffer.clear()
         self._preroll_buffer.clear()
