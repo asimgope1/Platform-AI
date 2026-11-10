@@ -126,6 +126,7 @@ class IVRCallSession:
         self._audio_service = audio_service
         self._chat_model = chat_model
         self._language = language
+        self.ignore_pbx_transcript: bool = PBX_IGNORE_TRANSCRIPT
         self.tenant_id = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
 
         # IVR Keypad Menu State Machine
@@ -502,9 +503,10 @@ class IVRCallSession:
         if self.menu_machine.state != IVRState.AI_CONVERSATION:
             return
 
-        if self._is_playing:
-            logger.info("[IVR] ⚡ Barge-in by PBX transcript while playing: interrupting audio!")
-            self._stop_playback(reason="transcript_barge_in")
+        # If PBX transcripts are configured to be ignored, drop immediately to protect local Whisper STT
+        if self.ignore_pbx_transcript:
+            logger.debug(f"[IVR] 🔕 Ignoring PBX transcript event (PBX_IGNORE_TRANSCRIPT=True): {event.get('text')}")
+            return
 
         text = (event.get("text") or event.get("transcript") or "").strip()
         if not text or not re.search(r'\w', text):
@@ -516,11 +518,24 @@ class IVRCallSession:
             logger.info(f"[IVR] 🛑 Discarding external English PBX transcript for {self.selected_language} session: '{text}' (relying on local Whisper)")
             return
 
+        # Filter out stray stopwords/filler noise from PBX (e.g. 'the', 'a', 'a ago', 'we're not not')
+        clean_words = [
+            w for w in re.findall(r"\b[a-zA-Z]+\b", text.lower())
+            if w not in {"the", "a", "an", "and", "or", "to", "of", "in", "it", "is", "by", "he", "we", "not", "i", "you", "ago"}
+        ]
+        if not clean_words or (len(clean_words) == 1 and len(clean_words[0]) < 3):
+            logger.info(f"[IVR] 🛑 Filtering out stray PBX stopword/noise transcript: '{text}'")
+            return
+
         # If local PCM buffer has speech accumulated, preserve caller's audio for local Whisper STT
-        if len(self._pcm_buffer) >= MIN_SPEECH_BYTES:
+        if len(self._pcm_buffer) > 0:
             logger.info(f"[IVR] 🎙️ Preserving local PCM speech ({len(self._pcm_buffer)} bytes) over PBX transcript '{text}'")
             self._latest_pbx_transcript = text
             return
+
+        if self._is_playing:
+            logger.info("[IVR] ⚡ Barge-in by PBX transcript while playing: interrupting audio!")
+            self._stop_playback(reason="transcript_barge_in")
 
         # Clear PCM buffer and cancel silence timer since PBX already gave us the full transcript
         self._pcm_buffer.clear()
@@ -566,7 +581,12 @@ class IVRCallSession:
             return
 
         if not user_text or not re.search(r'\w', user_text):
-            if self._latest_pbx_transcript and re.search(r'\w', self._latest_pbx_transcript):
+            if (
+                not self.ignore_pbx_transcript
+                and self.selected_language not in ("hi", "or")
+                and self._latest_pbx_transcript
+                and re.search(r'\w', self._latest_pbx_transcript)
+            ):
                 user_text = self._latest_pbx_transcript
                 self._latest_pbx_transcript = ""
                 logger.info(f"[IVR] 🎙️ Local STT returned empty/noise; fell back to PBX transcript: '{user_text}'")

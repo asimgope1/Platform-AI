@@ -55,6 +55,7 @@ class TestIVRVoiceBargeIn:
             audio_service=mock_audio,
         )
         session.menu_machine.state = IVRState.AI_CONVERSATION
+        session.ignore_pbx_transcript = False
 
         session._is_playing = True
         dummy_task = asyncio.create_task(asyncio.sleep(10))
@@ -68,6 +69,26 @@ class TestIVRVoiceBargeIn:
         assert session._is_playing is False
         assert dummy_task.cancelling() > 0 or dummy_task.cancelled()
         session._run_ai_and_reply.assert_awaited_once_with("cancel that")
+
+    @pytest.mark.asyncio
+    async def test_transcript_ignored_when_flag_enabled(self):
+        mock_ws = AsyncMock()
+        mock_audio = AsyncMock()
+        mock_orch = AsyncMock()
+
+        session = IVRCallSession(
+            ws=mock_ws,
+            orchestrator=mock_orch,
+            audio_service=mock_audio,
+        )
+        session.menu_machine.state = IVRState.AI_CONVERSATION
+        session.ignore_pbx_transcript = True
+        session._is_playing = True
+        session._run_ai_and_reply = AsyncMock()
+
+        await session.on_transcript({"text": "cancel that"})
+        session._run_ai_and_reply.assert_not_called()
+        assert session._is_playing is True  # Did not interrupt playback
 
     def test_substring_hi_eliminated(self):
         # Queries containing 'hi' as a substring must NOT trigger greeting intent
@@ -93,6 +114,7 @@ class TestIVRVoiceBargeIn:
             audio_service=mock_audio,
         )
         session.menu_machine.state = IVRState.AI_CONVERSATION
+        session.ignore_pbx_transcript = False
         session._run_ai_and_reply = AsyncMock()
 
         # Pure punctuation, noise or whitespace must be discarded
@@ -100,6 +122,9 @@ class TestIVRVoiceBargeIn:
         await session.on_transcript({"text": "..."})
         await session.on_transcript({"text": "   "})
         await session.on_transcript({"text": "!?"})
+        # Single stopword noise from PBX
+        await session.on_transcript({"text": "the"})
+        await session.on_transcript({"text": "a ago"})
         session._run_ai_and_reply.assert_not_called()
 
         # Real speech passes through
