@@ -37,6 +37,15 @@ class Settings(BaseSettings):
     IVR_CHAT_MODEL: str = "mock-chat"
     IVR_LANGUAGE: str = "en"
 
+    # Audio Intelligence (Milestone 1)
+    AUDIO_INTELLIGENCE_ENABLED: bool = True
+    AUDIO_SAMPLE_RATE: int = 8000
+    VAD_PROVIDER: str = "adaptive"
+    VAD_THRESHOLD: float = 0.42
+    NOISE_SUPPRESSION_ENABLED: bool = True
+    NOISE_SUPPRESSION_PROVIDER: str = "spectral"
+    ECHO_CANCELLATION_ENABLED: bool = False
+
 
 def validate_master_key(cfg: Settings) -> None:
     """Validates that production environments enforce a secure, non-placeholder MASTER_API_KEY."""

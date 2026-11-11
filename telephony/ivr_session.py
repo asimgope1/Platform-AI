@@ -65,6 +65,7 @@ from telephony.ivr_prompts import (
     get_service_ack_prompt,
 )
 from telephony.ivr_audio_cache import get_cached_prompt_pcm, store_cached_prompt_pcm
+from audio_intelligence import AudioIntelligencePipeline, AudioQualityReport, EnhancedAudioResult
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +152,11 @@ class IVRCallSession:
         self._playback_task: Optional[asyncio.Task] = None
         self._is_playing: bool = False
         self._latest_pbx_transcript: str = ""
+
+        # Milestone 1: Audio Intelligence pipeline & latest diagnostics
+        self.audio_pipeline = AudioIntelligencePipeline(sample_rate=PBX_SAMPLE_RATE)
+        self.last_audio_quality: Optional[AudioQualityReport] = None
+        self.last_enhanced_audio: Optional[EnhancedAudioResult] = None
 
     # ── call lifecycle handlers ───────────────────────────────────────────────
 
@@ -567,8 +573,26 @@ class IVRCallSession:
             await self._run_stt_ai_tts(pcm_snapshot)
 
     async def _run_stt_ai_tts(self, pcm: bytes) -> None:
-        # 1. STT — wrap raw PCM as minimal WAV so AudioService can read it
-        wav_bytes = _raw_pcm_to_wav(pcm, sample_rate=PBX_SAMPLE_RATE)
+        # 1. Audio Intelligence (Milestone 1): analyze & enhance while preserving original PCM
+        quality = await self.audio_pipeline.analyze(pcm)
+        self.last_audio_quality = quality
+        logger.info(
+            f"[IVR] 🎧 Audio Quality: label={quality.quality_label} score={quality.audio_quality_score:.2f} "
+            f"snr={quality.snr_db:.1f}dB rms={quality.rms:.1f} vad={quality.vad_probability:.2f} "
+            f"speech={quality.speech_duration_ms:.0f}ms clip={quality.clipping_pct:.2f}%"
+        )
+
+        # Reject weak non-speech noise bursts before running Whisper
+        if not quality.is_speech_present and quality.rms < 90.0:
+            logger.info("[IVR] 🔇 Audio Intelligence rejected non-speech noise burst; skipping STT.")
+            return
+
+        enhanced_result = await self.audio_pipeline.enhance(pcm, quality=quality)
+        self.last_enhanced_audio = enhanced_result
+        stt_pcm = enhanced_result.segmented_pcm or enhanced_result.enhanced_pcm or pcm
+
+        # 2. STT — wrap PCM as minimal WAV so AudioService can read it
+        wav_bytes = _raw_pcm_to_wav(stt_pcm, sample_rate=PBX_SAMPLE_RATE)
         try:
             stt_result = await self._audio_service.transcribe(
                 audio_bytes=wav_bytes,
