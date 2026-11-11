@@ -236,3 +236,4 @@ class TestAudioPipelineAndIVRIntegration:
         assert session.last_audio_quality.is_speech_present is True
         assert session.last_enhanced_audio is not None
         assert session.last_enhanced_audio.original_pcm == valid_speech
+

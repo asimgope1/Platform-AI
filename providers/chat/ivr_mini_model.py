@@ -162,6 +162,7 @@ class IVRRAGMiniModel:
         rag_context: str = "",
         language: str = "en",
         service_category: Optional[str] = None,
+        intelligence_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Synthesizes a high-precision, natural telephone spoken response.
@@ -209,17 +210,36 @@ class IVRRAGMiniModel:
 
         # 4e. Detect caller emotional frustration/stress to inject empathetic reassurance
         empathy_prefix = ""
-        if any(w in lower_query for w in [
-            "frustrated", "angry", "terrible", "worst", "stress", "pareshan", "chinta",
-            "fas gaya", "parisan", "gussa", "tension", "bekaar", "worry", "worried", "urgent",
-            "चिंता", "परेशान", "गुस्सा", "फंस गया", "तनाव", "ଠକେଇ", "ଚିନ୍ତା"
-        ]):
-            empathy_map = {
-                "en": "I completely understand your concern, please don't worry. ",
-                "hi": "मैं आपकी परेशानी समझ सकती हूँ, आप बिल्कुल चिंता मत कीजिए। ",
-                "or": "ମୁଁ ଆପଣଙ୍କ ଚିନ୍ତା ବୁଝିପାରୁଛି, ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ। ",
-            }
-            empathy_prefix = empathy_map.get(lang, empathy_map["en"])
+        intel_emo = ""
+        prev_attempts = 0
+        if intelligence_context:
+            emo_dict = intelligence_context.get("emotion") or {}
+            intel_emo = str(emo_dict.get("fused") or emo_dict.get("text") or "").lower()
+            prev_attempts = int(intelligence_context.get("previous_attempts") or 0)
+
+        if (
+            intel_emo in ("frustrated", "angry")
+            or prev_attempts >= 2
+            or any(w in lower_query for w in [
+                "frustrated", "angry", "terrible", "worst", "stress", "pareshan", "chinta",
+                "fas gaya", "parisan", "gussa", "tension", "bekaar", "worry", "worried", "urgent",
+                "चिंता", "परेशान", "गुस्सा", "फंस गया", "तनाव", "ଠକେଇ", "ଚିନ୍ତା"
+            ])
+        ):
+            if prev_attempts >= 2:
+                retry_map = {
+                    "en": "I understand you've already tried this earlier — let me help you with the next option right away. ",
+                    "hi": "मैं समझती हूँ कि आप पहले भी प्रयास कर चुकी हैं, चलिए मैं तुरंत अगले समाधान में मदद करती हूँ। ",
+                    "or": "ମୁଁ ବୁଝିପାରୁଛି ଆପଣ ପୂର୍ବରୁ ଚେଷ୍ଟା କରିଛନ୍ତି, ଚାଲନ୍ତୁ ମୁଁ ତୁରନ୍ତ ପରବର୍ତ୍ତୀ ସମାଧାନରେ ସାହାଯ୍ୟ କରୁଛି। ",
+                }
+                empathy_prefix = retry_map.get(lang, retry_map["en"])
+            else:
+                empathy_map = {
+                    "en": "I completely understand your concern, please don't worry. ",
+                    "hi": "मैं आपकी परेशानी समझ सकती हूँ, आप बिल्कुल चिंता मत कीजिए। ",
+                    "or": "ମୁଁ ଆପଣଙ୍କ ଚିନ୍ତା ବୁଝିପାରୁଛି, ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ। ",
+                }
+                empathy_prefix = empathy_map.get(lang, empathy_map["en"])
 
         # 4f. Check unrelated / general knowledge queries
         if any(w in lower_query for w in [

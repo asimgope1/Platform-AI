@@ -79,3 +79,4 @@ class PlaybackEchoCanceller:
         cleaned = mic - alpha * shifted_ref
         cleaned = np.clip(cleaned, -32767.0, 32767.0)
         return cleaned.astype("<i2").tobytes()
+

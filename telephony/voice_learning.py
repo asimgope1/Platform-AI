@@ -24,6 +24,8 @@ import logging
 import re
 from typing import Any, List, Optional
 
+from conversation_intelligence.transcript_confidence import mask_sensitive_text
+
 from storage.database import async_session
 from storage.repositories.document_repo import DocumentRepository
 from retrieval.embedding_service import EmbeddingService
@@ -90,16 +92,23 @@ async def learn_from_voice_turn(
     call_uuid: Optional[str],
     user_text: str,
     reply_text: str,
+    quality_ok: bool = True,
+    resolved: Optional[bool] = None,
 ) -> bool:
     """
     Ingest a single spoken Q&A turn into PostgreSQL pgvector if it contains novel knowledge.
+    Skips low-confidence / poor-quality transcripts when quality_ok is False, and masks PII.
     """
+    if not quality_ok:
+        logger.debug("[Voice Learning] Skipped low-quality / uncertain transcript turn.")
+        return False
+
     if not is_informative_interaction(user_text, reply_text):
         return False
 
     try:
-        clean_user = user_text.strip()
-        clean_reply = reply_text.strip()
+        clean_user = mask_sensitive_text(user_text.strip())
+        clean_reply = mask_sensitive_text(reply_text.strip())
         call_id = call_uuid or "unknown"
 
         # Embed user query to check for existing duplicates
@@ -157,6 +166,7 @@ async def learn_from_voice_turn(
                     "type": "voice_interaction_turn",
                     "call_uuid": call_id,
                     "caller_query": clean_user,
+                    "resolved": resolved,
                 },
             )
 
@@ -194,7 +204,7 @@ async def learn_from_call_summary(
                     # Clean injected RAG context out of user messages if present
                     if "User Message:\n" in content_str:
                         content_str = content_str.split("User Message:\n", 1)[1].strip()
-                    turns.append((role, content_str))
+                    turns.append((role, mask_sensitive_text(content_str)))
 
         # We need at least one user question and one assistant answer
         user_turns = [t for r, t in turns if r == "user"]

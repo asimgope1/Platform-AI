@@ -144,3 +144,4 @@ class AcousticFeatureExtractor:
             speech_rate_proxy=speech_rate_proxy,
             pause_ratio=round(pause_ratio, 3),
         )
+

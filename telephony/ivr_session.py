@@ -66,6 +66,9 @@ from telephony.ivr_prompts import (
 )
 from telephony.ivr_audio_cache import get_cached_prompt_pcm, store_cached_prompt_pcm
 from audio_intelligence import AudioIntelligencePipeline, AudioQualityReport, EnhancedAudioResult
+from conversation_intelligence.transcript_confidence import mask_sensitive_text
+from decision_engine.decision_manager import Action
+from telephony.intelligence import ConversationState, TelephonyIntelligencePipeline
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +161,17 @@ class IVRCallSession:
         self.last_audio_quality: Optional[AudioQualityReport] = None
         self.last_enhanced_audio: Optional[EnhancedAudioResult] = None
 
+        # Milestones 2–5: Hybrid Voice Intelligence coordinator & session state
+        self.intel_pipeline = TelephonyIntelligencePipeline()
+        self.conv_state = ConversationState(
+            call_uuid="unknown",
+            tenant_id=self.tenant_id,
+            language=self.selected_language,
+        )
+        self._last_stt_result: Optional[dict[str, Any]] = None
+        self._last_turn_pcm: bytes = b""
+        self._last_turn_intel_ctx: Optional[dict[str, Any]] = None
+
     # ── call lifecycle handlers ───────────────────────────────────────────────
 
     def on_call_start(self, event: dict[str, Any]) -> None:
@@ -180,6 +194,15 @@ class IVRCallSession:
         ]
         self._pcm_buffer.clear()
         self._last_voice_ts = time.monotonic()
+
+        self.conv_state = ConversationState(
+            call_uuid=self.call_uuid,
+            tenant_id=self.tenant_id,
+            language=self.selected_language,
+        )
+        self._last_stt_result = None
+        self._last_turn_pcm = b""
+        self._last_turn_intel_ctx = None
 
         # Start menu state machine in LANGUAGE_SELECTION
         self.menu_machine.start_call()
@@ -204,6 +227,12 @@ class IVRCallSession:
         if self._silence_task and not self._silence_task.done():
             self._silence_task.cancel()
         self._pcm_buffer.clear()
+
+        # Record end-of-call resolution telemetry before clearing session state
+        try:
+            self.intel_pipeline.record_call_end(self.conv_state)
+        except Exception as exc:
+            logger.debug(f"[IVR] Non-fatal call end telemetry error: {exc}")
 
         # Continuous Learning: summarize and store call dialogue in pgvector
         if self._history and len(self._history) > 1:
@@ -248,11 +277,13 @@ class IVRCallSession:
         if action == "LANGUAGE_SELECTED":
             self.selected_language = self.menu_machine.language
             self._language = self.selected_language
+            self.conv_state.language = self.selected_language
             logger.info(f"[IVR] Language set to: '{self.selected_language}'")
             asyncio.create_task(self._play_service_menu())
 
         elif action == "SERVICE_SELECTED":
             self.selected_service = self.menu_machine.service_key
+            self.conv_state.service_category = self.selected_service
             logger.info(f"[IVR] Service category set to: '{self.selected_service}'")
             asyncio.create_task(self._play_service_ack_and_start_ai())
 
@@ -445,7 +476,7 @@ class IVRCallSession:
         During menu navigation (WELCOME, LANGUAGE_SELECTION, SERVICE_SELECTION),
         caller microphone audio is ignored to prevent false STT triggers.
         """
-        if self.menu_machine.state != IVRState.AI_CONVERSATION:
+        if self.menu_machine.state not in (IVRState.AI_CONVERSATION, IVRState.FEEDBACK):
             return
 
         # When bot is actively speaking back to user, detect voice barge-in interruption
@@ -506,7 +537,7 @@ class IVRCallSession:
         If local PCM buffer is empty or short, use PBX transcript directly
         so caller query is never dropped!
         """
-        if self.menu_machine.state != IVRState.AI_CONVERSATION:
+        if self.menu_machine.state not in (IVRState.AI_CONVERSATION, IVRState.FEEDBACK):
             return
 
         # If PBX transcripts are configured to be ignored, drop immediately to protect local Whisper STT
@@ -592,6 +623,8 @@ class IVRCallSession:
         stt_pcm = enhanced_result.segmented_pcm or enhanced_result.enhanced_pcm or pcm
 
         # 2. STT — wrap PCM as minimal WAV so AudioService can read it
+        self._last_stt_result = None
+        self._last_turn_pcm = stt_pcm
         wav_bytes = _raw_pcm_to_wav(stt_pcm, sample_rate=PBX_SAMPLE_RATE)
         try:
             stt_result = await self._audio_service.transcribe(
@@ -599,7 +632,8 @@ class IVRCallSession:
                 filename="call_audio.wav",
                 language=self._language,
             )
-            user_text = (stt_result.get("text") or "").strip()
+            self._last_stt_result = stt_result if isinstance(stt_result, dict) else {"text": str(stt_result or "")}
+            user_text = (self._last_stt_result.get("text") or "").strip()
         except Exception as exc:
             logger.error(f"[IVR] STT error: {exc}")
             return
@@ -613,12 +647,16 @@ class IVRCallSession:
             ):
                 user_text = self._latest_pbx_transcript
                 self._latest_pbx_transcript = ""
+                self._last_stt_result = {"text": user_text, "language": self._language}
                 logger.info(f"[IVR] 🎙️ Local STT returned empty/noise; fell back to PBX transcript: '{user_text}'")
             else:
                 logger.debug(f"[IVR] STT returned noise/silence ('{user_text}'), skipping turn.")
                 return
 
-        logger.info(f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): '{user_text}'")
+        logger.info(
+            f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): "
+            f"'{mask_sensitive_text(user_text)}'"
+        )
         await self._run_ai_and_reply(user_text)
 
     async def _run_ai_and_reply(self, user_text: str) -> None:
@@ -639,33 +677,73 @@ class IVRCallSession:
         lower_user = clean_user.lower()
         self._history.append(ChatMessage(role="user", content=clean_user))
 
+        # ── 0. Hybrid Voice Intelligence Pipeline (Milestones 2–5) ────────────
+        stt_input = self._last_stt_result or {"text": clean_user, "language": self.selected_language}
+        if not stt_input.get("text"):
+            stt_input = dict(stt_input, text=clean_user)
+        self._last_stt_result = None
+        turn_pcm = self._last_turn_pcm
+        self._last_turn_pcm = b""
+
+        self.conv_state.language = self.selected_language
+        self.conv_state.service_category = self.selected_service
+        if self.call_uuid and self.conv_state.call_uuid in ("unknown", "", None):
+            self.conv_state.call_uuid = self.call_uuid
+
+        pkg, plan = await self.intel_pipeline.process_and_plan(
+            stt_result=stt_input,
+            state=self.conv_state,
+            audio=turn_pcm,
+            audio_quality=self.last_audio_quality,
+            acoustic_features=(
+                self.last_enhanced_audio.acoustic_features
+                if self.last_enhanced_audio is not None
+                else None
+            ),
+        )
+        self._last_turn_intel_ctx = plan.intelligence_context
+        effective_user = pkg.transcript.normalized_text or clean_user
+        lower_user = effective_user.lower()
+
+        if plan.trigger_transfer_event:
+            self.menu_machine.state = IVRState.ESCALATED
+            await self._finalize_and_speak(effective_user, plan.text)
+            await self._emit_transfer_event(plan.trigger_transfer_event)
+            return
+
+        if not plan.use_llm and plan.text:
+            if plan.action == Action.FEEDBACK and self.conv_state.awaiting_feedback:
+                self.menu_machine.state = IVRState.FEEDBACK
+            await self._finalize_and_speak(effective_user, plan.text)
+            return
+
         from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE, ivr_mini_brain
 
         # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
         # A. Appreciation / Closing turn (auto-hangup trigger)
         if ivr_mini_brain._is_closing_intent(lower_user):
             reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
-            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{clean_user}' -> '{reply_text}'")
-            return await self._finalize_and_speak(user_text, reply_text)
+            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
+            return await self._finalize_and_speak(effective_user, reply_text)
 
         # B. Voice clarity / Hearing check
         if any(w in lower_user for w in ["hear me", "loud and clear", "awaaz", "awaz", "sound", "आवाज़", "slow down", "dheere", "धीरे", "ଶୁଣା"]):
             reply_text = AUTONOMOUS_KNOWLEDGE["voice_clarification"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["voice_clarification"]["en"])
-            logger.info(f"[IVR] 🔊 Voice clarity check: '{clean_user}' -> '{reply_text}'")
-            return await self._finalize_and_speak(user_text, reply_text)
+            logger.info(f"[IVR] 🔊 Voice clarity check: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
+            return await self._finalize_and_speak(effective_user, reply_text)
 
         # C. Representative / Live human agent transfer
         if any(w in lower_user for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
             reply_text = AUTONOMOUS_KNOWLEDGE["human_agent"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["human_agent"]["en"])
-            logger.info(f"[IVR] 👤 Live human agent requested: '{clean_user}' -> '{reply_text}'")
-            return await self._finalize_and_speak(user_text, reply_text)
+            logger.info(f"[IVR] 👤 Live human agent requested: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
+            return await self._finalize_and_speak(effective_user, reply_text)
 
         # D. Opening greeting on very first turn
         user_turn_count = len([m for m in self._history if m.role == "user"])
         if ivr_mini_brain._is_greeting_intent(lower_user) and user_turn_count <= 1:
             reply_text = AUTONOMOUS_KNOWLEDGE["greeting"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["greeting"]["en"])
-            logger.info(f"[IVR] 👋 Opening greeting turn: '{clean_user}' -> '{reply_text}'")
-            return await self._finalize_and_speak(user_text, reply_text)
+            logger.info(f"[IVR] 👋 Opening greeting turn: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
+            return await self._finalize_and_speak(effective_user, reply_text)
 
         # ── 2. Conversational LLM Brain (Gemma with Multi-Turn Memory & RAG) ───
         reply_text = ""
@@ -736,9 +814,15 @@ class IVRCallSession:
         enable_gemma = os.getenv("ENABLE_GEMMA_OPEN_DOMAIN", "true").lower() in ("1", "true", "yes")
         if enable_gemma:
             try:
-                logger.info(f"[IVR] 🗣️ Conversational turn with Gemma (history_len={len(recent_turns)}): '{clean_user[:60]}'...")
+                logger.info(
+                    f"[IVR] 🗣️ Conversational turn with Gemma (history_len={len(recent_turns)}): "
+                    f"'{mask_sensitive_text(effective_user)[:60]}'..."
+                )
                 gemma_res = await asyncio.wait_for(
-                    self._orchestrator.execute(gemma_req),
+                    self._orchestrator.execute(
+                        gemma_req,
+                        intelligence_context=plan.intelligence_context,
+                    ),
                     timeout=3.5,
                 )
                 candidate = (gemma_res.choices[0].message.content or "").strip()
@@ -764,15 +848,27 @@ class IVRCallSession:
         # Step 2D: Resilient Fallback to local mini-brain
         if not reply_text:
             reply_text = ivr_mini_brain.synthesize(
-                user_query=clean_user,
+                user_query=effective_user,
                 messages=self._history,
                 rag_context=rag_context_str,
                 language=self.selected_language,
                 service_category=self.selected_service,
+                intelligence_context=plan.intelligence_context,
             )
             logger.info(f"[IVR] 🧠 Mini-brain fallback reply: '{reply_text}'")
 
-        await self._finalize_and_speak(user_text, reply_text)
+        await self._finalize_and_speak(effective_user, reply_text)
+
+    async def _emit_transfer_event(self, payload: dict[str, Any]) -> None:
+        """Emit a structured JSON transfer control event to Asterisk safely."""
+        try:
+            await self._ws.send_text(json.dumps(payload))
+            logger.info(
+                f"[IVR] 🔀 Emitted transfer event to PBX (uuid={payload.get('uuid')}, "
+                f"reason={payload.get('reason')})."
+            )
+        except Exception as exc:
+            logger.warning(f"[IVR] Failed to emit Asterisk transfer event (non-fatal): {exc}")
 
     async def _finalize_and_speak(self, user_text: str, reply_text: str) -> None:
         """Sanitizes text, updates history, triggers learning, and streams PCM audio."""
@@ -802,12 +898,16 @@ class IVRCallSession:
         self._history.append(ChatMessage(role="assistant", content=reply_text))
 
         # Continuous Learning: learn novel Q&A pairs from voice turns into pgvector
+        quality_ok = (self.conv_state.transcript_confidence >= 0.55) if self.conv_state.turn_number > 0 else True
+        resolved_flag = (self.conv_state.resolution_status == "resolved") if self.conv_state.turn_number > 0 else None
         asyncio.create_task(
             learn_from_voice_turn(
                 tenant_id=self.tenant_id,
                 call_uuid=self.call_uuid,
                 user_text=user_text,
                 reply_text=reply_text,
+                quality_ok=quality_ok,
+                resolved=resolved_flag,
             )
         )
 
@@ -844,8 +944,8 @@ class IVRCallSession:
             self._pcm_buffer.clear()
             self._last_voice_ts = time.monotonic()
 
-        # 5. Auto Cut after Thank You / Closing turn
-        if is_closing_turn(user_text, reply_text):
+        # 5. Auto Cut after Thank You / Closing turn (do NOT auto-cut while awaiting feedback rating)
+        if not (self.menu_machine.state == IVRState.FEEDBACK and self.conv_state.awaiting_feedback) and is_closing_turn(user_text, reply_text):
             logger.info(
                 f"[IVR] 📞 Closing farewell turn detected ('{user_text}' → '{reply_text[:50]}...'). "
                 f"Auto-cutting call (uuid={self.call_uuid})..."

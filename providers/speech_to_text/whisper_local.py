@@ -247,9 +247,18 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
             except Exception as pe:
                 logger.debug(f"Whisper prompt_ids injection skipped: {pe}")
 
+        import time
+        import zlib
+        t_stt_start = time.perf_counter()
         raw_input = {"raw": audio_data.astype(np.float32), "sampling_rate": samplerate}
-        result = pipe(raw_input, generate_kwargs=gen_kwargs)
-        transcribed_text = (result.get("text") or "").strip()
+        try:
+            result = pipe(raw_input, generate_kwargs=gen_kwargs, return_timestamps=True)
+        except Exception:
+            result = pipe(raw_input, generate_kwargs=gen_kwargs)
+
+        raw_text = (result.get("text") or "").strip()
+        chunks = result.get("chunks") or []
+        transcribed_text = raw_text
 
         # Apply universal phonetic normalization for banking terms
         for pattern, replacement in UNIVERSAL_PHONETIC_NORMALIZATION:
@@ -265,13 +274,38 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                 transcribed_text = re.sub(pattern, replacement, transcribed_text, flags=re.IGNORECASE)
 
         # Clean repetitive loops and hallucination tokens without dropping legitimate speech
-        transcribed_text = _clean_hallucinations_and_loops(transcribed_text)
+        cleaned_text = _clean_hallucinations_and_loops(transcribed_text)
+        hallucination_filtered = bool(transcribed_text and not cleaned_text)
+        transcribed_text = cleaned_text
+
+        # Compute decoding diagnostics (compression ratio, speaking rate, latency)
+        raw_bytes = transcribed_text.encode("utf-8")
+        compression_ratio = round(
+            len(raw_bytes) / max(1, len(zlib.compress(raw_bytes))) if raw_bytes else 0.0,
+            3,
+        )
+        word_count = len(transcribed_text.split()) if transcribed_text else 0
+        words_per_sec = round(word_count / max(0.1, duration), 2) if word_count else 0.0
+        inference_ms = round((time.perf_counter() - t_stt_start) * 1000.0, 2)
 
         return {
             "text": transcribed_text,
             "language": language or "en",
             "duration": duration,
             "words": [],
+            "segments": chunks,
+            "diagnostics": {
+                "provider": "whisper_local",
+                "raw_text": raw_text,
+                "rms": round(rms, 5),
+                "peak": round(peak, 5),
+                "duration_s": duration,
+                "word_count": word_count,
+                "words_per_sec": words_per_sec,
+                "compression_ratio": compression_ratio,
+                "hallucination_filtered": hallucination_filtered,
+                "inference_ms": inference_ms,
+            },
         }
 
     async def transcribe(

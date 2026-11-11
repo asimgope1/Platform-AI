@@ -50,3 +50,4 @@ class RNNoiseProvider:
         except Exception as exc:
             logger.debug(f"[AudioProvider] RNNoise execution skipped ({exc})")
             return None
+

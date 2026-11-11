@@ -148,3 +148,4 @@ def create_noise_suppressor(provider: str = "spectral") -> BaseNoiseSuppressor:
     if normalized == "rnnoise":
         return RNNoiseSuppressor()
     return SpectralNoiseSuppressor()
+

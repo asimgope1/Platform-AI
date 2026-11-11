@@ -1,6 +1,7 @@
 import time
 from typing import AsyncIterator, Optional, Dict, Any, Union
 from platform_core.contracts.requests import (
+    ChatMessage,
     NormalizedChatRequest,
     NormalizedChatResponse,
     StreamChunk,
@@ -38,6 +39,7 @@ class ChatOrchestrator:
         request: NormalizedChatRequest,
         context: Optional[TenantContext] = None,
         enable_rag: bool = False,
+        intelligence_context: Optional[Dict[str, Any]] = None,
     ) -> Union[NormalizedChatResponse, AsyncIterator[StreamChunk]]:
         start_time = time.perf_counter()
 
@@ -65,6 +67,32 @@ class ChatOrchestrator:
                         request.messages, rag_context
                     )
                     current_request = request.model_copy(update={"messages": augmented_messages})
+
+        # 3b. Inject concise Caller Intelligence context (never overrides policy/decision rules)
+        if intelligence_context:
+            intel_lines = [
+                f"intent={intelligence_context.get('intent', 'unknown')}",
+                f"emotion={intelligence_context.get('emotion', 'neutral')} (trend={intelligence_context.get('emotion_trend', 'stable')})",
+                f"caller_certainty={intelligence_context.get('caller_certainty', 'moderate')}",
+                f"system_confidence={intelligence_context.get('system_confidence', 'high')}",
+                f"resolution_status={intelligence_context.get('resolution_status', 'unresolved')}",
+            ]
+            if intelligence_context.get("satisfaction_score") is not None:
+                intel_lines.append(f"satisfaction={intelligence_context['satisfaction_score']}")
+            if intelligence_context.get("recommended_action"):
+                intel_lines.append(f"guidance={intelligence_context['recommended_action']}")
+
+            intel_msg = ChatMessage(
+                role="system",
+                content=(
+                    "Caller Intelligence (tone & empathy context only; follow bank policies strictly): "
+                    + ", ".join(intel_lines)
+                ),
+            )
+            msgs = list(current_request.messages)
+            insert_idx = 1 if msgs and msgs[0].role == "system" else 0
+            msgs.insert(insert_idx, intel_msg)
+            current_request = current_request.model_copy(update={"messages": msgs})
 
         # 4. Get chat adapter
         adapter = provider_registry.get_chat_adapter(model_meta.provider_id)
