@@ -1,0 +1,15 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "security",
+    "topic": "fraud_and_zero_liability",
+    "title": "Unauthorized Transaction, Phishing and Fraud Escalation Policy",
+    "content": "Any caller reporting unauthorized debits, stolen credentials, phishing, scam calls, or account takeover must be escalated immediately to a live fraud response specialist. Zero-liability protection under RBI guidelines applies when unauthorized electronic transactions are reported promptly within 3 working days. Bank representatives never ask customers to share OTPs, passwords, PINs, CVV codes, or remote screen-sharing access.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

@@ -30,16 +30,15 @@ from audio.service import AudioService
 from orchestration.chat_orchestrator import ChatOrchestrator
 from platform_core.contracts.requests import ChatMessage, NormalizedChatRequest
 from platform_core.security.tenant_context import TenantContext
+from services.conversation.response_generator import RAGFirstResponseGenerator
+from services.knowledge.knowledge_learning_service import KnowledgeLearningService
 from storage.database import async_session
-from storage.repositories.document_repo import DocumentRepository
-from retrieval.embedding_service import EmbeddingService
-from retrieval.search import SemanticSearchService
-from retrieval.rag_pipeline import RAGPipeline
 from telephony.pcm_utils import (
     PBX_CHUNK_BYTES,
     PBX_SAMPLE_RATE,
     audio_bytes_to_pcm8k,
     chunk_pcm,
+    generate_processing_pulse_pcm,
     is_silence,
     pcm_bytes_to_float32,
     wav_bytes_to_pcm8k,
@@ -78,17 +77,143 @@ logger = logging.getLogger(__name__)
 
 # How much PCM to accumulate before running STT (avoid dropping crisp short words like 'yes'/'no')
 MIN_SPEECH_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.25)    # 0.25 second minimum (4,000 bytes)
+MIN_SHORT_REPLY_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.12)  # 0.12 second minimum for crisp 1–5 digits / yes-no
 MAX_SPEECH_BYTES = PBX_SAMPLE_RATE * 2 * 8           # 8 seconds hard cap
 
-# Silence gap before we "close" an utterance and run STT (gives natural breathing headroom)
-SILENCE_GAP_SECONDS = 0.9
+# Silence gap before closing an utterance for STT (0.65s feels responsive without chopping brief pauses)
+SILENCE_GAP_SECONDS = float(os.getenv("IVR_SILENCE_GAP_SECONDS", "0.65"))
 
 # Delay between sending 20 ms PCM reply frames (throttles playback to real-time)
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
 
+# Barge-in speech protection: avoid false interruptions from speakerphone echo, clicks, or breathing
+BARGE_IN_COOLDOWN_SECONDS = 0.35
+BARGE_IN_RMS_THRESHOLD = 1150.0
+BARGE_IN_MIN_CONSECUTIVE_FRAMES = 6  # ~120 ms sustained active caller speech
+
+# Gentle waiting / processing chime played while STT -> RAG/LLM -> TTS is running
+PROCESSING_SOUND_ENABLED = os.getenv("IVR_PROCESSING_SOUND_ENABLED", "true").lower() in ("1", "true", "yes")
+PROCESSING_SOUND_INITIAL_DELAY_SECONDS = float(os.getenv("IVR_PROCESSING_SOUND_DELAY_SECONDS", "0.35"))
+PROCESSING_SOUND_INTERVAL_SECONDS = float(os.getenv("IVR_PROCESSING_SOUND_INTERVAL_SECONDS", "1.4"))
+
 # Model used for chat; override via env / config
 DEFAULT_CHAT_MODEL = os.getenv("IVR_CHAT_MODEL", "ivr-rag-mini")
-GEMMA_MODEL_ALIAS = os.getenv("GEMMA_MODEL_ALIAS", "ivr-rag-mini")
+GEMMA_MODEL_ALIAS = os.getenv("GEMMA_MODEL_ALIAS", "gemma4")
+
+_LEGACY_LOCAL_TOOLS_REPLACED_BY_REMOTE = frozenset(
+    {"count_open_purchase_requests", "get_customer_info"}
+)
+_CORE_IVR_TOOLS = frozenset(
+    {
+        "search_customer",
+        "get_customer_details",
+        "get_order_status",
+        "get_customer_orders",
+        "search_existing_complaints",
+        "create_complaint",
+        "register_complaint",
+        "get_complaint_status",
+        "get_customer_complaints",
+    }
+)
+_CONDITIONAL_IVR_TOOL_KEYWORDS = (
+    ("get_order_tracking", ("track", "tracking", "awb", "courier", "shipment", "shipped", "delivery", "dispatch", "ট্র্যাক", "ट्रैक")),
+    ("get_payment_status", ("payment", "paid", "refund", "upi", "card", "transaction", "money", "charge", "पेमेंट", "रिफंड")),
+    ("get_invoice_details", ("invoice", "bill", "receipt", "gst", "tax", "बिल", "इनवॉइस")),
+    ("get_customer_order_summary", ("summary", "all orders", "history", "total spend", "recent orders")),
+    ("escalate_complaint", ("escalate", "escalation", "supervisor", "manager", "urgent", "unresolved", "no callback", "delay")),
+    ("add_complaint_note", ("note", "comment", "remark", "follow up", "followup", "add info")),
+    ("update_complaint", ("update", "modify", "change", "edit", "resolution", "close complaint")),
+    ("call_external_api", ("api", "webhook", "external", "sync", "crm", "trigger")),
+    ("search_knowledge_documents", ("policy", "rule", "faq", "how to", "warranty", "return window", "document", "नियम")),
+    ("search_database_records", ("search database", "find record", "lookup table", "product sku", "catalog")),
+)
+
+
+def _supports_tool_calling_safe(alias: str) -> Optional[bool]:
+    """Return True/False if provider_registry knows the alias, or None if uninitialized/unknown."""
+    try:
+        from platform_core.contracts.capabilities import ModelCapability
+        from providers.registry import provider_registry
+
+        if not provider_registry.models:
+            return None
+        meta = provider_registry.get_model_metadata(alias)
+        if meta.provider_id == "windows_ollama" and "gemma2" in (meta.underlying_model or "").lower():
+            return False
+        return meta.supports(ModelCapability.TOOL_CALLING)
+    except Exception:
+        return None
+
+
+def _resolve_ivr_tool_model_alias(
+    preferred_alias: str,
+    has_tools: bool,
+    settings_alias: Optional[str] = None,
+) -> str:
+    """Resolve an IVR model alias that is guaranteed tool-capable when tools are attached."""
+    if not has_tools:
+        return preferred_alias
+
+    candidates: list[str] = []
+    for cand in (preferred_alias, settings_alias, "gemma4", "gemma", "general-chat"):
+        if cand and cand not in candidates:
+            candidates.append(cand)
+
+    # First respect explicit non-gemma2 preferred alias if tool-capable
+    pref_ok = _supports_tool_calling_safe(preferred_alias)
+    if pref_ok is True:
+        return preferred_alias
+    if pref_ok is None:
+        if preferred_alias and preferred_alias != "ivr-rag-mini" and "gemma2" not in preferred_alias.lower():
+            return preferred_alias
+        fallback = settings_alias or "gemma4"
+        return "gemma4" if (fallback == "ivr-rag-mini" or "gemma2" in fallback.lower()) else fallback
+
+    # Registry initialized and preferred_alias does not support tools -> pick first tool-capable alias
+    for cand in candidates[1:]:
+        if _supports_tool_calling_safe(cand) is True:
+            logger.info(
+                f"[IVR] Switching model alias from '{preferred_alias}' to tool-capable '{cand}'."
+            )
+            return cand
+
+    return settings_alias or "gemma4"
+
+
+def _select_ivr_session_tools(
+    all_tool_schemas: list[dict[str, Any]],
+    user_text: str,
+    history: list[ChatMessage],
+    service_category: Optional[str],
+    remote_tools_active: bool,
+) -> Optional[list[dict[str, Any]]]:
+    """Keep live call tool schemas focused so local Gemma keeps high accuracy and low latency."""
+    if not all_tool_schemas:
+        return None
+
+    filtered = all_tool_schemas
+    if remote_tools_active:
+        filtered = [
+            s
+            for s in all_tool_schemas
+            if (s.get("function") or {}).get("name") not in _LEGACY_LOCAL_TOOLS_REPLACED_BY_REMOTE
+        ]
+
+    if len(filtered) <= 10:
+        return filtered
+
+    recent_text = " ".join(
+        [user_text or "", service_category or "", *((m.content or "") for m in history[-4:])]
+    ).lower()
+
+    selected_names = set(_CORE_IVR_TOOLS)
+    for tool_name, keywords in _CONDITIONAL_IVR_TOOL_KEYWORDS:
+        if any(kw in recent_text for kw in keywords):
+            selected_names.add(tool_name)
+
+    focused = [s for s in filtered if (s.get("function") or {}).get("name") in selected_names]
+    return focused or filtered
 
 # Ignore PBX transcript events by default; rely on local high-accuracy Whisper STT
 PBX_IGNORE_TRANSCRIPT = os.getenv("PBX_IGNORE_TRANSCRIPT", "true").lower() in ("true", "1", "yes")
@@ -146,15 +271,26 @@ class IVRCallSession:
 
         # PCM accumulator (active only in AI_CONVERSATION)
         self._pcm_buffer: bytearray = bytearray()
-        self._preroll_buffer: deque[bytes] = deque(maxlen=4)   # 80ms speech-onset preservation buffer
+        self._preroll_buffer: deque[bytes] = deque(maxlen=10)   # 200ms speech-onset preservation buffer
         self._last_voice_ts: float = 0.0
         self._silence_task: Optional[asyncio.Task] = None
+        self._flush_task: Optional[asyncio.Task] = None
 
         # Concurrency & Playback controls
         self._pipeline_lock = asyncio.Lock()
+        self._playback_lock = asyncio.Lock()
         self._playback_task: Optional[asyncio.Task] = None
+        self._processing_task: Optional[asyncio.Task] = None
         self._is_playing: bool = False
+        self._is_synthesizing: bool = False
+        self._playback_started_ts: float = 0.0
+        self._barge_in_voice_frames: int = 0
+        self._barge_in_preroll: list[bytes] = []
+        self._cancelled_by_barge_in: bool = False
+        self._barge_in_captured: bool = False
+        self._last_playback_end_ts: float = 0.0
         self._latest_pbx_transcript: str = ""
+        self._order_dtmf_buffer: str = ""
 
         # Milestone 1: Audio Intelligence pipeline & latest diagnostics
         self.audio_pipeline = AudioIntelligencePipeline(sample_rate=PBX_SAMPLE_RATE)
@@ -172,11 +308,20 @@ class IVRCallSession:
         self._last_turn_pcm: bytes = b""
         self._last_turn_intel_ctx: Optional[dict[str, Any]] = None
 
+        # RAG-First Conversational AI Engine & Continuous Knowledge Learning
+        self.response_generator = RAGFirstResponseGenerator()
+        self.knowledge_learner = KnowledgeLearningService()
+        self._last_retrieval_tier: str = "strong"
+
     # ── call lifecycle handlers ───────────────────────────────────────────────
 
     def on_call_start(self, event: dict[str, Any]) -> None:
         """Invoked when PBX notifies of incoming call connection."""
         self.call_uuid = event.get("uuid") or event.get("call_uuid") or "unknown"
+        if event.get("authorized_customer_id") or event.get("customer_reference"):
+            self.authorized_customer_id = str(
+                event.get("authorized_customer_id") or event.get("customer_reference")
+            ).strip()
         self.caller_number = (
             event.get("caller")
             or event.get("caller_id")
@@ -203,6 +348,7 @@ class IVRCallSession:
         self._last_stt_result = None
         self._last_turn_pcm = b""
         self._last_turn_intel_ctx = None
+        self._order_dtmf_buffer = ""
 
         # Start menu state machine in LANGUAGE_SELECTION
         self.menu_machine.start_call()
@@ -224,8 +370,11 @@ class IVRCallSession:
 
         if self._playback_task and not self._playback_task.done():
             self._playback_task.cancel()
+        self._cancel_processing_sound()
         if self._silence_task and not self._silence_task.done():
             self._silence_task.cancel()
+        if self._flush_task and not self._flush_task.done():
+            self._flush_task.cancel()
         self._pcm_buffer.clear()
 
         # Record end-of-call resolution telemetry before clearing session state
@@ -252,8 +401,71 @@ class IVRCallSession:
         """Immediately interrupts active audio playback to Asterisk."""
         if self._playback_task and not self._playback_task.done():
             logger.info(f"[IVR] ⚡ Barge-in: cancelling playback task ({reason})")
+            self._cancelled_by_barge_in = reason == "voice_barge_in"
             self._playback_task.cancel()
+        self._cancel_processing_sound()
         self._is_playing = False
+        self._barge_in_voice_frames = 0
+        self._barge_in_preroll.clear()
+
+    def _start_processing_sound(self) -> None:
+        """Start gentle background waiting chimes if a turn takes noticeably long."""
+        if not PROCESSING_SOUND_ENABLED:
+            return
+        if self.menu_machine.state not in (IVRState.AI_CONVERSATION, IVRState.FEEDBACK):
+            return
+        if self._processing_task and not self._processing_task.done():
+            return
+        self._processing_task = asyncio.create_task(self._processing_sound_loop())
+
+    def _cancel_processing_sound(self) -> None:
+        """Synchronously request cancellation of any waiting/processing sound task."""
+        task = self._processing_task
+        self._processing_task = None
+        if task and not task.done():
+            task.cancel()
+
+    async def _stop_processing_sound(self) -> None:
+        """Cancel waiting/processing sound and wait until playback lock is released."""
+        task = self._processing_task
+        self._processing_task = None
+        if task and not task.done():
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+
+    async def _processing_sound_loop(self) -> None:
+        """Play a soft, non-intrusive dual-tone pulse while STT -> AI -> TTS is in flight."""
+        try:
+            await asyncio.sleep(max(0.0, PROCESSING_SOUND_INITIAL_DELAY_SECONDS))
+            pulse_pcm = generate_processing_pulse_pcm()
+            first_pulse = True
+            while (
+                self.menu_machine.state in (IVRState.AI_CONVERSATION, IVRState.FEEDBACK)
+                and not self._is_playing
+            ):
+                if first_pulse:
+                    logger.info(f"[IVR] 🎵 Playing waiting/processing sound (uuid={self.call_uuid})...")
+                    first_pulse = False
+                await self._stream_pcm_frames(pulse_pcm, verbose_logs=False)
+                await asyncio.sleep(max(0.1, PROCESSING_SOUND_INTERVAL_SECONDS))
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            logger.debug(f"[IVR] Processing sound loop ended: {exc}")
+
+    def _min_speech_bytes(self) -> int:
+        """Allow shorter utterances (e.g. '5', 'yes', 'no') during confirmation, feedback, or digit collection."""
+        if (
+            self.menu_machine.state == IVRState.FEEDBACK
+            or self.conv_state.awaiting_feedback
+            or self.conv_state.awaiting_resolution_confirmation
+            or self.conv_state.awaiting_order_id_digits
+        ):
+            return MIN_SHORT_REPLY_BYTES
+        return MIN_SPEECH_BYTES
 
     async def on_dtmf(self, digit: str, event: Optional[dict[str, Any]] = None) -> None:
         """
@@ -270,6 +482,44 @@ class IVRCallSession:
 
         # Interrupt active audio prompt playback immediately (barge-in)
         self._stop_playback(reason="dtmf_keypad")
+
+        # Collect 1-5 satisfaction rating via keypad when awaiting feedback
+        if (
+            (self.menu_machine.state == IVRState.FEEDBACK or self.conv_state.awaiting_feedback)
+            and digit in {"1", "2", "3", "4", "5"}
+        ):
+            if self._silence_task and not self._silence_task.done():
+                self._silence_task.cancel()
+            self._pcm_buffer.clear()
+            self._preroll_buffer.clear()
+            logger.info(f"[IVR] ⭐ Received DTMF satisfaction rating '{digit}/5'")
+            asyncio.create_task(self._process_dtmf_order_digits(digit))
+            return
+
+        # Collect 4-digit Order ID via keypad when awaiting order digits in AI conversation
+        # (checked before menu_machine so digits containing '9' do not trigger human transfer mid-entry)
+        if (
+            self.menu_machine.state == IVRState.AI_CONVERSATION
+            and self.conv_state.awaiting_order_id_digits
+            and len(digit) == 1
+            and digit.isdigit()
+        ):
+            # Cancel any buffered voice flush so spoken noise doesn't race with keypad digits
+            if self._silence_task and not self._silence_task.done():
+                self._silence_task.cancel()
+            self._pcm_buffer.clear()
+            self._preroll_buffer.clear()
+
+            self._order_dtmf_buffer += digit
+            logger.info(
+                f"[IVR] 🔢 Collected Order ID DTMF digit '{digit}' "
+                f"(buffer='{self._order_dtmf_buffer}')"
+            )
+            if len(self._order_dtmf_buffer) >= 4:
+                digits4 = self._order_dtmf_buffer[-4:]
+                self._order_dtmf_buffer = ""
+                asyncio.create_task(self._process_dtmf_order_digits(digits4))
+            return
 
         new_state, action = self.menu_machine.process_dtmf(digit)
         logger.info(f"[IVR] Menu Transition -> State={new_state}, Action={action}")
@@ -398,7 +648,9 @@ class IVRCallSession:
             pass
         finally:
             self._pcm_buffer.clear()
+            self._barge_in_captured = False
             self._last_voice_ts = time.monotonic()
+            self._last_playback_end_ts = self._last_voice_ts
 
     async def _play_transfer_notice(self) -> None:
         """Announces call transfer to a customer support representative."""
@@ -442,6 +694,8 @@ class IVRCallSession:
         """
         self._playback_task = asyncio.current_task()
         self._is_playing = True
+        self._playback_started_ts = time.monotonic()
+        self._barge_in_voice_frames = 0
         try:
             pcm_reply = get_cached_prompt_pcm(text)
             if pcm_reply:
@@ -454,7 +708,7 @@ class IVRCallSession:
                     voice="alloy",
                     response_format="wav",
                 )
-                pcm_reply = _tts_output_to_pcm8k(tts_bytes)
+                pcm_reply = await asyncio.to_thread(_tts_output_to_pcm8k, tts_bytes)
                 if pcm_reply:
                     store_cached_prompt_pcm(text, pcm_reply)
 
@@ -479,22 +733,36 @@ class IVRCallSession:
         if self.menu_machine.state not in (IVRState.AI_CONVERSATION, IVRState.FEEDBACK):
             return
 
-        # When bot is actively speaking back to user, detect voice barge-in interruption
+        # Ignore microphone frames while synthesizing TTS or while an active STT/LLM/TTS turn is running (unless barge-in playback is active)
+        if (self._is_synthesizing or self._pipeline_lock.locked()) and not self._is_playing:
+            return
+
+        # When bot is actively speaking back to user, detect sustained voice barge-in interruption
         if self._is_playing:
-            if len(data) >= 4:
+            if (
+                len(data) >= 4
+                and (time.monotonic() - self._playback_started_ts) >= BARGE_IN_COOLDOWN_SECONDS
+            ):
                 samples = np.frombuffer(data, dtype="<i2").astype(np.float32)
                 rms = float(np.sqrt(np.mean(samples ** 2)))
-                if rms > 650.0:
-                    self._barge_in_voice_frames = getattr(self, "_barge_in_voice_frames", 0) + 1
-                    if self._barge_in_voice_frames >= 2:  # ~40 ms of active speech
+                if rms > BARGE_IN_RMS_THRESHOLD:
+                    self._barge_in_voice_frames += 1
+                    self._barge_in_preroll.append(data)
+                    if self._barge_in_voice_frames >= BARGE_IN_MIN_CONSECUTIVE_FRAMES:
                         logger.info(f"[IVR] ⚡ Voice Barge-in detected (RMS={rms:.1f}): interrupting playback!")
+                        barge_frames = list(self._barge_in_preroll)
                         self._stop_playback(reason="voice_barge_in")
-                        self._barge_in_voice_frames = 0
+                        self._barge_in_captured = True
                         self._pcm_buffer.clear()
-                        self._pcm_buffer.extend(data)
+                        for frame in self._preroll_buffer:
+                            self._pcm_buffer.extend(frame)
+                        self._preroll_buffer.clear()
+                        for frame in barge_frames:
+                            self._pcm_buffer.extend(frame)
                         self._last_voice_ts = time.monotonic()
                 else:
                     self._barge_in_voice_frames = 0
+                    self._barge_in_preroll.clear()
             return
 
         silent = is_silence(data)
@@ -513,9 +781,9 @@ class IVRCallSession:
             if self._silence_task and not self._silence_task.done():
                 self._silence_task.cancel()
 
-            # Hard cap — avoid unbounded accumulation
+            # Hard cap — spawn flush without blocking the WebSocket receive loop
             if len(self._pcm_buffer) >= MAX_SPEECH_BYTES:
-                await self._flush_utterance()
+                self._spawn_flush_utterance()
         else:
             # Maintain rolling 80ms pre-roll buffer when caller is paused/idle
             if len(self._pcm_buffer) == 0:
@@ -523,7 +791,7 @@ class IVRCallSession:
 
             # Schedule a flush after SILENCE_GAP_SECONDS of quiet
             if (
-                len(self._pcm_buffer) >= MIN_SPEECH_BYTES
+                len(self._pcm_buffer) >= self._min_speech_bytes()
                 and (self._silence_task is None or self._silence_task.done())
             ):
                 self._silence_task = asyncio.create_task(
@@ -588,20 +856,60 @@ class IVRCallSession:
 
     async def _delayed_flush(self, delay: float) -> None:
         await asyncio.sleep(delay)
-        await self._flush_utterance()
+        # Detach timer handle before running STT/AI/TTS so subsequent speech cannot cancel this turn
+        self._silence_task = None
+        self._spawn_flush_utterance()
+
+    async def _process_dtmf_order_digits(self, digits4: str) -> None:
+        """Serialized handler for 4-digit DTMF Order ID entry to prevent concurrent STT/TTS collisions."""
+        async with self._pipeline_lock:
+            await self._run_ai_and_reply(digits4)
+
+    def _spawn_flush_utterance(self) -> Optional[asyncio.Task]:
+        """Snapshot accumulated speech synchronously and schedule serialized STT -> AI -> TTS task."""
+        if len(self._pcm_buffer) < self._min_speech_bytes():
+            self._pcm_buffer.clear()
+            self._barge_in_captured = False
+            return None
+
+        pcm_snapshot = bytes(self._pcm_buffer)
+        captured_at = time.monotonic()
+        from_barge_in = self._barge_in_captured
+        self._pcm_buffer.clear()
+        self._preroll_buffer.clear()
+        self._barge_in_captured = False
+        self._flush_task = asyncio.create_task(
+            self._run_flush_with_lock(pcm_snapshot, captured_at=captured_at, from_barge_in=from_barge_in)
+        )
+        return self._flush_task
+
+    async def _run_flush_with_lock(
+        self,
+        pcm_snapshot: bytes,
+        *,
+        captured_at: float = 0.0,
+        from_barge_in: bool = False,
+    ) -> None:
+        async with self._pipeline_lock:
+            if not from_barge_in and captured_at > 0 and captured_at < self._last_playback_end_ts:
+                logger.info("[IVR] 🔇 Discarding stale pre-playback audio snapshot queued behind active turn.")
+                return
+            await self._run_stt_ai_tts(pcm_snapshot)
 
     async def _flush_utterance(self) -> None:
         """Run STT → AI → TTS for whatever is in the buffer."""
-        if len(self._pcm_buffer) < MIN_SPEECH_BYTES:
+        if len(self._pcm_buffer) < self._min_speech_bytes():
             self._pcm_buffer.clear()
+            self._barge_in_captured = False
             return
 
         pcm_snapshot = bytes(self._pcm_buffer)
+        captured_at = time.monotonic()
+        from_barge_in = self._barge_in_captured
         self._pcm_buffer.clear()
         self._preroll_buffer.clear()
-
-        async with self._pipeline_lock:
-            await self._run_stt_ai_tts(pcm_snapshot)
+        self._barge_in_captured = False
+        await self._run_flush_with_lock(pcm_snapshot, captured_at=captured_at, from_barge_in=from_barge_in)
 
     async def _run_stt_ai_tts(self, pcm: bytes) -> None:
         # 1. Audio Intelligence (Milestone 1): analyze & enhance while preserving original PCM
@@ -613,51 +921,96 @@ class IVRCallSession:
             f"speech={quality.speech_duration_ms:.0f}ms clip={quality.clipping_pct:.2f}%"
         )
 
-        # Reject weak non-speech noise bursts before running Whisper
-        if not quality.is_speech_present and quality.rms < 90.0:
+        # Reject weak or sub-syllabic non-speech noise bursts before running Whisper
+        expecting_short_reply = bool(
+            self.menu_machine.state == IVRState.FEEDBACK
+            or self.conv_state.awaiting_feedback
+            or self.conv_state.awaiting_resolution_confirmation
+            or self.conv_state.awaiting_order_id_digits
+        )
+        rms_floor = 60.0 if expecting_short_reply else 90.0
+        min_speech_ms = 80.0 if expecting_short_reply else 160.0
+        if (not quality.is_speech_present and quality.rms < rms_floor) or (
+            quality.speech_duration_ms < min_speech_ms and quality.rms < 250.0
+        ):
             logger.info("[IVR] 🔇 Audio Intelligence rejected non-speech noise burst; skipping STT.")
             return
 
-        enhanced_result = await self.audio_pipeline.enhance(pcm, quality=quality)
-        self.last_enhanced_audio = enhanced_result
-        stt_pcm = enhanced_result.segmented_pcm or enhanced_result.enhanced_pcm or pcm
-
-        # 2. STT — wrap PCM as minimal WAV so AudioService can read it
-        self._last_stt_result = None
-        self._last_turn_pcm = stt_pcm
-        wav_bytes = _raw_pcm_to_wav(stt_pcm, sample_rate=PBX_SAMPLE_RATE)
+        self._start_processing_sound()
         try:
-            stt_result = await self._audio_service.transcribe(
-                audio_bytes=wav_bytes,
-                filename="call_audio.wav",
-                language=self._language,
-            )
-            self._last_stt_result = stt_result if isinstance(stt_result, dict) else {"text": str(stt_result or "")}
-            user_text = (self._last_stt_result.get("text") or "").strip()
-        except Exception as exc:
-            logger.error(f"[IVR] STT error: {exc}")
-            return
+            enhanced_result = await self.audio_pipeline.enhance(pcm, quality=quality)
+            self.last_enhanced_audio = enhanced_result
+            stt_pcm = enhanced_result.segmented_pcm or enhanced_result.enhanced_pcm or pcm
 
-        if not user_text or not re.search(r'\w', user_text):
-            if (
-                not self.ignore_pbx_transcript
-                and self.selected_language not in ("hi", "or")
-                and self._latest_pbx_transcript
-                and re.search(r'\w', self._latest_pbx_transcript)
-            ):
-                user_text = self._latest_pbx_transcript
-                self._latest_pbx_transcript = ""
-                self._last_stt_result = {"text": user_text, "language": self._language}
-                logger.info(f"[IVR] 🎙️ Local STT returned empty/noise; fell back to PBX transcript: '{user_text}'")
-            else:
-                logger.debug(f"[IVR] STT returned noise/silence ('{user_text}'), skipping turn.")
+            # 2. STT — wrap PCM as minimal WAV so AudioService can read it
+            self._last_stt_result = None
+            self._last_turn_pcm = stt_pcm
+            wav_bytes = _raw_pcm_to_wav(stt_pcm, sample_rate=PBX_SAMPLE_RATE)
+            try:
+                stt_result = await self._audio_service.transcribe(
+                    audio_bytes=wav_bytes,
+                    filename="call_audio.wav",
+                    language=self._language,
+                )
+                self._last_stt_result = stt_result if isinstance(stt_result, dict) else {"text": str(stt_result or "")}
+                user_text = (self._last_stt_result.get("text") or "").strip()
+            except Exception as exc:
+                logger.error(f"[IVR] STT error: {exc}")
                 return
 
-        logger.info(
-            f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): "
-            f"'{mask_sensitive_text(user_text)}'"
-        )
-        await self._run_ai_and_reply(user_text)
+            if user_text and not expecting_short_reply:
+                norm_utt = re.sub(r"[^a-z0-9\s]", "", user_text.lower()).strip()
+                if norm_utt in {"hmm", "hm", "mm", "mhm", "uh", "um", "ah", "oh", "huh", "er"}:
+                    logger.info(f"[IVR] 🔇 Ignoring non-lexical filler utterance '{user_text}'.")
+                    return
+                if (
+                    norm_utt in {"thank you", "thanks", "thanks for watching", "thank you very much", "bye", "you", "okay"}
+                    and (quality.speech_duration_ms < 500.0 or quality.rms < 150.0)
+                ):
+                    logger.info(
+                        f"[IVR] 🔇 Ignoring low-energy/short Whisper hallucination '{user_text}' "
+                        f"(speech={quality.speech_duration_ms:.0f}ms, rms={quality.rms:.1f})."
+                    )
+                    return
+
+            if not user_text or not re.search(r'\w', user_text):
+                if (
+                    not self.ignore_pbx_transcript
+                    and self.selected_language not in ("hi", "or")
+                    and self._latest_pbx_transcript
+                    and re.search(r'\w', self._latest_pbx_transcript)
+                ):
+                    user_text = self._latest_pbx_transcript
+                    self._latest_pbx_transcript = ""
+                    self._last_stt_result = {"text": user_text, "language": self._language}
+                    logger.info(f"[IVR] 🎙️ Local STT returned empty/noise; fell back to PBX transcript: '{user_text}'")
+                elif quality.is_speech_present and quality.speech_duration_ms >= 350:
+                    clarify_prompts = {
+                        "hi": "माफ़ कीजिए, आपकी आवाज़ साफ़ समझ नहीं आई। कृपया दोबारा बोलें।",
+                        "or": "କ୍ଷମା କରିବେ, ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଭାବରେ ଶୁଣାଗଲା ନାହିଁ। ଦୟାକରି ପୁଣି କୁହନ୍ତୁ।",
+                        "en": "Sorry, I could not hear that clearly. Could you please repeat?",
+                    }
+                    clarify_reply = clarify_prompts.get(
+                        self.selected_language or self._language,
+                        clarify_prompts["en"],
+                    )
+                    logger.info(
+                        f"[IVR] STT returned empty despite speech ({quality.speech_duration_ms:.0f}ms); "
+                        f"prompting caller to repeat ({self.selected_language or self._language})."
+                    )
+                    await self._finalize_and_speak(user_text="", reply_text=clarify_reply)
+                    return
+                else:
+                    logger.debug(f"[IVR] STT returned noise/silence ('{user_text}'), skipping turn.")
+                    return
+
+            logger.info(
+                f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): "
+                f"'{mask_sensitive_text(user_text)}'"
+            )
+            await self._run_ai_and_reply(user_text)
+        finally:
+            await self._stop_processing_sound()
 
     async def _run_ai_and_reply(self, user_text: str) -> None:
         """
@@ -673,6 +1026,17 @@ class IVRCallSession:
         if not clean_user or not re.search(r'\w', clean_user):
             logger.debug(f"[IVR] Ignoring empty or noise/punctuation transcript: '{clean_user}'")
             return
+
+        started_here = not (self._processing_task and not self._processing_task.done())
+        if started_here:
+            self._start_processing_sound()
+        try:
+            await self._run_ai_and_reply_inner(clean_user)
+        finally:
+            if started_here:
+                await self._stop_processing_sound()
+
+    async def _run_ai_and_reply_inner(self, clean_user: str) -> None:
 
         lower_user = clean_user.lower()
         self._history.append(ChatMessage(role="user", content=clean_user))
@@ -717,11 +1081,17 @@ class IVRCallSession:
             await self._finalize_and_speak(effective_user, plan.text)
             return
 
-        from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE, ivr_mini_brain
+        from providers.chat.ivr_mini_model import (
+            AUTONOMOUS_KNOWLEDGE,
+            extract_order_last4_digits,
+            ivr_mini_brain,
+        )
 
         # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
         # A. Appreciation / Closing turn (auto-hangup trigger)
         if ivr_mini_brain._is_closing_intent(lower_user):
+            self.conv_state.awaiting_order_id_digits = False
+            self._order_dtmf_buffer = ""
             reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
             logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
             return await self._finalize_and_speak(effective_user, reply_text)
@@ -734,6 +1104,8 @@ class IVRCallSession:
 
         # C. Representative / Live human agent transfer
         if any(w in lower_user for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
+            self.conv_state.awaiting_order_id_digits = False
+            self._order_dtmf_buffer = ""
             reply_text = AUTONOMOUS_KNOWLEDGE["human_agent"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["human_agent"]["en"])
             logger.info(f"[IVR] 👤 Live human agent requested: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
             return await self._finalize_and_speak(effective_user, reply_text)
@@ -745,117 +1117,160 @@ class IVRCallSession:
             logger.info(f"[IVR] 👋 Opening greeting turn: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
             return await self._finalize_and_speak(effective_user, reply_text)
 
-        # ── 2. Conversational LLM Brain (Gemma with Multi-Turn Memory & RAG) ───
-        reply_text = ""
-        rag_context_str = ""
+        # E. Order ID Status Verification (ask last 4 digits -> reply complete status)
+        non_order_intents = {
+            "video_kyc", "upi_refund", "upi_payment_failed", "card_block", "card_pin",
+            "account_balance", "loans_emi", "human_agent", "fraud_escalation", "unrelated_general",
+            "complaint", "complaint_status", "api_action",
+        }
+        inferred_order_check = ivr_mini_brain._infer_intent_with_history(lower_user, self._history)
+        if pkg.conversation.intent.intent in non_order_intents:
+            self.conv_state.awaiting_order_id_digits = False
+            self._order_dtmf_buffer = ""
 
-        # Step 2A: Query domain knowledge from pgvector
-        try:
-            async with async_session() as session:
-                doc_repo = DocumentRepository(session)
-                emb_service = EmbeddingService(provider_id="semantic-default")
-                search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
+        matched_order_reply = ""
+        matched_order_digits4: Optional[str] = None
 
-                ivr_tenant = os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
-                rag_threshold = float(os.getenv("RAG_MATCH_THRESHOLD", "0.55"))
-                search_results = await search_service.search(tenant_id=ivr_tenant, query=clean_user, top_k=2)
-                relevant_chunks = [c.content for c, score in search_results if score >= rag_threshold]
-                if relevant_chunks:
-                    rag_context_str = "\n\n".join(relevant_chunks)
-                    logger.info(f"[IVR] ✓ Injected {len(relevant_chunks)} pgvector RAG chunks into prompt.")
-        except Exception as rag_err:
-            logger.debug(f"[IVR] pgvector lookup skipped: {rag_err}")
+        from tools.registry import tool_registry as _tool_registry
 
-        # Ingest autonomous banking reference hint if relevant
-        inferred_topic = ivr_mini_brain._infer_intent_with_history(lower_user, self._history)
-        if inferred_topic and inferred_topic in AUTONOMOUS_KNOWLEDGE:
-            topic_fact = AUTONOMOUS_KNOWLEDGE[inferred_topic].get(self.selected_language, AUTONOMOUS_KNOWLEDGE[inferred_topic]["en"])
-            rag_context_str = f"{rag_context_str}\n\nBank Knowledge: {topic_fact}".strip()
+        remote_tools_active = any(
+            src == "remote_django" for src in _tool_registry.list_tools_with_sources().values()
+        )
+        ivr_tools_enabled = os.getenv("IVR_ENABLE_TOOLS", "true").lower() in ("1", "true", "yes")
+        all_tool_schemas = _tool_registry.get_all_tool_schemas()
+        session_tools = (
+            _select_ivr_session_tools(
+                all_tool_schemas=all_tool_schemas,
+                user_text=effective_user,
+                history=self._history,
+                service_category=self.selected_service,
+                remote_tools_active=remote_tools_active,
+            )
+            if (ivr_tools_enabled and all_tool_schemas)
+            else None
+        )
 
-        # Step 2B: Build Conversational Multi-Turn Prompt
+        is_complaint_turn = (
+            self.selected_service == "complaint"
+            or pkg.conversation.intent.intent == "complaint"
+            or any(k in lower_user for k in ("complaint", "complain", "ticket", "शिकायत", "ଅଭିଯୋଗ"))
+        )
+
+        if (
+            not remote_tools_active
+            and not is_complaint_turn
+            and (
+                self.conv_state.awaiting_order_id_digits
+                or self.conv_state.intent == "order_status"
+                or inferred_order_check == "order_status"
+            )
+        ):
+            digits4 = extract_order_last4_digits(
+                effective_user,
+                allow_bare_digits=(self.conv_state.awaiting_order_id_digits or self.conv_state.intent == "order_status"),
+            )
+            if digits4:
+                self.conv_state.awaiting_order_id_digits = False
+                self._order_dtmf_buffer = ""
+                self.conv_state.order_id_last4 = digits4
+                matched_order_digits4 = digits4
+                matched_order_reply = ivr_mini_brain.lookup_order_status(digits4, lang=self.selected_language)
+                logger.info(f"[IVR] 📦 Resolved Order ID ending '{digits4}' -> providing complete status.")
+            else:
+                self.conv_state.awaiting_order_id_digits = True
+                self._order_dtmf_buffer = ""
+                ask_digits_reply = AUTONOMOUS_KNOWLEDGE["order_status_ask_digits"].get(
+                    self.selected_language,
+                    AUTONOMOUS_KNOWLEDGE["order_status_ask_digits"]["en"],
+                )
+                active_emotion = str(self.conv_state.emotion.get("fused") or "neutral").lower()
+                ask_digits_reply = ivr_mini_brain.apply_sentiment_tone(
+                    ask_digits_reply,
+                    active_emotion,
+                    lang=self.selected_language,
+                    previous_attempts=self.conv_state.failed_attempts,
+                )
+                logger.info(f"[IVR] 📦 Prompting caller for last 4 digits of Order ID ({self.selected_language}).")
+                return await self._finalize_and_speak(effective_user, ask_digits_reply)
+
+        # ── 2. RAG-First Conversational AI (Hybrid Retrieval + Gemma + Validator) ───
+        ivr_tenant = self.tenant_id or os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
         service_info = SERVICE_BY_KEY.get(self.selected_service or "customer_support", SERVICE_CATEGORIES.get("1", {}))
         service_name = service_info.get("name_en", "Customer Support")
-        lang_name = {"en": "English", "hi": "Hindi", "or": "Odia"}.get(self.selected_language, "English")
-        reference_block = f"\nVerified Bank Reference:\n{rag_context_str}\nUse the above information to answer accurately." if rag_context_str else ""
+        active_emotion = str(self.conv_state.emotion.get("fused") or "neutral").lower()
 
-        conversational_system_prompt = (
-            f"You are an empathetic, warm, and highly capable bank customer support specialist on a live phone call.\n"
-            f"Language: Always respond in natural, conversational {lang_name}.\n"
-            f"Persona & Tone: Female specialist with a calm, friendly, reassuring voice. In Hindi/Odia, ALWAYS use feminine first-person grammar (कर सकती हूँ, सुन रही हूँ, मदद करूँगी, समझ रही हूँ) and write in authentic native script without Latin letters or parentheses.\n\n"
-            f"Active Conversational Skills:\n"
-            f"1. Emotion & Empathy: Listen for the caller's emotion. If the caller sounds stressed, worried, or frustrated (e.g., money debited, failed payment, blocked card, urgent issue), immediately validate their feelings with sincere empathy and reassurance before offering help (e.g., 'I completely understand how stressful this is, please don't worry, let me help you resolve this right away.'). If they are pleased, reflect their positive energy.\n"
-            f"2. Satisfaction: Check if your response fully resolved their inquiry (e.g., 'Does that answer your question?' or 'Did that help resolve your concern?'). Acknowledge their confirmation warmly.\n"
-            f"3. Confidence: Speak with grounded, reassuring confidence based on bank policies. For private account items (PIN, OTP, balance), explain with confidence that details are sent securely via SMS or mobile app. Never guess or hallucinate.\n"
-            f"4. Proactive Asking (Ask): Keep the dialogue moving smoothly by asking a relevant, helpful follow-up question (e.g., 'Do you have your physical PAN card ready?', 'Would you like me to check your transaction reference?').\n"
-            f"5. Feedback: Graciously welcome and acknowledge customer feedback, compliments, or suggestions.\n"
-            f"6. Confirmation: Confirm key requests and details before proceeding (e.g., 'Just to confirm, you would like help with your UPI payment?').\n"
-            f"7. Background Context: Remember the customer's selected service domain ({service_name}) and prior conversation turns so they never have to repeat themselves.\n"
-            f"8. Strict Limitation on Unrelated / Off-Topic Questions: You are strictly and exclusively a bank customer support agent. You MUST NOT entertain, elaborate on, or discuss off-topic queries (such as general knowledge, history, geography, weather, sports, politics, or coding). If the caller asks anything unrelated to banking, politely decline in exactly one sentence and steer them immediately back to banking services (e.g., 'I specialize exclusively in bank customer support. How can I assist you with your account, UPI, or KYC today?').\n\n"
-            f"Telephony Spoken Constraints:\n"
-            f"- Keep responses brief and conversational: 1 to 2 spoken sentences (under 28 words).\n"
-            f"- Never use markdown, asterisks, bullet points, numbers, or URLs. Speak plain conversational sentences.\n"
-            f"{reference_block}"
-        )
-
-        # Build rolling conversation history (last 6 turns) so Gemma has multi-turn memory!
-        dialogue_messages = [ChatMessage(role="system", content=conversational_system_prompt)]
-        recent_turns = [m for m in self._history if m.role in ("user", "assistant")][-6:]
-        dialogue_messages.extend(recent_turns)
-
-        gemma_req = NormalizedChatRequest(
-            model_alias="gemma",
-            messages=dialogue_messages,
-            stream=False,
-            max_tokens=65,
-            temperature=0.5,
-        )
-
-        # Step 2C: Execute Conversational Turn via Gemma Gateway
         enable_gemma = os.getenv("ENABLE_GEMMA_OPEN_DOMAIN", "true").lower() in ("1", "true", "yes")
         if enable_gemma:
-            try:
-                logger.info(
-                    f"[IVR] 🗣️ Conversational turn with Gemma (history_len={len(recent_turns)}): "
-                    f"'{mask_sensitive_text(effective_user)[:60]}'..."
-                )
-                gemma_res = await asyncio.wait_for(
-                    self._orchestrator.execute(
-                        gemma_req,
-                        intelligence_context=plan.intelligence_context,
-                    ),
-                    timeout=3.5,
-                )
-                candidate = (gemma_res.choices[0].message.content or "").strip()
-                # Filter out generic mock or placeholder responses
-                if (
-                    candidate
-                    and "mock response" not in candidate.lower()
-                    and "didn't quite catch that" not in candidate.lower()
-                    and "पूरी तरह समझ नहीं" not in candidate
-                    and "ସମ୍ପୂର୍ଣ୍ଣ ବୁଝିପାରିଲି ନାହିଁ" not in candidate
-                ):
-                    # Strict Language Enforcement: if caller chose Hindi, candidate must not be pure English
-                    if self.selected_language == "hi" and not any('\u0900' <= ch <= '\u097f' for ch in candidate):
-                        logger.warning(f"[IVR] Rejecting English candidate for Hindi session: '{candidate}'")
-                    elif self.selected_language == "or" and any('\u0900' <= ch <= '\u097f' for ch in candidate):
-                        logger.warning(f"[IVR] Rejecting Hindi candidate for Odia session: '{candidate}'")
-                    else:
-                        reply_text = candidate
-                        logger.info(f"[IVR] 🌟 Gemma conversational reply: '{reply_text}'")
-            except Exception as gemma_err:
-                logger.warning(f"[IVR] Gemma conversational turn error ({gemma_err}); falling back to mini-brain.")
+            from platform_core.config.settings import settings as _ivr_settings
 
-        # Step 2D: Resilient Fallback to local mini-brain
-        if not reply_text:
-            reply_text = ivr_mini_brain.synthesize(
-                user_query=effective_user,
-                messages=self._history,
-                rag_context=rag_context_str,
-                language=self.selected_language,
-                service_category=self.selected_service,
-                intelligence_context=plan.intelligence_context,
+            ivr_model_alias = _resolve_ivr_tool_model_alias(
+                preferred_alias=GEMMA_MODEL_ALIAS,
+                has_tools=bool(session_tools),
+                settings_alias=_ivr_settings.GEMMA_MODEL_ALIAS,
             )
-            logger.info(f"[IVR] 🧠 Mini-brain fallback reply: '{reply_text}'")
+
+            ivr_context = TenantContext(
+                tenant_id=ivr_tenant,
+                tenant_name=service_name or "IVR Voice Tenant",
+                api_key_id="ivr_session",
+                scopes={"*"},
+            )
+            gen_res = await self.response_generator.generate_response(
+                user_message=effective_user,
+                conversation_history=self._history,
+                tenant_id=ivr_tenant,
+                language=self.selected_language,
+                orchestrator=self._orchestrator,
+                model_alias=ivr_model_alias,
+                service_category=self.selected_service,
+                service_name=service_name,
+                intelligence_context=plan.intelligence_context,
+                tool_output=matched_order_reply,
+                required_token=matched_order_digits4,
+                active_emotion=active_emotion,
+                previous_attempts=self.conv_state.failed_attempts,
+                timeout_seconds=(
+                    float(os.getenv("IVR_TOOL_TURN_TIMEOUT_SECONDS", str(getattr(_ivr_settings, "IVR_TOOL_TURN_TIMEOUT_SECONDS", 95.0))))
+                    if session_tools
+                    else 3.5
+                ),
+                session_factory=async_session,
+                context=ivr_context if session_tools else None,
+                tools=session_tools,
+                authorized_customer_id=getattr(self, "authorized_customer_id", None),
+                call_uuid=self.call_uuid,
+                caller_number=self.caller_number,
+                tools_require_remote=remote_tools_active,
+            )
+            reply_text = gen_res.text
+            self._last_retrieval_tier = gen_res.retrieval_eval.tier.value
+            if gen_res.resolved_customer_id and not getattr(self, "authorized_customer_id", None):
+                self.authorized_customer_id = gen_res.resolved_customer_id
+        else:
+            retrieved = await self.response_generator.retrieval_service.search(
+                query=effective_user,
+                tenant_id=ivr_tenant,
+                top_k=4,
+                preferred_category=self.selected_service,
+                session_factory=async_session,
+            )
+            self._last_retrieval_tier = retrieved.evaluation.tier.value
+            if matched_order_reply:
+                reply_text = ivr_mini_brain.apply_sentiment_tone(
+                    matched_order_reply,
+                    active_emotion,
+                    lang=self.selected_language,
+                    previous_attempts=self.conv_state.failed_attempts,
+                )
+            else:
+                reply_text = ivr_mini_brain.synthesize(
+                    user_query=effective_user,
+                    messages=self._history,
+                    rag_context="\n\n".join(retrieved.chunk_texts),
+                    language=self.selected_language,
+                    service_category=self.selected_service,
+                    intelligence_context=plan.intelligence_context,
+                )
 
         await self._finalize_and_speak(effective_user, reply_text)
 
@@ -891,25 +1306,22 @@ class IVRCallSession:
             else:
                 reply_text = "I'm sorry, I couldn't clearly hear that. Could you please repeat your query about Video KYC or UPI?"
 
+        from providers.text_to_speech.base import MockTextToSpeechAdapter
+
+        active_emotion = str(self.conv_state.emotion.get("fused") or "neutral").lower()
+        active_trend = str(self.conv_state.emotion.get("trend") or "stable").lower()
+        sat_val = self.conv_state.satisfaction_score
+        sat_str = f"{sat_val:.2f}" if isinstance(sat_val, (int, float)) else "n/a"
+        tts_rate, tts_pitch = MockTextToSpeechAdapter.prosody_for_emotion(active_emotion)
         reply_text = reply_text.strip()
-        logger.info(f"[IVR] AI reply: '{reply_text}'")
+        logger.info(
+            f"[IVR] 💬 Reply Sentiment: sentiment={active_emotion} trend={active_trend} "
+            f"satisfaction={sat_str} tts_rate={tts_rate} tts_pitch={tts_pitch}"
+        )
+        logger.info(f"[IVR] AI reply (emotion={active_emotion}, trend={active_trend}): '{reply_text}'")
 
         # Keep rolling history
         self._history.append(ChatMessage(role="assistant", content=reply_text))
-
-        # Continuous Learning: learn novel Q&A pairs from voice turns into pgvector
-        quality_ok = (self.conv_state.transcript_confidence >= 0.55) if self.conv_state.turn_number > 0 else True
-        resolved_flag = (self.conv_state.resolution_status == "resolved") if self.conv_state.turn_number > 0 else None
-        asyncio.create_task(
-            learn_from_voice_turn(
-                tenant_id=self.tenant_id,
-                call_uuid=self.call_uuid,
-                user_text=user_text,
-                reply_text=reply_text,
-                quality_ok=quality_ok,
-                resolved=resolved_flag,
-            )
-        )
 
         # Trim history to avoid context explosion
         if len(self._history) > 21:
@@ -917,35 +1329,102 @@ class IVRCallSession:
 
         # 3. TTS → raw PCM 8 kHz (clean spoken text of markdown/bullets/emojis)
         spoken_reply = _clean_spoken_text(reply_text)
+        self._is_synthesizing = True
         try:
-            logger.info(f"[IVR] Synthesizing speech for reply ({len(spoken_reply)} chars)...")
+            logger.info(
+                f"[IVR] Synthesizing speech for reply ({len(spoken_reply)} chars, emotion={active_emotion})..."
+            )
             tts_bytes = await self._audio_service.synthesize(
                 text=spoken_reply,
                 model="tts-1",
                 voice="alloy",
                 response_format="wav",
+                emotion=active_emotion,
             )
-            pcm_reply = _tts_output_to_pcm8k(tts_bytes)
+            pcm_reply = await asyncio.to_thread(_tts_output_to_pcm8k, tts_bytes)
             logger.info(f"[IVR] TTS ready: {len(pcm_reply)} bytes PCM ({len(pcm_reply)/16000:.1f}s)")
         except Exception as exc:
             logger.error(f"[IVR] TTS error: {exc}")
             return
+        finally:
+            self._is_synthesizing = False
+
+        # Trigger Level 1 / Level 2 knowledge learning after TTS synthesis so embedding never delays audio
+        quality_ok = (self.conv_state.transcript_confidence >= 0.55) if self.conv_state.turn_number > 0 else True
+        resolved_flag = (self.conv_state.resolution_status == "resolved") if self.conv_state.turn_number > 0 else None
+        if self._last_retrieval_tier == "none" and quality_ok:
+            asyncio.create_task(
+                self.knowledge_learner.record_unanswered_query(
+                    tenant_id=self.tenant_id,
+                    call_uuid=self.call_uuid,
+                    user_text=user_text,
+                    provisional_reply=reply_text,
+                )
+            )
+        else:
+            asyncio.create_task(
+                learn_from_voice_turn(
+                    tenant_id=self.tenant_id,
+                    call_uuid=self.call_uuid,
+                    user_text=user_text,
+                    reply_text=reply_text,
+                    quality_ok=quality_ok,
+                    resolved=resolved_flag,
+                )
+            )
+
+        # Stop any active waiting/processing chime before streaming the final spoken reply
+        await self._stop_processing_sound()
+
+        # Cancel any prior playback before streaming the new reply so frames never interleave
+        if self._playback_task and not self._playback_task.done():
+            self._stop_playback(reason="superseded_by_new_reply")
+            await asyncio.sleep(0)
 
         # 4. Send reply over WebSocket as cancellable playback task (supports voice barge-in)
         self._is_playing = True
+        self._cancelled_by_barge_in = False
+        self._playback_started_ts = time.monotonic()
+        self._barge_in_voice_frames = 0
         self._playback_task = asyncio.create_task(self._send_pcm_reply(pcm_reply))
+        was_barge_in_interrupted = False
         try:
             await self._playback_task
         except asyncio.CancelledError:
+            was_barge_in_interrupted = self._cancelled_by_barge_in
             logger.info(f"[IVR] ⚡ AI reply playback interrupted by caller barge-in (uuid={self.call_uuid}).")
         finally:
             self._is_playing = False
             self._playback_task = None
-            self._pcm_buffer.clear()
+            # Preserve buffered caller speech frames when cancelled by voice barge-in
+            if not self._cancelled_by_barge_in:
+                self._pcm_buffer.clear()
+                self._barge_in_captured = False
+            self._cancelled_by_barge_in = False
             self._last_voice_ts = time.monotonic()
+            self._last_playback_end_ts = self._last_voice_ts
 
-        # 5. Auto Cut after Thank You / Closing turn (do NOT auto-cut while awaiting feedback rating)
-        if not (self.menu_machine.state == IVRState.FEEDBACK and self.conv_state.awaiting_feedback) and is_closing_turn(user_text, reply_text):
+        # 5. Auto Cut after Thank You / Closing turn (do NOT auto-cut when awaiting caller reply)
+        is_pending_reply = any(
+            getattr(self.conv_state, flag, False)
+            for flag in (
+                "awaiting_resolution_confirmation",
+                "awaiting_transfer_confirmation",
+                "awaiting_feedback",
+                "awaiting_order_id_digits",
+            )
+        )
+        is_clarify_reply = any(
+            marker in reply_text.lower()
+            for marker in ("trouble hearing", "please repeat", "repeat your question", "दोबारा", "दोहराएं", "ସ୍ପଷ୍ଟ ଶୁଣାଗଲା ନାହିଁ")
+        )
+        if (
+            not was_barge_in_interrupted
+            and not is_pending_reply
+            and not is_clarify_reply
+            and not (self.menu_machine.state == IVRState.FEEDBACK and self.conv_state.awaiting_feedback)
+            and is_closing_turn(user_text, reply_text)
+        ):
             logger.info(
                 f"[IVR] 📞 Closing farewell turn detected ('{user_text}' → '{reply_text[:50]}...'). "
                 f"Auto-cutting call (uuid={self.call_uuid})..."
@@ -964,62 +1443,77 @@ class IVRCallSession:
             self.on_call_end({"uuid": self.call_uuid, "reason": "auto_cut_after_closing"})
 
     async def _send_pcm_reply(self, pcm: bytes) -> None:
+        """Stream a spoken AI reply or menu prompt to PBX over WebSocket."""
+        await self._stream_pcm_frames(pcm, verbose_logs=True)
+
+    async def _stream_pcm_frames(self, pcm: bytes, verbose_logs: bool = True) -> None:
         """
         Stream raw PCM frames to PBX over WebSocket with jitter-buffer pre-filling
         and high-precision drift compensation to eliminate glitches and network stutter.
         """
-        try:
-            logger.info(f"[IVR] Sending audio reply to Asterisk (uuid={self.call_uuid})...")
-            if self.call_uuid:
-                header = json.dumps({"event": "play", "uuid": self.call_uuid})
-                await self._ws.send_text(header)
-
-            chunks = list(chunk_pcm(pcm, PBX_CHUNK_BYTES))
-            total_chunks = len(chunks)
-            if total_chunks == 0:
-                return
-
-            # PREBUFFERING: Send initial burst of 5 frames (100 ms) immediately to fill
-            # Asterisk/MizoDroid jitter buffer so event loop delays never cause underruns.
-            PREBUFFER_FRAMES = min(5, total_chunks)
-            for i in range(PREBUFFER_FRAMES):
-                await self._ws.send_bytes(chunks[i])
-
-            chunks_sent = PREBUFFER_FRAMES
-            start_time = time.monotonic()
-
-            for i in range(PREBUFFER_FRAMES, total_chunks):
-                frame = chunks[i]
-                await self._ws.send_bytes(frame)
-                chunks_sent += 1
-
-                # Calculate target wall-clock time for subsequent frames
-                target_time = start_time + (i - PREBUFFER_FRAMES + 1) * FRAME_INTERVAL_SECONDS
-                now = time.monotonic()
-                sleep_duration = target_time - now
-
-                # If behind by more than 100ms due to a system freeze, resync to avoid a huge burst
-                if sleep_duration < -0.100:
-                    start_time = now - (i - PREBUFFER_FRAMES + 1) * FRAME_INTERVAL_SECONDS
-                    sleep_duration = 0
-
-                if sleep_duration > 0.002:
-                    await asyncio.sleep(sleep_duration)
-
-            logger.info(f"[IVR] Finished sending audio: {chunks_sent} frames sent.")
-
-        except asyncio.CancelledError:
-            logger.info(f"[IVR] PCM stream cancelled (uuid={self.call_uuid}). Sending soft fade-out.")
-            # Send 2 frames (40ms) of comfort silence to Asterisk so speaker DAC ramps down cleanly
+        async with self._playback_lock:
             try:
+                if verbose_logs:
+                    logger.info(f"[IVR] Sending audio reply to Asterisk (uuid={self.call_uuid})...")
+                if self.call_uuid:
+                    header = json.dumps({"event": "play", "uuid": self.call_uuid})
+                    await self._ws.send_text(header)
+
+                chunks = list(chunk_pcm(pcm, PBX_CHUNK_BYTES))
+                total_chunks = len(chunks)
+                if total_chunks == 0:
+                    return
+
+                # PREBUFFERING: Send initial burst of 3 frames (60 ms) immediately to fill
+                # Asterisk/MizoDroid jitter buffer smoothly without clipping or long startup bursts.
+                PREBUFFER_FRAMES = min(3, total_chunks)
+                for i in range(PREBUFFER_FRAMES):
+                    await self._ws.send_bytes(chunks[i])
+
+                chunks_sent = PREBUFFER_FRAMES
+                start_time = time.monotonic()
+
+                for i in range(PREBUFFER_FRAMES, total_chunks):
+                    frame = chunks[i]
+                    await self._ws.send_bytes(frame)
+                    chunks_sent += 1
+
+                    # Calculate target wall-clock time for subsequent frames
+                    target_time = start_time + (i - PREBUFFER_FRAMES + 1) * FRAME_INTERVAL_SECONDS
+                    now = time.monotonic()
+                    sleep_duration = target_time - now
+
+                    # If behind by more than 100ms due to a system freeze, resync to avoid a huge burst
+                    if sleep_duration < -0.100:
+                        start_time = now - (i - PREBUFFER_FRAMES + 1) * FRAME_INTERVAL_SECONDS
+                        sleep_duration = 0
+
+                    if sleep_duration > 0.002:
+                        await asyncio.sleep(sleep_duration)
+
+                # Comfort trailing silence padding (40ms) to prevent abrupt tail click/cutoff
                 silence_frame = b"\x00" * PBX_CHUNK_BYTES
-                await self._ws.send_bytes(silence_frame)
-                await self._ws.send_bytes(silence_frame)
-            except Exception:
-                pass
-            raise
-        except Exception as exc:
-            logger.warning(f"[IVR] Send error (call may have ended): {exc}")
+                for _ in range(2):
+                    await asyncio.sleep(FRAME_INTERVAL_SECONDS)
+                    await self._ws.send_bytes(silence_frame)
+                    chunks_sent += 1
+
+                if verbose_logs:
+                    logger.info(f"[IVR] Finished sending audio: {chunks_sent} frames sent.")
+
+            except asyncio.CancelledError:
+                if verbose_logs:
+                    logger.info(f"[IVR] PCM stream cancelled (uuid={self.call_uuid}). Sending soft fade-out.")
+                # Send 2 frames (40ms) of comfort silence to Asterisk so speaker DAC ramps down cleanly
+                try:
+                    silence_frame = b"\x00" * PBX_CHUNK_BYTES
+                    await self._ws.send_bytes(silence_frame)
+                    await self._ws.send_bytes(silence_frame)
+                except Exception:
+                    pass
+                raise
+            except Exception as exc:
+                logger.warning(f"[IVR] Send error (call may have ended): {exc}")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1029,10 +1523,28 @@ class IVRCallSession:
 def is_closing_turn(user_text: str, reply_text: str) -> bool:
     """
     Detects if this conversational turn is a closing/farewell turn
-    (e.g. caller saying 'thank you', 'thanks', 'dhanyawad', 'bye', or AI delivering closing greeting).
+    (e.g. caller saying 'thank you', 'thanks', 'dhanyawad', 'bye', or AI delivering closing greeting),
+    unless the AI reply asks a question or requests confirmation/feedback/digits.
     """
     u = (user_text or "").lower().strip()
     r = (reply_text or "").lower().strip()
+
+    # Never end the call when the assistant asks a question or waits for caller confirmation/rating.
+    question_or_prompt_markers = (
+        "?",
+        "confirm whether your issue",
+        "anything else i can assist",
+        "scale of 1 to 5",
+        "how satisfied are you",
+        "last 4 digits",
+        "trouble hearing",
+        "please repeat",
+        "क्या आपकी समस्या",
+        "पुष्टि कर सकते",
+        "ଆପଣଙ୍କ ସମସ୍ୟାର ସମାଧାନ",
+    )
+    if any(marker in r for marker in question_or_prompt_markers):
+        return False
 
     closing_user_keywords = [
         "thank", "thanks", "thx", "dhanyawad", "dhanyavad", "shukriya", "dhanyabad",
@@ -1071,8 +1583,8 @@ def _clean_spoken_text(text: str) -> str:
     text = re.sub(r"\*([^*]+)\*", r"\1", text)
     text = re.sub(r"__([^_]+)__", r"\1", text)
     text = re.sub(r"_([^_]+)_", r"\1", text)
-    # Remove bullet markers, numbered lists, and header hashes
-    text = re.sub(r"^\s*[-*#\d\.]+\s*", "", text, flags=re.MULTILINE)
+    # Remove bullet markers, numbered paren lists, and header hashes without deleting spoken numbers
+    text = re.sub(r"^\s*(?:[-*#•]+|\d+\))\s+", "", text, flags=re.MULTILINE)
     # Remove robotic bracket tags like [Source 1], (Note: ...)
     text = re.sub(r"\[.*?\]", "", text)
     text = re.sub(r"\(Note:.*?\)", "", text, flags=re.IGNORECASE)
@@ -1089,16 +1601,19 @@ def _clean_spoken_text(text: str) -> str:
     text = re.sub(r"(?i)(?:English|Hindi|Odia)\s*Voice\s*Transcript\s*:\s*", "", text)
     text = re.sub(r"(?i)(?:Document\s*ID|Category|Source|Title)\s*:\s*[^\n\.,]+", "", text)
 
-    # Strip quotes and stray numbering anywhere in the speech
-    text = text.replace('"', '').replace("'", '')
-    text = re.sub(r'(?:^|\s+)\d+[\.\)]\s*', ' ', text).strip()
+    # Strip quotes while preserving spoken numbers and decimals
+    text = text.replace('"', '').replace("'", '').strip()
 
     # Deduplicate consecutive identical sentences (e.g. "Sentence A. Sentence A." -> "Sentence A.")
     pattern = r'([^.!?।\n]+[.!?।])\s*(?:\1\s*)+'
     text = re.sub(pattern, r'\1 ', text).strip()
 
-    # Phonetic normalization for Hindi speech (convert Latin acronyms to Devanagari)
-    has_hindi = any('\u0900' <= ch <= '\u097f' for ch in text)
+    # Phonetic normalization: detect Odia first so shared Devanagari danda punctuation ('।', U+0964)
+    # in Odia sentences never triggers Hindi Devanagari replacements.
+    has_odia = any('\u0b00' <= ch <= '\u0b7f' for ch in text)
+    has_hindi = (not has_odia) and any(
+        '\u0900' <= ch <= '\u0963' or '\u0966' <= ch <= '\u097f' for ch in text
+    )
     if has_hindi:
         hindi_loanwords = [
             (r"\bvideo\s*kyc\b", "वीडियो केवाईसी"),
@@ -1107,20 +1622,87 @@ def _clean_spoken_text(text: str) -> str:
             (r"\botp\b", "ओटीपी"),
             (r"\bpan\s*card\b", "पैन कार्ड"),
             (r"\bpan\b", "पैन"),
-            (r"\baadhaar\b", "आधार"),
-            (r"\baadhar\b", "आधार"),
+            (r"\baadha+r\b", "आधार"),
             (r"\batm\b", "एटीएम"),
             (r"\bpin\b", "पिन"),
             (r"\bsms\b", "एसएमएस"),
             (r"\butr\b", "यूटीआर"),
             (r"\bemi\b", "ईएमआई"),
-            (r"\bnetbanking\b", "नेटबैंकिंग"),
+            (r"\bnet\s*banking\b", "नेटबैंकिंग"),
+            (r"\bdebit\s*card\b", "डेबिट कार्ड"),
+            (r"\bcredit\s*card\b", "क्रेडिट कार्ड"),
+            (r"\bcustomer\s*support\b", "ग्राहक सेवा"),
+            (r"\bdocuments?\b", "डॉक्यूमेंट्स"),
+            (r"\boriginal\b", "ओरिजिनल"),
+            (r"\bphysical\b", "फिजिकल"),
+            (r"\bverification\b", "वेरिफिकेशन"),
+            (r"\bverify\b", "वेरिफाई"),
+            (r"\bmobile\b", "मोबाइल"),
+            (r"\bnumber\b", "नंबर"),
+            (r"\baccount\b", "अकाउंट"),
+            (r"\bbalance\b", "बैलेंस"),
+            (r"\bstatus\b", "स्टेटस"),
+            (r"\bbank\b", "बैंक"),
+            (r"\bfailed\b", "फेल्ड"),
+            (r"\btransfer\b", "ट्रांसफर"),
+            (r"\b(?:agent|representative)\b", "प्रतिनिधि"),
             (r"\bapp\b", "ऐप"),
             (r"\bpassword\b", "पासवर्ड"),
             (r"\brefund\b", "रिफंड"),
             (r"\bpayment\b", "पेमेंट"),
+            (r"\border\s*id\b", "ऑर्डर आईडी"),
+            (r"\border\b", "ऑर्डर"),
+            (r"\bdelivery\b", "डिलीवरी"),
+            (r"\bcourier\b", "कूरियर"),
+            (r"\btracking\b", "ट्रैकिंग"),
         ]
         for pat, rep in hindi_loanwords:
+            text = re.sub(pat, rep, text, flags=re.IGNORECASE)
+
+    # Phonetic normalization for Odia speech so native Odia VITS receives pure Odia script
+    if has_odia:
+        odia_loanwords = [
+            (r"\bvideo\s*kyc\b", "ଭିଡିଓ କେୱାଇସି"),
+            (r"\bkyc\b", "କେୱାଇସି"),
+            (r"\bupi\b", "ୟୁପିଆଇ"),
+            (r"\botp\b", "ଓଟିପି"),
+            (r"\bpan\s*card\b", "ପ୍ୟାନ୍ କାର୍ଡ"),
+            (r"\bpan\b", "ପ୍ୟାନ୍"),
+            (r"\baadha+r\b", "ଆଧାର"),
+            (r"\batm\b", "ଏଟିଏମ୍"),
+            (r"\bpin\b", "ପିନ୍"),
+            (r"\bsms\b", "ଏସ୍ଏମ୍ଏସ୍"),
+            (r"\butr\b", "ୟୁଟିଆର୍"),
+            (r"\bemi\b", "ଇଏମ୍ଆଇ"),
+            (r"\bnet\s*banking\b", "ନେଟ୍ ବ୍ୟାଙ୍କିଂ"),
+            (r"\bdebit\s*card\b", "ଡେବିଟ୍ କାର୍ଡ"),
+            (r"\bcredit\s*card\b", "କ୍ରେଡିଟ୍ କାର୍ଡ"),
+            (r"\bcustomer\s*support\b", "ଗ୍ରାହକ ସେବା"),
+            (r"\bdocuments?\b", "ଡକ୍ୟୁମେଣ୍ଟ୍"),
+            (r"\boriginal\b", "ଅରିଜିନାଲ୍"),
+            (r"\bphysical\b", "ଫିଜିକାଲ୍"),
+            (r"\bverification\b", "ଭେରିଫିକେସନ୍"),
+            (r"\bverify\b", "ଭେରିଫାଇ"),
+            (r"\bmobile\b", "ମୋବାଇଲ୍"),
+            (r"\bnumber\b", "ନମ୍ବର"),
+            (r"\baccount\b", "ଆକାଉଣ୍ଟ"),
+            (r"\bbalance\b", "ବାଲାନ୍ସ"),
+            (r"\bstatus\b", "ଷ୍ଟାଟସ୍"),
+            (r"\bbank\b", "ବ୍ୟାଙ୍କ"),
+            (r"\bfailed\b", "ଫେଲ୍ଡ"),
+            (r"\btransfer\b", "ଟ୍ରାନ୍ସଫର୍"),
+            (r"\b(?:agent|representative)\b", "ପ୍ରତିନିଧି"),
+            (r"\bapp\b", "ଆପ୍"),
+            (r"\bpassword\b", "ପାସୱାର୍ଡ"),
+            (r"\brefund\b", "ରିଫଣ୍ଡ"),
+            (r"\bpayment\b", "ପେମେଣ୍ଟ"),
+            (r"\border\s*id\b", "ଅର୍ଡର ଆଇଡି"),
+            (r"\border\b", "ଅର୍ଡର"),
+            (r"\bdelivery\b", "ଡେଲିଭରି"),
+            (r"\bcourier\b", "କୁରିଅର"),
+            (r"\btracking\b", "ଟ୍ରାକିଂ"),
+        ]
+        for pat, rep in odia_loanwords:
             text = re.sub(pat, rep, text, flags=re.IGNORECASE)
 
     # Collapse multiple spaces and newlines into natural sentence flow

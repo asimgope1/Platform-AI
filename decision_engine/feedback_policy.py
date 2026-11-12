@@ -35,3 +35,4 @@ class FeedbackPolicy:
 
         tmpl = FEEDBACK_THANKS_PROMPTS.get(language, FEEDBACK_THANKS_PROMPTS["en"])
         return tmpl.format(rating=rating)
+

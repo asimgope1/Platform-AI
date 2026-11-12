@@ -3,3 +3,4 @@
 from providers.speech_emotion.speechbrain_emotion import SpeechBrainEmotionProvider, VoiceEmotionResult
 
 __all__ = ["SpeechBrainEmotionProvider", "VoiceEmotionResult"]
+

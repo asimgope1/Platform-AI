@@ -33,6 +33,21 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning(f"Provider config not found at {settings.PROVIDERS_CONFIG_PATH}, using fallback defaults.")
 
+    # Sync validated remote Django business tools into ToolRegistry if enabled
+    if settings.REMOTE_TOOLS_ENABLED and settings.REMOTE_TOOLS_BASE_URL:
+        try:
+            from tools.remote.django_client import DjangoRemoteToolClient
+            from tools.remote.registry_sync import sync_remote_django_tools
+
+            remote_client = DjangoRemoteToolClient.from_settings(settings)
+            synced = await sync_remote_django_tools(
+                remote_client,
+                prefer_remote=settings.REMOTE_TOOLS_PREFER_REMOTE,
+            )
+            logger.info(f"Synced {len(synced)} remote Django business tools from {settings.REMOTE_TOOLS_BASE_URL}.")
+        except Exception as remote_err:
+            logger.warning(f"Remote Django tool sync unavailable at startup (non-fatal): {remote_err}")
+
     # Bootstrap default tenant and demo API key if table is empty
     async with async_session() as session:
         from sqlalchemy import select
@@ -75,6 +90,12 @@ async def lifespan(app: FastAPI):
         stt_adapter = provider_registry.get_stt_adapter("default")
         if hasattr(stt_adapter, "warmup"):
             asyncio.create_task(asyncio.to_thread(stt_adapter.warmup))
+
+        if "semantic-default" in getattr(provider_registry, "embedding_adapters", {}):
+            emb_adapter = provider_registry.get_embedding_adapter("semantic-default")
+            if hasattr(emb_adapter, "warmup"):
+                asyncio.create_task(asyncio.to_thread(emb_adapter.warmup))
+                logger.info("[IVR] Semantic embedding model warmup initiated in background.")
     except Exception as cache_err:
         logger.warning(f"[IVR] Failed to initiate audio cache warmup: {cache_err}")
 
@@ -82,4 +103,9 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     pbx_connector.stop()
+    try:
+        from data_access.connectors.connection_manager import connection_manager
+        await connection_manager.close_all()
+    except Exception as pool_err:
+        logger.warning(f"Failed disposing external DB pools on shutdown: {pool_err}")
     logger.info("AI Platform API service shutting down.")

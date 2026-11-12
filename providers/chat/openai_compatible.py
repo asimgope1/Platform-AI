@@ -30,6 +30,7 @@ class OpenAICompatibleChatAdapter(BaseChatAdapter):
         self.base_url = (os.getenv(base_url_env) if base_url_env else None) or config.get("base_url") or "https://api.openai.com/v1"
         self.api_key = (os.getenv(api_key_env) if api_key_env else None) or config.get("api_key") or ""
         self.timeout = float(config.get("timeout_seconds", 60.0))
+        self.reasoning_effort = config.get("reasoning_effort")
         self._last_offline_time = 0.0
 
     def _get_headers(self) -> Dict[str, str]:
@@ -75,14 +76,18 @@ class OpenAICompatibleChatAdapter(BaseChatAdapter):
             payload["tools"] = request.tools
         if request.tool_choice:
             payload["tool_choice"] = request.tool_choice
+        if self.reasoning_effort:
+            payload["reasoning_effort"] = self.reasoning_effort
+        if "ollama" in (self.provider_id or "").lower() or ":11434" in (self.base_url or ""):
+            payload["keep_alive"] = "15m"
 
         try:
-            timeout_cfg = httpx.Timeout(self.timeout, connect=1.0)
+            timeout_cfg = httpx.Timeout(self.timeout, connect=min(3.0, self.timeout))
             async with httpx.AsyncClient(timeout=timeout_cfg) as client:
                 res = await client.post(url, headers=self._get_headers(), json=payload)
         except Exception as exc:
             self._last_offline_time = time.time()
-            raise ProviderError(self.provider_id, f"Network connection failed: {exc}")
+            raise ProviderError(self.provider_id, f"Network connection failed: {type(exc).__name__}: {exc}")
 
         if res.status_code >= 400:
             raise ProviderError(
@@ -97,17 +102,21 @@ class OpenAICompatibleChatAdapter(BaseChatAdapter):
             msg = c.get("message", {})
             tool_calls = None
             if "tool_calls" in msg and msg["tool_calls"]:
-                tool_calls = [
-                    ToolCall(
-                        id=tc.get("id", ""),
-                        type=tc.get("type", "function"),
-                        function=FunctionCall(
-                            name=tc.get("function", {}).get("name", ""),
-                            arguments=tc.get("function", {}).get("arguments", ""),
-                        ),
+                tool_calls = []
+                for tc in msg["tool_calls"]:
+                    raw_args = tc.get("function", {}).get("arguments", "")
+                    if isinstance(raw_args, dict):
+                        raw_args = json.dumps(raw_args)
+                    tool_calls.append(
+                        ToolCall(
+                            id=tc.get("id", ""),
+                            type=tc.get("type", "function"),
+                            function=FunctionCall(
+                                name=tc.get("function", {}).get("name", ""),
+                                arguments=str(raw_args or ""),
+                            ),
+                        )
                     )
-                    for tc in msg["tool_calls"]
-                ]
 
             choices.append(
                 NormalizedChoice(

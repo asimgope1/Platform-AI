@@ -129,3 +129,4 @@ class FasterWhisperLocalAdapter(BaseSpeechToTextAdapter):
         if not self._available:
             return await self._fallback.transcribe(audio_bytes, filename=filename, model=model, language=language)
         return await asyncio.to_thread(self._transcribe_fw_sync, audio_bytes, filename, language)
+

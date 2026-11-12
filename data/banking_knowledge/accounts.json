@@ -1,0 +1,27 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "accounts",
+    "topic": "video_kyc_policy",
+    "title": "Video KYC Verification Policy and Document Requirements",
+    "content": "Customers completing Video KYC must have their original physical PAN card ready, Aadhaar registered mobile number for OTP verification, a smartphone or camera device in a well-lit environment, and a blank white sheet with a dark pen for live signature capture. Video KYC verification sessions take approximately 2 to 5 minutes once connected with a KYC officer. Photocopied, laminated, or digital screenshots of the PAN card are not accepted under RBI KYC guidelines.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "accounts",
+    "topic": "account_opening_and_balance_privacy",
+    "title": "Savings Account Opening, Balance Inquiry and Privacy Policy",
+    "content": "For privacy and security reasons, account balances, recent transaction history, and downloadable statements are not disclosed directly over automated voice menus unless verified via authenticated backend tools. Customers can check real-time balances and mini-statements immediately via the official Mobile Banking App, Internet Banking, or missed-call SMS alerts from their registered mobile number. Branch counters operate Monday to Friday 10:00 AM to 4:00 PM and on the 1st, 3rd, and 5th Saturdays.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

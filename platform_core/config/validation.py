@@ -17,6 +17,7 @@ class ProviderConfig(BaseModel):
     base_url_env: Optional[str] = None
     api_key_env: Optional[str] = None
     timeout_seconds: float = 60.0
+    reasoning_effort: Optional[str] = None
     device: Optional[str] = None
     trust_remote_code: Optional[bool] = False
 

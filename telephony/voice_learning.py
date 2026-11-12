@@ -20,16 +20,20 @@ Architecture:
 """
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
+import math
+import os
 import re
-from typing import Any, List, Optional
+import time
+from typing import Any, Dict, List, Optional, Tuple
 
 from conversation_intelligence.transcript_confidence import mask_sensitive_text
 
 from storage.database import async_session
 from storage.repositories.document_repo import DocumentRepository
 from retrieval.embedding_service import EmbeddingService
-from retrieval.search import SemanticSearchService
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +91,120 @@ def is_informative_interaction(user_text: str, reply_text: str) -> bool:
     return True
 
 
+def normalize_faq_query(text: str) -> str:
+    """Normalize a caller utterance into a fast-lookup FAQ key while keeping Indic characters."""
+    cleaned = re.sub(r"[^\w\u0900-\u097f\u0b00-\u0b7f\s]+", " ", (text or "").lower())
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+# Per-tenant fast-path cache for frequently asked / recently learned RAG chunks:
+# key=(tenant_id, normalized_query) -> (stored_ts, chunks, hit_count)
+_RAG_FAST_CACHE: Dict[Tuple[str, str], Tuple[float, List[str], int]] = {}
+_RAG_FAST_CACHE_TTL_S = 1800.0
+_RAG_FAST_CACHE_MAX_ENTRIES = 256
+
+
+def get_fast_rag_chunks(tenant_id: str, query: str) -> Optional[List[str]]:
+    """Return cached RAG chunks in <1ms if this caller question was recently answered or learned."""
+    norm = normalize_faq_query(query)
+    if not norm:
+        return None
+    key = (tenant_id, norm)
+    entry = _RAG_FAST_CACHE.get(key)
+    if not entry:
+        return None
+    ts, chunks, hits = entry
+    if (time.monotonic() - ts) > _RAG_FAST_CACHE_TTL_S or not chunks:
+        _RAG_FAST_CACHE.pop(key, None)
+        return None
+    _RAG_FAST_CACHE[key] = (time.monotonic(), chunks, hits + 1)
+    return list(chunks)
+
+
+def cache_rag_chunks(tenant_id: str, query: str, chunks: List[str]) -> None:
+    """Store retrieved/learned chunks for instant lookup on repeat most-asked questions."""
+    norm = normalize_faq_query(query)
+    if not norm or not chunks:
+        return
+    if len(_RAG_FAST_CACHE) >= _RAG_FAST_CACHE_MAX_ENTRIES:
+        oldest_key = min(_RAG_FAST_CACHE, key=lambda k: _RAG_FAST_CACHE[k][0])
+        _RAG_FAST_CACHE.pop(oldest_key, None)
+    prev = _RAG_FAST_CACHE.get((tenant_id, norm))
+    hits = (prev[2] + 1) if prev else 1
+    _RAG_FAST_CACHE[(tenant_id, norm)] = (time.monotonic(), list(chunks), hits)
+
+
+def rank_chunks_with_faq_boost(
+    search_results: List[Tuple[Any, float]],
+    threshold: float,
+    top_k: int = 2,
+) -> List[str]:
+    """Re-rank matching pgvector chunks giving a small priority boost to frequently asked questions."""
+    ranked: List[Tuple[float, str]] = []
+    for chunk, score in search_results:
+        if score < threshold:
+            continue
+        ask_count = 1
+        raw_meta = getattr(chunk, "meta_json", None)
+        if raw_meta:
+            try:
+                ask_count = max(1, int(json.loads(raw_meta).get("ask_count", 1) or 1))
+            except Exception:
+                ask_count = 1
+        boosted_score = score + min(0.05, 0.015 * math.log1p(ask_count - 1))
+        ranked.append((boosted_score, chunk.content))
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    return [content for _, content in ranked[:top_k]]
+
+
+async def _maybe_sync_dump_snapshot(session: Any, tenant_id: str) -> None:
+    """Keep data/ivr_chunks_dump.json synced during live PostgreSQL voice calls."""
+    try:
+        bind = getattr(session, "bind", None)
+        if not bind or "postgresql" not in str(bind.url):
+            return
+        from sqlalchemy import select
+        from storage.models.document import Document, DocumentChunk
+
+        docs_res = await session.execute(
+            select(Document).where(Document.tenant_id == tenant_id).order_by(Document.created_at.asc())
+        )
+        docs = {d.id: d for d in docs_res.scalars().all()}
+        chunks_res = await session.execute(
+            select(DocumentChunk)
+            .where(DocumentChunk.tenant_id == tenant_id)
+            .order_by(DocumentChunk.document_id.asc(), DocumentChunk.chunk_index.asc())
+        )
+        chunks_out = []
+        for c in chunks_res.scalars().all():
+            doc = docs.get(c.document_id)
+            chunks_out.append({
+                "id": c.id,
+                "document_id": c.document_id,
+                "document_title": doc.title if doc else "",
+                "source_type": doc.source_type if doc else "",
+                "chunk_index": c.chunk_index,
+                "content": c.content,
+                "meta": json.loads(c.meta_json) if c.meta_json else None,
+            })
+
+        dump_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "data",
+            "ivr_chunks_dump.json",
+        )
+        payload = json.dumps(chunks_out, indent=2, ensure_ascii=False)
+
+        def _write_sync() -> None:
+            os.makedirs(os.path.dirname(dump_path), exist_ok=True)
+            with open(dump_path, "w", encoding="utf-8") as fh:
+                fh.write(payload)
+
+        await asyncio.to_thread(_write_sync)
+    except Exception as exc:
+        logger.debug(f"[Voice Learning] Dump snapshot sync skipped: {exc}")
+
+
 async def learn_from_voice_turn(
     tenant_id: str,
     call_uuid: Optional[str],
@@ -96,8 +214,10 @@ async def learn_from_voice_turn(
     resolved: Optional[bool] = None,
 ) -> bool:
     """
-    Ingest a single spoken Q&A turn into PostgreSQL pgvector if it contains novel knowledge.
-    Skips low-confidence / poor-quality transcripts when quality_ok is False, and masks PII.
+    Learn or reinforce a spoken Q&A turn in pgvector + FAQ cache during live calls:
+    - Updates existing matching chunks with ask_count & phrasing variants (most asked questions).
+    - Reuses the single query embedding to avoid redundant CPU work.
+    - Stores novel voice Q&A chunks immediately and warms the fast-path FAQ cache.
     """
     if not quality_ok:
         logger.debug("[Voice Learning] Skipped low-quality / uncertain transcript turn.")
@@ -111,7 +231,13 @@ async def learn_from_voice_turn(
         clean_reply = mask_sensitive_text(reply_text.strip())
         call_id = call_uuid or "unknown"
 
-        # Embed user query to check for existing duplicates
+        learned_content = (
+            f"Customer Spoken Inquiry: \"{clean_user}\"\n"
+            f"Verified Resolution: \"{clean_reply}\"\n"
+            f"Source: Live Telephone Interaction ({call_id})"
+        )
+
+        # Compute query embedding once and reuse it directly for vector search (2x faster)
         emb_service = EmbeddingService(provider_id="semantic-default")
         query_emb = await emb_service.embed_query(clean_user)
         if not query_emb:
@@ -119,44 +245,65 @@ async def learn_from_voice_turn(
 
         async with async_session() as session:
             doc_repo = DocumentRepository(session)
-            search_service = SemanticSearchService(doc_repo=doc_repo, embedding_service=emb_service)
-
-            # Check if this query or knowledge is already in the vector database
-            existing_matches = await search_service.search(
+            existing_matches = await doc_repo.search_similar_chunks(
                 tenant_id=tenant_id,
-                query=clean_user,
+                query_embedding=query_emb,
                 top_k=1,
             )
 
             if existing_matches:
                 top_chunk, score = existing_matches[0]
-                # If top match similarity is above 0.92, it is already well-covered
-                if score >= 0.92:
-                    logger.debug(
-                        f"[Voice Learning] Skipped duplicate chunk (score={score:.3f} >= 0.92): '{clean_user[:40]}...'"
+                if score >= 0.88:
+                    chunk_meta: Dict[str, Any] = {}
+                    if top_chunk.meta_json:
+                        try:
+                            chunk_meta = json.loads(top_chunk.meta_json) or {}
+                        except Exception:
+                            chunk_meta = {}
+
+                    # Update existing chunk ask_count + phrasing variants; enrich voice turns if content evolves
+                    is_voice_chunk = chunk_meta.get("type") == "voice_interaction_turn"
+                    updated_content = None
+                    updated_emb = None
+                    if is_voice_chunk:
+                        variants = list(chunk_meta.get("variants") or [])
+                        if clean_user.lower() not in {v.lower() for v in variants}:
+                            variants.append(clean_user)
+                        variants_str = " | ".join(variants[-5:])
+                        updated_content = (
+                            f"Customer Spoken Inquiry: \"{clean_user}\"\n"
+                            f"Asked Variants ({len(variants)}x): {variants_str}\n"
+                            f"Verified Resolution: \"{clean_reply}\"\n"
+                            f"Source: Live Telephone Interaction ({call_id})"
+                        )
+                        updated_emb = await emb_service.embed_query(updated_content)
+
+                    updated = await doc_repo.record_chunk_hit(
+                        top_chunk,
+                        variant_query=clean_user,
+                        updated_content=updated_content,
+                        updated_embedding=updated_emb,
                     )
-                    return False
+                    cache_rag_chunks(tenant_id, clean_user, [updated.content])
+                    await _maybe_sync_dump_snapshot(session, tenant_id)
+                    logger.info(
+                        f"[Voice Learning] 🔄 Updated chunk #{updated.chunk_index} "
+                        f"(score={score:.3f}, hits={json.loads(updated.meta_json).get('ask_count')}): "
+                        f"'{clean_user[:45]}...'"
+                    )
+                    return True
 
-            # Format the learned knowledge unit
-            learned_content = (
-                f"Customer Spoken Inquiry: \"{clean_user}\"\n"
-                f"Verified Resolution: \"{clean_reply}\"\n"
-                f"Source: Live Telephone Interaction ({call_id})"
-            )
-
-            # Embed the full knowledge content for RAG retrieval
+            # Novel inquiry: store new learned chunk with ask_count=1 and warm fast-path cache
             content_emb = await emb_service.embed_query(learned_content)
             if not content_emb:
                 content_emb = query_emb
 
-            # Retrieve or create continuous learning document container
             doc = await doc_repo.get_or_create_document(
                 tenant_id=tenant_id,
                 title="Continuous Voice Call Learnings",
                 source_type="voice_call",
             )
 
-            # Store the chunk directly with pgvector embedding
             chunk = await doc_repo.append_chunk(
                 document_id=doc.id,
                 tenant_id=tenant_id,
@@ -166,9 +313,13 @@ async def learn_from_voice_turn(
                     "type": "voice_interaction_turn",
                     "call_uuid": call_id,
                     "caller_query": clean_user,
+                    "variants": [clean_user],
+                    "ask_count": 1,
                     "resolved": resolved,
                 },
             )
+            cache_rag_chunks(tenant_id, clean_user, [learned_content])
+            await _maybe_sync_dump_snapshot(session, tenant_id)
 
             logger.info(
                 f"[Voice Learning] 🧠 Stored new learned voice chunk #{chunk.chunk_index} "

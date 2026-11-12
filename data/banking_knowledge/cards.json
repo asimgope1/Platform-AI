@@ -1,0 +1,27 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "cards",
+    "topic": "card_hotlisting_and_replacement",
+    "title": "Lost or Stolen Debit and Credit Card Blocking Policy",
+    "content": "If a debit or credit card is lost, stolen, damaged, or suspected of compromise, the cardholder must hotlist it immediately through the Mobile Banking App Card Controls section, Internet Banking, or emergency IVR assistance. Permanent card hotlisting takes effect immediately and cannot be undone; a replacement card is dispatched to the registered communication address within 5 to 7 business days.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "cards",
+    "topic": "atm_pin_generation",
+    "title": "ATM and Debit Card Green PIN Generation Policy",
+    "content": "Callers requesting a new card PIN or resetting a forgotten ATM PIN should use Mobile Banking Card Services or visit any bank ATM to generate a Green PIN using registered mobile OTP verification. Support agents and automated voice systems never ask for, view, or verbally recite a customer's existing PIN or CVV.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

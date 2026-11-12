@@ -1,6 +1,7 @@
 import math
 import json
-from typing import List, Optional, Tuple
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -85,6 +86,54 @@ class DocumentRepository:
         await self.session.delete(doc)
         await self.session.commit()
         return True
+
+    async def replace_chunks(
+        self,
+        document_id: str,
+        tenant_id: str,
+        chunks_data: List[Tuple[int, str, List[float]]],
+        *,
+        new_title: Optional[str] = None,
+        new_source_type: Optional[str] = None,
+        meta: Optional[Dict[str, Any]] = None,
+    ) -> Optional[Document]:
+        """Atomically replace all chunks of a tenant document during re-indexing."""
+        doc = await self.get_by_id(document_id, tenant_id)
+        if not doc:
+            return None
+
+        await self.session.execute(
+            delete(DocumentChunk).where(
+                DocumentChunk.document_id == document_id,
+                DocumentChunk.tenant_id == tenant_id,
+            )
+        )
+
+        if new_title:
+            doc.title = new_title
+        if new_source_type:
+            doc.source_type = new_source_type
+
+        meta_str = json.dumps(meta, ensure_ascii=False) if meta else None
+        for idx, text, emb in chunks_data:
+            emb_384 = emb if len(emb) == 384 else None
+            emb_768 = emb if len(emb) == 768 else None
+            chunk = DocumentChunk(
+                document_id=document_id,
+                tenant_id=tenant_id,
+                chunk_index=idx,
+                content=text,
+                embedding=emb_384,
+                embedding_768=emb_768,
+                embedding_json=json.dumps(emb),
+                meta_json=meta_str,
+            )
+            self.session.add(chunk)
+
+        doc.total_chunks = len(chunks_data)
+        await self.session.commit()
+        await self.session.refresh(doc)
+        return doc
 
     async def search_similar_chunks(
         self,
@@ -183,6 +232,46 @@ class DocumentRepository:
         doc = await self.session.get(Document, document_id)
         if doc:
             doc.total_chunks = next_idx + 1
+
+        await self.session.commit()
+        await self.session.refresh(chunk)
+        return chunk
+
+    async def record_chunk_hit(
+        self,
+        chunk: DocumentChunk,
+        variant_query: Optional[str] = None,
+        updated_content: Optional[str] = None,
+        updated_embedding: Optional[List[float]] = None,
+    ) -> DocumentChunk:
+        """Increment ask_count, track caller phrasing variants, and optionally refresh chunk content."""
+        meta: Dict[str, Any] = {}
+        if chunk.meta_json:
+            try:
+                parsed = json.loads(chunk.meta_json)
+                if isinstance(parsed, dict):
+                    meta = parsed
+            except json.JSONDecodeError:
+                meta = {}
+
+        meta["ask_count"] = int(meta.get("ask_count", 1) or 1) + 1
+        meta["last_asked_at"] = datetime.now(timezone.utc).isoformat()
+
+        variants: List[str] = list(meta.get("variants") or [])
+        if variant_query:
+            clean_v = variant_query.strip()
+            if clean_v and clean_v.lower() not in {v.lower() for v in variants}:
+                variants.append(clean_v)
+                meta["variants"] = variants[-5:]
+
+        chunk.meta_json = json.dumps(meta, ensure_ascii=False)
+
+        if updated_content:
+            chunk.content = updated_content
+        if updated_embedding:
+            chunk.embedding = updated_embedding if len(updated_embedding) == 384 else None
+            chunk.embedding_768 = updated_embedding if len(updated_embedding) == 768 else None
+            chunk.embedding_json = json.dumps(updated_embedding)
 
         await self.session.commit()
         await self.session.refresh(chunk)

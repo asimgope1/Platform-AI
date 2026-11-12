@@ -1,0 +1,27 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "complaints",
+    "topic": "order_and_parcel_tracking_policy",
+    "title": "Order, Card Dispatch, and Shipment Tracking Policy",
+    "content": "Order and welcome-kit deliveries follow four standard fulfillment stages: Packed at Warehouse, Dispatched via Courier Partner (such as BlueDart, Delhivery, or Ecom Express), In Transit or Out for Delivery with OTP verification, and Delivered or Cancelled with automatic refund initiation. Callers asking about their specific order, parcel, dispatch delay, or shipment ETA should provide the last 4 digits of their Order ID by voice or keypad so the structured order-lookup tool retrieves live courier and delivery status; no ETA or courier should ever be guessed without tool output.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "complaints",
+    "topic": "complaint_escalation_matrix",
+    "title": "Customer Complaint Registration and Escalation Timeline",
+    "content": "Every registered service complaint generates a tracking ticket number via SMS. Standard operational complaints are resolved within 3 to 5 working days. If a resolution is delayed past SLA or unsatisfactory, callers may escalate to the Grievance Redressal Desk or connect directly with a live human specialist by pressing 9 or requesting an agent.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

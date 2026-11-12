@@ -1,0 +1,27 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "upi_payments",
+    "topic": "failed_upi_transaction",
+    "title": "UPI Transaction Failure and Auto-Reversal Policy",
+    "content": "When money is debited from the sender's bank account during a UPI transaction but the beneficiary does not receive the funds, NPCI guidelines provide automatic reversal. Most failed UPI transactions auto-reverse within T+1 business day and at most within 3 to 5 working days. If the reversal is not credited after 3 working days, the customer should raise a transaction dispute inside the UPI app under Transaction History using the 12-digit UTR or RRN reference number, or contact customer support to log a reconciliation ticket.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "upi_payments",
+    "topic": "upi_limits_and_wrong_transfer",
+    "title": "UPI Daily Transfer Limits and Incorrect Beneficiary Policy",
+    "content": "Standard peer-to-peer UPI transfers carry a daily limit of up to Rs 1,00,000 per 24 hours across up to 20 transactions, with a lower Rs 5,000 cap during the first 24 hours after resetting UPI MPIN or changing a SIM card. If funds were sent intentionally to an incorrect UPI ID, the bank cannot unilaterally reverse settled payments without beneficiary consent and recipient-bank recall mediation.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

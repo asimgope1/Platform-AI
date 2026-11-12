@@ -117,3 +117,4 @@ class TextEmotionAnalyzer:
             probabilities=norm_probs,
             signals=signals,
         )
+

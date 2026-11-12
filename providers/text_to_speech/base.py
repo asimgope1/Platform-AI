@@ -126,6 +126,14 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
                 (r"\bcomplaints?\b", "ଅଭିଯୋଗ"),
                 (r"\brepresentatives?\b", "ପ୍ରତିନିଧି"),
                 (r"\bagents?\b", "ଏଜେଣ୍ଟ"),
+                (r"\boriginal\b", "ମୂଳ"),
+                (r"\bverification\b", "ଭେରିଫିକେସନ"),
+                (r"\bverify\b", "ଯାଞ୍ଚ"),
+                (r"\bdebit\b", "ଡେବିଟ"),
+                (r"\bcredit\b", "କ୍ରେଡିଟ"),
+                (r"\btransfer\b", "ଟ୍ରାନ୍ସଫର"),
+                (r"\bbranch\b", "ଶାଖା"),
+                (r"\bservice\b", "ସେବା"),
             ]
             for pat, rep in odia_loanwords:
                 clean_text = re.sub(pat, f" {rep} ", clean_text, flags=re.IGNORECASE)
@@ -151,10 +159,32 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
             return None
         return None
 
-    async def _synthesize_edge_tts(self, text: str, voice: str, rate: str = "+0%") -> Optional[bytes]:
+    _EMOTION_PROSODY: Dict[str, tuple[str, str]] = {
+        "angry": ("-10%", "-2Hz"),
+        "frustrated": ("-9%", "-2Hz"),
+        "concerned": ("-8%", "-1Hz"),
+        "sad": ("-10%", "-2Hz"),
+        "happy": ("-1%", "+3Hz"),
+        "satisfied": ("-2%", "+2Hz"),
+        "neutral": ("-6%", "+0Hz"),
+    }
+
+    @classmethod
+    def prosody_for_emotion(cls, emotion: Optional[str]) -> tuple[str, str]:
+        """Map detected caller emotion to (speech_rate, pitch) for expressive neural TTS."""
+        key = (emotion or "neutral").strip().lower()
+        return cls._EMOTION_PROSODY.get(key, cls._EMOTION_PROSODY["neutral"])
+
+    async def _synthesize_edge_tts(
+        self,
+        text: str,
+        voice: str,
+        rate: str = "+0%",
+        pitch: str = "+0Hz",
+    ) -> Optional[bytes]:
         try:
             import edge_tts
-            communicate = edge_tts.Communicate(text, voice, rate=rate)
+            communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
             chunks = []
             async for chunk in communicate.stream():
                 if chunk["type"] == "audio":
@@ -243,9 +273,12 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         model: str = "tts-1",
         voice: str = "alloy",
         response_format: str = "mp3",
+        emotion: Optional[str] = None,
     ) -> bytes:
         clean_text = text.strip()
-        cache_key = f"{voice}:{clean_text}"
+        speech_rate, speech_pitch = self.prosody_for_emotion(emotion)
+        emo_tag = (emotion or "neutral").strip().lower()
+        cache_key = f"{voice}:{emo_tag}:{clean_text}"
         if cache_key in _TTS_CACHE:
             return _TTS_CACHE[cache_key]
 
@@ -271,12 +304,11 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         has_indian_context = has_hindi or has_odia or any(w in clean_text.lower() for w in ("namaste", "dabayein", "dabantu", "paayein", "odia", "hindi"))
         spoken_text = self._odia_to_phonetic(clean_text) if has_odia else clean_text
         neural_voice = "hi-IN-SwaraNeural" if has_indian_context else "en-IN-NeerjaNeural"
-        speech_rate = "-6%"
 
-        # Secondary: Ultra-realistic neural speech
+        # Secondary: Ultra-realistic neural speech modulated by caller emotion
         try:
             edge_audio = await asyncio.wait_for(
-                self._synthesize_edge_tts(spoken_text, neural_voice, rate=speech_rate),
+                self._synthesize_edge_tts(spoken_text, neural_voice, rate=speech_rate, pitch=speech_pitch),
                 timeout=7.0
             )
             if edge_audio:
@@ -347,10 +379,11 @@ class OpenAITextToSpeechAdapter(BaseTextToSpeechAdapter):
         model: str = "tts-1",
         voice: str = "alloy",
         response_format: str = "mp3",
+        emotion: Optional[str] = None,
     ) -> bytes:
         if not self.api_key:
             mock = MockTextToSpeechAdapter(self.provider_id, self.config)
-            return await mock.synthesize(text, model, voice, response_format)
+            return await mock.synthesize(text, model, voice, response_format, emotion=emotion)
 
         url = f"{self.base_url.rstrip('/')}/audio/speech"
         headers = {

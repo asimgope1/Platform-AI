@@ -142,5 +142,9 @@ class TestClosingTurnDetection:
         from telephony.ivr_session import is_closing_turn
         assert is_closing_turn("What is video KYC?", "Video KYC is online verification.") is False
         assert is_closing_turn("Mera UPI refund nahi aaya", "UPI refund takes 3-5 days.") is False
+        assert is_closing_turn(
+            "Thank you.",
+            "Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?",
+        ) is False
 
 

@@ -1,0 +1,15 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "netbanking_and_cheque_book",
+    "title": "Internet Banking Unlock and Cheque Book Issuance Policy",
+    "content": "Locked Internet Banking profiles resulting from repeated incorrect password attempts automatically unlock after 24 hours or can be reset immediately using the Forgot Password flow with Debit Card and OTP verification. Cheque books of 10, 25, or 50 leaves can be ordered inside Mobile Banking or Internet Banking and arrive at the registered mailing address within 5 to 7 working days.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

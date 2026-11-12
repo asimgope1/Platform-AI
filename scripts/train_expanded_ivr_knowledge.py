@@ -239,6 +239,39 @@ Connecting to a Live Representative (English):
 - Automated Callback Option: If queues are busy, simply state 'Call me back' and our next available supervisor will return your call within 15 minutes.
 - Verification: Keep the last 4 digits of your registered mobile number or your 4-digit IVR T-PIN handy for quick authorization."
 """
+    },
+
+    # ── 9. ORDER ID STATUS LOOKUP (LAST 4 DIGITS VERIFICATION PROTOCOL) ─────
+    {
+        "title": "Order ID Status Verification & Complete Shipment Tracking (Last 4 Digits)",
+        "source_type": "order_status_verification",
+        "content": """
+[ORDER ID STATUS VERIFICATION PROTOCOL — ASK LAST 4 DIGITS FIRST]
+
+IVR Two-Step Order Status Workflow (English, Hindi, Odia):
+- Step 1 (Ask Last 4 Digits): Whenever a caller asks about their Order ID, Order status, parcel status, or delivery status without specifying the Order ID digits, ALWAYS ask for the last 4 digits of their Order ID first:
+  - English: "Certainly! Please tell me the last 4 digits of your Order ID so I can check and share its complete status."
+  - Hindi: "जी बिल्कुल, कृपया अपने ऑर्डर आईडी के अंतिम 4 अंक बताइए ताकि मैं आपको आपके ऑर्डर की पूरी स्थिति बता सकूँ।"
+  - Odia: "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡିର ଶେଷ ୪ଟି ଅଙ୍କ କୁହନ୍ତୁ ଯେପରି ମୁଁ ଆପଣଙ୍କୁ ଏହାର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ଜଣାଇପାରିବି।"
+- Step 2 (Reply Back Complete Order Status): Once the caller provides the last 4 digits (by voice or keypad), reply back completely with the Order ID ending digits, current delivery status, courier partner, expected delivery timeline, and SMS tracking/OTP note.
+
+Verified Order ID Status Directory (Last 4 Digits Lookup):
+- Order ID ending in 4821: Status is Out for Delivery today via BlueDart Courier (AWB BD994821). Delivery is scheduled today between 2:00 PM and 6:00 PM at your registered address. Prepaid via UPI, and your 4-digit delivery OTP has been sent via SMS.
+  Hindi: "आपके ऑर्डर आईडी 4821 की पूरी स्थिति यह है कि आपका पार्सल ब्लूडार्ट कूरियर के माध्यम से आज डिलीवरी के लिए निकल चुका है। यह आज दोपहर 2 बजे से शाम 6 बजे के बीच आपके पंजीकृत पते पर पहुंचेगा और डिलीवरी ओटीपी आपके मोबाइल पर एसएमएस द्वारा भेज दिया गया है।"
+  Odia: "ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡି 4821 ର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ହେଉଛି ଏହା ଆଜି ବ୍ଲୁଡାର୍ଟ କୁରିଅର ମାଧ୍ୟମରେ ଡେଲିଭରି ପାଇଁ ବାହାରିସାରିଛି। ଆଜି ଅପରାହ୍ନ ୨ଟା ରୁ ସନ୍ଧ୍ୟା ୬ଟା ମଧ୍ୟରେ ପହଞ୍ଚିବ ଏବଂ ଡେଲିଭରି ଓଟିପି ଏସଏମଏସରେ ପଠାଯାଇଛି।"
+
+- Order ID ending in 7392: Status is In Transit at the Mumbai Sorting Hub via Delhivery Courier (AWB DL777392). Parcel departed the warehouse on schedule and expected delivery is tomorrow by 5:00 PM. Live GPS tracking link has been sent to your registered mobile number.
+  Hindi: "आपके ऑर्डर आईडी 7392 की पूरी स्थिति यह है कि आपका ऑर्डर डेल्हीवरी कूरियर के मुंबई हब में पहुंच चुका है और रास्ते में है। इसकी डिलीवरी कल शाम 5 बजे तक संभावित है और लाइव ट्रैकिंग लिंक एसएमएस द्वारा भेज दिया गया है।"
+
+- Order ID ending in 1024: Status is Packed and Ready for Dispatch at our fulfillment center with courier partner Ecom Express (AWB EX111024). Carrier pickup is scheduled tonight, and delivery will arrive within 2 to 3 business days.
+  Hindi: "आपके ऑर्डर आईडी 1024 की पूरी स्थिति यह है कि आपका ऑर्डर पैक होकर डिस्पैच के लिए तैयार है। आज रात ईकॉम एक्सप्रेस कूरियर इसे पिकअप करेगा और 2 से 3 कार्यदिवसों में डिलीवर कर दिया जाएगा।"
+
+- Order ID ending in 9510: Status is Delivered yesterday at 4:15 PM at your registered address and verified with your delivery OTP. The 7-day hassle-free return and replacement window is currently active.
+  Hindi: "आपके ऑर्डर आईडी 9510 की पूरी स्थिति यह है कि आपका पार्सल कल शाम 4 बजकर 15 मिनट पर सफलतापूर्वक डिलीवर हो चुका है। यदि किसी सहायता की आवश्यकता हो तो 7 दिनों की रिटर्न सुविधा उपलब्ध है।"
+
+- Order ID ending in 3304: Status is Cancelled prior to dispatch as requested, and your full refund has been processed and credited back to your original UPI payment account with SMS confirmation sent.
+  Hindi: "आपके ऑर्डर आईडी 3304 की पूरी स्थिति यह है कि आपका ऑर्डर डिस्पैच से पहले रद्द कर दिया गया था और आपका पूरा रिफंड आपके मूल भुगतान खाते में वापस जमा कर दिया गया है।"
+"""
     }
 ]
 
@@ -271,8 +304,14 @@ async def train_expanded_knowledge():
         else:
             print(f"✓ Using existing tenant: {tenant.name} (ID: {tenant.id})")
 
+        existing_docs = await doc_repo.list_by_tenant(tenant.id)
+        existing_titles = {d.title for d in existing_docs}
+
         total_chunks = 0
         for doc_item in IVR_EXPANDED_KNOWLEDGE:
+            if doc_item["title"] in existing_titles:
+                print(f"  = Skipping already ingested '{doc_item['title'][:45]}...'")
+                continue
             doc = await ingestion_service.ingest_document(
                 tenant_id=tenant.id,
                 title=doc_item["title"],
@@ -302,6 +341,7 @@ async def train_expanded_knowledge():
             ("UPI Refund", "UPI transaction fail ho gaya paise kat gaye"),
             ("Video KYC", "What documents are required to complete Video KYC?"),
             ("Order Tracking", "Mera delivery status kya hai parcel kab aayega"),
+            ("Order ID 4821 Status", "Check status of order id last 4 digits 4821"),
             ("Speak to Human", "I want to talk to a human customer care representative"),
             ("Audio Clarification", "Awaaz nahi aa rahi thoda dheere bolo"),
             ("Closing / Thanks", "Bahut bahut shukriya aapka"),

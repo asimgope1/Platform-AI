@@ -30,7 +30,7 @@ def upgrade() -> None:
         if is_postgres:
             op.add_column("document_chunks", sa.Column("embedding", Vector(384), nullable=True))
         else:
-            op.add_column("document_chunks", sa.Column("embedding", sa.NullType(), nullable=True))
+            op.add_column("document_chunks", sa.Column("embedding", sa.JSON(), nullable=True))
 
 
 def downgrade() -> None:

@@ -30,6 +30,7 @@ URDU_TO_DEVANAGARI = {
 HINDI_LOANWORDS_MAP = [
     (r'\b(?:video\s*kyc|vedio\s*kyc)\b', 'वीडियो केवाईसी'),
     (r'\b(?:kyc)\b', 'केवाईसी'),
+    (r'\b(?:documents?|docs?)\b', 'डॉक्यूमेंट्स'),
     (r'\b(?:upi|u\s*p\s*i)\b', 'यूपीआई'),
     (r'\b(?:pan\s*card)\b', 'पैन कार्ड'),
     (r'\b(?:aadhaar\s*card|aadhar\s*card|adhar\s*card)\b', 'आधार कार्ड'),
@@ -40,13 +41,20 @@ HINDI_LOANWORDS_MAP = [
     (r'\b(?:balance)\b', 'बैलेंस'),
     (r'\b(?:customer\s*support|customer\s*care)\b', 'ग्राहक सेवा'),
     (r'\b(?:payment)\b', 'पेमेंट'),
+    (r'\b(?:verification|verify)\b', 'वेरिफिकेशन'),
+    (r'\b(?:order\s*id)\b', 'ऑर्डर आईडी'),
+    (r'\b(?:order)\b', 'ऑर्डर'),
+    (r'\b(?:delivery)\b', 'डिलीवरी'),
+    (r'\b(?:parcel)\b', 'पार्सल'),
+    (r'\b(?:digits?)\b', 'अंक'),
+    (r'\b(?:status)\b', 'स्टेटस'),
 ]
 
 UNIVERSAL_PHONETIC_NORMALIZATION = [
     # UPI phonetic misrecognitions: "you be a", "you be i", "you pay", "u p i", "up i", "yupi"
     (r'\b(?:you\s*be\s*[ai]|you\s*pay|u\s*p\s*i|up\s*i|yupi|u\s*b\s*i)\b', 'UPI'),
     # Video KYC phonetic misrecognitions: "vedio kyc", "video k y c", "kay why see", "k y c"
-    (r'\b(?:vedio\s*kyc|video\s*k\s*y\s*c|kay\s*why\s*see)\b', 'Video KYC'),
+    (r'\b(?:vedio\s*kyc|video\s*k\s*y\s*c|kay\s*why\s*see|vdo\s*kyc)\b', 'Video KYC'),
     (r'\b(?:k\s*y\s*c)\b', 'KYC'),
     # PAN / Aadhaar card misrecognitions
     (r'\b(?:pen\s*card|pan\s*car)\b', 'PAN card'),
@@ -55,6 +63,8 @@ UNIVERSAL_PHONETIC_NORMALIZATION = [
     # Common mishearings of Hindi "batao" / "bataiye" in Hinglish audio
     (r'\bpayment\s+(?:better|butter|battle)\b', 'UPI payment refund status'),
     (r'\bkyc\s+(?:better|butter)\b', 'KYC details'),
+    # Order reference phonetic mishearings over 8 kHz PSTN (e.g. 'ORT2005', 'OIT2005' -> 'ORD-2005')
+    (r'\b(?:ort|oit|ord)\s*-?\s*(\d{3,6})\b', r'ORD-\1'),
 ]
 
 
@@ -76,6 +86,15 @@ def _clean_hallucinations_and_loops(text: str) -> str:
     return text.strip()
 
 
+def _is_improbable_hallucination(text: str, duration: float) -> bool:
+    """Reject impossible speaking-rate hallucinations on short/clipped telephony bursts."""
+    if not text:
+        return False
+    word_count = len(text.split())
+    wps = word_count / max(0.1, duration)
+    return (word_count >= 5 and duration < 1.2 and wps > 5.5) or (word_count >= 8 and wps > 7.5)
+
+
 class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
     """Real local speech-to-text adapter utilizing Whisper (whisper-base / whisper-tiny).
     
@@ -95,6 +114,11 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                     from transformers import pipeline
                     logger.info(f"Loading local Whisper STT model: '{self.model_name}' on CPU...")
                     self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu")
+                    # Clear conflicting default max_length on both model and pipeline generation_config
+                    for cfg_owner in (self._pipe, getattr(self._pipe, "model", None)):
+                        gen_cfg = getattr(cfg_owner, "generation_config", None)
+                        if gen_cfg is not None and hasattr(gen_cfg, "max_length"):
+                            gen_cfg.max_length = None
                     logger.info("Local Whisper STT model pipeline ready.")
         return self._pipe
 
@@ -213,10 +237,10 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         # Configure Whisper generation arguments with domain vocabulary biasing
         pipe = self._get_pipeline()
         gen_kwargs = {
-            "max_new_tokens": 128,
-            "max_length": None,
+            "max_new_tokens": 96,
+            "num_beams": 1,
+            "do_sample": False,
             "no_repeat_ngram_size": 3,
-            "temperature": 0.0,
         }
         prompt_text = ""
 
@@ -227,7 +251,8 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         elif language in ("hi", "hindi", "hi-IN"):
             gen_kwargs["language"] = "hi"
             gen_kwargs["task"] = "transcribe"
-            prompt_text = "ग्राहक सहायता कॉल: वीडियो केवाईसी, आधार कार्ड, पैन कार्ड, यूपीआई रिफंड, विफल भुगतान, खाता शेष, कार्ड ब्लॉक, एटीएम पिन, ऋण, धन्यवाद, नमस्ते।"
+            # Pure Devanagari domain prompt prevents whisper-base cross-script gibberish hallucinations
+            prompt_text = "ग्राहक सहायता कॉल: वीडियो केवाईसी, पैन कार्ड, आधार कार्ड, यूपीआई रिफंड, एटीएम पिन, खाता बैलेंस, कार्ड ब्लॉक, ऑर्डर स्टेटस, धन्यवाद।"
         elif language in ("en", "english", "en-IN", "en-US"):
             gen_kwargs["language"] = "en"
             gen_kwargs["task"] = "transcribe"
@@ -252,7 +277,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         t_stt_start = time.perf_counter()
         raw_input = {"raw": audio_data.astype(np.float32), "sampling_rate": samplerate}
         try:
-            result = pipe(raw_input, generate_kwargs=gen_kwargs, return_timestamps=True)
+            result = pipe(raw_input, generate_kwargs=gen_kwargs, return_timestamps=(duration > 25.0))
         except Exception:
             result = pipe(raw_input, generate_kwargs=gen_kwargs)
 
@@ -273,9 +298,45 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
             for pattern, replacement in HINDI_LOANWORDS_MAP:
                 transcribed_text = re.sub(pattern, replacement, transcribed_text, flags=re.IGNORECASE)
 
-        # Clean repetitive loops and hallucination tokens without dropping legitimate speech
+        # Clean repetitive loops and impossible-rate hallucinations
         cleaned_text = _clean_hallucinations_and_loops(transcribed_text)
         hallucination_filtered = bool(transcribed_text and not cleaned_text)
+        if _is_improbable_hallucination(cleaned_text, duration):
+            logger.info(
+                f"Filtered improbable Whisper hallucination (dur={duration}s): '{cleaned_text[:60]}'"
+            )
+            cleaned_text = ""
+            hallucination_filtered = True
+
+        # If forced Hindi/Odia pass produced empty output on audible speech (e.g., caller spoke
+        # pure English terms like "Video KYC documents"), run one English rescue pass.
+        if (
+            not cleaned_text
+            and rms >= 0.015
+            and language in ("hi", "hindi", "hi-IN", "or", "or-IN", "ory", "odia")
+        ):
+            en_kwargs = {
+                "max_new_tokens": 96,
+                "num_beams": 1,
+                "do_sample": False,
+                "no_repeat_ngram_size": 3,
+                "language": "en",
+                "task": "transcribe",
+            }
+            try:
+                en_res = pipe(raw_input, generate_kwargs=en_kwargs)
+                en_candidate = _clean_hallucinations_and_loops((en_res.get("text") or "").strip())
+                if en_candidate and not _is_improbable_hallucination(en_candidate, duration):
+                    for pattern, replacement in UNIVERSAL_PHONETIC_NORMALIZATION:
+                        en_candidate = re.sub(pattern, replacement, en_candidate, flags=re.IGNORECASE)
+                    if language in ("hi", "hindi", "hi-IN"):
+                        for pattern, replacement in HINDI_LOANWORDS_MAP:
+                            en_candidate = re.sub(pattern, replacement, en_candidate, flags=re.IGNORECASE)
+                    cleaned_text = en_candidate
+                    hallucination_filtered = False
+            except Exception as rescue_err:
+                logger.debug(f"Whisper English rescue pass skipped: {rescue_err}")
+
         transcribed_text = cleaned_text
 
         # Compute decoding diagnostics (compression ratio, speaking rate, latency)

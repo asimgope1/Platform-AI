@@ -38,8 +38,11 @@ BANKING_TERMS_SET = {
     "balance", "card", "debit", "credit", "atm", "pin", "loan", "emi", "complaint",
     "bank", "branch", "cheque", "check", "transfer", "neft", "imps", "rtgs", "failed",
     "pending", "debited", "deducted", "blocked", "freeze", "agent", "representative",
+    "order", "status", "delivery", "track", "tracking", "shipment", "courier", "parcel",
     "यूपीआई", "केवाईसी", "पैन", "आधार", "रिफंड", "खाता", "बैलेंस", "कार्ड", "ऋण", "शिकायत", "पेमेंट",
+    "ऑर्डर", "डिलीवरी", "स्टेटस", "पार्सल", "ट्रैक",
     "ୟୁପିଆଇ", "କେୱାଇସି", "ଆଧାର", "ପ୍ୟାନ୍", "ଖାତା", "ବାଲାନ୍ସ", "କାର୍ଡ", "ଅଭିଯୋଗ",
+    "ଅର୍ଡର", "ଡେଲିଭରି", "ସ୍ଥିତି", "ପାର୍ସଲ",
 }
 
 AMOUNT_PATTERN = re.compile(r"(?:₹|rs\.?|inr|rupees?|रुपये|टके|ଟଙ୍କା)\s*([\d,]+(?:\.\d{1,2})?)|([\d,]{2,7})\s*(?:rs\.?|inr|rupees?|रुपये|ଟଙ୍କା)", re.IGNORECASE)
@@ -175,13 +178,14 @@ class TranscriptAnalyzer:
         has_devanagari = any("\u0900" <= ch <= "\u097f" for ch in normalized)
         has_odia = any("\u0b00" <= ch <= "\u0b7f" for ch in normalized)
         has_latin = any("a" <= ch.lower() <= "z" for ch in normalized)
+        is_pure_digits = bool(re.fullmatch(r"[\d\s\-.,#०-९୦-୯]+", normalized))
 
         language_match = True
-        if selected_language == "hi" and not has_devanagari:
+        if selected_language == "hi" and not has_devanagari and not is_pure_digits:
             language_match = False
             confidence -= 0.18 if has_latin else 0.25
             issues.append("script_mismatch_hi")
-        elif selected_language == "or" and not has_odia:
+        elif selected_language == "or" and not has_odia and not is_pure_digits:
             language_match = False
             confidence -= 0.18 if (has_devanagari or has_latin) else 0.25
             issues.append("script_mismatch_or")

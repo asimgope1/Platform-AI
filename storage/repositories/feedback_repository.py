@@ -45,3 +45,4 @@ class FeedbackRepository:
         )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+

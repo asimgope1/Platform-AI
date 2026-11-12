@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     PBX_WS_URL: Optional[str] = None
     PBX_IGNORE_TRANSCRIPT: bool = True
     IVR_CHAT_MODEL: str = "mock-chat"
+    GEMMA_MODEL_ALIAS: str = "gemma4"
     IVR_LANGUAGE: str = "en"
 
     # Audio Intelligence (Milestone 1)
@@ -46,9 +47,33 @@ class Settings(BaseSettings):
     NOISE_SUPPRESSION_PROVIDER: str = "spectral"
     ECHO_CANCELLATION_ENABLED: bool = False
 
+    # Remote Business Tool Service (Windows Django Backend)
+    REMOTE_TOOLS_ENABLED: bool = False
+    REMOTE_TOOLS_BASE_URL: Optional[str] = None
+    REMOTE_TOOLS_AUTH_TOKEN: Optional[str] = None
+    REMOTE_TOOLS_API_KEY: Optional[str] = None
+    REMOTE_TOOLS_HMAC_SECRET: Optional[str] = None
+    REMOTE_TOOLS_REQUIRE_AUTH: bool = False
+    REMOTE_TOOLS_REQUIRE_HTTPS_IN_PROD: bool = True
+    REMOTE_TOOLS_TIMEOUT_SECONDS: float = 5.0
+    REMOTE_TOOLS_MAX_RETRIES: int = 2
+    REMOTE_TOOLS_PER_TENANT_CONCURRENCY: int = 8
+    REMOTE_TOOLS_RATE_LIMIT_PER_MIN: int = 120
+    REMOTE_TOOLS_DEFAULT_TENANT_SLUG: Optional[str] = None
+    REMOTE_TOOLS_TENANT_MAP: str = "{}"
+    REMOTE_TOOLS_PREFER_REMOTE: bool = False
+    DATA_ACCESS_MASTER_KEY: Optional[str] = None
+
+    # External Complaint / Business Action API Integration & Call Tooling
+    COMPLAINT_API_URL: Optional[str] = None
+    COMPLAINT_API_TOKEN: Optional[str] = None
+    EXTERNAL_API_ALLOWED_BASES: str = ""
+    IVR_ENABLE_TOOLS: bool = True
+    IVR_TOOL_TURN_TIMEOUT_SECONDS: float = 95.0
+
 
 def validate_master_key(cfg: Settings) -> None:
-    """Validates that production environments enforce a secure, non-placeholder MASTER_API_KEY."""
+    """Validates that production environments enforce secure keys and fail-closed remote auth."""
     if cfg.ENVIRONMENT.lower() == "production":
         key = cfg.MASTER_API_KEY
         if not key or len(key) < 32:
@@ -60,6 +85,26 @@ def validate_master_key(cfg: Settings) -> None:
             raise ValueError(
                 "The default placeholder cannot be used in production."
             )
+        if cfg.REMOTE_TOOLS_ENABLED:
+            if not cfg.REMOTE_TOOLS_REQUIRE_AUTH:
+                raise ValueError(
+                    "Production requires REMOTE_TOOLS_REQUIRE_AUTH=True when REMOTE_TOOLS_ENABLED=True."
+                )
+            has_cred = any(
+                (v or "").strip()
+                for v in (cfg.REMOTE_TOOLS_AUTH_TOKEN, cfg.REMOTE_TOOLS_API_KEY, cfg.REMOTE_TOOLS_HMAC_SECRET)
+            )
+            if not has_cred:
+                raise ValueError(
+                    "Production requires at least one remote tool credential "
+                    "(REMOTE_TOOLS_API_KEY, REMOTE_TOOLS_AUTH_TOKEN, or REMOTE_TOOLS_HMAC_SECRET)."
+                )
+            if cfg.REMOTE_TOOLS_REQUIRE_HTTPS_IN_PROD and cfg.REMOTE_TOOLS_BASE_URL:
+                if not cfg.REMOTE_TOOLS_BASE_URL.strip().lower().startswith("https://"):
+                    raise ValueError(
+                        "Production requires an https:// REMOTE_TOOLS_BASE_URL unless "
+                        "REMOTE_TOOLS_REQUIRE_HTTPS_IN_PROD=False is explicitly set for a private mTLS tunnel."
+                    )
 
 
 settings = Settings()

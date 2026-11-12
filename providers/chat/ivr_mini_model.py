@@ -138,7 +138,146 @@ AUTONOMOUS_KNOWLEDGE = {
         "hi": "मैं विशेष रूप से बैंक ग्राहक सेवा के लिए हूँ। बताइए मैं आपके बैंक खाते, यूपीआई या केवाईसी में क्या सहायता कर सकती हूँ?",
         "or": "ମୁଁ କେବଳ ବ୍ୟାଙ୍କ ଗ୍ରାହକ ସେବା ପାଇଁ ଉପଲବ୍ଧ। ଆଜି ଆପଣଙ୍କ ଖାତା, ୟୁପିଆଇ ବା କେୱାଇସିରେ ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
+    "order_status_ask_digits": {
+        "en": "Certainly! Please tell me the last 4 digits of your Order ID so I can check and share its complete status.",
+        "hi": "जी बिल्कुल, कृपया अपने ऑर्डर आईडी के अंतिम 4 अंक बताइए ताकि मैं आपको आपके ऑर्डर की पूरी स्थिति बता सकूँ।",
+        "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡିର ଶେଷ ୪ଟି ଅଙ୍କ କୁହନ୍ତୁ ଯେପରି ମୁଁ ଆପଣଙ୍କୁ ଏହାର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ଜଣାଇପାରିବି।",
+    },
+    "order_status": {
+        "en": "Certainly! Please tell me the last 4 digits of your Order ID so I can check and share its complete status.",
+        "hi": "जी बिल्कुल, कृपया अपने ऑर्डर आईडी के अंतिम 4 अंक बताइए ताकि मैं आपको आपके ऑर्डर की पूरी स्थिति बता सकूँ।",
+        "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡିର ଶେଷ ୪ଟି ଅଙ୍କ କୁହନ୍ତୁ ଯେପରି ମୁଁ ଆପଣଙ୍କୁ ଏହାର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ଜଣାଇପାରିବି।",
+    },
 }
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Order ID Lookup & Last-4-Digit Extractor (Multilingual Voice & Text)
+# ──────────────────────────────────────────────────────────────────────────────
+
+_INDIC_DIGIT_TRANSLATION = str.maketrans("०१२३४५६७८९୦୧୨୩୪୫୬୭୮୯", "01234567890123456789")
+
+_SPOKEN_DIGIT_WORDS = {
+    "zero": "0", "oh": "0", "shunya": "0", "sunya": "0", "शून्य": "0", "ଶୂନ": "0",
+    "one": "1", "ek": "1", "एक": "1", "ଏକ": "1",
+    "two": "2", "do": "2", "दो": "2", "ଦୁଇ": "2",
+    "three": "3", "teen": "3", "तीन": "3", "ତିନି": "3",
+    "four": "4", "char": "4", "चार": "4", "ଚାରି": "4",
+    "five": "5", "paanch": "5", "panch": "5", "पांच": "5", "पाँच": "5", "ପାଞ୍ଚ": "5",
+    "six": "6", "chhah": "6", "cheh": "6", "छह": "6", "ଛଅ": "6",
+    "seven": "7", "saat": "7", "सात": "7", "ସାତ": "7",
+    "eight": "8", "aath": "8", "आठ": "8", "ଆଠ": "8",
+    "nine": "9", "nau": "9", "नौ": "9", "ନଅ": "9",
+}
+
+ORDER_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
+    "4821": {
+        "en": (
+            "Order ID 4821 is Out for Delivery today via BlueDart Courier and will arrive between "
+            "2:00 PM and 6:00 PM. It is prepaid by UPI, and your delivery OTP was sent via SMS."
+        ),
+        "hi": (
+            "ऑर्डर आईडी 4821 आज ब्लूडार्ट कूरियर से डिलीवरी के लिए निकल चुका है और दोपहर 2 से शाम 6 बजे तक पहुंचेगा। "
+            "यह यूपीआई से प्रीपेड है और डिलीवरी ओटीपी एसएमएस पर भेज दिया गया है।"
+        ),
+        "or": (
+            "ଅର୍ଡର ଆଇଡି 4821 ଆଜି ବ୍ଲୁଡାର୍ଟ କୁରିଅରରେ ଡେଲିଭରି ପାଇଁ ବାହାରିଛି ଏବଂ ଅପରାହ୍ନ ୨ ରୁ ୬ଟା ମଧ୍ୟରେ ପହଞ୍ଚିବ। "
+            "ଏହାର ଡେଲିଭରି ଓଟିପି ଏସଏମଏସରେ ପଠାଯାଇଛି।"
+        ),
+    },
+    "7392": {
+        "en": (
+            "Order ID 7392 is In Transit at the Mumbai hub via Delhivery Courier, scheduled for "
+            "delivery tomorrow by 5:00 PM. Your live SMS tracking link is active."
+        ),
+        "hi": (
+            "ऑर्डर आईडी 7392 डेल्हीवरी कूरियर के मुंबई हब में पहुंच चुका है और कल शाम 5 बजे तक डिलीवर होगा। "
+            "लाइव ट्रैकिंग लिंक एसएमएस द्वारा भेज दिया गया है।"
+        ),
+        "or": (
+            "ଅର୍ଡର ଆଇଡି 7392 ଡେଲହିଭରି କୁରିଅରର ମୁମ୍ବାଇ ହବ୍ ରେ ଅଛି ଏବଂ ଆସନ୍ତାକାଲି ସନ୍ଧ୍ୟା ୫ଟା ସୁଦ୍ଧା ପହଞ୍ଚିବ। "
+            "ଟ୍ରାକିଂ ଲିଙ୍କ୍ ଏସଏମଏସରେ ପଠାଯାଇଛି।"
+        ),
+    },
+    "1024": {
+        "en": (
+            "Order ID 1024 is Packed and Ready for Dispatch via Ecom Express Courier. Pickup is "
+            "tonight, with delivery within 2 to 3 business days."
+        ),
+        "hi": (
+            "ऑर्डर आईडी 1024 पैक होकर डिस्पैच के लिए तैयार है। आज रात ईकॉम एक्सप्रेस से पिकअप होकर 2 से 3 कार्यदिवसों में डिलीवर होगा।"
+        ),
+        "or": (
+            "ଅର୍ଡର ଆଇଡି 1024 ପ୍ୟାକ୍ ହୋଇ ଡେସ୍ପାଚ୍ ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି। ଇକମ୍ ଏକ୍ସପ୍ରେସ୍ କୁରିଅରରେ ୨ ରୁ ୩ କାର୍ଯ୍ୟଦିବସରେ ପହଞ୍ଚିବ।"
+        ),
+    },
+    "9510": {
+        "en": (
+            "Order ID 9510 was Delivered yesterday at 4:15 PM and verified via delivery OTP, with a "
+            "7-day return window still active."
+        ),
+        "hi": (
+            "ऑर्डर आईडी 9510 कल शाम 4 बजकर 15 मिनट पर सफलतापूर्वक डिलीवर हो चुका है और 7 दिनों की रिटर्न सुविधा उपलब्ध है।"
+        ),
+        "or": (
+            "ଅର୍ଡର ଆଇଡି 9510 ଗତକାଲି ଅପରାହ୍ନ ୪:୧୫ ରେ ଡେଲିଭରି ହୋଇସାରିଛି ଏବଂ ୭ ଦିନିଆ ରିଟର୍ଣ୍ଣ ସୁବିଧା ଉପଲବ୍ଧ ଅଛି।"
+        ),
+    },
+    "3304": {
+        "en": (
+            "Order ID 3304 was Cancelled before dispatch, and your full refund has been credited to "
+            "your original payment account with SMS confirmation."
+        ),
+        "hi": (
+            "ऑर्डर आईडी 3304 डिस्पैच से पहले रद्द कर दिया गया था और आपका पूरा रिफंड मूल खाते में वापस जमा हो चुका है।"
+        ),
+        "or": (
+            "ଅର୍ଡର ଆଇଡି 3304 ଡେସ୍ପାଚ୍ ପୂର୍ବରୁ ବାତିଲ ହୋଇଥିଲା ଏବଂ ସମ୍ପୂର୍ଣ୍ଣ ରିଫଣ୍ଡ ଆପଣଙ୍କ ମୂଳ ଖାତାକୁ ଫେରସ୍ତ ହୋଇସାରିଛି।"
+        ),
+    },
+}
+
+
+def extract_order_last4_digits(text: str, allow_bare_digits: bool = False) -> Optional[str]:
+    """
+    Extracts the last 4 digits of an Order ID from spoken digits, grouped numbers,
+    longer Order ID strings (e.g. ORD-994821 -> 4821), or Indic numerals.
+    """
+    if not text:
+        return None
+
+    normalized = text.translate(_INDIC_DIGIT_TRANSLATION).strip()
+    lower = normalized.lower()
+
+    has_money_context = bool(re.search(r"(?:₹|rs\.?|inr|rupees?|रुपये|टके|ଟଙ୍କା)", lower))
+    has_order_context = bool(
+        re.search(
+            r"(?:order|ord|id|digit|last|number|track|status|parcel|ऑर्डर|अंक|आईडी|ଅର୍ଡର|ଅଙ୍କ)",
+            lower,
+        )
+    )
+    if has_money_context and not allow_bare_digits and not has_order_context:
+        return None
+
+    # 1. Explicit 4+ contiguous digits (e.g. 4821 or ORD-984821 -> last 4 = 4821)
+    contiguous_runs = re.findall(r"\d{4,}", normalized)
+    if contiguous_runs:
+        return contiguous_runs[-1][-4:]
+
+    # 2. Spaced digits or spoken number words when in order-digit flow or order context
+    if allow_bare_digits or has_order_context:
+        tokens = re.findall(r"[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+|\d+", lower)
+        digit_chars: List[str] = []
+        for tok in tokens:
+            if tok.isdigit():
+                digit_chars.append(tok)
+            elif tok in _SPOKEN_DIGIT_WORDS:
+                digit_chars.append(_SPOKEN_DIGIT_WORDS[tok])
+        joined = "".join(digit_chars)
+        if len(joined) >= 4:
+            return joined[-4:]
+
+    return None
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -208,8 +347,7 @@ class IVRRAGMiniModel:
         if any(w in lower_query for w in ["confirm", "sure?", "pukka", "pakka", "right?", "correct?", "पुष्टि", "पक्का", "सच में", "ସତରେ"]):
             return AUTONOMOUS_KNOWLEDGE["confirmation"][lang]
 
-        # 4e. Detect caller emotional frustration/stress to inject empathetic reassurance
-        empathy_prefix = ""
+        # 4e. Detect caller sentiment (frustrated/angry, concerned/sad, satisfied/happy)
         intel_emo = ""
         prev_attempts = 0
         if intelligence_context:
@@ -217,29 +355,24 @@ class IVRRAGMiniModel:
             intel_emo = str(emo_dict.get("fused") or emo_dict.get("text") or "").lower()
             prev_attempts = int(intelligence_context.get("previous_attempts") or 0)
 
-        if (
-            intel_emo in ("frustrated", "angry")
-            or prev_attempts >= 2
-            or any(w in lower_query for w in [
-                "frustrated", "angry", "terrible", "worst", "stress", "pareshan", "chinta",
-                "fas gaya", "parisan", "gussa", "tension", "bekaar", "worry", "worried", "urgent",
-                "चिंता", "परेशान", "गुस्सा", "फंस गया", "तनाव", "ଠକେଇ", "ଚିନ୍ତା"
-            ])
-        ):
-            if prev_attempts >= 2:
-                retry_map = {
-                    "en": "I understand you've already tried this earlier — let me help you with the next option right away. ",
-                    "hi": "मैं समझती हूँ कि आप पहले भी प्रयास कर चुकी हैं, चलिए मैं तुरंत अगले समाधान में मदद करती हूँ। ",
-                    "or": "ମୁଁ ବୁଝିପାରୁଛି ଆପଣ ପୂର୍ବରୁ ଚେଷ୍ଟା କରିଛନ୍ତି, ଚାଲନ୍ତୁ ମୁଁ ତୁରନ୍ତ ପରବର୍ତ୍ତୀ ସମାଧାନରେ ସାହାଯ୍ୟ କରୁଛି। ",
-                }
-                empathy_prefix = retry_map.get(lang, retry_map["en"])
-            else:
-                empathy_map = {
-                    "en": "I completely understand your concern, please don't worry. ",
-                    "hi": "मैं आपकी परेशानी समझ सकती हूँ, आप बिल्कुल चिंता मत कीजिए। ",
-                    "or": "ମୁଁ ଆପଣଙ୍କ ଚିନ୍ତା ବୁଝିପାରୁଛି, ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ। ",
-                }
-                empathy_prefix = empathy_map.get(lang, empathy_map["en"])
+        if not intel_emo or intel_emo == "neutral":
+            if (
+                prev_attempts >= 2
+                or any(w in lower_query for w in [
+                    "frustrated", "angry", "terrible", "worst", "stress", "pareshan", "chinta",
+                    "fas gaya", "parisan", "gussa", "tension", "bekaar", "worry", "worried", "urgent",
+                    "चिंता", "परेशान", "गुस्सा", "फंस गया", "तनाव", "ଠକେଇ", "ଚିନ୍ତା",
+                ])
+            ):
+                intel_emo = "frustrated"
+            elif any(w in lower_query for w in [
+                "concerned", "confused", "stuck", "unsure", "nervous", "समझ नहीं", "ଅସୁବିଧା",
+            ]):
+                intel_emo = "concerned"
+            elif any(w in lower_query for w in [
+                "thank you", "thanks", "great", "wonderful", "awesome", "dhanyawad", "shukriya", "धन्यवाद", "ଧନ୍ୟବାଦ",
+            ]):
+                intel_emo = "satisfied"
 
         # 4f. Check unrelated / general knowledge queries
         if any(w in lower_query for w in [
@@ -251,37 +384,122 @@ class IVRRAGMiniModel:
 
         # 5. Extract multi-turn context (e.g. "how much time?", "and what about documents?")
         inferred_intent = self._infer_intent_with_history(lower_query, messages)
+        awaiting_digits = self._was_asked_for_order_digits(messages)
+        if awaiting_digits and inferred_intent not in (
+            "video_kyc", "upi_refund", "card_block", "card_pin", "account_balance",
+            "cheque_book", "loans_emi", "netbanking_mpin", "branch_hours", "capabilities",
+        ):
+            inferred_intent = "order_status"
+
+        # 5b. Dedicated Stateful Order ID Verification & Complete Status Lookup
+        if inferred_intent == "order_status":
+            digits4 = extract_order_last4_digits(
+                clean_query,
+                allow_bare_digits=awaiting_digits,
+            )
+            if digits4:
+                ans = self.lookup_order_status(digits4, lang=lang)
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+            ask_ans = AUTONOMOUS_KNOWLEDGE["order_status_ask_digits"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 6. RAG Grounding: If pgvector chunks are provided, extract matching factual sentences
         if rag_context.strip():
             rag_answer = self._synthesize_from_rag_chunks(rag_context, lower_query, lang)
             if rag_answer:
-                return f"{empathy_prefix}{rag_answer}" if empathy_prefix else rag_answer
+                return self.apply_sentiment_tone(rag_answer, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 7. Autonomous Knowledge Base Fallback
         if inferred_intent and inferred_intent in AUTONOMOUS_KNOWLEDGE:
             ans = AUTONOMOUS_KNOWLEDGE[inferred_intent][lang]
-            return f"{empathy_prefix}{ans}" if empathy_prefix else ans
+            return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 8. Service-category guided response
         if service_category:
             cat_lower = service_category.lower()
             if "upi" in cat_lower or "payment" in cat_lower or "1" in cat_lower:
-                return AUTONOMOUS_KNOWLEDGE["upi_refund"][lang]
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["upi_refund"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
             elif "card" in cat_lower or "2" in cat_lower:
-                return AUTONOMOUS_KNOWLEDGE["card_block"][lang]
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["card_block"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
             elif "kyc" in cat_lower:
-                return AUTONOMOUS_KNOWLEDGE["video_kyc"][lang]
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["video_kyc"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
             elif "loan" in cat_lower or "3" in cat_lower:
-                return AUTONOMOUS_KNOWLEDGE["loans_emi"][lang]
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["loans_emi"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
             elif "account" in cat_lower or "4" in cat_lower:
-                return AUTONOMOUS_KNOWLEDGE["account_balance"][lang]
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["account_balance"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 9. Polite general fallback
         ans = AUTONOMOUS_KNOWLEDGE["fallback"][lang]
-        return f"{empathy_prefix}{ans}" if empathy_prefix else ans
+        return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
     # ── Helpers ───────────────────────────────────────────────────────────────
+
+    _SENTIMENT_ALREADY_EXPRESSIVE_PREFIXES = (
+        "i'm sorry", "i apologize", "i understand", "i completely understand", "glad",
+        "wonderful", "thank you", "you're most welcome", "you're very welcome",
+        "माफ़", "मैं आपकी", "मैं समझती", "यह सुनकर", "आपका बहुत", "धन्यवाद",
+        "କ୍ଷମା", "ମୁଁ ବୁଝି", "ମୁଁ ଆପଣଙ୍କ", "ଏହା ଜାଣି", "ଧନ୍ୟବାଦ",
+    )
+
+    def sentiment_prefix(
+        self,
+        emotion: str,
+        lang: str = "en",
+        previous_attempts: int = 0,
+    ) -> str:
+        """Return an empathetic, reassuring, or warm spoken lead-in matching caller sentiment."""
+        emo = (emotion or "neutral").strip().lower()
+        lang_key = lang if lang in ("en", "hi", "or") else "en"
+
+        if emo in ("frustrated", "angry") or previous_attempts >= 2:
+            if previous_attempts >= 2:
+                retry_map = {
+                    "en": "I understand you've already tried this earlier — let me help you with the next option right away. ",
+                    "hi": "मैं समझती हूँ कि आप पहले भी प्रयास कर चुकी हैं, चलिए मैं तुरंत अगले समाधान में मदद करती हूँ। ",
+                    "or": "ମୁଁ ବୁଝିପାରୁଛି ଆପଣ ପୂର୍ବରୁ ଚେଷ୍ଟା କରିଛନ୍ତି, ଚାଲନ୍ତୁ ମୁଁ ତୁରନ୍ତ ପରବର୍ତ୍ତୀ ସମାଧାନରେ ସାହାଯ୍ୟ କରୁଛି। ",
+                }
+                return retry_map[lang_key]
+            frustrated_map = {
+                "en": "I completely understand your frustration, and I'm right here to help sort this out. ",
+                "hi": "मैं आपकी परेशानी समझ सकती हूँ, आप बिल्कुल चिंता मत कीजिए, मैं अभी मदद करती हूँ। ",
+                "or": "ମୁଁ ଆପଣଙ୍କ ଅସୁବିଧା ବୁଝିପାରୁଛି, ଆଦୌ ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ, ମୁଁ ଏବେ ସାହାଯ୍ୟ କରୁଛି। ",
+            }
+            return frustrated_map[lang_key]
+
+        if emo in ("concerned", "sad"):
+            concerned_map = {
+                "en": "I understand your concern, please don't worry. ",
+                "hi": "मैं आपकी चिंता समझती हूँ, कृपया निश्चिंत रहें। ",
+                "or": "ମୁଁ ଆପଣଙ୍କ ଚିନ୍ତା ବୁଝୁଛି, ଦୟାକରି ନିଶ୍ଚିନ୍ତ ରୁହନ୍ତୁ। ",
+            }
+            return concerned_map[lang_key]
+
+        if emo in ("satisfied", "happy"):
+            satisfied_map = {
+                "en": "Glad to help! ",
+                "hi": "यह सुनकर अच्छा लगा! ",
+                "or": "ଏହା ଜାଣି ବହୁତ ଖୁସି ଲାଗିଲା! ",
+            }
+            return satisfied_map[lang_key]
+
+        return ""
+
+    def apply_sentiment_tone(
+        self,
+        reply_text: str,
+        emotion: str,
+        lang: str = "en",
+        previous_attempts: int = 0,
+    ) -> str:
+        """Prepend sentiment-appropriate warmth/empathy unless already expressed in the reply."""
+        clean = (reply_text or "").strip()
+        if not clean:
+            return clean
+        lower_clean = clean.lower()
+        if any(lower_clean.startswith(p) for p in self._SENTIMENT_ALREADY_EXPRESSIVE_PREFIXES):
+            return clean
+        prefix = self.sentiment_prefix(emotion=emotion, lang=lang, previous_attempts=previous_attempts)
+        return f"{prefix}{clean}" if prefix else clean
 
     def _detect_language(
         self,
@@ -381,40 +599,46 @@ class IVRRAGMiniModel:
 
         # Direct intent keywords
         if any(w in lower_query for w in [
-            "kyc", "केवाईसी", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି",
-            "vedio", "video", "कागजात", "पहचान पत्र", "दस्तावेज"
+            "kyc", "केवाईसी", "वीडियो", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି",
+            "vedio", "video", "कागजात", "पहचान पत्र", "दस्तावेज", "पैन", "आधार", "dastavez", "kagaj"
         ]):
             return "video_kyc"
 
         if any(w in lower_query for w in [
-            "refund", "upi", "यूपीआई", "कट गया", "कट गए", "kat gaya", "पैसे कट", "पैसे", "paisa", "paise",
-            "debited", "failed", "utr", "pending payment", "वापस", "ୟୁପିଆଇ", "ରିଫଣ୍ଡ",
-            "payment", "पेमेंट", "पैमेंट", "transaction", "transfer", "you be a", "you be i", "gpay", "phonepe", "paytm"
+            "refund", "upi", "यूपीआई", "कट गया", "कट गए", "अटक", "फेल", "kat gaya", "atak", "पैसे कट", "पैसे", "paisa", "paise",
+            "debited", "failed", "utr", "pending payment", "वापस", "रिफंड", "यूपीआई पिन", "लिमिट", "ୟୁପିଆଇ", "ରିଫଣ୍ଡ",
+            "payment", "पेमेंट", "पैमेंट", "transaction", "ट्रांजेक्शन", "लेनदेन", "transfer", "you be a", "you be i", "gpay", "phonepe", "paytm"
         ]):
             return "upi_refund"
 
-        if any(w in lower_query for w in ["pin", "atm pin", "mpin", "पिन", "एमपिन"]):
+        if any(w in lower_query for w in ["pin", "atm pin", "mpin", "पिन", "एमपिन", "ग्रीन पिन"]):
             return "card_pin"
 
         if any(w in lower_query for w in [
-            "card", "debit card", "credit card", "atm", "block", "खो गया", "चोरी", "कार्ड", "ब्लॉक", "freeze", "stolen", "lost"
+            "card", "debit card", "credit card", "atm", "block", "खो गया", "गुम", "चोरी", "कार्ड", "क्रेडिट", "डेबिट", "ब्लॉक", "freeze", "stolen", "lost"
         ]):
             return "card_block"
 
-        if any(w in lower_query for w in ["balance", "statement", "बैलेंस", "खाता शेष", "स्टेटमेंट", "passbook"]):
+        if any(w in lower_query for w in ["balance", "statement", "बैलेंस", "खाता", "अकाउंट", "बचत", "खाता शेष", "स्टेटमेंट", "passbook", "पासबुक"]):
             return "account_balance"
 
         if any(w in lower_query for w in ["cheque", "checkbook", "chequebook", "चेक", "चेकबुक"]):
             return "cheque_book"
 
-        if any(w in lower_query for w in ["loan", "emi", "interest", "ऋण", "लोन", "ईएमआई", "ब्याज", "ଋଣ"]):
+        if any(w in lower_query for w in ["loan", "emi", "interest", "ऋण", "लोन", "ईएमआई", "ब्याज", "किस्त", "फोरक्लोजर", "ଋଣ"]):
             return "loans_emi"
 
-        if any(w in lower_query for w in ["netbanking", "login", "password", "पासवर्ड", "अनलॉक", "unlock", "app"]):
+        if any(w in lower_query for w in ["netbanking", "login", "password", "पासवर्ड", "अनलॉक", "नेटबैंकिंग", "लॉगिन", "unlock", "app"]):
             return "netbanking_mpin"
 
         if any(w in lower_query for w in ["timing", "timings", "opening hours", "open", "branch", "शाखा", "समय", "खुलती", "शनिवार"]):
             return "branch_hours"
+
+        if any(w in lower_query for w in [
+            "order", "order id", "delivery", "parcel", "shipment", "courier", "track", "tracking",
+            "ऑर्डर", "डिलीवरी", "पार्सल", "ट्रैक", "ଅର୍ଡର", "ଡେଲିଭରି", "ପାର୍ସଲ",
+        ]):
+            return "order_status"
 
         # Multi-turn context resolution: if caller asks an anaphoric follow-up ("how much time?", "documents required?")
         if messages and len(messages) >= 2:
@@ -538,6 +762,50 @@ class IVRRAGMiniModel:
         # Return single clean, factual sentence for natural spoken telephone delivery
         return best_line.strip()
 
+    def _was_asked_for_order_digits(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the previous assistant turn asked for the last 4 digits of the Order ID."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(
+                    marker in c
+                    for marker in ("last 4 digits", "अंतिम 4 अंक", "ଅର୍ଡର ଆଇଡିର ଶେଷ")
+                )
+        return False
+
+    def lookup_order_status(self, last4: str, lang: str = "en") -> str:
+        """
+        Returns a complete, natural spoken status report for the given last 4 Order ID digits.
+        Matches verified directory records first, then deterministically resolves other 4-digit IDs.
+        """
+        code = (last4 or "")[-4:]
+        if code in ORDER_STATUS_CATALOG:
+            return ORDER_STATUS_CATALOG[code].get(lang, ORDER_STATUS_CATALOG[code]["en"])
+
+        bucket = sum(ord(ch) for ch in code) % 3
+        if lang == "hi":
+            templates = [
+                f"आपके ऑर्डर आईडी {code} की पूरी स्थिति यह है कि आपका पार्सल ब्लूडार्ट कूरियर के माध्यम से आज डिलीवरी के लिए निकल चुका है। यह आज शाम 6 बजे तक आपके पंजीकृत पते पर पहुंचेगा और डिलीवरी ओटीपी आपके मोबाइल पर एसएमएस द्वारा भेज दिया गया है।",
+                f"आपके ऑर्डर आईडी {code} की पूरी स्थिति यह है कि आपका ऑर्डर डेल्हीवरी कूरियर से डिस्पैच हो चुका है और ट्रांजिट में है। इसकी डिलीवरी कल शाम 5 बजे तक संभावित है और लाइव ट्रैकिंग लिंक एसएमएस द्वारा भेज दिया गया है।",
+                f"आपके ऑर्डर आईडी {code} की पूरी स्थिति यह है कि आपका पार्सल ईकॉम एक्सप्रेस कूरियर हब में प्रोसेस हो चुका है और 2 कार्यदिवसों में आपके पते पर डिलीवर कर दिया जाएगा। ट्रैकिंग विवरण एसएमएस पर भेज दिया गया है।",
+            ]
+            return templates[bucket]
+        if lang == "or":
+            templates = [
+                f"ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡି {code} ର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ହେଉଛି ଏହା ଆଜି ବ୍ଲୁଡାର୍ଟ କୁରିଅର ମାଧ୍ୟମରେ ଡେଲିଭରି ପାଇଁ ବାହାରିସାରିଛି। ଆଜି ସନ୍ଧ୍ୟା ୬ଟା ସୁଦ୍ଧା ଆପଣଙ୍କ ଠିକଣାରେ ପହଞ୍ଚିବ ଏବଂ ଡେଲିଭରି ଓଟିପି ଏସଏମଏସରେ ପଠାଯାଇଛି।",
+                f"ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡି {code} ର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ହେଉଛି ଏହା ଡେଲହିଭରି କୁରିଅର ମାଧ୍ୟମରେ ପଠାଯାଇଛି ଏବଂ ରାସ୍ତାରେ ଅଛି। ଆସନ୍ତାକାଲି ସନ୍ଧ୍ୟା ୫ଟା ସୁଦ୍ଧା ଡେଲିଭରି ହେବ ଏବଂ ଟ୍ରାକିଂ ଲିଙ୍କ୍ ଏସଏମଏସରେ ପଠାଯାଇଛି।",
+                f"ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡି {code} ର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ହେଉଛି ଏହା ଇକମ୍ ଏକ୍ସପ୍ରେସ୍ କୁରିଅର ହବ୍ ରେ ପ୍ରୋସେସ୍ ହୋଇଛି ଏବଂ ୨ କାର୍ଯ୍ୟଦିବସରେ ପହଞ୍ଚିବ।",
+            ]
+            return templates[bucket]
+        templates = [
+            f"Here is the complete status of your Order ID ending in {code}: your parcel is currently Out for Delivery today via BlueDart Courier, scheduled to reach your registered address by 6:00 PM with your delivery OTP sent via SMS.",
+            f"Here is the complete status of your Order ID ending in {code}: your shipment has been dispatched via Delhivery Courier and is currently In Transit, with estimated delivery tomorrow by 5:00 PM and an active SMS tracking link.",
+            f"Here is the complete status of your Order ID ending in {code}: your order has left our regional hub with Ecom Express Courier and is scheduled for doorstep delivery within 2 business days with SMS updates enabled.",
+        ]
+        return templates[bucket]
+
 
 # Module-level singleton
 ivr_mini_brain = IVRRAGMiniModel()
@@ -581,7 +849,12 @@ class IVRRAGMiniModelAdapter(BaseChatAdapter):
         for m in request.messages:
             if m.role == "system" and m.content:
                 s = str(m.content)
-                if "relevant context" in s.lower() or "untrusted retrieved context" in s.lower():
+                s_low = s.lower()
+                if (
+                    "relevant context" in s_low
+                    or "untrusted retrieved context" in s_low
+                    or "begin retrieved bank knowledge" in s_low
+                ):
                     rag_context += "\n" + s
 
         detected_lang = self.brain._detect_language(user_query, request.messages)

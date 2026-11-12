@@ -32,10 +32,10 @@ class SpeechSegmenter:
         self,
         sample_rate: int = 8000,
         frame_ms: int = 20,
-        preroll_ms: int = 120,
-        hangover_ms: int = 180,
+        preroll_ms: int = 200,
+        hangover_ms: int = 280,
         vad_processor: Optional[BaseVADProcessor] = None,
-        vad_threshold: float = 0.42,
+        vad_threshold: float = 0.35,
     ) -> None:
         self.sample_rate = sample_rate
         self.frame_ms = frame_ms

@@ -18,6 +18,7 @@ def get_rag_pipeline(session: AsyncSession = Depends(get_db_session)) -> RAGPipe
 
 def get_chat_orchestrator(
     rag_pipeline: RAGPipeline = Depends(get_rag_pipeline),
+    session: AsyncSession = Depends(get_db_session),
 ) -> ChatOrchestrator:
-    tool_executor = ToolExecutor(timeout_seconds=10.0)
+    tool_executor = ToolExecutor(timeout_seconds=10.0, db_session=session)
     return ChatOrchestrator(rag_pipeline=rag_pipeline, tool_executor=tool_executor)

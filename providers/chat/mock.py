@@ -30,10 +30,82 @@ class MockChatAdapter(BaseChatAdapter):
         req_id = f"chatcmpl-mock-{uuid.uuid4().hex[:8]}"
         created_ts = int(time.time())
 
-        # Check if the user's last message is triggering a tool call
-        last_msg = request.messages[-1].content if request.messages else ""
+        # Check if we just received a tool output to summarize cleanly
+        last_message = request.messages[-1] if request.messages else None
+        last_msg = last_message.content if last_message else ""
         if isinstance(last_msg, list):
             last_msg = str(last_msg)
+
+        if last_message and last_message.role == "tool" and last_message.name == "get_order_status":
+            try:
+                tool_data = json.loads(str(last_msg or "{}"))
+            except Exception:
+                tool_data = {}
+            if tool_data.get("error"):
+                reply_content = f"Unable to check order status: {tool_data['error']}"
+            elif tool_data.get("found"):
+                order_id = tool_data.get("order_id", "unknown")
+                order_status = tool_data.get("order_status", "unknown")
+                eta = tool_data.get("expected_delivery")
+                reply_content = f"Order {order_id} is currently {order_status}."
+                if eta:
+                    reply_content += f" Expected delivery: {eta}."
+            else:
+                reply_content = tool_data.get("message") or "No matching order was found."
+            return NormalizedChatResponse(
+                id=req_id,
+                model=model_meta.alias,
+                created=created_ts,
+                choices=[
+                    NormalizedChoice(
+                        index=0,
+                        message=ChatMessage(role="assistant", content=reply_content),
+                        finish_reason="stop",
+                    )
+                ],
+                usage=UsageInfo(prompt_tokens=14, completion_tokens=18, total_tokens=32),
+            )
+
+        # If tools include get_order_status and user asks about an order, emit tool_calls
+        available_tool_names = {
+            t.get("function", {}).get("name")
+            for t in (request.tools or [])
+            if isinstance(t, dict)
+        }
+        if (
+            last_message
+            and last_message.role == "user"
+            and "get_order_status" in available_tool_names
+            and ("order" in str(last_msg or "").lower() or "ord-" in str(last_msg or "").lower())
+        ):
+            import re
+            m = re.search(r"\b([A-Za-z]{2,6}-\d{2,10}|\d{4,10})\b", str(last_msg or ""))
+            extracted_id = m.group(1) if m else "ORD-1001"
+            tool_call = ToolCall(
+                id=f"call_{uuid.uuid4().hex[:8]}",
+                type="function",
+                function=FunctionCall(
+                    name="get_order_status",
+                    arguments=json.dumps({"order_id": extracted_id}),
+                ),
+            )
+            return NormalizedChatResponse(
+                id=req_id,
+                model=model_meta.alias,
+                created=created_ts,
+                choices=[
+                    NormalizedChoice(
+                        index=0,
+                        message=ChatMessage(
+                            role="assistant",
+                            content=None,
+                            tool_calls=[tool_call],
+                        ),
+                        finish_reason="tool_calls",
+                    )
+                ],
+                usage=UsageInfo(prompt_tokens=15, completion_tokens=20, total_tokens=35),
+            )
 
         # If tools are provided and user asks for purchase requests / report, simulate tool call
         if request.tools and ("purchase request" in last_msg.lower() or "report" in last_msg.lower() or "customer" in last_msg.lower()):

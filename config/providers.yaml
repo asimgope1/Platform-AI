@@ -29,11 +29,29 @@ model_aliases:
 
   gemma:
     provider: windows_ollama
-    model: gemma2:2b
-    description: "High-speed Gemma 2B model running via Ollama on Windows host"
+    model: gemma4:latest
+    description: "Primary Gemma 4 model running via Ollama on Windows host with native tool calling"
     capabilities:
       - chat
       - streaming
+      - tool_calling
+
+  gemma2:
+    provider: windows_ollama
+    model: gemma2:2b
+    description: "Fast lightweight Gemma 2B model running via Ollama on Windows host (completion only, no tool calling)"
+    capabilities:
+      - chat
+      - streaming
+
+  gemma4:
+    provider: windows_ollama
+    model: gemma4:latest
+    description: "Gemma 4 model with native tool-calling support via Ollama on Windows host"
+    capabilities:
+      - chat
+      - streaming
+      - tool_calling
 
   gemma-local:
     provider: gemma_transformers
@@ -69,9 +87,10 @@ providers:
   windows_ollama:
     type: openai_compatible
     base_url_env: OLLAMA_BASE_URL
-    base_url: http://192.168.1.141:8080/v1
+    base_url: http://192.168.1.141:11434/v1
     api_key: ollama
-    timeout_seconds: 15.0
+    timeout_seconds: 120.0
+    reasoning_effort: none
 
   hosted_chat:
     type: openai_compatible

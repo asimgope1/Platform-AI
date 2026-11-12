@@ -1,0 +1,482 @@
+COMPLETE EXISTING CODEBASE FLOW ANALYSIS — AI PLATFORM + ASTERISK IVR + DJANGO + OLLAMA
+=======================================================================================
+
+Repository Scope & Remote Django Note:
+- Inspected workspace: /Users/asimgope/.gemini/antigravity-ide/scratch/ai-platform
+- No existing source files were modified.
+- The Windows Business Application Django repository (192.168.1.141:8000, exposing
+  GET /api/v1/tools/ and POST /api/v1/tools/execute/) is NOT present in this local
+  Mac workspace and could not be inspected directly. All findings about that Windows
+  service are strictly derived from FastAPI's integration client
+  (tools/remote/django_client.py), tools/remote/registry_sync.py, and
+  REMOTE_TOOL_INTEGRATION_REPORT.md.
+- Note: A separate local Django scaffold (comone/urls.py, apps/api/urls.py) exists
+  inside ai-platform for Com-one v2 (/v1/* proxy to FastAPI :8001 and
+  /api/v2/telephony/*), which is distinct from the Windows Business Tool Service.
+
+---------------------------------------------------------------------------------------
+A. EXECUTIVE SYSTEM OVERVIEW
+---------------------------------------------------------------------------------------
+
+The system is a distributed, multi-tenant, real-time voice IVR and conversational AI
+platform where the MacBook FastAPI `ai-platform` acts as the sole AI orchestrator:
+
+1. MacBook (0.0.0.0:8000) — FastAPI ai-platform:
+   - Hosts REST & WebSocket APIs, PBXConnector (outbound WebSocket client to Asterisk
+     192.168.1.133:9093), IVRCallSession state machine & audio streaming.
+   - Runs Milestone 1 AudioIntelligencePipeline, local openai/whisper-base STT (CPU),
+     Milestones 2-4 TelephonyIntelligencePipeline + DecisionManager, Hybrid RAG
+     (pgvector / SQLite + sentence-transformers/all-MiniLM-L6-v2), ChatOrchestrator +
+     ToolLoopRunner + ToolExecutor, and neural TTS (edge-tts with VITS Odia / macOS
+     say / synthetic tone fallbacks).
+
+2. Asterisk PBX (192.168.1.133:9093):
+   - Terminates SIP calls, handles DTMF, streams bidirectional 8 kHz 16-bit mono PCM
+     audio (320 bytes per 20 ms frame), and exchanges JSON control events over WebSocket.
+
+3. Windows Inference Server (192.168.1.141:11434/v1) — Ollama:
+   - Serves gemma4:latest (tool-calling enabled; thinking disabled via
+     reasoning_effort: none) and gemma2:2b (completion-only, no tool calling).
+
+4. Windows Business Application Server (192.168.1.141:8000) — Django:
+   - Hosts the remote business tool catalog (/api/v1/tools/) and tool execution
+     endpoint (/api/v1/tools/execute/) for multi-tenant operations (current tenant:
+     tenant_001).
+
+---------------------------------------------------------------------------------------
+B. DETAILED END-TO-END FLOW
+---------------------------------------------------------------------------------------
+
+1. Application Startup & Lifespan
+   - Entry point: services/api/main.py -> create_app() mounts CORSMiddleware,
+     RateLimitMiddleware(max_requests_per_minute=300), RequestIdMiddleware, global
+     exception handlers, 11 routers, and optional static UI; runs uvicorn on 0.0.0.0:8000.
+   - Configuration: platform_core/config/settings.py loads .env via Pydantic
+     BaseSettings. Note: main.py / lifespan.py do NOT call load_dotenv(), so
+     os.getenv(...) reads in telephony/pbx_connector.py and telephony/ivr_session.py
+     rely on process environment or --env-file .env, whereas Settings reads .env directly.
+   - Lifespan (services/api/lifespan.py):
+     a) validate_master_key(settings) & setup_logging(settings.LOG_LEVEL).
+     b) init_db() creates all SQLAlchemy tables defined in storage/models/__init__.py.
+     c) provider_registry.initialize_from_file(settings.PROVIDERS_CONFIG_PATH)
+        (config/providers.yaml) loads chat adapters (windows_ollama, hosted_chat,
+        ivr_mini_brain, mock_provider, local transformers), embeddings (all-MiniLM-L6-v2),
+        STT (whisper_local), TTS (mock_tts wrapping edge-tts + mms-tts-ory + macOS say),
+        and vector store (pgvector).
+     d) If REMOTE_TOOLS_ENABLED=true and REMOTE_TOOLS_BASE_URL is set,
+        DjangoRemoteToolClient.from_settings(settings) calls sync_remote_django_tools()
+        to fetch/validate /api/v1/tools/, block SQL-named tools/params, snapshot shadowed
+        local tools, and unregister local register_complaint when remote
+        create_complaint is active (tools/remote/registry_sync.py:91-190).
+     e) Bootstraps default tenant + demo key (sk_live_demo_test_key_12345) if Tenant
+        table is empty.
+     f) Starts pbx_connector.start_background() if PBX_WS_URL is set
+        (ws://192.168.1.133:9093).
+     g) Starts background warmup tasks for IVR cached audio prompts
+        (warm_up_ivr_prompts), whisper-base, and all-MiniLM-L6-v2.
+
+2. Incoming Telephone Call Lifecycle
+   - Outbound PBX mode (telephony/pbx_connector.py): PBXConnector maintains a
+     persistent WebSocket client to PBX_WS_URL with exponential reconnect backoff
+     (2s to 30s). It holds ONE IVRCallSession per socket, resetting on call_end.
+   - Inbound WS mode (api/routes/ivr_websocket.py): @router.websocket("/ws/ivr")
+     creates a fresh IVRCallSession per WebSocket connection using module-level
+     _orchestrator and _audio_service.
+   - Call start: on_call_start() resets session state, initializes
+     ConversationState(call_uuid, tenant_id, language), transitions
+     IVRMenuStateMachine to LANGUAGE_SELECTION, and plays the trilingual welcome +
+     language prompt (1=English, 2=Hindi, 3=Odia) via _speak_and_wait().
+
+3. Audio Processing, VAD, STT & Transcript Normalization
+   - Frame ingestion (on_pcm_frame): Receives 8 kHz 16-bit mono PCM frames
+     (320 bytes = 20 ms).
+   - Barge-in detection: During active TTS playback (_playback_active), frames are
+     checked against BARGE_IN_RMS_THRESHOLD (1150.0) for
+     BARGE_IN_MIN_CONSECUTIVE_FRAMES (6 frames = 120 ms) with
+     BARGE_IN_COOLDOWN_SECONDS (0.35 s). Triggering sets _barge_in_event, cancels
+     playback, and sends stop_playback / clear_audio to Asterisk.
+   - Speech buffering & endpointing: Accumulates speech frames up to MAX_SPEECH_BYTES
+     (128,000 B = 8 s) and flushes after SILENCE_GAP_SECONDS (0.65 s), enforcing
+     MIN_SPEECH_BYTES (4,000 B) or MIN_SHORT_REPLY_BYTES (1,920 B) during
+     confirmation/digit prompts.
+   - Audio Intelligence (audio_intelligence/audio_preprocessor.py): Runs via
+     asyncio.to_thread() — AudioQualityAnalyzer (SNR, RMS, VAD ratio, clipping),
+     optional PlaybackEchoCanceller, SpectralNoiseSuppressor, SpeechSegmenter, and
+     AcousticFeatureExtractor.
+   - Resampling & STT (telephony/pcm_utils.py,
+     providers/speech_to_text/whisper_local.py): DC-removes and polyphase-resamples
+     8 kHz PCM to 16 kHz float32 with adaptive gain boost, then runs
+     openai/whisper-base on CPU. Post-processing normalizes Urdu script to
+     Devanagari, applies HINDI_LOANWORDS_MAP, normalizes spoken order IDs
+     (ort|oit|ord -> ORD-...), strips Whisper loop hallucinations, and discards
+     improbable phantom transcripts.
+
+4. Voice Intelligence, Decision Engine & Context Construction
+   - Intelligence Pipeline (telephony/intelligence/pipeline.py,
+     orchestration/intelligence_orchestrator.py):
+     * TranscriptAnalyzer: Normalizes text, masks PII (mask_sensitive_text), detects
+       amounts, computes transcript_confidence.
+     * ConversationAnalyzer: Assesses intent, text emotion, acoustic emotion, fused
+       emotion + trend (improving/stable/worsening), caller_certainty,
+       system_confidence, satisfaction_score, and resolution_status.
+     * DecisionManager (decision_engine/decision_manager.py): Deterministic policy
+       priorities: TRANSFER (explicit agent request, mandatory security escalation,
+       accepted transfer) -> FEEDBACK ack -> CLARIFY (low audio/transcript quality) ->
+       OFFER_TRANSFER (repeated failures + low satisfaction/worsening emotion) ->
+       FEEDBACK request (after confirmed resolution) -> CONFIRM (uncertain/potentially
+       resolved) -> CONTINUE (normal AI turn).
+   - Non-blocking telemetry (telephony/intelligence/event_handler.py): Enqueues DB
+     writes onto a bounded asyncio.Queue(maxsize=100) so 20 ms streaming is never
+     blocked.
+   - Context Construction (services/conversation/context_builder.py,
+     services/conversation/response_generator.py):
+     * HybridRetrievalService.search() checks the fast FAQ cache, embeds via
+       all-MiniLM-L6-v2 (with cross-lingual Indic anchors), queries pgvector cosine
+       similarity (or SQLite fallback), and reranks with lexical overlap + authority +
+       ask_count.
+     * ConversationContextBuilder.build_messages() places static behavioral +
+       tool-first instructions first, excludes historical "customer spoken inquiry:" /
+       "call interaction summary" chunks when tools are attached (capping non-transcript
+       context at 1 chunk), and injects Caller Intelligence tone metadata.
+
+5. LLM Orchestration & Tool-Calling Lifecycle
+   - Model Selection (telephony/ivr_session.py): _resolve_ivr_tool_model_alias()
+     resolves GEMMA_MODEL_ALIAS (gemma4) when tools are enabled, refusing gemma2 if
+     it lacks ModelCapability.TOOL_CALLING. _select_ivr_session_tools() narrows the
+     tool list by caller intent/context to minimize prompt tokens.
+   - Execution (orchestration/chat_orchestrator.py, orchestration/tool_loop.py):
+     * CapabilityChecker verifies CHAT and TOOL_CALLING before calling
+       OpenAICompatibleChatAdapter (http://192.168.1.141:11434/v1/chat/completions,
+       reasoning_effort="none", keep_alive="15m", 30s offline circuit breaker).
+     * ToolLoopRunner runs up to max_iterations=5 (bounded by
+       max_execution_seconds=120.0, wrapped by IVR_TOOL_TURN_TIMEOUT_SECONDS=95.0),
+       deduplicating identical (tool_name, canonical_args) calls per turn
+       (turn_exec_cache) and propagating discovered customer_reference into
+       turn_metadata["authorized_customer_id"].
+   - Tool Validation & Routing (tools/executor.py, tools/remote/django_client.py):
+     * Strips _RESERVED_INTERNAL_ARGS (tenant_id, authorized_customer_id, call_uuid,
+       etc.) from LLM args to prevent spoofing.
+     * Normalizes schema aliases (order_id <-> order_number/order_reference,
+       ticket_number <-> complaint_reference, customer_id <-> customer_reference).
+     * Sanitizes strings against SQLi/prompt injection (sanitize_tool_argument),
+       injects trusted TenantContext and metadata, and dispatches to
+       DjangoRemoteToolClient.execute_tool() (when prefer_remote=True or no local
+       active TenantDatabaseConfig).
+     * Remote calls enforce per-tenant rate limits (120/min), semaphores (8
+       concurrent), idempotency keys (60s dedup cache), optional HMAC-SHA256 signing,
+       bounded retries (2 retries on 502/503/504/transport errors), customer ownership
+       checks, and mask_record_pii().
+     * Safety guard: In ChatOrchestrator.execute() (lines 130-132), when
+       current_request.tools is non-empty, failures do NOT silently fall back to
+       ivr-rag-mini / mock-chat — response_generator.py returns an honest
+       technical-unavailable fallback message.
+
+6. TTS & Real-Time Audio Playback
+   - _finalize_and_speak() cleans markdown/emojis (_clean_spoken_text), synthesizes
+     audio via AudioService.synthesize() (providers/text_to_speech/base.py:270-355):
+     1. Pure Odia text -> local facebook/mms-tts-ory VITS model.
+     2. Otherwise -> edge-tts (en-IN-NeerjaNeural or hi-IN-SwaraNeural) with
+        emotion-modulated rate/pitch (7.0s timeout, 250-entry _TTS_CACHE).
+     3. Fallback -> macOS say (Tara/Lekha/Vani/Geeta/Soumya), then synthetic
+        sine-wave RIFF tone.
+   - audio_bytes_to_pcm8k() converts MP3/WAV via afconvert to 8 kHz 16-bit mono PCM
+     with smooth fades.
+   - _stream_pcm_frames() prefills 3 frames (60 ms jitter buffer), streams 320 B
+     frames every 20 ms with monotonic drift compensation, appends 40 ms comfort
+     silence, and aborts immediately if _barge_in_event fires.
+
+---------------------------------------------------------------------------------------
+C. HIGH-LEVEL ARCHITECTURE DIAGRAM (MERMAID)
+---------------------------------------------------------------------------------------
+
+```mermaid
+flowchart LR
+    Caller["PSTN / SIP Caller"] <-->|"SIP / RTP"| PBX["Asterisk PBX (192.168.1.133:9093)"]
+    PBX <-->|"WS: 8kHz 16-bit PCM + JSON"| Conn["PBXConnector / /ws/ivr"]
+
+    subgraph Mac["MacBook — FastAPI ai-platform (Port 8000)"]
+        Conn --> Session["IVRCallSession & IVRMenuStateMachine"]
+        Session --> AudioIntel["AudioIntelligencePipeline (VAD / NS / AEC / Quality)"]
+        AudioIntel --> Whisper["WhisperLocal STT (whisper-base CPU)"]
+        Whisper --> VoiceIntel["TelephonyIntelligencePipeline + DecisionManager"]
+        VoiceIntel --> RAG["HybridRetrievalService (MiniLM + pgvector/SQLite)"]
+        VoiceIntel --> Orch["ChatOrchestrator + ToolLoopRunner"]
+        Orch --> Exec["ToolExecutor (Sanitize + Scope + Alias)"]
+        Orch --> TTS["AudioService (EdgeTTS / MMS-Odia / say)"]
+        TTS --> Session
+        VoiceIntel -.->|"Bounded Async Queue"| DB[("PostgreSQL/pgvector or SQLite")]
+        RAG --> DB
+    end
+
+    Orch <-->|"HTTP POST /v1/chat/completions (reasoning_effort=none)"| Ollama["Windows Ollama (192.168.1.141:11434) — gemma4 / gemma2:2b"]
+    Exec <-->|"HTTP GET /api/v1/tools/ & POST /execute/ (HMAC/APIKey/Tenant)"| Django["Windows Django Business App (192.168.1.141:8000)"]
+```
+
+---------------------------------------------------------------------------------------
+D. END-TO-END CALL SEQUENCE DIAGRAM (MERMAID — TWO-TURN COMPLAINT FLOW)
+---------------------------------------------------------------------------------------
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Caller / Asterisk (192.168.1.133:9093)
+    participant IVR as IVRCallSession (Mac)
+    participant STT as AudioIntel + Whisper
+    participant VI as VoiceIntel + DecisionManager
+    participant Orch as ChatOrchestrator + ToolLoop
+    participant LLM as Ollama gemma4 (192.168.1.141:11434)
+    participant DJ as Django Tools (192.168.1.141:8000)
+    participant TTS as EdgeTTS + PCM Streamer
+
+    C->>IVR: JSON call_start (call_uuid, caller_number)
+    IVR->>TTS: Welcome + Language Prompt (1=EN, 2=HI, 3=OR)
+    TTS-->>C: 8kHz PCM frames (20ms)
+    C->>IVR: DTMF "1" -> "2" (or direct speech)
+    Note over IVR: State -> AI_CONVERSATION (complaint)
+
+    C->>IVR: Turn 1 PCM ("Hi, I am Sarah Connor, complaint on ORD-2005")
+    IVR->>STT: Enhance PCM + Resample 16kHz + Whisper STT
+    STT-->>IVR: Normalized transcript + AcousticFeatures
+    IVR->>VI: process_and_plan() -> Intent=complaint, Action=continue
+    IVR->>Orch: Hybrid RAG + select_tools + execute(gemma4)
+    Orch->>LLM: Messages + filtered tool schemas
+    LLM-->>Orch: tool_call: search_customer / get_order_status("ORD-2005")
+    Orch->>DJ: POST /api/v1/tools/execute/ (X-Tenant-ID: tenant_001)
+    DJ-->>Orch: Customer CUST_456 + Order ORD-2005
+    Orch->>LLM: Tool result -> prompt confirmation before creating ticket
+    LLM-->>Orch: "I found order ORD-2005 for Sarah Connor. Confirm to file complaint?"
+    Orch->>TTS: Synthesize reply + stream 20ms PCM
+    TTS-->>C: Spoken confirmation prompt
+
+    C->>IVR: Turn 2 PCM ("Yes, please register it")
+    IVR->>STT: AudioIntel + Whisper STT
+    IVR->>VI: process_and_plan() -> Action=continue
+    IVR->>Orch: History + tools -> execute(gemma4)
+    Orch->>LLM: Messages + tool schemas
+    LLM-->>Orch: tool_call: create_complaint(order_reference="ORD-2005", ...)
+    Orch->>DJ: POST /api/v1/tools/execute/ (Idempotency-Key)
+    DJ-->>Orch: Ticket CMP-... created
+    Orch->>LLM: Ticket confirmation text
+    Orch->>TTS: Synthesize ticket number + next steps
+    TTS-->>C: Spoken ticket confirmation
+    C->>IVR: JSON call_end -> record_call_end() + background voice summary learning
+```
+
+---------------------------------------------------------------------------------------
+E. IVR STATE MACHINE (telephony/ivr_menu.py & ivr_session.py)
+---------------------------------------------------------------------------------------
+
+- WELCOME -> Transitions immediately on on_call_start() -> LANGUAGE_SELECTION
+- LANGUAGE_SELECTION -> DTMF 1/2/3 (en/hi/or); 0 -> HUMAN_TRANSFER; 9s timeout or 3
+  invalid retries -> defaults to "en" -> SERVICE_SELECTION
+- SERVICE_SELECTION -> DTMF 1-7 (customer_support, complaint, upi_payment,
+  account_services, card_services, loans_emi, other_enquiries); 0 -> HUMAN_TRANSFER;
+  * -> LANGUAGE_SELECTION; 9s timeout or 3 invalid retries -> AI_CONVERSATION (general)
+- AI_CONVERSATION -> Voice PCM turns; DTMF 0 -> HUMAN_TRANSFER; Action.TRANSFER ->
+  ESCALATED / HUMAN_TRANSFER; closing intent -> FEEDBACK or CALL_END
+- HUMAN_TRANSFER -> Plays transfer notice, emits transfer WS event & telemetry ->
+  ESCALATED / CALL_END
+- ESCALATED -> Handed off to human agent queue -> CALL_END
+- FEEDBACK -> Action.FEEDBACK after confirmed resolution; expects 1-5 rating ->
+  records CallFeedback -> CALL_END
+- CALL_END -> Terminal state; stops playback, records ConversationResolution, triggers
+  async call summary learning.
+
+---------------------------------------------------------------------------------------
+F. COMPLETE CODEBASE MODULE MATRIX
+---------------------------------------------------------------------------------------
+
+- services/api/: FastAPI app bootstrap, middleware, lifespan, optional static UI
+  (main.py, lifespan.py)
+- api/routes/ & api/schemas/: 11 REST routers + /ws/ivr WebSocket + Pydantic schemas
+- api/middleware/: RequestIdMiddleware, RateLimitMiddleware
+- platform_core/: Settings, Pydantic config validation, ModelCapability contracts,
+  error hierarchy, Bearer API key auth, permissions, JSON logging & metrics
+- providers/: ProviderRegistry & adapters for Chat (OpenAICompatibleChatAdapter,
+  IVRMiniModelAdapter, Mock, Transformers), Embeddings (MiniLM), STT (WhisperLocal),
+  TTS (EdgeTTS/VITS-Odia/macOS say under MockTextToSpeechAdapter), Rerankers, pgvector
+- orchestration/: ChatOrchestrator, ToolLoopRunner, ModelResolver, CapabilityChecker,
+  IntelligenceOrchestrator, ResponseOrchestrator
+- telephony/: PBXConnector, IVRMenuStateMachine, IVRCallSession, pcm_utils,
+  voice_learning, intelligence/pipeline.py, intelligence/session_state.py,
+  intelligence/event_handler.py
+- audio/ & audio_intelligence/: AudioService, AudioIntelligencePipeline (VAD,
+  SpectralNoiseSuppressor, PlaybackEchoCanceller, AudioQualityAnalyzer,
+  SpeechSegmenter, AcousticFeatureExtractor)
+- conversation_intelligence/: TranscriptAnalyzer, ConversationAnalyzer,
+  ConversationMemory
+- decision_engine/: DecisionManager, EscalationRules, TransferPolicy,
+  ConfirmationPolicy, FeedbackPolicy
+- retrieval/ & services/knowledge/: SemanticSearchService, RAGPipeline,
+  HybridRetrievalService
+- services/conversation/: ConversationContextBuilder, RAGFirstResponseGenerator
+- tools/: ToolRegistry, ToolExecutor, business_data/*, remote/django_client.py,
+  remote/registry_sync.py
+- data_access/: UniversalDataAccessService (PG/MySQL/MSSQL/Oracle/Mongo/SQLite),
+  CredentialCipher (Fernet), schema_discovery, CDC sync/service.py
+- storage/: Async SQLAlchemy engine, 17 ORM models, repositories
+- comone/ & apps/: Companion Com-one v2 Django wrapper (proxies /v1/* to :8001,
+  exposes /api/v2/telephony/*)
+
+---------------------------------------------------------------------------------------
+G. COMPLETE BUSINESS TOOL INVENTORY
+---------------------------------------------------------------------------------------
+
+Local Built-In Registry Tools (tools/registry.py) — 15 Tools:
+1.  count_open_purchase_requests
+2.  get_customer_info
+3.  get_order_status
+4.  search_customer
+5.  get_customer_details
+6.  get_customer_orders
+7.  get_order_tracking
+8.  get_payment_status
+9.  get_invoice_details
+10. get_customer_order_summary
+11. search_database_records
+12. search_knowledge_documents
+13. register_complaint (unregistered when remote create_complaint is synced)
+14. get_complaint_status
+15. call_external_api
+
+Remote Windows Django Tools (tools/remote/):
+- Synced at startup from GET http://192.168.1.141:8000/api/v1/tools/, validated by
+  validate_remote_tool_spec() (blocks SQL tool names/params), registered with
+  source="remote_django".
+- Verified in REMOTE_TOOL_INTEGRATION_REPORT.md: 10 core read tools
+  (search_customer, get_customer_details, get_order_status, get_customer_orders,
+  get_order_tracking, get_payment_status, get_invoice_details,
+  get_customer_order_summary, search_database_records, search_knowledge_documents)
+  plus create_complaint (handled in registry_sync.py to shadow local
+  register_complaint), and any additional catalog entries passing validation.
+- Routing rule: If REMOTE_TOOLS_PREFER_REMOTE=false and the tenant has an active
+  local TenantDatabaseConfig, executes local UDA handler; otherwise executes
+  POST /api/v1/tools/execute/ on Windows Django.
+
+---------------------------------------------------------------------------------------
+H. COMPLETE API & WEBSOCKET INVENTORY
+---------------------------------------------------------------------------------------
+
+- GET  /health                                  (Public)  DB ping, sync state, metrics
+- GET  /v1/models, /v1/models/{model_alias}     (Auth)    Configured models & caps
+- POST /v1/chat/completions                     (Auth)    OpenAI-compatible chat + RAG + tools
+- POST /v1/embeddings                           (Auth)    Vector embeddings
+- POST /v1/audio/transcriptions                 (Auth)    Speech-to-text
+- POST /v1/audio/speech                         (Auth)    Text-to-speech
+- POST/GET/DELETE /v1/documents/*               (Auth)    Ingest, list, upload, reindex, delete, search
+- POST/GET/PATCH  /v1/complaints/*              (Auth)    Tenant-scoped complaint CRUD
+- GET/POST/PUT    /v1/tenants/databases/* (11)  (Auth)    External DB onboarding, discovery, mapping, rotation
+- POST/GET        /v1/sync/* (4)                (Auth)    Outbox CDC events, process, reconcile, status
+- WS   /ws/ivr                                  (No auth) Inbound Asterisk/client PCM + JSON stream
+- WS   Client -> PBX_WS_URL (192.168.1.133:9093)(No auth) Outbound PBXConnector to Asterisk
+
+---------------------------------------------------------------------------------------
+I. DATA FLOW & STORAGE ARCHITECTURE
+---------------------------------------------------------------------------------------
+
+- Async SQLAlchemy engine (storage/database.py) supporting PostgreSQL (pgvector +
+  JSONB) and SQLite.
+- 17 ORM Tables (storage/models/__init__.py):
+  Tenant, ApiKey, Document, DocumentChunk, UsageEvent, Conversation, CallIntelligence,
+  CallEvent, CallTransfer, ConversationResolution, CallFeedback, Complaint,
+  TenantDatabaseConfig, ToolExecutionAudit, SyncEvent, SyncRecordState, SyncDeadLetter.
+- Continuous Voice Learning (telephony/voice_learning.py): Non-trivial turns and
+  call-end summaries are embedded asynchronously and stored in DocumentChunk
+  (deduplicated at cosine similarity >= 0.92) + fast per-tenant FAQ cache.
+
+---------------------------------------------------------------------------------------
+J. CONCURRENCY, ASYNC & REAL-TIME STREAMING AUDIT
+---------------------------------------------------------------------------------------
+
+- Per-session guards: _flush_lock, _tts_lock, _barge_in_event, monotonic _turn_epoch
+  and _playback_generation drop stale pre-playback audio frames cleanly.
+- CPU offloading: AudioIntelligencePipeline, WhisperLocal STT, and macOS say run via
+  asyncio.to_thread() to protect the 20 ms PCM streaming loop.
+- Bottlenecks / Risks:
+  1. PBXConnector creates one IVRCallSession per WebSocket connection (concurrent
+     calls require multiple WebSocket connections to /ws/ivr or separate PBX sockets).
+  2. RateLimitMiddleware uses an unbounded in-memory defaultdict(list) (per-process)
+     and hardcodes "Maximum 120 requests per minute." in its 429 message despite
+     max_requests_per_minute=300 in main.py.
+
+---------------------------------------------------------------------------------------
+K. SECURITY & MULTI-TENANT AUDIT
+---------------------------------------------------------------------------------------
+
+- Auth: Bearer API keys are SHA-256 hashed (ApiKeyRepository); MASTER_API_KEY uses
+  secrets.compare_digest.
+- Tool & Tenant Isolation:
+  * ToolExecutor strips _RESERVED_INTERNAL_ARGS so LLMs cannot spoof tenant_id or
+    customer auth.
+  * DjangoRemoteToolClient resolves tenant_id strictly from TenantContext, enforces
+    authorized_customer_id pre-request and post-response, masks PII (mask_record_pii),
+    supports HMAC-SHA256 signing, and blocks SQL tool names/params.
+  * External DB credentials use MultiFernet encryption (data_access/security.py).
+- Security Gaps:
+  1. /ws/ivr and PBXConnector have no API key authentication on WebSocket handshake.
+  2. REMOTE_TOOLS_REQUIRE_AUTH defaults to false in dev mode; Windows Django must
+     enforce token/HMAC auth before production customer data is attached.
+  3. CredentialCipher falls back to a hardcoded dev secret string if all master key
+     env vars are unset.
+
+---------------------------------------------------------------------------------------
+L. PERFORMANCE & LATENCY ANALYSIS (FROM PERFORMANCE_BENCHMARK_REPORT.md)
+---------------------------------------------------------------------------------------
+
+- Full ChatOrchestrator roundtrip (LLM1 -> Remote Django -> LLM2, 20 LAN runs):
+  p50 = 20,267.44 ms, p95 = 24,406.30 ms, max = 26,378.37 ms.
+  * llm_tool_selection:        p50 =  3,525.43 ms (cold-start max = 41,662.47 ms)
+  * remote_tool_query (HTTP):  p50 =    157.10 ms (Django internal p50 = 3.00 ms)
+  * final_response_generation: p50 = 16,417.29 ms (~81% of total turn time)
+- Local Hybrid RAG Search (warm MiniLM, SQLite): p50 = 8.57 ms.
+- 20 Concurrent Local UDA Executions: p50 = 59.32 ms, 164.18 ms total wall time.
+- Voice UX mitigation: Plays generated processing pulse sound during Whisper + LLM +
+  tool waits, and warms up Whisper, MiniLM, and common IVR prompts at startup.
+
+---------------------------------------------------------------------------------------
+M. FEATURE CLASSIFICATION & GAP ANALYSIS
+---------------------------------------------------------------------------------------
+
+- IMPLEMENTED:
+  * FastAPI + Lifespan + Provider Registry
+  * Asterisk Bidirectional 8kHz PCM + Barge-in
+  * Audio Intelligence (VAD, Spectral NS, Quality, Acoustic Features)
+  * Local Whisper STT + Indic/Order Normalization
+  * Voice Intelligence + Deterministic Decision Engine
+  * Hybrid RAG + Continuous Voice Learning
+  * Gemma 4 Tool Calling + ToolLoopRunner + Remote Django Integration
+  * Complaint Registration & Status (Local + Remote)
+  * Neural TTS (EdgeTTS + MMS-Odia + macOS say)
+  * Universal Multi-DB Connectors & CDC Sync
+
+- CONFIGURED BUT NOT USED:
+  * config/routing.yaml: Defines routes.chat.fallbacks and rate_limits, but
+    ChatOrchestrator hardcodes ivr-rag-mini -> mock-chat fallback and main.py
+    hardcodes 300 rpm in RateLimitMiddleware.
+
+- PARTIALLY IMPLEMENTED:
+  * Acoustic Echo Cancellation (PlaybackEchoCanceller exists, disabled by default via
+    ECHO_CANCELLATION_ENABLED=false).
+  * Remote Django Auth Enforcement (HMAC/Bearer/API-Key client exists, but
+    REMOTE_TOOLS_REQUIRE_AUTH defaults to false for dev).
+
+- NOT IMPLEMENTED:
+  * Live Streaming LLM -> Streaming TTS Sentence Chunking (IVRCallSession runs
+    non-streaming orchestrator.execute for ToolLoopRunner and synthesizes TTS after
+    the full reply completes).
+
+---------------------------------------------------------------------------------------
+N. RECOMMENDED NEXT ARCHITECTURE IMPROVEMENTS
+---------------------------------------------------------------------------------------
+
+1. Cut ~16.4s LLM synthesis latency: Use a faster quantized tool-capable model or
+   GPU-hosted Ollama on Windows, cap max_tokens for voice turns, and add sentence-level
+   streaming TTS chunking after final tool calls.
+2. Wire config/routing.yaml into ChatOrchestrator & RateLimitMiddleware (or remove it
+   to avoid config drift) and fix the hardcoded "120 requests per minute" 429 message.
+3. Harden production auth: Enable REMOTE_TOOLS_REQUIRE_AUTH=true with HMAC/API-Key
+   verification on Mac + Windows Django, add WebSocket origin/token auth on /ws/ivr,
+   and require DATA_ACCESS_MASTER_KEY in non-dev environments.
+4. Rename/alias mock_tts -> hybrid_tts / neural_tts in providers/registry.py and
+   config/providers.yaml to reflect its real EdgeTTS/VITS implementation.
+

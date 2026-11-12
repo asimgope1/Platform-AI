@@ -9,6 +9,13 @@ class DocumentUploadRequest(BaseModel):
     source_type: Optional[str] = "text"
 
 
+class DocumentReindexRequest(BaseModel):
+    title: Optional[str] = None
+    content: str
+    source_type: Optional[str] = None
+    version: Optional[str] = "2.0"
+
+
 class DocumentResponse(BaseModel):
     id: str
     tenant_id: str
@@ -26,6 +33,8 @@ class DocumentListResponse(BaseModel):
 class SearchRequestSchema(BaseModel):
     query: str
     top_k: Optional[int] = 4
+    category: Optional[str] = None
+    hybrid: Optional[bool] = True
 
 
 class SearchResultItem(BaseModel):
@@ -33,6 +42,7 @@ class SearchResultItem(BaseModel):
     chunk_index: int
     content: str
     score: float
+    citation: Optional[str] = None
 
 
 class SearchResponseSchema(BaseModel):

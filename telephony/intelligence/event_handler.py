@@ -115,3 +115,4 @@ class IntelligenceEventHandler:
     def close(self) -> None:
         if self._worker_task and not self._worker_task.done():
             self._worker_task.cancel()
+

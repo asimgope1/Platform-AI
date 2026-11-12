@@ -83,3 +83,4 @@ class ConversationMemory:
         if delta >= 0.15 or (len(self.turns) >= 2 and current_valence > 0.3 > prev_ema):
             return "improving"
         return "stable"
+

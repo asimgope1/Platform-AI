@@ -21,6 +21,8 @@ class ChatCompletionRequestSchema(BaseModel):
     tool_choice: Optional[Union[str, Dict[str, Any]]] = None
     user: Optional[str] = None
     enable_rag: Optional[bool] = False
+    enable_tools: Optional[bool] = False
+    authorized_customer_id: Optional[str] = None
 
 
 class ChoiceSchema(BaseModel):

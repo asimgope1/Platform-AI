@@ -68,6 +68,8 @@ class ConversationState:
     awaiting_transfer_confirmation: bool = False
     awaiting_resolution_confirmation: bool = False
     awaiting_feedback: bool = False
+    awaiting_order_id_digits: bool = False
+    order_id_last4: Optional[str] = None
 
     last_transcript: str = ""
     last_masked_transcript: str = ""
@@ -147,9 +149,15 @@ class ConversationState:
             resolution_status=self.resolution_status,
         )
 
-        # Increment failed attempts if caller repeats unresolved intent or explicitly rejects resolution
+        # Increment failed attempts if caller repeats unresolved intent or explicitly rejects resolution.
+        # Do not penalize legitimate multi-turn slot filling (e.g. supplying order ID digits) or positive/closing turns.
+        non_failure_intents = {"appreciation", "greeting", "feedback_rating", "confirmation_yes"}
         if (
-            self.memory.consecutive_same_intent >= 1
+            (
+                self.memory.consecutive_same_intent >= 1
+                and not self.awaiting_order_id_digits
+                and intelligence.intent.intent not in non_failure_intents
+            )
             or (self.awaiting_resolution_confirmation and intelligence.intent.intent == "confirmation_no")
         ):
             self.failed_attempts += 1
@@ -181,9 +189,12 @@ class ConversationState:
             "previous_attempts": self.failed_attempts,
             "recommended_action": recommended_action,
             "language": self.language,
+            "order_id_last4": self.order_id_last4,
+            "awaiting_order_id_digits": self.awaiting_order_id_digits,
         }
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
         data.pop("memory", None)
         return data
+

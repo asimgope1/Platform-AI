@@ -69,3 +69,4 @@ class SatisfactionAnalyzer:
             satisfaction_label=label,
             explicit_rating=None,
         )
+

@@ -54,6 +54,16 @@ CONFIRM_NO_PATTERNS = re.compile(
 )
 
 RATING_PATTERN = re.compile(r"\b([1-5])\s*(?:out of 5|stars?|rating|में से 5|स्टार|ରେଟିଂ)?\b", re.IGNORECASE)
+_RATING_WORDS: Dict[str, int] = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+    "ek": 1, "do": 2, "teen": 3, "chaar": 4, "char": 4, "paanch": 5, "panch": 5,
+    "एक": 1, "दो": 2, "तीन": 3, "चार": 4, "पांच": 5, "पाँच": 5,
+    "ଏକ": 1, "ଦୁଇ": 2, "ତିନି": 3, "ଚାରି": 4, "ପାଞ୍ଚ": 5,
+}
+_RATING_WORD_PATTERN = re.compile(
+    r"(?:^|\s)(" + "|".join(re.escape(w) for w in _RATING_WORDS) + r")(?:$|\s|[.!?,।])",
+    re.IGNORECASE,
+)
 
 OFF_TOPIC_PATTERNS = re.compile(
     r"\b(?:weather|cricket|football|movie|recipe|joke|poem|capital of|president|prime minister|coding|python|java|physics|chemistry)\b|"
@@ -70,6 +80,7 @@ class IntentAnalyzer:
         text: str,
         service_category: Optional[str] = None,
         awaiting_feedback: bool = False,
+        awaiting_order_id_digits: bool = False,
     ) -> IntentResult:
         clean = (text or "").strip()
         lower = clean.lower()
@@ -78,12 +89,21 @@ class IntentAnalyzer:
 
         # 1. Explicit feedback rating when expected or formatted as rating
         if awaiting_feedback:
-            m = RATING_PATTERN.search(clean)
-            if m:
+            digit_match = RATING_PATTERN.search(clean)
+            word_match = _RATING_WORD_PATTERN.search(lower)
+            if word_match and (not digit_match or word_match.start() < digit_match.start()):
+                word_rating = _RATING_WORDS.get(word_match.group(1).strip())
+                if word_rating is not None:
+                    return IntentResult(
+                        intent="feedback_rating",
+                        confidence=0.90,
+                        rating_value=word_rating,
+                    )
+            if digit_match:
                 return IntentResult(
                     intent="feedback_rating",
                     confidence=0.92,
-                    rating_value=int(m.group(1)),
+                    rating_value=int(digit_match.group(1)),
                 )
 
         # 2. Explicit agent request (highest priority for immediate routing)
@@ -135,6 +155,25 @@ class IntentAnalyzer:
         if any(w in lower for w in ("loan", "emi", "interest", "ऋण", "ईएमआई", "ଋଣ", "ଇଏମଆଇ")):
             return IntentResult(intent="loans_emi", confidence=0.86)
 
+        if any(w in lower for w in (
+            "order", "order id", "delivery", "parcel", "shipment", "courier", "track", "tracking",
+            "ऑर्डर", "डिलीवरी", "पार्सल", "ट्रैक", "ଅର୍ଡର", "ଡେଲିଭରି", "ପାର୍ସଲ",
+        )):
+            return IntentResult(intent="order_status", confidence=0.90)
+
+        if awaiting_order_id_digits and (
+            re.search(r"[\d०-९୦-୯]", clean)
+            or any(
+                w in lower
+                for w in (
+                    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+                    "शून्य", "एक", "दो", "तीन", "चार", "पांच", "पाँच", "छह", "सात", "आठ", "नौ",
+                    "ଶୂନ", "ଏକ", "ଦୁଇ", "ତିନି", "ଚାରି", "ପାଞ୍ଚ", "ଛଅ", "ସାତ", "ଆଠ", "ନଅ",
+                )
+            )
+        ):
+            return IntentResult(intent="order_status", confidence=0.92)
+
         if any(w in lower for w in ("complaint", "issue", "problem", "ticket", "शिकायत", "समस्या", "ଅଭିଯୋଗ", "ସମସ୍ୟା")):
             return IntentResult(intent="complaint", confidence=0.80)
 
@@ -149,3 +188,4 @@ class IntentAnalyzer:
             return IntentResult(intent=service_category, confidence=0.55)
 
         return IntentResult(intent="unknown", confidence=0.35)
+

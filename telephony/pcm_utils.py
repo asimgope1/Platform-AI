@@ -138,10 +138,10 @@ def pcm_bytes_to_float32(pcm: bytes, source_rate: int = PBX_SAMPLE_RATE) -> np.n
     return np.clip(samples, -1.0, 1.0)
 
 
-def is_silence(pcm: bytes, rms_threshold: float = 45.0) -> bool:
+def is_silence(pcm: bytes, rms_threshold: float = 38.0) -> bool:
     """
     High-sensitivity silence gate on raw s16le bytes.
-    Threshold tuned to 45.0 to catch soft caller voices, quiet consonants,
+    Threshold tuned to 38.0 to catch soft caller voices, quiet consonants,
     and word endings while rejecting line hiss and muted background.
     """
     if len(pcm) < PBX_SAMPLE_WIDTH * 2:
@@ -193,10 +193,10 @@ def wav_bytes_to_pcm8k(wav_bytes: bytes) -> bytes:
         # Apply smooth fade ramps to start and end (10ms = 80 samples)
         samples = apply_smooth_fades(samples, fade_samples=80)
 
-        # Normalize to -1.5 dBFS (~27,500) for clean telephone playback without DAC clipping
+        # Normalize to -1.8 dBFS (~26,500) to avoid G.711/PSTN DAC saturation and clicks
         max_val = float(np.max(np.abs(samples)))
         if max_val > 1e-4:
-            target_peak = 27500.0
+            target_peak = 26500.0
             gain = min(target_peak / max_val, 10.0)
             samples = samples * gain
 
@@ -256,6 +256,47 @@ def _silence_pcm(duration_ms: int = 500) -> bytes:
     """Return silent raw s16le PCM for the given duration."""
     n_samples = int(PBX_SAMPLE_RATE * duration_ms / 1000)
     return b"\x00\x00" * n_samples
+
+
+_PROCESSING_PULSE_PCM_CACHE: bytes | None = None
+
+
+def generate_processing_pulse_pcm(peak_amplitude: float = 2600.0) -> bytes:
+    """
+    Generate a gentle, telephony-safe ascending dual-tone waiting/processing chime
+    (C5 -> E5, ~195 ms, 8 kHz s16le mono) to reassure callers while STT/AI/TTS runs.
+    """
+    global _PROCESSING_PULSE_PCM_CACHE
+    if _PROCESSING_PULSE_PCM_CACHE is not None and peak_amplitude == 2600.0:
+        return _PROCESSING_PULSE_PCM_CACHE
+
+    def _soft_tone(freq_hz: float, duration_ms: int, fade_in_ms: int = 15, fade_out_ms: int = 25) -> np.ndarray:
+        n_samples = int(PBX_SAMPLE_RATE * duration_ms / 1000)
+        t = np.arange(n_samples, dtype=np.float32) / float(PBX_SAMPLE_RATE)
+        wave_arr = (
+            0.85 * np.sin(2.0 * math.pi * freq_hz * t)
+            + 0.15 * np.sin(2.0 * math.pi * (freq_hz * 2.0) * t)
+        ).astype(np.float32)
+
+        fi = min(int(PBX_SAMPLE_RATE * fade_in_ms / 1000), n_samples // 3)
+        fo = min(int(PBX_SAMPLE_RATE * fade_out_ms / 1000), n_samples // 2)
+        if fi > 0:
+            wave_arr[:fi] *= 0.5 * (1.0 - np.cos(np.pi * np.arange(fi, dtype=np.float32) / fi))
+        if fo > 0:
+            wave_arr[-fo:] *= 0.5 * (1.0 + np.cos(np.pi * np.arange(fo, dtype=np.float32) / fo))
+        return wave_arr * float(peak_amplitude)
+
+    tone1 = _soft_tone(523.25, duration_ms=75, fade_in_ms=15, fade_out_ms=20)
+    gap = np.zeros(int(PBX_SAMPLE_RATE * 25 / 1000), dtype=np.float32)
+    tone2 = _soft_tone(659.25, duration_ms=95, fade_in_ms=15, fade_out_ms=30)
+
+    combined = np.concatenate([tone1, gap, tone2])
+    combined = np.clip(combined, -32767.0, 32767.0).astype("<i2")
+    pcm = combined.tobytes()
+
+    if peak_amplitude == 2600.0:
+        _PROCESSING_PULSE_PCM_CACHE = pcm
+    return pcm
 
 
 # ──────────────────────────────────────────────────────────────────────────────

@@ -116,3 +116,4 @@ def upgrade() -> None:
 def downgrade() -> None:
     for table in ("conversation_resolution", "call_transfer", "call_feedback", "call_events", "call_intelligence"):
         op.drop_table(table)
+

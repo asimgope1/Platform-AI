@@ -66,6 +66,7 @@ class IntelligenceOrchestrator:
             prior_satisfaction=state.satisfaction_score,
             awaiting_resolution_confirmation=state.awaiting_resolution_confirmation,
             awaiting_feedback=state.awaiting_feedback,
+            awaiting_order_id_digits=state.awaiting_order_id_digits,
         )
 
         # 3. Update per-call ConversationState
@@ -87,3 +88,4 @@ class IntelligenceOrchestrator:
             conversation=conv_result,
             decision=decision,
         )
+

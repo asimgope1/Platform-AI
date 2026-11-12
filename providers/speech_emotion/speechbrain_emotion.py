@@ -126,3 +126,4 @@ class SpeechBrainEmotionProvider:
             provider="acoustic_prosody",
             experimental_signal=experimental,
         )
+

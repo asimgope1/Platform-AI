@@ -58,25 +58,27 @@ async def test_old_placeholder_rejected_by_default(async_client: httpx.AsyncClie
 
 def test_validate_master_key_production_enforcement():
     # 1. Missing key in production must raise ValueError
-    cfg_missing = Settings(ENVIRONMENT="production", MASTER_API_KEY=None)
+    cfg_missing = Settings(_env_file=None, ENVIRONMENT="production", MASTER_API_KEY=None)
     with pytest.raises(ValueError, match="Production requires an explicitly configured"):
         validate_master_key(cfg_missing)
 
     # 2. Key too short (< 32 chars) in production must raise ValueError
-    cfg_short = Settings(ENVIRONMENT="production", MASTER_API_KEY="short-key-123")
+    cfg_short = Settings(_env_file=None, ENVIRONMENT="production", MASTER_API_KEY="short-key-123")
     with pytest.raises(ValueError, match="at least 32 characters"):
         validate_master_key(cfg_short)
 
     # 3. Default placeholder in production must raise ValueError
     cfg_placeholder = Settings(
+        _env_file=None,
         ENVIRONMENT="production",
         MASTER_API_KEY="sk-platform-master-key-change-in-production"
     )
     with pytest.raises(ValueError, match="placeholder cannot be used in production"):
         validate_master_key(cfg_placeholder)
 
-    # 4. Valid 32+ char key in production passes
+    # 4. Valid 32+ char key in production passes when remote tools are disabled or hardened
     cfg_valid = Settings(
+        _env_file=None,
         ENVIRONMENT="production",
         MASTER_API_KEY="sk-prod-sec-key-7483920194857201948572"
     )

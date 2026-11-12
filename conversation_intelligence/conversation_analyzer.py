@@ -79,6 +79,7 @@ class ConversationAnalyzer:
         prior_satisfaction: Optional[float] = None,
         awaiting_resolution_confirmation: bool = False,
         awaiting_feedback: bool = False,
+        awaiting_order_id_digits: bool = False,
     ) -> ConversationIntelligenceResult:
         voice_task = asyncio.to_thread(
             self.voice_emotion_provider.analyze,
@@ -91,6 +92,7 @@ class ConversationAnalyzer:
             transcript,
             service_category,
             awaiting_feedback,
+            awaiting_order_id_digits,
         )
         certainty_task = asyncio.to_thread(
             self.caller_confidence_analyzer.analyze,
@@ -151,3 +153,4 @@ class ConversationAnalyzer:
             fused_emotion=fused_emotion,
             fused_emotion_confidence=fused_conf,
         )
+

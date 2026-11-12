@@ -1,0 +1,15 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "loans",
+    "topic": "loan_emi_and_foreclosure",
+    "title": "Loan Repayment, EMI Auto-Debit and Foreclosure Policy",
+    "content": "Loan EMIs are auto-debited from the linked repayment account via NACH mandate on the scheduled due date each month. Customers wishing to view repayment schedules, download interest certificates, check foreclosure charges, or obtain a No Objection Certificate after full repayment can access Loan Services in Mobile Banking or NetBanking, or request specialist assistance for restructuring.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]
+

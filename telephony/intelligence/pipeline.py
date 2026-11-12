@@ -56,11 +56,22 @@ class TelephonyIntelligencePipeline:
         )
         plan = self.response_orchestrator.prepare(decision=pkg.decision, state=state)
 
+        conv = pkg.conversation
         logger.info(
             f"[VoiceIntel] Turn={state.turn_number} Intent={state.intent} "
             f"Emotion={state.emotion.get('fused')}({state.emotion.get('trend')}) "
             f"Certainty={state.caller_certainty} SysConf={state.system_confidence} "
             f"Action={plan.action.value} Reason={pkg.decision.reason}"
+        )
+        sat_val = state.satisfaction_score
+        sat_str = f"{sat_val:.2f}" if isinstance(sat_val, (int, float)) else "n/a"
+        logger.info(
+            f"[IVR] 💬 Caller Sentiment: sentiment={state.emotion.get('fused')} "
+            f"trend={state.emotion.get('trend')} "
+            f"text={conv.text_emotion.primary_emotion}({conv.text_emotion.confidence:.2f}) "
+            f"voice={conv.voice_emotion.primary_emotion}({conv.voice_emotion.confidence:.2f}) "
+            f"satisfaction={sat_str} "
+            f"resolution={state.resolution_status}"
         )
 
         if self.persistence_enabled and state.call_uuid and state.call_uuid != "unknown":
@@ -156,3 +167,4 @@ class TelephonyIntelligencePipeline:
             customer_confirmed=state.customer_confirmed,
             escalation_required=bool(state.transfer_completed or state.requires_mandatory_escalation),
         )
+

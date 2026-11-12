@@ -127,6 +127,9 @@ class ChatOrchestrator:
             else:
                 response = await adapter.chat_completion(current_request, model_meta)
         except Exception as e:
+            # Never fall back to a non-tool mock/template model when live business tools were requested
+            if current_request.tools:
+                raise
             logger.warning(f"Primary model {model_meta.alias} failed ({e}); falling back to local fallback provider.")
             try:
                 try:

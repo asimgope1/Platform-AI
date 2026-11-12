@@ -1,3 +1,4 @@
+import inspect
 from typing import Dict, Any, Optional
 from providers.registry import provider_registry
 
@@ -34,11 +35,19 @@ class AudioService:
         model: str = "tts-1",
         voice: str = "alloy",
         response_format: str = "mp3",
+        emotion: Optional[str] = None,
     ) -> bytes:
         adapter = provider_registry.get_tts_adapter(self.tts_provider_id)
-        return await adapter.synthesize(
-            text=text,
-            model=model,
-            voice=voice,
-            response_format=response_format,
-        )
+        kwargs: Dict[str, Any] = {
+            "text": text,
+            "model": model,
+            "voice": voice,
+            "response_format": response_format,
+        }
+        try:
+            params = inspect.signature(adapter.synthesize).parameters
+            if emotion and ("emotion" in params or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values())):
+                kwargs["emotion"] = emotion
+        except (TypeError, ValueError):
+            pass
+        return await adapter.synthesize(**kwargs)

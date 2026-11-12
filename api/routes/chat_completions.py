@@ -1,5 +1,5 @@
 import json
-from typing import AsyncIterator
+from typing import AsyncIterator, Any, Dict
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +12,7 @@ from storage.database import get_db_session
 from storage.repositories.usage_repo import UsageRepository
 from services.api.dependencies import get_chat_orchestrator
 from orchestration.chat_orchestrator import ChatOrchestrator
+from tools.registry import tool_registry
 
 router = APIRouter(prefix="/v1", tags=["Chat Completions"])
 
@@ -51,6 +52,14 @@ async def create_chat_completion(
             )
         )
 
+    resolved_tools = payload.tools
+    if resolved_tools is None and payload.enable_tools:
+        resolved_tools = tool_registry.get_all_tool_schemas()
+
+    metadata: Dict[str, Any] = {}
+    if payload.authorized_customer_id:
+        metadata["authorized_customer_id"] = payload.authorized_customer_id
+
     norm_request = NormalizedChatRequest(
         model_alias=payload.model,
         messages=normalized_messages,
@@ -58,9 +67,10 @@ async def create_chat_completion(
         temperature=payload.temperature,
         top_p=payload.top_p,
         max_tokens=payload.max_tokens,
-        tools=payload.tools,
+        tools=resolved_tools,
         tool_choice=payload.tool_choice,
         user=payload.user,
+        metadata=metadata,
     )
 
     req_id = request_id_ctx.get() or "req_chat"

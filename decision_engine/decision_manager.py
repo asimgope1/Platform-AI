@@ -107,9 +107,17 @@ class DecisionManager:
             )
 
         # 3. Audio / Transcription Failure (Priority 3)
-        if needs_clarification or (
-            state.audio_quality_score > 0.0 and state.audio_quality_score < self.audio_clarify_threshold
-        ):
+        # Never force clarification when STT still decoded a recognized, confident turn cleanly.
+        transcript_uncertain = (
+            state.transcript_confidence < self.transcript_confirm_threshold
+            or state.intent in (None, "unknown")
+        )
+        low_audio_blocked = (
+            state.audio_quality_score > 0.0
+            and state.audio_quality_score < self.audio_clarify_threshold
+            and (transcript_uncertain or state.audio_quality_score < 0.20)
+        )
+        if needs_clarification or low_audio_blocked:
             # After 2 consecutive clarifications, offer human transfer if available
             if state.clarification_count >= 2 and not state.transfer_offered:
                 return DecisionResult(
