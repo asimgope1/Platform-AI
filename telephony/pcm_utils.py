@@ -210,21 +210,91 @@ def wav_bytes_to_pcm8k(wav_bytes: bytes) -> bytes:
         return _afconvert_to_pcm8k(wav_bytes, ext=".wav")
 
 
+import shutil
+
+
 def audio_bytes_to_pcm8k(audio_bytes: bytes, ext: str = ".mp3") -> bytes:
     """
     Convert arbitrary audio bytes (mp3 / m4a / wav / …) to raw s16le mono 8 kHz
-    using macOS `afconvert` → WAV → wav_bytes_to_pcm8k pipeline.
+    using multi-platform conversion (ffmpeg on Linux/Windows, afconvert on macOS).
     Falls back to a 0.5-second silence tone on error.
     """
     try:
-        # Try wav path first (fastest, no subprocess)
+        # Try direct wav path first (fastest, no external process)
         if ext.lower() in (".wav", ".wave"):
             return wav_bytes_to_pcm8k(audio_bytes)
 
-        return _afconvert_to_pcm8k(audio_bytes, ext=ext)
+        # 1. On non-macOS (or if ffmpeg is available), prefer ffmpeg
+        if shutil.which("ffmpeg"):
+            return _ffmpeg_to_pcm8k(audio_bytes, ext=ext)
+
+        # 2. On macOS fallback to built-in afconvert
+        if shutil.which("afconvert"):
+            return _afconvert_to_pcm8k(audio_bytes, ext=ext)
+
+        raise RuntimeError("Neither 'ffmpeg' nor 'afconvert' was found in PATH.")
     except Exception as exc:
         logger.error(f"audio_bytes_to_pcm8k: conversion failed ({exc}); returning silence")
         return _silence_pcm(duration_ms=500)
+
+
+def _ffmpeg_to_pcm8k(audio_bytes: bytes, ext: str = ".mp3") -> bytes:
+    """Convert audio bytes to raw s16le mono 8 kHz via ffmpeg pipe."""
+    try:
+        proc = subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel", "error",
+                "-f", ext.lstrip(".").lower() or "mp3",
+                "-i", "pipe:0",
+                "-f", "s16le",
+                "-acodec", "pcm_s16le",
+                "-ac", "1",
+                "-ar", "8000",
+                "pipe:1",
+            ],
+            input=audio_bytes,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            timeout=10,
+        )
+        samples = np.frombuffer(proc.stdout, dtype="<i2").astype(np.float32)
+        if len(samples) == 0:
+            return proc.stdout
+
+        # Normalize to -1.8 dBFS to avoid DAC saturation
+        max_val = float(np.max(np.abs(samples)))
+        if max_val > 1e-4:
+            target_peak = 26500.0
+            gain = min(target_peak / max_val, 10.0)
+            samples = samples * gain
+
+        samples = np.clip(samples, -32767.0, 32767.0)
+        return samples.astype("<i2").tobytes()
+    except Exception as exc:
+        # If piping failed, try temporary file fallback
+        with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as in_f:
+            in_path = in_f.name
+            in_f.write(audio_bytes)
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as out_f:
+            out_path = out_f.name
+        try:
+            subprocess.run(
+                ["ffmpeg", "-y", "-i", in_path, "-ac", "1", "-ar", "8000", out_path],
+                check=True,
+                capture_output=True,
+                timeout=10,
+            )
+            with open(out_path, "rb") as f:
+                return wav_bytes_to_pcm8k(f.read())
+        finally:
+            for p in (in_path, out_path):
+                try:
+                    os.remove(p)
+                except OSError:
+                    pass
 
 
 def _afconvert_to_pcm8k(audio_bytes: bytes, ext: str = ".mp3") -> bytes:
