@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
@@ -121,6 +122,43 @@ class RAGFirstResponseGenerator:
         rag_context_str = "\n\n".join(retrieved.chunk_texts)
         if tool_output:
             rag_context_str = f"{rag_context_str}\n\nVerified Backend Tool Result:\n{tool_output}".strip()
+
+        # If knowledge exists in RAG and the turn is an informational FAQ/policy query (not an action/lookup tool call),
+        # synthesize instantly from RAG with zero latency, without stalling on slow LLMs.
+        rag_first_enabled = os.getenv("IVR_RAG_FIRST_INSTANT", "true").lower() in ("1", "true", "yes")
+        action_intent = _needs_live_action_fallback(user_message, service_category)
+        if rag_first_enabled and retrieved.chunk_texts and not action_intent and not tool_output:
+            logger.info(
+                f"[IVR] ⚡ Instant RAG Synthesis ({len(retrieved.chunk_texts)} chunks, tier={retrieved.evaluation.tier.value}) "
+                f"for query: '{user_message[:60]}'"
+            )
+            rag_reply = ivr_mini_brain.synthesize(
+                user_query=user_message,
+                messages=conversation_history,
+                rag_context=rag_context_str,
+                language=language,
+                service_category=service_category,
+                intelligence_context=intelligence_context,
+            )
+            if rag_reply:
+                formatted_reply = ivr_mini_brain.apply_sentiment_tone(
+                    rag_reply,
+                    active_emotion,
+                    lang=language,
+                    previous_attempts=previous_attempts,
+                )
+                latency_ms = round((time.perf_counter() - t_start) * 1000.0, 2)
+                return GeneratedResponse(
+                    text=formatted_reply,
+                    source="instant_rag",
+                    retrieval_eval=retrieved.evaluation,
+                    grounded=True,
+                    used_fallback=False,
+                    latency_ms=latency_ms,
+                    rag_context_text=rag_context_str,
+                    cache_hit=retrieved.cache_hit,
+                    resolved_customer_id=None,
+                )
 
         if retrieved.cache_hit:
             logger.info(
