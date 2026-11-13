@@ -86,10 +86,13 @@ SILENCE_GAP_SECONDS = float(os.getenv("IVR_SILENCE_GAP_SECONDS", "0.65"))
 # Delay between sending 20 ms PCM reply frames (throttles playback to real-time)
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
 
-# Barge-in speech protection: avoid false interruptions from speakerphone echo, clicks, or breathing
-BARGE_IN_COOLDOWN_SECONDS = 0.35
-BARGE_IN_RMS_THRESHOLD = 1150.0
-BARGE_IN_MIN_CONSECUTIVE_FRAMES = 6  # ~120 ms sustained active caller speech
+# Barge-in speech protection & responsive ducking ("slowdown AI voice and start listening")
+BARGE_IN_COOLDOWN_SECONDS = float(os.getenv("IVR_BARGE_IN_COOLDOWN_SECONDS", "0.25"))
+BARGE_IN_DUCK_RMS_THRESHOLD = float(os.getenv("IVR_BARGE_IN_DUCK_RMS_THRESHOLD", "420.0"))
+BARGE_IN_RMS_THRESHOLD = float(os.getenv("IVR_BARGE_IN_RMS_THRESHOLD", "650.0"))
+BARGE_IN_MIN_CONSECUTIVE_FRAMES = int(os.getenv("IVR_BARGE_IN_MIN_CONSECUTIVE_FRAMES", "2"))  # ~40 ms strong speech
+BARGE_IN_DUCK_GAIN = float(os.getenv("IVR_BARGE_IN_DUCK_GAIN", "0.22"))
+BARGE_IN_DUCK_SLOWDOWN_FACTOR = float(os.getenv("IVR_BARGE_IN_DUCK_SLOWDOWN_FACTOR", "1.35"))
 
 # Gentle waiting / processing chime played while STT -> RAG/LLM -> TTS is running
 PROCESSING_SOUND_ENABLED = os.getenv("IVR_PROCESSING_SOUND_ENABLED", "true").lower() in ("1", "true", "yes")
@@ -285,7 +288,10 @@ class IVRCallSession:
         self._is_synthesizing: bool = False
         self._playback_started_ts: float = 0.0
         self._barge_in_voice_frames: int = 0
+        self._barge_in_duck_frames: int = 0
         self._barge_in_preroll: list[bytes] = []
+        self._is_ducking: bool = False
+        self._duck_gain: float = 1.0
         self._cancelled_by_barge_in: bool = False
         self._barge_in_captured: bool = False
         self._last_playback_end_ts: float = 0.0
@@ -405,7 +411,10 @@ class IVRCallSession:
             self._playback_task.cancel()
         self._cancel_processing_sound()
         self._is_playing = False
+        self._is_ducking = False
+        self._duck_gain = 1.0
         self._barge_in_voice_frames = 0
+        self._barge_in_duck_frames = 0
         self._barge_in_preroll.clear()
 
     def _start_processing_sound(self) -> None:
@@ -733,11 +742,14 @@ class IVRCallSession:
         if self.menu_machine.state not in (IVRState.AI_CONVERSATION, IVRState.FEEDBACK):
             return
 
-        # Ignore microphone frames while synthesizing TTS or while an active STT/LLM/TTS turn is running (unless barge-in playback is active)
-        if (self._is_synthesizing or self._pipeline_lock.locked()) and not self._is_playing:
+        # Ignore microphone frames while synthesizing TTS or while an active STT/LLM/TTS turn is running
+        # (unless barge-in playback is active OR we just captured a barge-in and are actively listening)
+        if (self._is_synthesizing or (self._pipeline_lock.locked() and not self._barge_in_captured)) and not self._is_playing:
             return
 
-        # When bot is actively speaking back to user, detect sustained voice barge-in interruption
+        # When bot is actively speaking back to user:
+        # 1) Softly duck & slow down AI voice on first signs of caller speech (RMS > BARGE_IN_DUCK_RMS_THRESHOLD)
+        # 2) Cancel AI playback and start listening immediately on sustained speech
         if self._is_playing:
             if (
                 len(data) >= 4
@@ -745,11 +757,24 @@ class IVRCallSession:
             ):
                 samples = np.frombuffer(data, dtype="<i2").astype(np.float32)
                 rms = float(np.sqrt(np.mean(samples ** 2)))
-                if rms > BARGE_IN_RMS_THRESHOLD:
-                    self._barge_in_voice_frames += 1
+                if rms > BARGE_IN_DUCK_RMS_THRESHOLD:
+                    self._barge_in_duck_frames += 1
                     self._barge_in_preroll.append(data)
-                    if self._barge_in_voice_frames >= BARGE_IN_MIN_CONSECUTIVE_FRAMES:
-                        logger.info(f"[IVR] ⚡ Voice Barge-in detected (RMS={rms:.1f}): interrupting playback!")
+                    if not self._is_ducking:
+                        self._is_ducking = True
+                        logger.debug(f"[IVR] 🔉 Caller speech onset (RMS={rms:.1f}): ducking/slowing AI voice.")
+
+                    if rms > BARGE_IN_RMS_THRESHOLD:
+                        self._barge_in_voice_frames += 1
+                    else:
+                        self._barge_in_voice_frames = 0
+
+                    soft_trigger_frames = max(4, BARGE_IN_MIN_CONSECUTIVE_FRAMES * 2)
+                    if (
+                        self._barge_in_voice_frames >= BARGE_IN_MIN_CONSECUTIVE_FRAMES
+                        or self._barge_in_duck_frames >= soft_trigger_frames
+                    ):
+                        logger.info(f"[IVR] ⚡ Voice Barge-in detected (RMS={rms:.1f}): interrupting playback & listening!")
                         barge_frames = list(self._barge_in_preroll)
                         self._stop_playback(reason="voice_barge_in")
                         self._barge_in_captured = True
@@ -762,6 +787,8 @@ class IVRCallSession:
                         self._last_voice_ts = time.monotonic()
                 else:
                     self._barge_in_voice_frames = 0
+                    self._barge_in_duck_frames = 0
+                    self._is_ducking = False
                     self._barge_in_preroll.clear()
             return
 
@@ -1300,11 +1327,11 @@ class IVRCallSession:
 
         if not reply_text or "mock response" in reply_text.lower():
             if self.selected_language == "hi":
-                reply_text = "माफ़ कीजिये, आपकी आवाज़ साफ़ नहीं आई। क्या आप वीडियो केवाईसी या यूपीआई समस्या के बारे में पूछ रहे हैं?"
+                reply_text = "माफ़ कीजिए, आपकी आवाज़ साफ़ नहीं आई। कृपया अपनी बात दोबारा कहें।"
             elif self.selected_language == "or":
-                reply_text = "କ୍ଷମା କରିବେ, ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଶୁଣାଗଲା ନାହିଁ। ଆପଣ ଭିଡିଓ କେୱାଇସି କିମ୍ବା ୟୁପିଆଇ ବିଷୟରେ ପଚାରୁଛନ୍ତି କି?"
+                reply_text = "କ୍ଷମା କରିବେ, ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଶୁଣାଗଲା ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ଅନୁରୋଧ ପୁଣିଥରେ କୁହନ୍ତୁ।"
             else:
-                reply_text = "I'm sorry, I couldn't clearly hear that. Could you please repeat your query about Video KYC or UPI?"
+                reply_text = "I'm sorry, I couldn't clearly hear that. Could you please repeat your request?"
 
         from providers.text_to_speech.base import MockTextToSpeechAdapter
 
@@ -1472,20 +1499,32 @@ class IVRCallSession:
 
                 chunks_sent = PREBUFFER_FRAMES
                 start_time = time.monotonic()
+                target_time = start_time
 
                 for i in range(PREBUFFER_FRAMES, total_chunks):
                     frame = chunks[i]
+                    if self._is_ducking:
+                        self._duck_gain = max(BARGE_IN_DUCK_GAIN, self._duck_gain * 0.65)
+                        frame_interval = FRAME_INTERVAL_SECONDS * BARGE_IN_DUCK_SLOWDOWN_FACTOR
+                    else:
+                        if self._duck_gain < 0.999:
+                            self._duck_gain = min(1.0, self._duck_gain + 0.15)
+                        frame_interval = FRAME_INTERVAL_SECONDS
+
+                    if self._duck_gain < 0.999:
+                        frame = _scale_pcm_frame(frame, self._duck_gain)
+
                     await self._ws.send_bytes(frame)
                     chunks_sent += 1
 
                     # Calculate target wall-clock time for subsequent frames
-                    target_time = start_time + (i - PREBUFFER_FRAMES + 1) * FRAME_INTERVAL_SECONDS
+                    target_time += frame_interval
                     now = time.monotonic()
                     sleep_duration = target_time - now
 
                     # If behind by more than 100ms due to a system freeze, resync to avoid a huge burst
                     if sleep_duration < -0.100:
-                        start_time = now - (i - PREBUFFER_FRAMES + 1) * FRAME_INTERVAL_SECONDS
+                        target_time = now
                         sleep_duration = 0
 
                     if sleep_duration > 0.002:
@@ -1519,6 +1558,14 @@ class IVRCallSession:
 # ──────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────────────────────────────────────
+
+def _scale_pcm_frame(frame: bytes, gain: float) -> bytes:
+    """Scale 16-bit signed little-endian PCM frame amplitude cleanly without overflow."""
+    if not frame or len(frame) < 2 or gain >= 0.999:
+        return frame
+    samples = np.frombuffer(frame, dtype="<i2").astype(np.float32) * max(0.0, gain)
+    return np.clip(samples, -32768.0, 32767.0).astype("<i2").tobytes()
+
 
 def is_closing_turn(user_text: str, reply_text: str) -> bool:
     """

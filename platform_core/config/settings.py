@@ -71,6 +71,18 @@ class Settings(BaseSettings):
     IVR_ENABLE_TOOLS: bool = True
     IVR_TOOL_TURN_TIMEOUT_SECONDS: float = 95.0
 
+    # Direct Tenant CRM Database (Universal Data Access)
+    CRM_DB_ENABLED: bool = False
+    CRM_DB_NAME: str = "crm_backend_db"
+    CRM_DB_ENGINE: str = "postgresql"
+    CRM_DB_HOST: str = "192.168.1.124"
+    CRM_DB_PORT: int = 5435
+    CRM_DB_SCHEMA: str = "public"
+    CRM_DB_USERNAME: Optional[str] = None
+    CRM_DB_PASSWORD: Optional[str] = None
+    CRM_DB_TENANT_ID: Optional[str] = None
+    CRM_DB_READ_ONLY: bool = True
+
 
 def validate_master_key(cfg: Settings) -> None:
     """Validates that production environments enforce secure keys and fail-closed remote auth."""

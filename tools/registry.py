@@ -4,6 +4,7 @@ from tools.business_data.reports import count_open_purchase_requests
 from tools.business_data.customers import get_customer_info
 from tools.business_data.orders import get_order_status
 from tools.business_data.universal_tools import (
+    get_customer_complaints,
     get_customer_details,
     get_customer_order_summary,
     get_customer_orders,
@@ -231,6 +232,21 @@ tool_registry.register(
         "required": [],
     },
     handler=get_invoice_details,
+)
+
+tool_registry.register(
+    name="get_customer_complaints",
+    description="Retrieves a customer's complaint history with human-readable status names by customer ID or phone number.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "customer_id": {"type": "string", "description": "Customer unique identifier."},
+            "phone": {"type": "string", "description": "Customer phone number (used to resolve customer_id when customer_id is not known)."},
+            "limit": {"type": "integer", "description": "Maximum number of complaints to return (default 10).", "default": 10},
+        },
+        "required": [],
+    },
+    handler=get_customer_complaints,
 )
 
 tool_registry.register(

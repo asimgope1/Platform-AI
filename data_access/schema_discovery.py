@@ -18,7 +18,7 @@ class SchemaDiscoveryService:
         self,
         spec: ConnectionConfigSpec,
         *,
-        timeout_seconds: float = 10.0,
+        timeout_seconds: float = 90.0,
     ) -> DiscoveredSchema:
         adapter = await self._manager.get_adapter(spec)
         try:

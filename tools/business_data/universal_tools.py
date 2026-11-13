@@ -98,17 +98,36 @@ async def search_customer(
                 caller_subject=ctx.api_key_id,
             )
         else:
-            # Fuzzy query string: match by exact customer_id first, then fallback to name ilike
-            rows = await service.query_entity(
-                tenant_id=ctx.tenant_id,
-                tool_name="search_customer",
-                entity="customer",
-                filters={"customer_id": c_query},
-                authorized_customer_id=auth_cust,
-                mask_pii=True,
-                limit=effective_limit,
-                caller_subject=ctx.api_key_id,
-            )
+            # Fuzzy query string: match by exact customer_id (when valid ID), phone digits, or name ilike
+            rows = []
+            try:
+                rows = await service.query_entity(
+                    tenant_id=ctx.tenant_id,
+                    tool_name="search_customer",
+                    entity="customer",
+                    filters={"customer_id": c_query},
+                    authorized_customer_id=auth_cust,
+                    mask_pii=True,
+                    limit=effective_limit,
+                    caller_subject=ctx.api_key_id,
+                )
+            except Exception:
+                rows = []
+            if not rows and any(ch.isdigit() for ch in c_query):
+                try:
+                    rows = await service.query_entity(
+                        tenant_id=ctx.tenant_id,
+                        tool_name="search_customer",
+                        entity="customer",
+                        filters={"phone": c_query},
+                        filter_operators={"phone": "ilike"},
+                        authorized_customer_id=auth_cust,
+                        mask_pii=True,
+                        limit=effective_limit,
+                        caller_subject=ctx.api_key_id,
+                    )
+                except Exception:
+                    rows = []
             if not rows:
                 rows = await service.query_entity(
                     tenant_id=ctx.tenant_id,
@@ -581,5 +600,92 @@ async def search_knowledge_documents(
         "count": len(matches),
         "matches": matches,
         "citations": [f"doc:{m['document_id']}#chunk-{m['chunk_index']}" for m in matches],
+    }
+
+
+async def get_customer_complaints(
+    customer_id: Optional[str] = None,
+    phone: Optional[str] = None,
+    limit: int = 10,
+    *,
+    tenant_context: Optional[TenantContext] = None,
+    db_session: Optional[AsyncSession] = None,
+    authorized_customer_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Retrieve a customer's complaint history from the tenant's mapped CRM database (read-only)."""
+    ctx = _require_tenant(tenant_context)
+    c_cust = _clean_opt(customer_id, "customer_id", 64)
+    c_phone = _clean_opt(phone, "phone", 32)
+    if not c_cust and not c_phone:
+        raise ValidationError("Either 'customer_id' or 'phone' is required to look up customer complaints.")
+
+    effective_limit = max(1, min(int(limit or 10), 25))
+    auth_cust = authorized_customer_id or c_cust
+
+    async with _resolve_session(db_session) as session:
+        service = UniversalDataAccessService(session)
+        resolved_customer_id = c_cust
+
+        if not resolved_customer_id and c_phone:
+            cust_rows = await service.query_entity(
+                tenant_id=ctx.tenant_id,
+                tool_name="get_customer_complaints",
+                entity="customer",
+                filters={"phone": c_phone},
+                filter_operators={"phone": "ilike"},
+                authorized_customer_id=auth_cust,
+                mask_pii=True,
+                limit=1,
+                caller_subject=ctx.api_key_id,
+            )
+            if not cust_rows:
+                return {
+                    "found": False,
+                    "count": 0,
+                    "complaints": [],
+                    "message": "No customer found for the provided phone number.",
+                }
+            resolved_customer_id = str(cust_rows[0].get("customer_id"))
+
+        ticket_rows = await service.query_entity(
+            tenant_id=ctx.tenant_id,
+            tool_name="get_customer_complaints",
+            entity="support_ticket",
+            filters={"customer_id": resolved_customer_id},
+            include_related_customer=True,
+            authorized_customer_id=auth_cust or resolved_customer_id,
+            mask_pii=True,
+            order_by="updated_at",
+            descending=True,
+            limit=effective_limit,
+            caller_subject=ctx.api_key_id,
+        )
+
+    complaints = []
+    for rec in ticket_rows:
+        updated_val = rec.get("updated_at") or rec.get("created_at")
+        complaints.append(
+            {
+                "ticket_number": rec.get("ticket_id"),
+                "status": rec.get("status_name") or rec.get("phase_type") or str(rec.get("ticket_status") or ""),
+                "status_id": str(rec.get("ticket_status")) if rec.get("ticket_status") is not None else None,
+                "description": rec.get("subject"),
+                "updated_at": updated_val.isoformat() if hasattr(updated_val, "isoformat") else updated_val,
+                "customer_id": str(rec.get("customer_id")) if rec.get("customer_id") is not None else None,
+                "customer_name": rec.get("customer_name"),
+                "phone": rec.get("phone"),
+            }
+        )
+
+    return {
+        "found": len(complaints) > 0,
+        "count": len(complaints),
+        "customer_id": resolved_customer_id,
+        "complaints": complaints,
+        "message": (
+            f"Found {len(complaints)} complaint(s) for this customer."
+            if complaints
+            else "No complaints found for this customer."
+        ),
     }
 

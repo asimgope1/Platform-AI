@@ -299,7 +299,7 @@ class UniversalDataAccessService:
         order_by: Optional[str] = None,
         descending: bool = False,
         limit: int = 10,
-        timeout_seconds: float = 5.0,
+        timeout_seconds: float = 20.0,
         caller_subject: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
@@ -367,6 +367,25 @@ class UniversalDataAccessService:
                 resolved_order_by = ent_spec.fields[order_by]
 
             joins: List[QueryJoin] = []
+            if "status" in ent_spec.relations:
+                status_rel = ent_spec.relations["status"]
+                status_spec = mapping.entities.get(status_rel.target_entity)
+                if status_spec:
+                    status_proj: Dict[str, str] = {}
+                    if "phase_name" in status_spec.fields and "status_name" not in projection:
+                        status_proj["status_name"] = status_spec.fields["phase_name"]
+                    if "phase_type" in status_spec.fields and "phase_type" not in projection:
+                        status_proj["phase_type"] = status_spec.fields["phase_type"]
+                    if status_proj:
+                        joins.append(
+                            QueryJoin(
+                                right_table=status_spec.table,
+                                right_schema=status_spec.schema_name,
+                                left_column=status_rel.local_column,
+                                right_column=status_rel.target_column,
+                                select_columns=status_proj,
+                            )
+                        )
             if include_related_customer and "customer" in ent_spec.relations:
                 rel = ent_spec.relations["customer"]
                 cust_spec = mapping.entities.get(rel.target_entity)

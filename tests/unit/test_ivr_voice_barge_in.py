@@ -130,3 +130,63 @@ class TestIVRVoiceBargeIn:
         # Real speech passes through
         await session.on_transcript({"text": "Hello"})
         session._run_ai_and_reply.assert_awaited_once_with("Hello")
+
+    @pytest.mark.asyncio
+    async def test_soft_ducking_and_post_barge_in_listening(self):
+        mock_ws = AsyncMock()
+        mock_audio = AsyncMock()
+        mock_orch = AsyncMock()
+
+        session = IVRCallSession(
+            ws=mock_ws,
+            orchestrator=mock_orch,
+            audio_service=mock_audio,
+        )
+        session.menu_machine.state = IVRState.AI_CONVERSATION
+        session._is_playing = True
+        dummy_task = asyncio.create_task(asyncio.sleep(10))
+        session._playback_task = dummy_task
+
+        # Softer caller speech (RMS ~530) triggers immediate ducking without instant cut on 1st frame
+        soft_frame = self._generate_pcm_frame(amplitude=750)
+        await session.on_pcm_frame(soft_frame)
+        assert session._is_ducking is True
+        assert session._is_playing is True
+
+        # Send 3 more soft frames -> triggers full barge-in and starts listening
+        for _ in range(3):
+            await session.on_pcm_frame(soft_frame)
+        await asyncio.sleep(0)
+        assert session._is_playing is False
+        assert session._barge_in_captured is True
+        buf_after_barge = len(session._pcm_buffer)
+        assert buf_after_barge > 0
+
+        # Even if _pipeline_lock is momentarily still held while playback task unwinds,
+        # incoming caller speech frames MUST continue to be buffered (listening)
+        async with session._pipeline_lock:
+            await session.on_pcm_frame(soft_frame)
+        assert len(session._pcm_buffer) > buf_after_barge
+
+    @pytest.mark.asyncio
+    async def test_stream_pcm_frames_attenuates_when_ducking(self):
+        mock_ws = AsyncMock()
+        mock_audio = AsyncMock()
+        mock_orch = AsyncMock()
+
+        session = IVRCallSession(
+            ws=mock_ws,
+            orchestrator=mock_orch,
+            audio_service=mock_audio,
+        )
+        session._is_ducking = True
+
+        # 5 frames of constant amplitude 10000
+        frame = self._generate_pcm_frame(amplitude=10000, length=160)
+        pcm = frame * 5
+        await session._stream_pcm_frames(pcm, verbose_logs=False)
+
+        sent_bytes = [c.args[0] for c in mock_ws.send_bytes.call_args_list]
+        # Frame 3 (index 3, first post-prebuffer frame) must be attenuated below original peak
+        ducked_samples = np.frombuffer(sent_bytes[3], dtype="<i2")
+        assert int(np.max(np.abs(ducked_samples))) < 7500

@@ -466,31 +466,52 @@ async def get_complaint_status(
             }
 
         # Fallback: check mapped external support_ticket entity if tenant configured an external DB
-        if UniversalDataAccessService.has_connector if False else True:
-            try:
-                filters: Dict[str, Any] = {}
-                if ticket_number:
-                    filters["ticket_id"] = ticket_number.strip()
-                elif effective_customer:
-                    filters["customer_id"] = effective_customer
-                if filters:
-                    uda = UniversalDataAccessService()
-                    uda_res = await uda.query_entity(
-                        session,
-                        tenant_id,
-                        "support_ticket",
-                        filters=filters,
-                        limit=safe_limit,
-                        authorized_customer_id=authorized_customer_id,
-                        actor_id=getattr(tenant_context, "api_key_id", "api"),
+        try:
+            filters: Dict[str, Any] = {}
+            if ticket_number:
+                filters["ticket_id"] = ticket_number.strip()
+            elif effective_customer:
+                filters["customer_id"] = effective_customer
+            if filters:
+                uda = UniversalDataAccessService(session)
+                uda_rows = await uda.query_entity(
+                    tenant_id=tenant_id,
+                    tool_name="get_complaint_status",
+                    entity="support_ticket",
+                    filters=filters,
+                    include_related_customer=True,
+                    order_by="updated_at",
+                    descending=True,
+                    limit=safe_limit,
+                    authorized_customer_id=authorized_customer_id,
+                    mask_pii=True,
+                    caller_subject=getattr(tenant_context, "api_key_id", "api"),
+                )
+                formatted = []
+                for rec in uda_rows:
+                    updated_val = rec.get("updated_at") or rec.get("created_at")
+                    formatted.append(
+                        {
+                            "ticket_number": rec.get("ticket_id"),
+                            "status": rec.get("status_name") or rec.get("phase_type") or str(rec.get("ticket_status") or ""),
+                            "status_id": str(rec.get("ticket_status")) if rec.get("ticket_status") is not None else None,
+                            "description": rec.get("subject"),
+                            "updated_at": updated_val.isoformat() if hasattr(updated_val, "isoformat") else updated_val,
+                            "customer_id": str(rec.get("customer_id")) if rec.get("customer_id") is not None else None,
+                            "customer_name": rec.get("customer_name"),
+                            "phone": rec.get("phone"),
+                        }
                     )
+                if formatted:
                     return {
-                        "found": uda_res.count > 0,
-                        "count": uda_res.count,
-                        "complaints": uda_res.records,
+                        "found": True,
+                        "count": len(formatted),
+                        "complaints": formatted,
                     }
-            except Exception:
-                pass
+        except PermissionError:
+            raise
+        except Exception as exc:
+            logger.debug(f"[get_complaint_status] UDA fallback skipped/failed: {exc}")
 
     return {
         "found": False,

@@ -223,7 +223,10 @@ class RAGFirstResponseGenerator:
                     lang=language,
                     previous_attempts=previous_attempts,
                 )
-            elif tools and (tools_require_remote or _needs_live_action_fallback(user_message, service_category)):
+            elif tools and (
+                _needs_live_action_fallback(user_message, service_category)
+                or (tools_require_remote and retrieved.evaluation.tier == RetrievalConfidenceTier.NONE)
+            ):
                 source = "tool_unavailable_fallback"
                 unavailable_msgs = {
                     "en": (

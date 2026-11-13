@@ -43,6 +43,20 @@ platform where the MacBook FastAPI `ai-platform` acts as the sole AI orchestrato
      endpoint (/api/v1/tools/execute/) for multi-tenant operations (current tenant:
      tenant_001).
 
+5. Staging CRM Server (192.168.1.124) — PostgreSQL + Django REST API:
+   - PostgreSQL CRM Database (`crm_backend_db`, port 5435 via staging Compose):
+     * Connected to ai-platform Universal Data Access (UDA) layer in read-only mode.
+     * Contains 29 tables: `Customers`, `ComplainBookings`, `ComplainFollowUp`,
+       `ComplainPhaseMaster`, `ComplainTypeMasters`, `Products`, `DepartmentMasters`,
+       `Users`, `Roles`, `ExtensionLogin`, etc.
+     * Mapped canonical entities: `customer` -> `Customers`, `support_ticket` ->
+       `ComplainBookings` (with `LEFT JOIN` on `ComplainPhaseMaster` and `Customers`),
+       `complaint_phase` -> `ComplainPhaseMaster`, `product` -> `Products`.
+   - CRM REST API (port 8002):
+     * Django REST port of CRMBackend1 (.NET), providing OpenAPI 3.0.3 endpoints
+       (/api/Auth/login, /api/ComplainBookings, /api/ComplainFollowUp/add, etc.)
+       designed for CRM writes, ticket lifecycle, and complaint number generation.
+
 ---------------------------------------------------------------------------------------
 B. DETAILED END-TO-END FLOW
 ---------------------------------------------------------------------------------------
@@ -68,11 +82,27 @@ B. DETAILED END-TO-END FLOW
         to fetch/validate /api/v1/tools/, block SQL-named tools/params, snapshot shadowed
         local tools, and unregister local register_complaint when remote
         create_complaint is active (tools/remote/registry_sync.py:91-190).
-     e) Bootstraps default tenant + demo key (sk_live_demo_test_key_12345) if Tenant
+        Note: REMOTE_TOOLS_PREFER_REMOTE=false can be set in .env to give precedence
+        to local UDA-backed tools over remote Django tools.
+     e) If CRM_DB_ENABLED=true and CRM_DB_USERNAME / CRM_DB_PASSWORD are set,
+        lifespan calls bootstrap_crm_database(settings) (data_access/bootstrap.py):
+        * Looks up tenant_id (CRM_DB_TENANT_ID or primary active tenant-ivr-support).
+        * Registers/updates TenantDatabaseConfig for crm_backend_db (read_only=True,
+          connection_options={"sslmode": "disable"}, connect_timeout=30s).
+        * Discovers schema and auto-maps canonical entities:
+          - customer -> Customers (customers_id, name, phonenumber, email)
+          - complaint_phase -> ComplainPhaseMaster (phase_id, phase_name, phase_type, initial)
+          - support_ticket -> ComplainBookings (complainid, customers_id, othernotes,
+            complain_phase_sl, complaindatetime, modifydate) with logical relations
+            status -> complaint_phase and customer -> customer
+          - product -> Products (product_code, product_name)
+        * Validates mapping against discovered schema and marks is_active=True,
+          mapping_validated=True.
+     f) Bootstraps default tenant + demo key (sk_live_demo_test_key_12345) if Tenant
         table is empty.
-     f) Starts pbx_connector.start_background() if PBX_WS_URL is set
+     g) Starts pbx_connector.start_background() if PBX_WS_URL is set
         (ws://192.168.1.133:9093).
-     g) Starts background warmup tasks for IVR cached audio prompts
+     h) Starts background warmup tasks for IVR cached audio prompts
         (warm_up_ivr_prompts), whisper-base, and all-MiniLM-L6-v2.
 
 2. Incoming Telephone Call Lifecycle
@@ -204,12 +234,15 @@ flowchart LR
         Orch --> Exec["ToolExecutor (Sanitize + Scope + Alias)"]
         Orch --> TTS["AudioService (EdgeTTS / MMS-Odia / say)"]
         TTS --> Session
-        VoiceIntel -.->|"Bounded Async Queue"| DB[("PostgreSQL/pgvector or SQLite")]
+        VoiceIntel -.->|"Bounded Async Queue"| DB[("Local DB: PostgreSQL/pgvector or SQLite")]
         RAG --> DB
+        Exec --> UDA["Universal Data Access (UDA) Layer (read_only=True)"]
     end
 
+    UDA <-->|"SQL (psycopg v3, port 5435, read-only)"| CRMDB[("CRM Database (192.168.1.124:5435)\ncrm_backend_db")]
     Orch <-->|"HTTP POST /v1/chat/completions (reasoning_effort=none)"| Ollama["Windows Ollama (192.168.1.141:11434) — gemma4 / gemma2:2b"]
     Exec <-->|"HTTP GET /api/v1/tools/ & POST /execute/ (HMAC/APIKey/Tenant)"| Django["Windows Django Business App (192.168.1.141:8000)"]
+    Exec -.->|"Future CRM Action Adapter (HTTP POST /api/ComplainBookings)"| CRMAPI["CRM REST API (192.168.1.124:8002)"]
 ```
 
 ---------------------------------------------------------------------------------------
@@ -466,7 +499,153 @@ M. FEATURE CLASSIFICATION & GAP ANALYSIS
     the full reply completes).
 
 ---------------------------------------------------------------------------------------
-N. RECOMMENDED NEXT ARCHITECTURE IMPROVEMENTS
+O. HOW TO MANUALLY CONNECT, CONFIGURE, OR REPLACE THE DATABASE
+---------------------------------------------------------------------------------------
+
+The platform supports two methods for connecting or replacing an external database:
+
+METHOD 1: Automatic Environment Bootstrap (Recommended for single external CRM)
+---------------------------------------------------------------------------------
+You can point the platform to any PostgreSQL, MySQL, MSSQL, Oracle, or SQLite database
+simply by updating .env. When the FastAPI application boots, services/api/lifespan.py
+invokes data_access/bootstrap.py -> bootstrap_crm_database(), which registers the config,
+discovers the schema, creates the entity mapping, and validates it automatically.
+
+1. Open `ai-platform/.env` and update the `CRM_DB_*` settings:
+   ```env
+   # Enable external CRM DB connection
+   CRM_DB_ENABLED=true
+   CRM_DB_NAME=crm_backend_db          # Database name
+   CRM_DB_ENGINE=postgresql             # postgresql | mysql | mssql | oracle | sqlite
+   CRM_DB_HOST=192.168.1.124            # Host IP or hostname
+   CRM_DB_PORT=5435                     # Host/published port (5435 for staging compose)
+   CRM_DB_SCHEMA=public                 # Schema name
+   CRM_DB_USERNAME=ai_ivr_ro            # Dedicated read-only DB user
+   CRM_DB_PASSWORD=your_secure_password # Database password
+   CRM_DB_TENANT_ID=879e9bda-8049-4824-9aa0-fc5e9f0012d9  # (Optional: defaults to active tenant)
+   CRM_DB_READ_ONLY=true                # Enforces read-only transactions
+   REMOTE_TOOLS_PREFER_REMOTE=false     # true = prefer Django :8000; false = prefer local UDA DB
+   ```
+
+2. To switch or replace the database (e.g. moving from Staging to Production, or to a
+   different server):
+   a) Stop the FastAPI app (if running).
+   b) Update `CRM_DB_HOST`, `CRM_DB_PORT`, `CRM_DB_NAME`, `CRM_DB_USERNAME`, `CRM_DB_PASSWORD`.
+   c) If the new database has a different schema or table names, update the mapping in
+      `data_access/bootstrap.py` (lines 80-150) or clear the old config row:
+      ```sql
+      DELETE FROM tenant_database_configs WHERE name = 'crm_backend_db';
+      ```
+   d) Restart FastAPI. Schema discovery will inspect the new database and auto-map it.
+
+
+METHOD 2: Programmatic / REST API Database Onboarding (Multi-Tenant)
+---------------------------------------------------------------------------------
+For multi-tenant setups or dynamically registering databases without restarting the server:
+
+1. Register Database Configuration:
+   ```python
+   from data_access.service import UniversalDataAccessService
+   from storage.database import async_session
+
+   async with async_session() as session:
+       uda = UniversalDataAccessService(session)
+       config = await uda.register_config(
+           tenant_id="your-tenant-uuid",
+           name="production_crm_db",
+           engine="postgresql",             # postgresql / mysql / mssql / oracle / sqlite / mongodb
+           database_name="production_crm",
+           host="192.168.1.150",
+           port=5432,
+           username="ai_ivr_ro",
+           password="your_password",
+           schema_name="public",
+           connection_options={"sslmode": "require"},  # or "disable" in local dev
+           read_only=True,
+       )
+   ```
+
+2. Discover Schema:
+   ```python
+   schema = await uda.discover_and_save_schema(tenant_id, config.id)
+   print("Discovered tables:", [t.name for t in schema.tables])
+   ```
+
+3. Define and Save Canonical Entity Mappings:
+   Map your physical tables and columns to canonical entities (customer, support_ticket,
+   product, order, payment, invoice, inventory, shipment):
+   ```python
+   from data_access.entity_mapping import EntityMappingConfig, EntityMappingSpec, EntityRelationSpec
+
+   mapping = EntityMappingConfig(
+       entities={
+           "customer": EntityMappingSpec(
+               table="Customers",
+               primary_key="customers_id",
+               fields={
+                   "customer_id": "customers_id",
+                   "name": "name",
+                   "phone": "phonenumber",
+                   "email": "email",
+               },
+           ),
+           "complaint_phase": EntityMappingSpec(
+               table="ComplainPhaseMaster",
+               primary_key="complain_phase_sl",
+               fields={
+                   "phase_id": "complain_phase_sl",
+                   "phase_name": "complain_phase_name",
+                   "phase_type": "phase_type",
+                   "is_initial": "initial",
+               },
+           ),
+           "support_ticket": EntityMappingSpec(
+               table="ComplainBookings",
+               primary_key="complainsl",
+               fields={
+                   "ticket_id": "complainid",
+                   "customer_id": "customers_id",
+                   "subject": "othernotes",
+                   "ticket_status": "complain_phase_sl",
+                   "created_at": "complaindatetime",
+                   "updated_at": "modifydate",
+               },
+               relations={
+                   "customer": EntityRelationSpec(
+                       target_entity="customer",
+                       local_column="customers_id",
+                       target_column="customers_id",
+                   ),
+                   "status": EntityRelationSpec(
+                       target_entity="complaint_phase",
+                       local_column="complain_phase_sl",
+                       target_column="complain_phase_sl",
+                   ),
+               },
+           ),
+       }
+   )
+   await uda.update_mapping(tenant_id, config.id, mapping)
+   ```
+
+4. Validate and Activate:
+   ```python
+   result = await uda.validate_mapping(tenant_id, config.id)
+   if result.valid:
+       await uda.activate_config(tenant_id, config.id)
+       print("Database successfully activated and ready for tool queries!")
+   else:
+       print("Mapping errors:", result.errors)
+   ```
+
+5. How Tools Query the Database:
+   Once active, tools like `search_customer`, `get_customer_details`, `get_complaint_status`,
+   and `get_customer_complaints` automatically query the active database through
+   `UniversalDataAccessService.query_entity()`. PII is automatically masked (phone/email/
+   passwords), and customer-level authorization (`authorized_customer_id`) is strictly enforced.
+
+---------------------------------------------------------------------------------------
+P. RECOMMENDED NEXT ARCHITECTURE IMPROVEMENTS
 ---------------------------------------------------------------------------------------
 
 1. Cut ~16.4s LLM synthesis latency: Use a faster quantized tool-capable model or

@@ -94,7 +94,16 @@ class SQLAlchemyCoreAdapter(BaseDatabaseAdapter):
 
     def _get_engine(self) -> sa.Engine:
         if self._engine is None:
-            url_str = str(self._url)
+            url_obj = self._url
+            url_str = str(url_obj)
+            if "postgresql+psycopg2" in url_str:
+                import importlib.util
+                if importlib.util.find_spec("psycopg2") is None and importlib.util.find_spec("psycopg") is not None:
+                    if isinstance(url_obj, URL):
+                        url_obj = url_obj.set(drivername="postgresql+psycopg")
+                    else:
+                        url_obj = url_str.replace("postgresql+psycopg2", "postgresql+psycopg", 1)
+                    url_str = str(url_obj)
             is_sqlite = url_str.startswith("sqlite")
             kwargs: Dict[str, Any] = {"pool_pre_ping": True}
             if is_sqlite:
@@ -111,7 +120,7 @@ class SQLAlchemyCoreAdapter(BaseDatabaseAdapter):
                     }
                     if ssl_args:
                         kwargs["connect_args"] = {"ssl": ssl_args}
-            self._engine = sa.create_engine(self._url, **kwargs)
+            self._engine = sa.create_engine(url_obj, **kwargs)
         return self._engine
 
     def _apply_read_only_and_timeout(self, conn: sa.Connection, timeout_ms: int) -> None:
@@ -326,11 +335,11 @@ class SQLAlchemyCoreAdapter(BaseDatabaseAdapter):
             col_expr = sa.column(safe_col, _selectable=target_tbl)
             if flt.operator == "eq":
                 if isinstance(flt.value, str):
-                    stmt = stmt.where(sa.func.lower(col_expr) == flt.value.lower())
+                    stmt = stmt.where(sa.func.lower(sa.cast(col_expr, sa.String)) == flt.value.lower())
                 else:
                     stmt = stmt.where(col_expr == flt.value)
             elif flt.operator == "ilike":
-                stmt = stmt.where(col_expr.ilike(f"%{flt.value}%"))
+                stmt = stmt.where(sa.cast(col_expr, sa.String).ilike(f"%{flt.value}%"))
             elif flt.operator == "in":
                 vals = list(flt.value) if isinstance(flt.value, (list, tuple, set)) else [flt.value]
                 stmt = stmt.where(col_expr.in_(vals))
@@ -351,7 +360,7 @@ class SQLAlchemyCoreAdapter(BaseDatabaseAdapter):
     async def execute_read_only(
         self,
         query_spec: QuerySpec,
-        timeout_seconds: float = 5.0,
+        timeout_seconds: float = 20.0,
         max_rows: int = 50,
     ) -> QueryResult:
         t0 = time.perf_counter()

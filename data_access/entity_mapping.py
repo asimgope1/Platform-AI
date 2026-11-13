@@ -71,8 +71,16 @@ UNIVERSAL_ENTITIES: Dict[str, List[str]] = {
         "order_id",
         "subject",
         "ticket_status",
+        "ticket_status_name",
         "priority",
+        "created_at",
         "updated_at",
+    ],
+    "complaint_phase": [
+        "phase_id",
+        "phase_name",
+        "phase_type",
+        "is_initial",
     ],
     "inventory": [
         "inventory_id",
@@ -109,6 +117,7 @@ REQUIRED_ENTITY_FIELDS: Dict[str, List[str]] = {
     "invoice": ["invoice_number", "invoice_status"],
     "product": ["product_id", "name"],
     "support_ticket": ["ticket_id", "ticket_status"],
+    "complaint_phase": ["phase_id", "phase_name"],
     "inventory": ["sku", "quantity_available"],
     "shipment": ["tracking_number", "shipment_status"],
 }

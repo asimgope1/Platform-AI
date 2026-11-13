@@ -71,6 +71,14 @@ async def lifespan(app: FastAPI):
             await session.commit()
             logger.info(f"Bootstrapped default tenant '{tenant.id}' with demo key: {demo_key}")
 
+    # Optional: Auto-register, discover, and activate direct CRM DB from CRM_DB_* env vars
+    if settings.CRM_DB_ENABLED:
+        try:
+            from data_access.bootstrap import bootstrap_crm_database
+            await bootstrap_crm_database(settings)
+        except Exception as crm_err:
+            logger.warning(f"[CRM_DB] Direct CRM DB bootstrap skipped (non-fatal): {crm_err}")
+
     # Start persistent PBX WebSocket connector (dials out to Asterisk)
     pbx_ws_url = settings.PBX_WS_URL or os.getenv("PBX_WS_URL", "")
     if pbx_ws_url:
