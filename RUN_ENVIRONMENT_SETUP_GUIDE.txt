@@ -1,0 +1,206 @@
+=======================================================================================
+HOW TO RUN THE AI PLATFORM ON ANOTHER SYSTEM (STEP-BY-STEP SETUP GUIDE)
+=======================================================================================
+
+This guide explains how to replicate and run this exact AI Platform environment
+(FastAPI, Asterisk PBX integration, Whisper STT, Ollama LLM, pgvector RAG, and live CRM DB)
+on any other system (Linux, macOS, or Windows WSL2).
+
+---------------------------------------------------------------------------------------
+1. SYSTEM PREREQUISITES
+---------------------------------------------------------------------------------------
+
+Ensure the new host system has:
+- Python 3.12 or 3.13 (recommended: 3.13)
+- Git
+- System audio utilities:
+  * Linux (Ubuntu/Debian): `sudo apt-get update && sudo apt-get install -y ffmpeg sox build-essential libpq-dev`
+  * macOS: built-in `afconvert` (install Xcode command line tools: `xcode-select --install`)
+  * Windows WSL2: `sudo apt-get update && sudo apt-get install -y ffmpeg sox python3-venv`
+- Network connectivity to the other network nodes:
+  * Asterisk PBX: ws://192.168.1.133:9093
+  * Windows Ollama: http://192.168.1.141:11434
+  * Windows Django Business Tools (if active): http://192.168.1.141:8000
+  * Staging CRM Database: 192.168.1.124:5435 (PostgreSQL)
+  * Staging CRM REST API: http://192.168.1.124:8002
+
+---------------------------------------------------------------------------------------
+2. CLONE THE REPOSITORY
+---------------------------------------------------------------------------------------
+
+```bash
+git clone https://github.com/asimgope1/Platform-AI.git ai-platform
+cd ai-platform
+```
+
+---------------------------------------------------------------------------------------
+3. CREATE VIRTUAL ENVIRONMENT & INSTALL PACKAGES
+---------------------------------------------------------------------------------------
+
+```bash
+# Create and activate Python virtual environment
+python3 -m venv .venv
+
+# On Linux / macOS:
+source .venv/bin/activate
+
+# On Windows PowerShell:
+# .venv\Scripts\Activate.ps1
+
+# Upgrade pip and install package in editable mode with dependencies
+pip install --upgrade pip
+pip install -e .
+
+# Verify psycopg is present for PostgreSQL CRM access:
+pip install "psycopg[binary]>=3.2.0"
+```
+
+---------------------------------------------------------------------------------------
+4. ENVIRONMENT CONFIGURATION (.env)
+---------------------------------------------------------------------------------------
+
+Create `.env` from `.env.example`:
+```bash
+cp .env.example .env
+```
+
+Open `.env` in your editor and configure the following key values:
+
+```env
+# Application Core
+APP_ENV=development
+LOG_LEVEL=INFO
+MASTER_API_KEY=sk_live_master_secret_key_12345
+ENCRYPTION_MASTER_KEY=k8s-dev-master-key-must-be-32-chars!
+DATA_ACCESS_MASTER_KEY=k8s-dev-master-key-must-be-32-chars!
+
+# Local Storage Database (PostgreSQL with pgvector, or SQLite dev fallback)
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/ai_platform_db
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=ai_platform_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+
+# Asterisk PBX WebSocket (Bidirectional PCM Audio)
+PBX_WS_URL=ws://192.168.1.133:9093
+PBX_WS_RECONNECT_MAX_BACKOFF=30.0
+
+# Windows Ollama Server (LLM Tool Calling)
+OLLAMA_BASE_URL=http://192.168.1.141:11434
+IVR_CHAT_MODEL=gemma4
+GEMMA_MODEL_ALIAS=gemma4
+
+# Windows Business Application Server (Django Remote Tools)
+REMOTE_TOOLS_ENABLED=true
+REMOTE_TOOLS_BASE_URL=http://192.168.1.141:8000
+REMOTE_TOOLS_PREFER_REMOTE=false
+
+# Direct Live CRM PostgreSQL Database (Universal Data Access)
+CRM_DB_ENABLED=true
+CRM_DB_ENGINE=postgresql
+CRM_DB_HOST=192.168.1.124
+CRM_DB_PORT=5435
+CRM_DB_NAME=crm_backend_db
+CRM_DB_SCHEMA=public
+CRM_DB_USERNAME=postgres
+CRM_DB_PASSWORD=<your_crm_database_password>
+CRM_DB_READ_ONLY=true
+
+# Speech & Audio Processing
+WHISPER_MODEL=openai/whisper-base
+WHISPER_DEVICE=cpu
+VOICE_INTEL_ENABLED=true
+BARGE_IN_RMS_THRESHOLD=1150.0
+BARGE_IN_MIN_CONSECUTIVE_FRAMES=6
+BARGE_IN_DUCK_SLOWDOWN_FACTOR=1.35
+NOISE_SUPPRESSION_ENABLED=true
+NOISE_SUPPRESSION_PROVIDER=spectral
+ECHO_CANCELLATION_ENABLED=false
+```
+
+---------------------------------------------------------------------------------------
+5. RUN THE TEST SUITE TO VERIFY INSTALLATION
+---------------------------------------------------------------------------------------
+
+Run the automated integration and unit test suite:
+```bash
+.venv/bin/pytest tests/integration/test_database_agnostic_architecture.py \
+                 tests/integration/test_phase3b_security_and_adapters.py \
+                 tests/unit/test_config.py -v
+```
+All 11 tests must pass (`11 passed in ~1s`).
+
+---------------------------------------------------------------------------------------
+6. START THE AI PLATFORM APPLICATION
+---------------------------------------------------------------------------------------
+
+Run the FastAPI application via uvicorn:
+```bash
+.venv/bin/python -m uvicorn services.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+What happens on startup:
+1. Lifespan validates keys and initializes the local database tables.
+2. Provider registry loads chat adapters, Whisper STT, TTS, and embeddings.
+3. `bootstrap_crm_database()` connects to `crm_backend_db` (192.168.1.124:5435),
+   discovers the schema, auto-maps canonical entities (customer -> Customers,
+   support_ticket -> ComplainBookings, complaint_phase -> ComplainPhaseMaster),
+   and activates the CRM database config.
+4. Model warmup pre-loads Whisper STT and sentence-transformers in the background.
+5. `PBXConnector` connects to Asterisk at `ws://192.168.1.133:9093` and enters
+   the call listening loop.
+
+---------------------------------------------------------------------------------------
+7. HOW TO CONNECT OR SWITCH TO A DIFFERENT DATABASE
+---------------------------------------------------------------------------------------
+
+To replace the CRM database or point to a new database server:
+1. Stop the application (`Ctrl+C`).
+2. Update the `CRM_DB_*` variables in `.env`:
+   - `CRM_DB_HOST`: New database IP/host
+   - `CRM_DB_PORT`: New port (e.g. 5432 or 5435)
+   - `CRM_DB_NAME`: New database name
+   - `CRM_DB_USERNAME`: Database username
+   - `CRM_DB_PASSWORD`: Database password
+3. If the new database has different table names, clear the cached mapping:
+   ```bash
+   .venv/bin/python -c "
+   import asyncio
+   from sqlalchemy import text
+   from storage.database import async_session
+   async def clear():
+       async with async_session() as s:
+           await s.execute(text(\"DELETE FROM tenant_database_configs WHERE name = 'crm_backend_db'\"))
+           await s.commit()
+   asyncio.run(clear())
+   "
+   ```
+4. Restart the platform:
+   ```bash
+   .venv/bin/python -m uvicorn services.api.main:app --host 0.0.0.0 --port 8000
+   ```
+   The platform will automatically inspect the new database schema, re-map entities,
+   and activate it without requiring manual SQL migrations.
+
+---------------------------------------------------------------------------------------
+8. COMMON TROUBLESHOOTING
+---------------------------------------------------------------------------------------
+
+1. Port 8000 Already in Use:
+   `lsof -i :8000` -> `kill -9 <PID>`
+
+2. Cannot connect to CRM DB (192.168.1.124:5435):
+   - Check if the CRM Docker Compose is running on that host: `docker compose ps`
+   - Test connectivity from the terminal:
+     `nc -zv 192.168.1.124 5435` or `telnet 192.168.1.124 5435`
+
+3. Ollama (192.168.1.141:11434) Timed Out:
+   - Check if Ollama service is running on the Windows machine.
+   - Test connectivity: `curl http://192.168.1.141:11434/api/tags`
+   - Ensure `gemma4` is pulled: `ollama run gemma4`
+
+4. Asterisk WebSocket Connection Refused:
+   - Check Asterisk service on 192.168.1.133: `asterisk -rx "core show channels"`
+   - Ensure port 9093 is open for WebSocket streaming.
+=======================================================================================
