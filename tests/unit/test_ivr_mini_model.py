@@ -152,6 +152,49 @@ class TestIVRRAGMiniModel:
         cat_reply = brain.synthesize("better details", language="en", service_category="upi_payments")
         assert "refund" in cat_reply.lower() or "24 to 48" in cat_reply.lower()
 
+    def test_complaint_status_direct_cmp_query(self, brain):
+        reply = brain.synthesize("What is the status of complaint CMP/0001/26-27?", language="en")
+        assert "ticket number 1" in reply.lower()
+        assert "cmp 0001" in reply.lower()
+        assert "canceled" in reply.lower()
+        # Verify it does not recite awkward raw strings like slash zero zero zero one
+        assert "slash" not in reply.lower()
+        assert "26-27" not in reply.lower()
+
+    def test_complaint_status_spoken_and_short_numbers(self, brain):
+        reply_num = brain.synthesize("What is the status of complaint 8?", language="en")
+        assert "ticket number 8" in reply_num.lower() or "cmp 0008" in reply_num.lower()
+
+        reply_spoken = brain.synthesize("Status of ticket one", language="en")
+        assert "ticket number 1" in reply_spoken.lower()
+
+    def test_complaint_status_phone_lookup(self, brain):
+        reply = brain.synthesize("Check my complaint status for phone 8976453421", language="en")
+        assert "8976453421" in reply
+        assert "ticket 1" in reply.lower() and "ticket 2" in reply.lower()
+
+    def test_complaint_status_multi_turn_prompting(self, brain):
+        # Turn 1: user asks without ID -> assistant asks for ticket or phone
+        turn1_reply = brain.synthesize("I want to check my complaint status", language="en")
+        assert "complaint ticket number" in turn1_reply.lower()
+        assert "phone number" in turn1_reply.lower()
+
+        # Turn 2: user responds with bare number "1"
+        history = [
+            ChatMessage(role="user", content="I want to check my complaint status"),
+            ChatMessage(role="assistant", content=turn1_reply),
+        ]
+        turn2_reply = brain.synthesize("1", messages=history, language="en")
+        assert "ticket number 1" in turn2_reply.lower()
+        assert "canceled" in turn2_reply.lower()
+
+    def test_complaint_status_multilingual(self, brain):
+        hi_reply = brain.synthesize("शिकायत नंबर 1 की स्थिति क्या है?", language="hi")
+        assert "टिकट नंबर 1" in hi_reply or "सीएमपी 0001" in hi_reply
+
+        or_reply = brain.synthesize("ଅଭିଯୋଗ ଟିକେଟ୍ ୧ ର ସ୍ଥିତି କଣ?", language="or")
+        assert "ଟିକେଟ୍ ନମ୍ବର ୧" in or_reply or "ସିଏମ୍‌ପି ୦୦୦୧" in or_reply
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

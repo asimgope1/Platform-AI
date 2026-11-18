@@ -20,7 +20,7 @@ SERVICE_MENUS: Dict[str, str] = {
     "en": (
         "How can I help you today? "
         "Press 1 for Customer Support, "
-        "2 to register a complaint, "
+        "2 for Complaint Status and Registration, "
         "3 for UPI and payment issues, "
         "4 for account and banking services, "
         "5 for card-related issues, "
@@ -31,7 +31,7 @@ SERVICE_MENUS: Dict[str, str] = {
     "hi": (
         "नमस्ते! हम आपकी क्या मदद कर सकते हैं? ... "
         "कस्टमर सपोर्ट के लिए 1 दबाएं, ... "
-        "शिकायत दर्ज करने के लिए 2, ... "
+        "शिकायत स्थिति और पंजीकरण के लिए 2, ... "
         "यूपीआई और पेमेंट समस्या के लिए 3, ... "
         "खाता और बैंकिंग सेवा के लिए 4, ... "
         "कार्ड संबंधित समस्या के लिए 5, ... "
@@ -42,7 +42,7 @@ SERVICE_MENUS: Dict[str, str] = {
     "or": (
         "ନମସ୍କାର! ଆମେ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରି ପାରିବୁ? ... "
         "ଗ୍ରାହକ ସେବା ପାଇଁ ଏକ ଦବାନ୍ତୁ, ... "
-        "ଅଭିଯୋଗ ପାଇଁ ଦୁଇ, ... "
+        "ଅଭିଯୋଗ ସ୍ଥିତି ଏବଂ ପଞ୍ଜୀକରଣ ପାଇଁ ଦୁଇ, ... "
         "ୟୁପିଆଇ ଏବଂ ପେମେଣ୍ଟ ପାଇଁ ତିନି, ... "
         "ଖାତା ଏବଂ ବ୍ୟାଙ୍କିଙ୍ଗ ପାଇଁ ଚାରି, ... "
         "କାର୍ଡ ପାଇଁ ପାଞ୍ଚ, ... "
@@ -60,9 +60,9 @@ SERVICE_NAMES: Dict[str, Dict[str, str]] = {
         "or": "ଗ୍ରାହକ ସେବା",
     },
     "complaint": {
-        "en": "Complaint Registration",
-        "hi": "शिकायत पंजीकरण",
-        "or": "ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ",
+        "en": "Complaint Status and Registration",
+        "hi": "शिकायत स्थिति और पंजीकरण",
+        "or": "ଅଭିଯୋଗ ଏବଂ ସ୍ଥିତି",
     },
     "upi_payment": {
         "en": "UPI and Payment Support",
@@ -125,7 +125,16 @@ HUMAN_TRANSFER: Dict[str, str] = {
 
 def get_service_ack_prompt(language: str, service_key: str) -> str:
     """Returns a natural, warm service acknowledgement prompt in the selected language."""
-    lang = language if language in SERVICE_ACKS else "en"
+    lang = language if language in ("en", "hi", "or") else "en"
+    
+    if service_key == "complaint":
+        complaint_acks = {
+            "en": "Sure, I can help you check your complaint status or register a new issue. Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
+            "hi": "जी बिल्कुल, मैं आपकी शिकायत स्थिति जांचने या नई शिकायत में मदद कर सकती हूँ। कृपया अपना टिकट नंबर (जैसे 1 या 0001) या पंजीकृत मोबाइल नंबर बताइए।",
+            "or": "ଆଜ୍ଞା ହଁ, ମୁଁ ଆପଣଙ୍କ ଅଭିଯୋଗ ସ୍ଥିତି ଯାଞ୍ଚ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବି। ଦୟାକରି ଆପଣଙ୍କ ଟିକେଟ୍ ନମ୍ବର (ଯେପରି ୧ ବା ୦୦୦୧) କିମ୍ବା ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବର କୁହନ୍ତୁ।",
+        }
+        return complaint_acks.get(lang, complaint_acks["en"])
+
     names = SERVICE_NAMES.get(service_key, {})
     service_name = names.get(lang, names.get("en", "Customer Support"))
     template = SERVICE_ACKS.get(lang, SERVICE_ACKS["en"])

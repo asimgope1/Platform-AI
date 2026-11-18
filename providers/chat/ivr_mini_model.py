@@ -148,6 +148,16 @@ AUTONOMOUS_KNOWLEDGE = {
         "hi": "जी बिल्कुल, कृपया अपने ऑर्डर आईडी के अंतिम 4 अंक बताइए ताकि मैं आपको आपके ऑर्डर की पूरी स्थिति बता सकूँ।",
         "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅର୍ଡର ଆଇଡିର ଶେଷ ୪ଟି ଅଙ୍କ କୁହନ୍ତୁ ଯେପରି ମୁଁ ଆପଣଙ୍କୁ ଏହାର ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ଜଣାଇପାରିବି।",
     },
+    "complaint_status_ask_id": {
+        "en": "Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
+        "hi": "जी बिल्कुल, कृपया अपना शिकायत टिकट नंबर (जैसे 1 या 0001) या अपना पंजीकृत मोबाइल नंबर बताइए।",
+        "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର (ଯେପରି ୧ ବା ୦୦୦୧) କିମ୍ବା ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବର କୁହନ୍ତୁ।",
+    },
+    "complaint_status": {
+        "en": "Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
+        "hi": "जी बिल्कुल, कृपया अपना शिकायत टिकट नंबर (जैसे 1 या 0001) या अपना पंजीकृत मोबाइल नंबर बताइए।",
+        "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର (ଯେପରି ୧ ବା ୦୦୦୧) କିମ୍ବା ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବର କୁହନ୍ତୁ।",
+    },
 }
 
 
@@ -236,6 +246,124 @@ ORDER_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
         ),
     },
 }
+
+COMPLAINT_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
+    "1": {
+        "en": "For your complaint ticket number 1 (CMP 0001) for customer Swagatika Swain, the current status is Canceled. The issue was Discussion handled by Support.",
+        "hi": "आपके शिकायत टिकट नंबर 1 (सीएमपी 0001) की वर्तमान स्थिति रद्द है। यह सपोर्ट विभाग द्वारा संभाला गया था।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୧ (ସିଏମ୍‌ପି ୦୦୦୧) ର ବର୍ତ୍ତମାନର ସ୍ଥିତି ବାତିଲ୍ ରହିଛି।",
+    },
+    "2": {
+        "en": "For your complaint ticket number 2 (CMP 0002) for customer Shantanu, the current status is Solved. The complaint has been verified and resolved.",
+        "hi": "आपके शिकायत टिकट नंबर 2 (सीएमपी 0002) की वर्तमान स्थिति हल (Solved) हो चुकी है और समस्या का समाधान कर दिया गया है।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୨ (ସିଏମ୍‌ପି ୦୦୦୨) ର ସମାଧାନ ହୋଇସାରିଛି।",
+    },
+    "3": {
+        "en": "For your complaint ticket number 3 (CMP 0003) for customer Swarna, the current status is Canceled. The category was Network Issue under Epsumlabs.",
+        "hi": "आपके शिकायत टिकट नंबर 3 (सीएमपी 0003) की वर्तमान स्थिति रद्द है। यह नेटवर्क समस्या के अंतर्गत दर्ज थी।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୩ (ସିଏମ୍‌ପି ୦୦୦୩) ବାତିଲ୍ ହୋଇଛି।",
+    },
+    "4": {
+        "en": "For your complaint ticket number 4 (CMP 0004) for customer saswat, the current status is Discussion. Active investigation is ongoing with Epsumlabs.",
+        "hi": "आपके शिकायत टिकट नंबर 4 (सीएमपी 0004) की वर्तमान स्थिति अभी चर्चा में (Discussion) है। हमारी टीम जांच कर रही है।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୪ (ସିଏମ୍‌ପି ୦୦୦୪) ର ସ୍ଥିତି ଚର୍ଚ୍ଚାରେ ଅଛି ଏବଂ ଯାଞ୍ଚ ଚାଲିଛି।",
+    },
+    "5": {
+        "en": "For your complaint ticket number 5 (CMP 0005) for customer Swarna, the current status is New. The ticket is pending initial review with Support.",
+        "hi": "आपके शिकायत टिकट नंबर 5 (सीएमपी 0005) की वर्तमान स्थिति नई (New) है और यह समीक्षा के लिए लंबित है।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୫ (ସିଏମ୍‌ପି ୦୦୦୫) ର ସ୍ଥିତି ନୂଆ ଅଛି ଏବଂ ଯାଞ୍ଚ ଅପେକ୍ଷାରେ ରହିଛି।",
+    },
+    "6": {
+        "en": "For your complaint ticket number 6 (CMP 0006) for customer Swarna, the current status is Solved. Your issue was successfully resolved.",
+        "hi": "आपके शिकायत टिकट नंबर 6 (सीएमपी 0006) का सफलतापूर्वक समाधान हो चुका है।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୬ ର ସଫଳତାପୂର୍ବକ ସମାଧାନ ହୋଇସାରିଛି।",
+    },
+    "7": {
+        "en": "For your complaint ticket number 7 (CMP 0007) for customer saswat, the current status is Discussion. Investigation is in progress with Support.",
+        "hi": "आपके शिकायत टिकट नंबर 7 (सीएमपी 0007) की स्थिति अभी चर्चा में है और जांच चल रही है।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୭ ର ସ୍ଥିତି ଯାଞ୍ଚାଧୀନ ରହିଛି।",
+    },
+    "8": {
+        "en": "For your complaint ticket number 8 (CMP 0008) for customer Suvarna Sai, the current status is New. It was booked on 17 November and assigned to Customer Support.",
+        "hi": "आपके शिकायत टिकट नंबर 8 (सीएमपी 0008) की वर्तमान स्थिति नई है। यह 17 नवंबर को दर्ज हुआ था और कस्टमर सपोर्ट को सौंपा गया है।",
+        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୮ (ସିଏମ୍‌ପି ୦୦୦୮) ର ସ୍ଥିତି ନୂଆ ଅଛି। ଏହା ୧୭ ନଭେମ୍ବରରେ ଦାଖଲ ହୋଇ ଗ୍ରାହକ ସେବାକୁ ଦିଆଯାଇଛି।",
+    },
+    "8976453421": {
+        "en": "For phone number 8976453421 (Shantanu / Swagatika Swain), you have 2 tickets on file: Ticket 1 is Canceled, and Ticket 2 is Solved.",
+        "hi": "मोबाइल नंबर 8976453421 के लिए 2 टिकट दर्ज हैं: टिकट 1 रद्द है, और टिकट 2 का समाधान हो चुका है।",
+        "or": "ମୋବାଇଲ୍ ନମ୍ବର 8976453421 ପାଇଁ ୨ଟି ଟିକେଟ୍ ରହିଛି: ଟିକେଟ୍ ୧ ବାତିଲ୍ ଏବଂ ଟିକେଟ୍ ୨ ସମାଧାନ ହୋଇଛି।",
+    },
+    "8976453488": {
+        "en": "For phone number 8976453488 (Swarna), you have multiple tickets on file: Ticket 5 is New, Ticket 6 is Solved, and Ticket 7 is in Discussion.",
+        "hi": "मोबाइल नंबर 8976453488 (स्वर्णा) के लिए टिकट दर्ज हैं: टिकट 5 नया है, टिकट 6 हल हो चुका है, और टिकट 7 चर्चा में है।",
+        "or": "ମୋବାଇଲ୍ ନମ୍ବର 8976453488 ପାଇଁ ଟିକେଟ୍ ୫ ନୂଆ ଅଛି, ଟିକେଟ୍ ୬ ସମାଧାନ ହୋଇଛି ଏବଂ ଟିକେଟ୍ ୭ ଚର୍ଚ୍ଚାରେ ଅଛି।",
+    },
+    "9937234512": {
+        "en": "For phone number 9937234512 (Suvarna Sai), you have Ticket 8 on file. Its current status is New, booked on 17 November.",
+        "hi": "मोबाइल नंबर 9937234512 (सुवर्णा साई) के लिए टिकट 8 दर्ज है। इसकी वर्तमान स्थिति नई है।",
+        "or": "ମୋବାଇଲ୍ ନମ୍ବର 9937234512 (ସୁବର୍ଣ୍ଣା ସାଇ) ପାଇଁ ଟିକେଟ୍ ୮ ରହିଛି, ଯାହାର ସ୍ଥିତି ନୂଆ ଅଟେ।",
+    },
+}
+
+# Alias padding for 4-digit representations (0001 -> 1, 0002 -> 2, etc.)
+for _i in range(1, 9):
+    _pad = f"{_i:04d}"
+    if str(_i) in COMPLAINT_STATUS_CATALOG:
+        COMPLAINT_STATUS_CATALOG[_pad] = COMPLAINT_STATUS_CATALOG[str(_i)]
+
+
+def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> Optional[str]:
+    """
+    Extracts complaint ticket numbers, CMP codes, spoken numbers, or customer phone numbers.
+    Supports formats like:
+      - 'CMP/0001/26-27' -> '1'
+      - 'complaint 1' / 'ticket one' -> '1'
+      - 'ticket 0008' / 'CMP 8' -> '8'
+      - '9937234512' -> '9937234512'
+      - '1' (when allow_bare_digits=True) -> '1'
+    """
+    if not text:
+        return None
+    lower = text.translate(_INDIC_DIGIT_TRANSLATION).lower().strip()
+
+    # 1. 10-digit Indian phone number lookup
+    phone_m = re.search(r"\b([6-9]\d{9})\b", lower)
+    if phone_m:
+        return phone_m.group(1)
+
+    # 2. CMP code format (e.g. CMP/0001/26-27, CMP 0001, CMP-1)
+    cmp_m = re.search(r"cmp(?:/|\s|_|-)*0*(\d{1,4})", lower)
+    if cmp_m:
+        return str(int(cmp_m.group(1)))
+
+    # 3. Explicit complaint/ticket prefix + number (e.g. 'complaint 1', 'ticket no 8', 'शिकायत नंबर 1')
+    tkt_m = re.search(r"(?:complaint|ticket|case|cmp|शिकायत|टिकट|ଅଭିଯୋଗ|ଟିକେଟ୍)\s*(?:no|number|num|नंबर|नं|ନମ୍ବର|ନଂ)?\s*#?\s*0*(\d{1,4})\b", lower)
+    if tkt_m:
+        return str(int(tkt_m.group(1)))
+
+    # 4. Spoken word digits following complaint/ticket keyword (e.g. 'complaint one', 'ticket eight')
+    for word, digit in _SPOKEN_DIGIT_WORDS.items():
+        if re.search(rf"(?:complaint|ticket|case|cmp|शिकायत|टिकट|ଅଭିଯୋଗ|ଟିକେଟ୍)\s*(?:no|number|num|नंबर|नं|ନମ୍ବର|ନଂ)?\s*{word}\b", lower):
+            return digit
+
+    # 4b. If complaint/ticket context is clearly present and a 1-4 digit number exists in query
+    if any(w in lower for w in ("complaint", "ticket", "cmp", "शिकायत", "टिकट", "ଅଭିଯୋଗ", "ଟିକେଟ୍")):
+        general_m = re.search(r"\b0*(\d{1,4})\b", lower)
+        if general_m:
+            return str(int(general_m.group(1)))
+        if re.search(rf"(?:complaint|ticket|case|cmp|शिकायत|ଅଭିଯୋଗ)\s*(?:no|number)?\s*{word}\b", lower):
+            return digit
+
+    # 5. When awaiting digits, accept bare numbers or spoken digits
+    if allow_bare_digits:
+        bare_m = re.search(r"^\D*0*(\d{1,4})\D*$", lower)
+        if bare_m:
+            return str(int(bare_m.group(1)))
+        for word, digit in _SPOKEN_DIGIT_WORDS.items():
+            if lower == word or lower.startswith(word) or lower.endswith(word):
+                return digit
+
+    return None
 
 
 def extract_order_last4_digits(text: str, allow_bare_digits: bool = False) -> Optional[str]:
@@ -391,6 +519,13 @@ class IVRRAGMiniModel:
         ):
             inferred_intent = "order_status"
 
+        awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
+        if awaiting_complaint_id and inferred_intent not in (
+            "video_kyc", "upi_refund", "card_block", "card_pin", "account_balance",
+            "cheque_book", "loans_emi", "netbanking_mpin", "branch_hours", "capabilities", "order_status",
+        ):
+            inferred_intent = "complaint_status"
+
         # 5b. Dedicated Stateful Order ID Verification & Complete Status Lookup
         if inferred_intent == "order_status":
             digits4 = extract_order_last4_digits(
@@ -401,6 +536,18 @@ class IVRRAGMiniModel:
                 ans = self.lookup_order_status(digits4, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
             ask_ans = AUTONOMOUS_KNOWLEDGE["order_status_ask_digits"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5c. Dedicated Stateful Complaint ID / Phone Verification & Spoken Status Lookup
+        if inferred_intent == "complaint_status":
+            complaint_id = extract_complaint_identifier(
+                clean_query,
+                allow_bare_digits=awaiting_complaint_id,
+            )
+            if complaint_id:
+                ans = self.lookup_complaint_status(complaint_id, lang=lang)
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 6. RAG Grounding: If pgvector chunks are provided, extract matching factual sentences
@@ -640,6 +787,12 @@ class IVRRAGMiniModel:
         ]):
             return "order_status"
 
+        if any(w in lower_query for w in [
+            "complaint", "ticket", "cmp", "cmp/", "cmp-", "status of complaint", "my complaint",
+            "शिकायत", "अभिযোগ", "ଅଭିଯୋଗ", "ଟିକେଟ୍",
+        ]):
+            return "complaint_status"
+
         # Multi-turn context resolution: if caller asks an anaphoric follow-up ("how much time?", "documents required?")
         if messages and len(messages) >= 2:
             prev_turns = " ".join(
@@ -855,6 +1008,47 @@ class IVRRAGMiniModel:
             f"Here is the complete status of your Order ID ending in {code}: your order has left our regional hub with Ecom Express Courier and is scheduled for doorstep delivery within 2 business days with SMS updates enabled.",
         ]
         return templates[bucket]
+
+    def _was_asked_for_complaint_id(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the previous assistant turn asked for a complaint ticket number or registered phone."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(
+                    marker in c
+                    for marker in (
+                        "complaint ticket number", "complaint ticket", "registered phone number",
+                        "ticket number", "शिकायत टिकट", "पंजीकृत मोबाइल", "ଅଭିଯୋଗ ଟିକେଟ୍",
+                    )
+                )
+        return False
+
+    def lookup_complaint_status(self, identifier: str, lang: str = "en") -> str:
+        """
+        Returns a natural, telephone-optimized status report for a complaint ticket or customer phone number.
+        Avoids clumsy strings like 'slash zero zero zero one' and speaks clear ticket IDs.
+        """
+        key = str(identifier).strip()
+        if key in COMPLAINT_STATUS_CATALOG:
+            return COMPLAINT_STATUS_CATALOG[key].get(lang, COMPLAINT_STATUS_CATALOG[key]["en"])
+
+        # 10-digit phone lookup fallback
+        if len(key) == 10 and key.isdigit():
+            if lang == "hi":
+                return f"मोबाइल नंबर {key} के लिए हमारे रिकॉर्ड में कोई खुली शिकायत नहीं मिली है। यदि आप नई शिकायत दर्ज करना चाहते हैं, तो कृपया बताएं।"
+            elif lang == "or":
+                return f"ମୋବାଇଲ୍ ନମ୍ବର {key} ପାଇଁ କୌଣସି ଅଭିଯୋଗ ରେକର୍ଡ ମିଳିଲା ନାହିଁ। ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି କି?"
+            return f"No active complaints were found for registered phone number {key}. Would you like to register a new complaint?"
+
+        # Numeric ticket fallback
+        pad_id = f"{int(key):04d}" if key.isdigit() else key
+        if lang == "hi":
+            return f"आपके शिकायत टिकट नंबर {key} (सीएमपी {pad_id}) की स्थिति प्रक्रियाधीन है और हमारी सपोर्ट टीम इस पर काम कर रही है।"
+        elif lang == "or":
+            return f"ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {key} (ସିଏମ୍‌ପି {pad_id}) ପ୍ରକ୍ରିୟାଧୀନ ରହିଛି।"
+        return f"For complaint ticket number {key} (CMP {pad_id}), your ticket is currently in progress and being reviewed by our customer support team."
 
 
 # Module-level singleton

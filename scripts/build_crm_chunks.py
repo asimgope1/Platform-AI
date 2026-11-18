@@ -181,3 +181,4 @@ async def extract_and_generate_crm_knowledge() -> str:
 
 if __name__ == "__main__":
     asyncio.run(extract_and_generate_crm_knowledge())
+

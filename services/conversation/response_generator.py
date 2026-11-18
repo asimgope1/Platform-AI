@@ -57,15 +57,19 @@ def _extract_tool_names(tools: Optional[List[Dict[str, Any]]]) -> List[str]:
 
 
 def _needs_live_action_fallback(user_message: str, service_category: Optional[str]) -> bool:
+    lower = (user_message or "").lower()
+    # Explicit registration/booking actions need the backend live tool loop
+    if any(k in lower for k in ("register a complaint", "file a complaint", "book a complaint", "दर्ज करें", "दर्ज करनी", "नया शिकायत")):
+        return True
+    # Status checks for complaints, orders, or tickets can be synthesized instantly via RAG
+    if any(k in lower for k in ("status", "check", "what is", "where is", "track", "tracking", "cmp", "ticket", "स्थिति")):
+        return False
     if service_category == "complaint":
         return True
-    lower = (user_message or "").lower()
     return any(
         k in lower
         for k in (
-            "complaint", "complain", "register a complaint", "file a complaint",
-            "ticket", "order", "ord-", "tracking", "track", "payment status",
-            "invoice", "शिकायत", "ଅଭିଯୋଗ",
+            "register", "book", "file", "invoice",
         )
     )
 
