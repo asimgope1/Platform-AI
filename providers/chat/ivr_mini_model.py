@@ -325,6 +325,8 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
     if not text:
         return None
     lower = text.translate(_INDIC_DIGIT_TRANSLATION).lower().strip()
+    # 0. Telephony phonetic recovery: 8kHz mishearing of 'zero' as 'video' adjacent to digits
+    lower = re.sub(r'\bvideo\b(?=(?:[\s,]+video)*[\s,]+(?:and\s*)?\d)', 'zero', lower)
 
     # 1. 10-digit Indian phone number lookup
     phone_m = re.search(r"\b([6-9]\d{9})\b", lower)
@@ -354,8 +356,18 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
         if re.search(rf"(?:complaint|ticket|case|cmp|शिकायत|ଅଭିଯୋଗ)\s*(?:no|number)?\s*{word}\b", lower):
             return digit
 
-    # 5. When awaiting digits, accept bare numbers or spoken digits
+    # 5. When awaiting digits, accept bare numbers or spoken digits (e.g. '0 0 0 1', 'zero, zero, zero, 1', '1')
     if allow_bare_digits:
+        normalized_spoken = lower
+        for word, digit in _SPOKEN_DIGIT_WORDS.items():
+            normalized_spoken = re.sub(rf'\b{word}\b', digit, normalized_spoken)
+        found_digits = re.findall(r'\d', normalized_spoken)
+        if found_digits:
+            digit_seq = ''.join(found_digits)
+            if len(digit_seq) == 10 and digit_seq[0] in '6789':
+                return digit_seq
+            if len(digit_seq) <= 4:
+                return str(int(digit_seq))
         bare_m = re.search(r"^\D*0*(\d{1,4})\D*$", lower)
         if bare_m:
             return str(int(bare_m.group(1)))
@@ -520,11 +532,16 @@ class IVRRAGMiniModel:
             inferred_intent = "order_status"
 
         awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
-        if awaiting_complaint_id and inferred_intent not in (
-            "video_kyc", "upi_refund", "card_block", "card_pin", "account_balance",
-            "cheque_book", "loans_emi", "netbanking_mpin", "branch_hours", "capabilities", "order_status",
-        ):
-            inferred_intent = "complaint_status"
+        if awaiting_complaint_id:
+            # Check if query contains complaint identifier or bare digits (including telephony mishearings like 'video 1')
+            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
+            if cid_probe:
+                inferred_intent = "complaint_status"
+            elif inferred_intent not in (
+                "upi_refund", "card_block", "card_pin", "account_balance",
+                "cheque_book", "loans_emi", "netbanking_mpin", "branch_hours", "capabilities", "order_status",
+            ):
+                inferred_intent = "complaint_status"
 
         # 5b. Dedicated Stateful Order ID Verification & Complete Status Lookup
         if inferred_intent == "order_status":
@@ -745,7 +762,8 @@ class IVRRAGMiniModel:
             return "capabilities"
 
         # Direct intent keywords
-        if any(w in lower_query for w in [
+        is_video_digit_mishearing = bool(re.search(r'\bvideo\b(?=(?:[\s,]+video)*[\s,]+(?:and\s*)?\d)', lower_query))
+        if not is_video_digit_mishearing and any(w in lower_query for w in [
             "kyc", "केवाईसी", "वीडियो", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି",
             "vedio", "video", "कागजात", "पहचान पत्र", "दस्तावेज", "पैन", "आधार", "dastavez", "kagaj"
         ]):

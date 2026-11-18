@@ -195,6 +195,30 @@ class TestIVRRAGMiniModel:
         or_reply = brain.synthesize("ଅଭିଯୋଗ ଟିକେଟ୍ ୧ ର ସ୍ଥିତି କଣ?", language="or")
         assert "ଟିକେଟ୍ ନମ୍ବର ୧" in or_reply or "ସିଏମ୍‌ପି ୦୦୦୧" in or_reply
 
+    def test_complaint_status_video_mishearing_recovery(self, brain):
+        history = [
+            ChatMessage(role="user", content="Check my complaint"),
+            ChatMessage(role="assistant", content="Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number."),
+        ]
+        # Whispered 'zero zero zero 1' transcribed acoustically as 'Video, video, video 1.'
+        reply = brain.synthesize("Video, video, video 1.", messages=history, language="en")
+        assert "ticket number 1" in reply.lower()
+        assert "canceled" in reply.lower()
+        # Verify it did not divert to Video KYC documents
+        assert "aadhaar" not in reply.lower()
+        assert "physical pan" not in reply.lower()
+
+    def test_complaint_status_spaced_digits_recovery(self, brain):
+        history = [
+            ChatMessage(role="user", content="Check my complaint"),
+            ChatMessage(role="assistant", content="Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number."),
+        ]
+        reply_spaced = brain.synthesize("0 0 0 1", messages=history, language="en")
+        assert "ticket number 1" in reply_spaced.lower()
+
+        reply_commas = brain.synthesize("0, 0, 0, 1", messages=history, language="en")
+        assert "ticket number 1" in reply_commas.lower()
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

@@ -63,6 +63,8 @@ UNIVERSAL_PHONETIC_NORMALIZATION = [
     # Common mishearings of Hindi "batao" / "bataiye" in Hinglish audio
     (r'\bpayment\s+(?:better|butter|battle)\b', 'UPI payment refund status'),
     (r'\bkyc\s+(?:better|butter)\b', 'KYC details'),
+    # Common 8kHz telephony mishearing of "zero" as "video" when followed by digits or repeated
+    (r'\bvideo\b(?=(?:[\s,]+video)*[\s,]+(?:and\s*)?\d)', 'zero'),
     # Order reference phonetic mishearings over 8 kHz PSTN (e.g. 'ORT2005', 'OIT2005' -> 'ORD-2005')
     (r'\b(?:ort|oit|ord)\s*-?\s*(\d{3,6})\b', r'ORD-\1'),
 ]
@@ -247,16 +249,16 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         if language in ("or", "or-IN", "ory", "odia"):
             gen_kwargs["language"] = "hi"
             gen_kwargs["task"] = "transcribe"
-            prompt_text = "ଗ୍ରାହକ ସେବା କଲ୍: ଭିଡିଓ କେୱାଇସି, ଆଧାର କାର୍ଡ, ପ୍ୟାନ୍ କାର୍ଡ, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍, ବାଲାନ୍ସ, ଧନ୍ୟବାଦ, ନମସ୍କାର।"
+            prompt_text = "ଗ୍ରାହକ ସେବା କଲ୍: ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର, ସିଏମ୍‌ପି ୦୦୦୧, ଶୂନ, ଏକ, ଦୁଇ, ତିନି, ଚାରି, ପାଞ୍ଚ, ଛଅ, ସାତ, ଆଠ, ନଅ, ମୋବାଇଲ୍ ନମ୍ବର, ଭିଡିଓ କେୱାଇସି, ଆଧାର କାର୍ଡ, ପ୍ୟାନ୍ କାର୍ଡ, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍, ବାଲାନ୍ସ, ଧନ୍ୟବାଦ, ନମସ୍କାର।"
         elif language in ("hi", "hindi", "hi-IN"):
             gen_kwargs["language"] = "hi"
             gen_kwargs["task"] = "transcribe"
             # Pure Devanagari domain prompt prevents whisper-base cross-script gibberish hallucinations
-            prompt_text = "ग्राहक सहायता कॉल: वीडियो केवाईसी, पैन कार्ड, आधार कार्ड, यूपीआई रिफंड, एटीएम पिन, खाता बैलेंस, कार्ड ब्लॉक, ऑर्डर स्टेटस, धन्यवाद।"
+            prompt_text = "ग्राहक सहायता कॉल: शिकायत टिकट नंबर, सीएमपी 0001, शून्य, एक, दो, तीन, चार, पांच, छह, सात, आठ, नौ, मोबाइल नंबर, वीडियो केवाईसी, पैन कार्ड, आधार कार्ड, यूपीआई रिफंड, एटीएम पिन, खाता बैलेंस, कार्ड ब्लॉक, ऑर्डर स्टेटस, धन्यवाद।"
         elif language in ("en", "english", "en-IN", "en-US"):
             gen_kwargs["language"] = "en"
             gen_kwargs["task"] = "transcribe"
-            prompt_text = "Customer support call for Video KYC documents, original physical PAN card, Aadhaar, UPI refund status, failed payment, account balance, card block, ATM PIN, complaints, thank you."
+            prompt_text = "Customer support call: complaint ticket number, CMP 0001, zero, one, two, three, four, five, six, seven, eight, nine, phone number, Video KYC verification, physical PAN card, Aadhaar, UPI refund status, failed payment, account balance, card block, ATM PIN, thank you."
         elif language and language not in ("auto", "any", "multilingual", "all"):
             gen_kwargs["language"] = language
             gen_kwargs["task"] = "transcribe"
