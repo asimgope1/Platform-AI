@@ -1301,9 +1301,9 @@
       "variants": [
         "Thank you."
       ],
-      "ask_count": 13,
+      "ask_count": 21,
       "call_uuid": "833de165-7056-4d45-b2bc-4d7fd9c6f5cd",
-      "last_asked_at": "2026-11-11T13:04:45.259378+00:00"
+      "last_asked_at": "2026-11-18T12:44:51.715631+00:00"
     }
   },
   {
@@ -1456,6 +1456,103 @@
       ],
       "ask_count": 1,
       "call_uuid": "d25c8f94-6f65-48d0-8de5-44834374e052"
+    }
+  },
+  {
+    "id": "093b811d-2ec3-4399-aada-f3a3ba2af385",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 11,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"0, 0, 1,\"\nProvisional Assistant Reply: \"Here are the complete details for complaint ticket number 1 (reference CMP 0001): It was booked for customer Swagatika Swain on 21 September 2026 from Bhubaneswar, Odisha under the Support department. The issue category is Discussion, and the current ticket status is Canceled after review. Would you like to register a fresh complaint or need help with another service?\"\nCall UUID: a871d167-301c-4c89-a8c2-f5192aae0910",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "0, 0, 1,",
+      "variants": [
+        "0, 0, 1,",
+        "0, 0, 2,"
+      ],
+      "ask_count": 2,
+      "call_uuid": "a871d167-301c-4c89-a8c2-f5192aae0910",
+      "last_asked_at": "2026-11-18T06:48:19.164055+00:00"
+    }
+  },
+  {
+    "id": "009b4440-ce7a-475f-b3f5-7a6a4106558e",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 12,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"RIDO, RIDOL, RIO 4.\"\nProvisional Assistant Reply: \"Here are the complete details for complaint ticket number 4 (reference CMP 0004): It was booked for customer Saswat on 30 September 2026 from Bhadrak, Odisha under Epsumlabs. The current status is Discussion with ongoing investigation.\"\nCall UUID: e33b09c3-f670-437f-8514-faa2b8a98558",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "RIDO, RIDOL, RIO 4.",
+      "variants": [
+        "RIDO, RIDOL, RIO 4."
+      ],
+      "ask_count": 1,
+      "call_uuid": "e33b09c3-f670-437f-8514-faa2b8a98558"
+    }
+  },
+  {
+    "id": "a4311f6e-706d-483c-8ac8-9bc8481f5c6f",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 13,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"My broadband internet connection has been completely downstairs yesterday.\"\nProvisional Assistant Reply: \"I understand you've already tried this earlier — let me help you with the next option right away. Your complaint has been successfully registered under ticket number 10 (reference CMP 0010). Our support team will investigate the issue and update you shortly. Is there anything else I can help you with today?\"\nCall UUID: 0f1683a5-f31d-4a43-b3e8-4b67f1699b74",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "My broadband internet connection has been completely downstairs yesterday.",
+      "variants": [
+        "My broadband internet connection has been completely downstairs yesterday."
+      ],
+      "ask_count": 1,
+      "call_uuid": "0f1683a5-f31d-4a43-b3e8-4b67f1699b74"
+    }
+  },
+  {
+    "id": "c7d25464-f95e-445d-8fdd-e5a7ac712829",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 14,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"Okay, let's turn.\"\nProvisional Assistant Reply: \"Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\"\nCall UUID: 470d16d8-28bc-4abe-9e61-4aea4b02f6f7",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "Okay, let's turn.",
+      "variants": [
+        "Okay, let's turn."
+      ],
+      "ask_count": 1,
+      "call_uuid": "470d16d8-28bc-4abe-9e61-4aea4b02f6f7"
+    }
+  },
+  {
+    "id": "59e7f472-01d4-4eeb-981f-118736e87901",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 15,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"I don't think it's working.\"\nProvisional Assistant Reply: \"Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\"\nCall UUID: 26fd0b6c-7270-4fa7-831b-5e9d25cc04c7",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "I don't think it's working.",
+      "variants": [
+        "I don't think it's working."
+      ],
+      "ask_count": 1,
+      "call_uuid": "26fd0b6c-7270-4fa7-831b-5e9d25cc04c7"
     }
   },
   {
@@ -1800,17 +1897,16 @@
     }
   },
   {
-    "id": "bf5b07c9-66f2-4752-b4a1-112b4b4ed4d0",
+    "id": "ccb0e895-310a-4443-938b-0ba682e91170",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
     "chunk_index": 32,
-    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-0)",
+    "content": "Call Interaction Summary [Session bench-call-4]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
     "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "bench-call-0",
-      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
-      "resolved": false
+      "type": "call_summary",
+      "call_uuid": "bench-call-4",
+      "turn_count": 2
     }
   },
   {
@@ -1842,6 +1938,20 @@
     }
   },
   {
+    "id": "bf5b07c9-66f2-4752-b4a1-112b4b4ed4d0",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 32,
+    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-0)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "bench-call-0",
+      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
+      "resolved": false
+    }
+  },
+  {
     "id": "f94a4bab-d156-44f4-9d07-5638356333ad",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -1856,15 +1966,15 @@
     }
   },
   {
-    "id": "ccb0e895-310a-4443-938b-0ba682e91170",
+    "id": "107f59fe-62b8-4da7-aab4-12a94ef1bc14",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 32,
-    "content": "Call Interaction Summary [Session bench-call-4]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
+    "chunk_index": 35,
+    "content": "Call Interaction Summary [Session bench-call-1]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
     "meta": {
       "type": "call_summary",
-      "call_uuid": "bench-call-4",
+      "call_uuid": "bench-call-1",
       "turn_count": 2
     }
   },
@@ -1878,19 +1988,6 @@
     "meta": {
       "type": "call_summary",
       "call_uuid": "bench-call-3",
-      "turn_count": 2
-    }
-  },
-  {
-    "id": "107f59fe-62b8-4da7-aab4-12a94ef1bc14",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 35,
-    "content": "Call Interaction Summary [Session bench-call-1]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "bench-call-1",
       "turn_count": 2
     }
   },
@@ -2570,6 +2667,19 @@
     }
   },
   {
+    "id": "55c1fdd5-b8cd-4893-95d4-cb0d2dad118a",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 95,
+    "content": "Call Interaction Summary [Session b32f95aa-3fb6-437b-a4ea-13fee4d5f68c]:\nCaller: Debit card.\nAssistant: I understand you have a question about your debit card; could you please tell me what specifically you need assistance with today?\nCaller: Nothing, thank You.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Debit card., Nothing, thank You.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "b32f95aa-3fb6-437b-a4ea-13fee4d5f68c",
+      "turn_count": 4
+    }
+  },
+  {
     "id": "cc0c2c56-f678-4c6c-aa15-0fbcc119a43a",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2585,19 +2695,6 @@
       ],
       "ask_count": 1,
       "resolved": true
-    }
-  },
-  {
-    "id": "55c1fdd5-b8cd-4893-95d4-cb0d2dad118a",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 95,
-    "content": "Call Interaction Summary [Session b32f95aa-3fb6-437b-a4ea-13fee4d5f68c]:\nCaller: Debit card.\nAssistant: I understand you have a question about your debit card; could you please tell me what specifically you need assistance with today?\nCaller: Nothing, thank You.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Debit card., Nothing, thank You.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "b32f95aa-3fb6-437b-a4ea-13fee4d5f68c",
-      "turn_count": 4
     }
   },
   {
@@ -2627,24 +2724,6 @@
     }
   },
   {
-    "id": "acb17ab4-82f7-455d-a802-215fb55aee73",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 97,
-    "content": "Customer Spoken Inquiry: \"UPI payment refund status.\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (225a230e-c9bc-4636-91ad-9775d95b3b81)",
-    "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "225a230e-c9bc-4636-91ad-9775d95b3b81",
-      "caller_query": "UPI payment refund status.",
-      "variants": [
-        "UPI payment refund status."
-      ],
-      "ask_count": 1,
-      "resolved": false
-    }
-  },
-  {
     "id": "8ce784da-bb2c-4bc5-b4ca-5b0d8c3b8c1e",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2657,6 +2736,24 @@
       "caller_query": "Video KYF document.",
       "variants": [
         "Video KYF document."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "acb17ab4-82f7-455d-a802-215fb55aee73",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 97,
+    "content": "Customer Spoken Inquiry: \"UPI payment refund status.\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (225a230e-c9bc-4636-91ad-9775d95b3b81)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "225a230e-c9bc-4636-91ad-9775d95b3b81",
+      "caller_query": "UPI payment refund status.",
+      "variants": [
+        "UPI payment refund status."
       ],
       "ask_count": 1,
       "resolved": false
@@ -2702,24 +2799,6 @@
     }
   },
   {
-    "id": "ce8d0af4-23ec-4e1e-8502-bf1466eda52d",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 99,
-    "content": "Customer Spoken Inquiry: \"Tell me about the Video KYC.\"\nVerified Resolution: \"For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification.\"\nSource: Live Telephone Interaction (459ef8fb-ad2f-48fa-ba15-248883b91eee)",
-    "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "459ef8fb-ad2f-48fa-ba15-248883b91eee",
-      "caller_query": "Tell me about the Video KYC.",
-      "variants": [
-        "Tell me about the Video KYC."
-      ],
-      "ask_count": 1,
-      "resolved": false
-    }
-  },
-  {
     "id": "02307ba3-fe8f-44ca-b8b9-80289a43227c",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2738,16 +2817,21 @@
     }
   },
   {
-    "id": "30bbfb78-a95a-4be9-86f0-ed4f74dc20f7",
+    "id": "ce8d0af4-23ec-4e1e-8502-bf1466eda52d",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 100,
-    "content": "Call Interaction Summary [Session 89de332b-02f0-4653-acdc-b62ec0240e05]:\nCaller: It's very thank you, it's thank you very.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you. Thank you, thank.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you. Thank you, thank\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: It's very thank you, it's thank you very., Thank you. Thank you, thank., Thank you. Thank you, thank",
+    "chunk_index": 99,
+    "content": "Customer Spoken Inquiry: \"Tell me about the Video KYC.\"\nVerified Resolution: \"For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification.\"\nSource: Live Telephone Interaction (459ef8fb-ad2f-48fa-ba15-248883b91eee)",
     "meta": {
-      "type": "call_summary",
-      "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
-      "turn_count": 8
+      "type": "voice_interaction_turn",
+      "call_uuid": "459ef8fb-ad2f-48fa-ba15-248883b91eee",
+      "caller_query": "Tell me about the Video KYC.",
+      "variants": [
+        "Tell me about the Video KYC."
+      ],
+      "ask_count": 1,
+      "resolved": false
     }
   },
   {
@@ -2764,16 +2848,16 @@
     }
   },
   {
-    "id": "316273ff-6c11-459c-a975-a7a2d8b9ea40",
+    "id": "30bbfb78-a95a-4be9-86f0-ed4f74dc20f7",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 101,
-    "content": "Call Interaction Summary [Session 1585d9b4-1cbf-4f5a-b8a4-e9d447d2391d]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Thank you.",
+    "chunk_index": 100,
+    "content": "Call Interaction Summary [Session 89de332b-02f0-4653-acdc-b62ec0240e05]:\nCaller: It's very thank you, it's thank you very.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you. Thank you, thank.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you. Thank you, thank\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: It's very thank you, it's thank you very., Thank you. Thank you, thank., Thank you. Thank you, thank",
     "meta": {
       "type": "call_summary",
-      "call_uuid": "1585d9b4-1cbf-4f5a-b8a4-e9d447d2391d",
-      "turn_count": 2
+      "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
+      "turn_count": 8
     }
   },
   {
@@ -2792,6 +2876,19 @@
       ],
       "ask_count": 1,
       "resolved": false
+    }
+  },
+  {
+    "id": "316273ff-6c11-459c-a975-a7a2d8b9ea40",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 101,
+    "content": "Call Interaction Summary [Session 1585d9b4-1cbf-4f5a-b8a4-e9d447d2391d]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "1585d9b4-1cbf-4f5a-b8a4-e9d447d2391d",
+      "turn_count": 2
     }
   },
   {
@@ -2852,6 +2949,19 @@
     }
   },
   {
+    "id": "5551c6c2-90fa-4484-bf78-0995822799ec",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 105,
+    "content": "Call Interaction Summary [Session 15a3626f-ec70-4732-a4a3-76220813c333]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "15a3626f-ec70-4732-a4a3-76220813c333",
+      "turn_count": 2
+    }
+  },
+  {
     "id": "c3c8cc95-e09f-4e04-ad29-3cb5006afb2b",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2870,16 +2980,47 @@
     }
   },
   {
-    "id": "5551c6c2-90fa-4484-bf78-0995822799ec",
+    "id": "3696d42f-bc9f-440a-bf8e-698b71977f62",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 105,
-    "content": "Call Interaction Summary [Session 15a3626f-ec70-4732-a4a3-76220813c333]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Thank you.",
+    "chunk_index": 106,
+    "content": "Call Interaction Summary [Session d25c8f94-6f65-48d0-8de5-44834374e052]:\nCaller: Zero, zero zero one.\nAssistant: I can certainly help you with that order, could you please tell me what you would like to know about order number zero zero zero one?\nCaller: What is the status of this complaint?\nAssistant: Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\nCaller: you\nAssistant: I apologize, I need a specific ticket number or your phone number to check the status of your complaint for you.\nCaller: Thank you.\nAssistant: I understand this has been frustrating. Would you like me to transfer you to a live customer care agent?\nKey Inquiries: Zero, zero zero one., What is the status of this complaint?, you",
     "meta": {
       "type": "call_summary",
-      "call_uuid": "15a3626f-ec70-4732-a4a3-76220813c333",
-      "turn_count": 2
+      "call_uuid": "d25c8f94-6f65-48d0-8de5-44834374e052",
+      "turn_count": 8
+    }
+  },
+  {
+    "id": "b7c71c3b-854d-470a-9e0a-2a3980a8dc45",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 107,
+    "content": "Call Interaction Summary [Session a871d167-301c-4c89-a8c2-f5192aae0910]:\nCaller: 0, 0, 1,\nAssistant: Here are the complete details for complaint ticket number 1 (reference CMP 0001): It was booked for customer Swagatika Swain on 21 September 2026 from Bhubaneswar, Odisha under the Support department. The issue category is Discussion, and the current ticket status is Canceled after review. Would you like to register a fresh complaint or need help with another service?\nCaller: Yes, I want to register a new complaint.\nKey Inquiries: 0, 0, 1,, Yes, I want to register a new complaint.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "a871d167-301c-4c89-a8c2-f5192aae0910",
+      "turn_count": 3
+    }
+  },
+  {
+    "id": "8f35534d-952e-4103-8036-1bfd7efd61f9",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 108,
+    "content": "Customer Spoken Inquiry: \"My complaint nowadays is 0, 0, zero five.\"\nVerified Resolution: \"For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\"\nSource: Live Telephone Interaction (014042e0-1aab-4980-9294-2243a0ebe6dd)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "014042e0-1aab-4980-9294-2243a0ebe6dd",
+      "caller_query": "My complaint nowadays is 0, 0, zero five.",
+      "variants": [
+        "My complaint nowadays is 0, 0, zero five."
+      ],
+      "ask_count": 1,
+      "resolved": false
     }
   },
   {
@@ -2893,6 +3034,37 @@
       "type": "call_summary",
       "call_uuid": "f61c8ded-b10a-41f3-b19b-1a0acb7868c0",
       "turn_count": 4
+    }
+  },
+  {
+    "id": "179c6218-32c4-4a4b-ae99-ceb850f5c773",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 109,
+    "content": "Call Interaction Summary [Session 014042e0-1aab-4980-9294-2243a0ebe6dd]:\nCaller: My complaint nowadays is 0, 0, zero five.\nAssistant: For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: My complaint nowadays is 0, 0, zero five., Thank you., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "014042e0-1aab-4980-9294-2243a0ebe6dd",
+      "turn_count": 8
+    }
+  },
+  {
+    "id": "716e6112-6bdf-4743-905c-9e06ddbd7e10",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 110,
+    "content": "Customer Spoken Inquiry: \"My complaint ID is 0, 0, zero five. I want to know my status.\"\nVerified Resolution: \"For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\"\nSource: Live Telephone Interaction (37cbf293-bf30-413b-a938-449e1443bf91)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "37cbf293-bf30-413b-a938-449e1443bf91",
+      "caller_query": "My complaint ID is 0, 0, zero five. I want to know my status.",
+      "variants": [
+        "My complaint ID is 0, 0, zero five. I want to know my status."
+      ],
+      "ask_count": 1,
+      "resolved": false
     }
   },
   {
@@ -2927,6 +3099,50 @@
     }
   },
   {
+    "id": "79ad121d-8176-4b92-9c24-531d16b2002c",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 111,
+    "content": "Call Interaction Summary [Session 37cbf293-bf30-413b-a938-449e1443bf91]:\nCaller: My complaint ID is 0, 0, zero five. I want to know my status.\nAssistant: For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: My complaint ID is 0, 0, zero five. I want to know my status., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "37cbf293-bf30-413b-a938-449e1443bf91",
+      "turn_count": 4
+    }
+  },
+  {
+    "id": "a9f23e21-b17f-4236-8b8b-1cb4a7892a4b",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 112,
+    "content": "Customer Spoken Inquiry: \"0, 0, zero five.\"\nVerified Resolution: \"Here are the complete details for complaint ticket number 5 (reference CMP 0005): It was booked for customer Swagatika Swain on 30 September 2026 from Bhadrak, Odisha for Network Issue under Support. The current status is New and awaiting assignment.\"\nSource: Live Telephone Interaction (ea1e6963-4397-45a8-a60f-692405dd7088)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "ea1e6963-4397-45a8-a60f-692405dd7088",
+      "caller_query": "0, 0, zero five.",
+      "variants": [
+        "0, 0, zero five."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "2c590eb3-14b1-4d9b-b6c2-5f34c1aea6b5",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 113,
+    "content": "Call Interaction Summary [Session ea1e6963-4397-45a8-a60f-692405dd7088]:\nCaller: 0, 0, zero five.\nAssistant: Here are the complete details for complaint ticket number 5 (reference CMP 0005): It was booked for customer Swagatika Swain on 30 September 2026 from Bhadrak, Odisha for Network Issue under Support. The current status is New and awaiting assignment.\nCaller: Aad\nAssistant: Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\nKey Inquiries: 0, 0, zero five., Aad",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "ea1e6963-4397-45a8-a60f-692405dd7088",
+      "turn_count": 4
+    }
+  },
+  {
     "id": "eb2149d6-2bee-4684-9225-63a54b37afba",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2937,6 +3153,182 @@
       "type": "call_summary",
       "call_uuid": "f9d1d30f-face-4d43-b87a-1e0ec0dea1d2",
       "turn_count": 10
+    }
+  },
+  {
+    "id": "94f5e88e-9528-4457-a8fb-9aa0829d6739",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 114,
+    "content": "Call Interaction Summary [Session e33b09c3-f670-437f-8514-faa2b8a98558]:\nCaller: RIDO, RIDOL, RIO 4.\nAssistant: Here are the complete details for complaint ticket number 4 (reference CMP 0004): It was booked for customer Saswat on 30 September 2026 from Bhadrak, Odisha under Epsumlabs. The current status is Discussion with ongoing investigation.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: RIDO, RIDOL, RIO 4., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "e33b09c3-f670-437f-8514-faa2b8a98558",
+      "turn_count": 4
+    }
+  },
+  {
+    "id": "d8996055-bdf8-47d9-8f6f-2d6de01ffc85",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 115,
+    "content": "Call Interaction Summary [Session 71679f1a-2049-41be-af3a-634d50697483]:\nCaller: 0, 0, 2,\nAssistant: Here are the complete details for complaint ticket number 2 (reference CMP 0002): It was booked for customer Shantanu on 30 September 2026 from Bhadrak, Odisha. The current status is Solved, and the resolution has been verified and closed by our Support team.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: 0, 0, 2,, Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "71679f1a-2049-41be-af3a-634d50697483",
+      "turn_count": 4
+    }
+  },
+  {
+    "id": "912c8bc1-4863-46af-8c8f-490faff4098c",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 116,
+    "content": "Call Interaction Summary [Session a0465385-e4a6-444e-a7d4-8d2c48462435]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Thank you., Thank you., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "a0465385-e4a6-444e-a7d4-8d2c48462435",
+      "turn_count": 8
+    }
+  },
+  {
+    "id": "99ffc724-75bd-49d0-9a4d-da582cbab764",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 117,
+    "content": "Customer Spoken Inquiry: \"Zero, zero.\"\nVerified Resolution: \"For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\"\nSource: Live Telephone Interaction (82e0bb72-24a5-4929-9be7-bed8cfb4773c)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "82e0bb72-24a5-4929-9be7-bed8cfb4773c",
+      "caller_query": "Zero, zero.",
+      "variants": [
+        "Zero, zero."
+      ],
+      "ask_count": 1,
+      "resolved": true
+    }
+  },
+  {
+    "id": "d6421eae-21fa-4795-bb2a-d8f7e8296e6d",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 118,
+    "content": "Customer Spoken Inquiry: \"No, no, zero one.\"\nVerified Resolution: \"Thank you for rating us 1 out of 5! Have a wonderful day ahead.\"\nSource: Live Telephone Interaction (82e0bb72-24a5-4929-9be7-bed8cfb4773c)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "82e0bb72-24a5-4929-9be7-bed8cfb4773c",
+      "caller_query": "No, no, zero one.",
+      "variants": [
+        "No, no, zero one."
+      ],
+      "ask_count": 1,
+      "resolved": true
+    }
+  },
+  {
+    "id": "9954d6f7-2612-4c11-b84a-15bbf18b1937",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 119,
+    "content": "Call Interaction Summary [Session 82e0bb72-24a5-4929-9be7-bed8cfb4773c]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Zero, zero.\nAssistant: For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\nCaller: No, no, zero one.\nAssistant: Thank you for rating us 1 out of 5! Have a wonderful day ahead.\nCaller: Thank you.\nAssistant: Thank you for rating us 1 out of 5! Have a wonderful day ahead.\nKey Inquiries: Thank you., Thank you., Zero, zero.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "82e0bb72-24a5-4929-9be7-bed8cfb4773c",
+      "turn_count": 10
+    }
+  },
+  {
+    "id": "d8a0a7d6-938f-4a43-8b44-2df1ca86e19c",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 120,
+    "content": "Call Interaction Summary [Session 19346aec-890b-4892-bbfa-4789b53670cb]:\nCaller: Zero, zero. Zero one.\nAssistant: Here are the complete details for complaint ticket number 1 (reference CMP 0001): It was booked for customer Swagatika Swain on 21 September 2026 from Bhubaneswar, Odisha under the Support department. The issue category is Discussion, and the current ticket status is Canceled after review. Would you like to register a fresh complaint or need help with another service?\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Zero, zero. Zero one., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "19346aec-890b-4892-bbfa-4789b53670cb",
+      "turn_count": 4
+    }
+  },
+  {
+    "id": "240be766-3ed1-4d69-b888-c126d9a96499",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 121,
+    "content": "Customer Spoken Inquiry: \"Yes, I want to register a new complaint.\"\nVerified Resolution: \"Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.\"\nSource: Live Telephone Interaction (0f1683a5-f31d-4a43-b3e8-4b67f1699b74)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "0f1683a5-f31d-4a43-b3e8-4b67f1699b74",
+      "caller_query": "Yes, I want to register a new complaint.",
+      "variants": [
+        "Yes, I want to register a new complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "4898f4c0-3537-47c1-a0f2-f993bfd2a13f",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 122,
+    "content": "Call Interaction Summary [Session 0f1683a5-f31d-4a43-b3e8-4b67f1699b74]:\nCaller: Register.\nAssistant: Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\nCaller: Yes, I want to register a new complaint.\nAssistant: Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.\nCaller: My broadband internet connection has been completely downstairs yesterday.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Your complaint has been successfully registered under ticket number 10 (reference CMP 0010). Our support team will investigate the issue and update you shortly. Is there anything else I can help you with today?\nCaller: Thank you.\nAssistant: I understand this has been frustrating. Would you like me to transfer you to a live customer care agent?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Register., Yes, I want to register a new complaint., My broadband internet connection has been completely downstairs yesterday.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "0f1683a5-f31d-4a43-b3e8-4b67f1699b74",
+      "turn_count": 12
+    }
+  },
+  {
+    "id": "c12d25c9-4ad1-4fd3-8c73-d0e08a6daa17",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 123,
+    "content": "Call Interaction Summary [Session 470d16d8-28bc-4abe-9e61-4aea4b02f6f7]:\nCaller: Okay, let's turn.\nAssistant: Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Okay, let's turn., Thank you., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "470d16d8-28bc-4abe-9e61-4aea4b02f6f7",
+      "turn_count": 10
+    }
+  },
+  {
+    "id": "057de16a-36ab-47e1-aad0-61dbae7089ea",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 124,
+    "content": "Customer Spoken Inquiry: \"The gist of new complaint.\"\nVerified Resolution: \"Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.\"\nSource: Live Telephone Interaction (98a485db-5326-4b03-8f0f-285cd6ea7a3b)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "98a485db-5326-4b03-8f0f-285cd6ea7a3b",
+      "caller_query": "The gist of new complaint.",
+      "variants": [
+        "The gist of new complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "16774fb4-a2fb-405c-abdc-50736397e862",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 125,
+    "content": "Call Interaction Summary [Session 98a485db-5326-4b03-8f0f-285cd6ea7a3b]:\nCaller: The gist of new complaint.\nAssistant: Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: The gist of new complaint., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "98a485db-5326-4b03-8f0f-285cd6ea7a3b",
+      "turn_count": 4
     }
   },
   {

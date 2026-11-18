@@ -650,6 +650,7 @@ class IVRCallSession:
         self._language = self.selected_language
 
         ack_text = get_service_ack_prompt(self.selected_language, self.selected_service or "customer_support")
+        self._history.append(ChatMessage(role="assistant", content=ack_text))
         try:
             await self._play_prompt(ack_text)
             logger.info(f"[IVR] 🚀 Handoff to AI_CONVERSATION complete. Listening for caller voice...")

@@ -276,6 +276,86 @@ class TestIVRRAGMiniModel:
         assert "successfully registered" in reply.lower()
         assert "ticket number" in reply.lower()
 
+    def test_conversational_branch_status_flow(self, brain):
+        history = [
+            ChatMessage(
+                role="assistant",
+                content="Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?",
+            )
+        ]
+        # Turn 1: Caller chooses status branch
+        reply1 = brain.synthesize("Check status", messages=history, service_category="complaint", language="en")
+        assert "ticket number" in reply1.lower() or "registered phone" in reply1.lower()
+        history.append(ChatMessage(role="user", content="Check status"))
+        history.append(ChatMessage(role="assistant", content=reply1))
+
+        # Turn 2: Caller provides spaced digits
+        reply2 = brain.synthesize("0 0 0 1", messages=history, service_category="complaint", language="en")
+        assert "ticket number 1" in reply2.lower()
+        assert "cmp 0001" in reply2.lower()
+        assert "swagatika swain" in reply2.lower()
+        history.append(ChatMessage(role="user", content="0 0 0 1"))
+        history.append(ChatMessage(role="assistant", content=reply2))
+
+        # Turn 3: Caller concludes with gratitude
+        reply3 = brain.synthesize("Thank you", messages=history, service_category="complaint", language="en")
+        assert "welcome" in reply3.lower()
+
+    def test_conversational_branch_registration_flow(self, brain):
+        history = [
+            ChatMessage(
+                role="assistant",
+                content="Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?",
+            )
+        ]
+        # Turn 1: Caller says 'new one' or 'register a new one'
+        reply1 = brain.synthesize("new one", messages=history, service_category="complaint", language="en")
+        assert "describe the issue" in reply1.lower() or "problem you are facing" in reply1.lower()
+        assert "ticket number 1" not in reply1.lower()  # MUST NOT extract digit 1 from 'one'
+        history.append(ChatMessage(role="user", content="new one"))
+        history.append(ChatMessage(role="assistant", content=reply1))
+
+        # Turn 2: Caller describes their issue
+        reply2 = brain.synthesize(
+            "My wifi router has a red blinking light and no connection",
+            messages=history,
+            service_category="complaint",
+            language="en",
+        )
+        assert "successfully registered" in reply2.lower()
+        assert "ticket number" in reply2.lower()
+        history.append(ChatMessage(role="user", content="My wifi router has a red blinking light and no connection"))
+        history.append(ChatMessage(role="assistant", content=reply2))
+
+        # Turn 3: Caller says 'No that is all, thank you'
+        reply3 = brain.synthesize("No that is all, thank you", messages=history, service_category="complaint", language="en")
+        assert "welcome" in reply3.lower()
+
+    def test_conversational_branch_multilingual(self, brain):
+        hi_history = [
+            ChatMessage(
+                role="assistant",
+                content="शिकायत सेवा में आपका स्वागत है। क्या आप अपनी पुरानी शिकायत की स्थिति देखना चाहते हैं, या नई शिकायत दर्ज करना चाहते हैं?",
+            )
+        ]
+        hi_status = brain.synthesize("पुरानी शिकायत की स्थिति देखनी है", messages=hi_history, language="hi", service_category="complaint")
+        assert "टिकट नंबर" in hi_status
+
+        hi_reg = brain.synthesize("नया वाला", messages=hi_history, language="hi", service_category="complaint")
+        assert "विवरण" in hi_reg or "समस्या" in hi_reg
+
+        or_history = [
+            ChatMessage(
+                role="assistant",
+                content="ଅଭିଯୋଗ ସେବାକୁ ସ୍ୱାଗତ। ଆପଣ ପୂର୍ବ ଅଭିଯୋଗର ସ୍ଥିତି ଜାଣିବାକୁ ଚାହାଁନ୍ତି, କିମ୍ବା ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି?",
+            )
+        ]
+        or_status = brain.synthesize("ପୂର୍ବ ଅଭିଯୋଗର ସ୍ଥିତି", messages=or_history, language="or", service_category="complaint")
+        assert "ଟିକେଟ୍ ନମ୍ବର" in or_status
+
+        or_reg = brain.synthesize("ନୂଆ ଗୋଟିଏ", messages=or_history, language="or", service_category="complaint")
+        assert "ସମସ୍ୟା" in or_reg or "ଅଭିଯୋଗ" in or_reg
+
     def test_response_generator_does_not_stall_on_complaint_registration(self):
         from services.conversation.response_generator import _needs_live_action_fallback
         # Must return False so Turn 1 synthesizes instantly in < 2ms without slow Ollama tool stalls

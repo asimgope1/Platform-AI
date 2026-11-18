@@ -129,9 +129,9 @@ def get_service_ack_prompt(language: str, service_key: str) -> str:
     
     if service_key == "complaint":
         complaint_acks = {
-            "en": "Sure, I can help you check your complaint status or register a new issue. Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
-            "hi": "जी बिल्कुल, मैं आपकी शिकायत स्थिति जांचने या नई शिकायत में मदद कर सकती हूँ। कृपया अपना टिकट नंबर (जैसे 1 या 0001) या पंजीकृत मोबाइल नंबर बताइए।",
-            "or": "ଆଜ୍ଞା ହଁ, ମୁଁ ଆପଣଙ୍କ ଅଭିଯୋଗ ସ୍ଥିତି ଯାଞ୍ଚ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବି। ଦୟାକରି ଆପଣଙ୍କ ଟିକେଟ୍ ନମ୍ବର (ଯେପରି ୧ ବା ୦୦୦୧) କିମ୍ବା ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବର କୁହନ୍ତୁ।",
+            "en": "Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?",
+            "hi": "शिकायत सेवा में आपका स्वागत है। क्या आप अपनी पुरानी शिकायत की स्थिति देखना चाहते हैं, या नई शिकायत दर्ज करना चाहते हैं?",
+            "or": "ଅଭିଯୋଗ ସେବାକୁ ସ୍ୱାଗତ। ଆପଣ ପୂର୍ବ ଅଭିଯୋଗର ସ୍ଥିତି ଜାଣିବାକୁ ଚାହାଁନ୍ତି, କିମ୍ବା ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି?",
         }
         return complaint_acks.get(lang, complaint_acks["en"])
 

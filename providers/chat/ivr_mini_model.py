@@ -284,107 +284,127 @@ COMPLAINT_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
         "en": (
             "Here are the complete details for complaint ticket number 2 (reference CMP 0002): "
             "It was booked for customer Shantanu on 30 September 2026 from Bhadrak, Odisha. "
-            "The current status is Solved, and the resolution has been verified and closed by our Support team."
+            "The current status is Solved, and the resolution has been verified and closed by our Support team. "
+            "Is there anything else I can help you with today?"
         ),
         "hi": (
             "शिकायत टिकट नंबर 2 (सीएमपी 0002) का पूरा विवरण: "
             "यह 30 सितंबर 2026 को भद्रक, ओडिशा से शांतनु के लिए दर्ज हुआ था। "
-            "इसकी वर्तमान स्थिति हल (Solved) हो चुकी है और सपोर्ट टीम द्वारा समस्या का समाधान कर दिया गया है।"
+            "इसकी वर्तमान स्थिति हल (Solved) हो चुकी है और सपोर्ट टीम द्वारा समस्या का समाधान कर दिया गया है। "
+            "क्या मैं और कोई सहायता करूँ?"
         ),
         "or": (
             "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୨ (ସିଏମ୍‌ପି ୦୦୦୨) ର ବିବରଣୀ: "
             "ଏହା ୩୦ ସେପ୍ଟେମ୍ବର ୨୦୨୬ ରେ ଭଦ୍ରକରୁ ଶାନ୍ତନୁଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। "
-            "ଏହାର ସମାଧାନ ହୋଇସାରିଛି ଏବଂ ସ୍ଥିତି Solved ରହିଛି।"
+            "ଏହାର ସମାଧାନ ହୋଇସାରିଛି ଏବଂ ସ୍ଥିତି Solved ରହିଛି। "
+            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
         ),
     },
     "3": {
         "en": (
             "Here are the complete details for complaint ticket number 3 (reference CMP 0003): "
             "It was booked for customer Swarna on 30 September 2026 from Kendrapada, Odisha for Network Issue under Epsumlabs. "
-            "The current status is Canceled."
+            "The current status is Canceled. "
+            "Is there anything else I can help you with today?"
         ),
         "hi": (
             "शिकायत टिकट नंबर 3 (सीएमपी 0003) का विवरण: "
             "यह 30 सितंबर 2026 को केंद्रपाड़ा, ओडिशा से स्वर्णा के लिए एप्समलैब्स में नेटवर्क समस्या हेतु दर्ज था। "
-            "वर्तमान स्थिति रद्द (Canceled) है।"
+            "वर्तमान स्थिति रद्द (Canceled) है। "
+            "क्या मैं और कोई सहायता करूँ?"
         ),
         "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୩ (ସିଏମ୍‌ପି ୦୦୦୩) କେନ୍ଦ୍ରାପଡ଼ାରୁ ସ୍ୱର୍ଣ୍ଣାଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଥିଲା, ବର୍ତ୍ତମାନ ଏହା ବାତିଲ୍ ହୋଇଛି।"
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୩ (ସିଏମ୍‌ପି ୦୦୦୩) କେନ୍ଦ୍ରାପଡ଼ାରୁ ସ୍ୱର୍ଣ୍ଣାଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଥିଲା, ବର୍ତ୍ତମାନ ଏହା ବାତିଲ୍ ହୋଇଛି। "
+            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
         ),
     },
     "4": {
         "en": (
             "Here are the complete details for complaint ticket number 4 (reference CMP 0004): "
             "It was booked for customer Saswat on 30 September 2026 from Bhadrak, Odisha under Epsumlabs. "
-            "The current status is Discussion with ongoing investigation."
+            "The current status is Discussion with ongoing investigation. "
+            "Is there anything else I can help you with today?"
         ),
         "hi": (
             "शिकायत टिकट नंबर 4 (सीएमपी 0004) का विवरण: "
-            "यह 30 सितंबर 2026 को भद्रक से शाश्वत के लिए एप्समलैब्स में दर्ज हुआ था। स्थिति अभी चर्चा में (Discussion) है।"
+            "यह 30 सितंबर 2026 को भद्रक से शाश्वत के लिए एप्समलैब्स में दर्ज हुआ था। स्थिति अभी चर्चा में (Discussion) है। "
+            "क्या मैं और कोई सहायता करूँ?"
         ),
         "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୪ (ସିଏମ୍‌ପି ୦୦୦୪) ଭଦ୍ରକରୁ ଶାଶ୍ୱତଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। ଏହା ବର୍ତ୍ତମାନ ଚର୍ଚ୍ଚାରେ ଅଛି।"
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୪ (ସିଏମ୍‌ପି ୦୦୦୪) ଭଦ୍ରକରୁ ଶାଶ୍ୱତଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। ଏହା ବର୍ତ୍ତମାନ ଚର୍ଚ୍ଚାରେ ଅଛି। "
+            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
         ),
     },
     "5": {
         "en": (
             "Here are the complete details for complaint ticket number 5 (reference CMP 0005): "
             "It was booked for customer Swagatika Swain on 30 September 2026 from Bhadrak, Odisha for Network Issue under Support. "
-            "The current status is New and awaiting assignment."
+            "The current status is New and awaiting assignment. "
+            "Is there anything else I can help you with today?"
         ),
         "hi": (
             "शिकायत टिकट नंबर 5 (सीएमपी 0005) का विवरण: "
-            "यह 30 सितंबर 2026 को भद्रक से स्वातिका स्वाईं के लिए नेटवर्क समस्या हेतु दर्ज हुआ था। स्थिति नई (New) है।"
+            "यह 30 सितंबर 2026 को भद्रक से स्वातिका स्वाईं के लिए नेटवर्क समस्या हेतु दर्ज हुआ था। स्थिति नई (New) है। "
+            "क्या मैं और कोई सहायता करूँ?"
         ),
         "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୫ (ସିଏମ୍‌ପି ୦୦୦୫) ସ୍ଵାଗତିକା ସ୍ଵାଇଁଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।"
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୫ (ସିଏମ୍‌ପି ୦୦୦୫) ସ୍ଵାଗତିକା ସ୍ଵାଇଁଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ। "
+            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
         ),
     },
     "6": {
         "en": (
             "Here are the complete details for complaint ticket number 6 (reference CMP 0006): "
             "It was booked for customer Sas on 30 September 2026 from Bhadrak, Odisha under Support for Discussion. "
-            "The current status is New."
+            "The current status is New. "
+            "Is there anything else I can help you with today?"
         ),
-        "hi": "शिकायत टिकट नंबर 6 (सीएमपी 0006) भद्रक से दर्ज किया गया था। वर्तमान स्थिति नई (New) है।",
-        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୬ (ସିଏମ୍‌ପି ୦୦୦୬) ଭଦ୍ରକରୁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।",
+        "hi": "शिकायत टिकट नंबर 6 (सीएमपी 0006) भद्रक से दर्ज किया गया था। वर्तमान स्थिति नई (New) है। क्या मैं और कोई सहायता करूँ?",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୬ (ସିଏମ୍‌ପି ୦୦୦୬) ଭଦ୍ରକରୁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?",
     },
     "7": {
         "en": (
             "Here are the complete details for complaint ticket number 7 (reference CMP 0007): "
-            "It was booked on 30 September 2026 under the Support department. The current status is New."
+            "It was booked on 30 September 2026 under the Support department. The current status is New. "
+            "Is there anything else I can help you with today?"
         ),
-        "hi": "शिकायत टिकट नंबर 7 (सीएमपी 0007) सपोर्ट विभाग में दर्ज है। वर्तमान स्थिति नई (New) है।",
-        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୭ (ସିଏମ୍‌ପି ୦୦୦୭) ସପୋର୍ଟ ବିଭାଗରେ ନୂଆ ରହିଛି।",
+        "hi": "शिकायत टिकट नंबर 7 (सीएमपी 0007) सपोर्ट विभाग में दर्ज है। वर्तमान स्थिति नई (New) है। क्या मैं और कोई सहायता करूँ?",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୭ (ସିଏମ୍‌ପି ୦୦୦୭) ସପୋର୍ଟ ବିଭାଗରେ ନୂଆ ରହିଛି। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?",
     },
     "8": {
         "en": (
             "Here are the complete details for complaint ticket number 8 (reference CMP 0008): "
             "It was booked for customer Suvarna Sai on 17 November 2026 from Bhubaneswar, Odisha under Customer Support. "
-            "The current status is New and under active review."
+            "The current status is New and under active review. "
+            "Is there anything else I can help you with today?"
         ),
         "hi": (
             "शिकायत टिकट नंबर 8 (सीएमपी 0008) का पूरा विवरण: "
-            "यह 17 नवंबर 2026 को भुवनेश्वर से सुवर्णा साई के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है और समीक्षा में है।"
+            "यह 17 नवंबर 2026 को भुवनेश्वर से सुवर्णा साई के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है और समीक्षा में है। "
+            "क्या मैं और कोई सहायता करूँ?"
         ),
         "or": (
             "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୮ (ସିଏମ୍‌ପି ୦୦୦୮) ର ବିବରଣୀ: "
-            "ଏହା ୧୭ ନଭେମ୍ବର ୨୦୨୬ ରେ ଭୁବନେଶ୍ୱରରୁ ସୁବର୍ଣ୍ଣା ସାଇଙ୍କ ନାମରେ ଦାଖଲ ହୋଇଥିଲା। ବର୍ତ୍ତମାନର ସ୍ଥିତି ନୂଆ ଅଟେ।"
+            "ଏହା ୧୭ ନଭେମ୍ବର ୨୦୨୬ ରେ ଭୁବନେଶ୍ୱରରୁ ସୁବର୍ଣ୍ଣା ସାଇଙ୍କ ନାମରେ ଦାଖଲ ହୋଇଥିଲା। ବର୍ତ୍ତମାନର ସ୍ଥିତି ନୂଆ ଅଟେ। "
+            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
         ),
     },
     "9": {
         "en": (
             "Here are the complete details for complaint ticket number 9 (reference CMP 0009): "
             "It was booked on 18 November 2026 for Broadband service issue under Customer Support. "
-            "The current status is New and under review."
+            "The current status is New and under review. "
+            "Is there anything else I can help you with today?"
         ),
         "hi": (
             "शिकायत टिकट नंबर 9 (सीएमपी 0009) का पूरा विवरण: "
-            "यह 18 नवंबर 2026 को ब्रॉडबैंड सेवा समस्या के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है।"
+            "यह 18 नवंबर 2026 को ब्रॉडबैंड सेवा समस्या के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है। "
+            "क्या मैं और कोई सहायता करूँ?"
         ),
         "or": (
             "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୯ (ସିଏମ୍‌ପି ୦୦୦୯) ର ବିବରଣୀ: "
-            "ଏହା ୧୮ ନଭେମ୍ବର ୨୦୨୬ ରେ ବ୍ରଡବ୍ୟାଣ୍ଡ ସମସ୍ୟା ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।"
+            "ଏହା ୧୮ ନଭେମ୍ବର ୨୦୨୬ ରେ ବ୍ରଡବ୍ୟାଣ୍ଡ ସମସ୍ୟା ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ। "
+            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
         ),
     },
     "8976453421": {
@@ -545,6 +565,8 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
     lower = text.translate(_INDIC_DIGIT_TRANSLATION).lower().strip()
     # 0. Telephony phonetic recovery: 8kHz mishearing of 'zero' as 'video' adjacent to digits
     lower = re.sub(r'\bvideo\b(?=(?:[\s,]+video)*[\s,]+(?:and\s*)?\d)', 'zero', lower)
+    # Guard against 'new one', 'another one', 'register a new one', etc. being misheard or parsed as digit 1
+    lower = re.sub(r'\b(?:new|another|a\s+new|fresh)\s+one\b', 'new_ticket', lower)
 
     # 1. 10-digit Indian phone number lookup
     phone_m = re.search(r"\b([6-9]\d{9})\b", lower)
@@ -571,8 +593,15 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
         general_m = re.search(r"\b0*(\d{1,4})\b", lower)
         if general_m:
             return str(int(general_m.group(1)))
-        if re.search(rf"(?:complaint|ticket|case|cmp|शिकायत|ଅଭିଯୋଗ)\s*(?:no|number)?\s*{word}\b", lower):
-            return digit
+        for word, digit in _SPOKEN_DIGIT_WORDS.items():
+            if re.search(rf"(?:complaint|ticket|case|cmp|शिकायत|ଅଭିଯୋଗ)\s*(?:no|number)?\s*{word}\b", lower):
+                return digit
+
+    # If the user expresses intent to register or describe a new complaint without an explicit ticket prefix,
+    # do NOT extract bare numbers or single words as ticket IDs
+    tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', lower))
+    if tokens.intersection({"register", "lodge", "file", "book", "दर्ज", "पंजीकृत", "दाखिल", "ଦାଖଲ", "new", "fresh", "नया", "नई", "ନୂଆ"}):
+        return None
 
     # 5. Direct number sequences, padded zeros, or pure digit utterances (e.g. '0001', '0 0 0 1', 'Zero, zero zero one.', '1')
     normalized_spoken = lower
@@ -585,10 +614,10 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
             return digit_seq
         non_digit_words = [
             w for w in re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', normalized_spoken)
-            if w not in ('and', 'or', 'the', 'is', 'no', 'number', 'ticket', 'id', 'dot', 'zero')
+            if w not in ('and', 'or', 'the', 'is', 'it', 'my', 'please', 'no', 'number', 'ticket', 'id', 'dot', 'zero')
         ]
         # Padded numbers (e.g. '0001', '0 0 0 1', 'Zero, zero zero one.') or pure digit utterances without extra text
-        if len(digit_seq) <= 4 and (allow_bare_digits or len(digit_seq) >= 2 or len(non_digit_words) == 0):
+        if len(digit_seq) <= 4 and ((allow_bare_digits and len(non_digit_words) <= 1) or len(digit_seq) >= 2 or len(non_digit_words) == 0):
             return str(int(digit_seq))
 
     return None
@@ -653,10 +682,14 @@ class IVRRAGMiniModel:
     def _is_complaint_register_intent(self, lower_query: str) -> bool:
         """Checks if the user wants to register, file, or book a new complaint."""
         clean = (lower_query or "").strip().lower()
-        if any(w in clean for w in ("status", "check", "track", "where is", "existing", "update", "स्थिति", "ଟ୍ରାକ୍")):
+        if any(w in clean for w in ("status", "check", "track", "where is", "existing", "update", "स्थिति", "ଟ୍ରାକ୍", "ପୂର୍ବ")):
             return False
         tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
-        if tokens.intersection({"register", "lodge", "दर्ज", "पंजीकृत", "पंजीकरण"}):
+        if tokens.intersection({"register", "lodge", "file", "book", "दर्ज", "पंजीकृत", "पंजीकरण", "दाखिल", "ଦାଖଲ", "ପଞ୍ଜୀକରଣ"}):
+            return True
+        if "new one" in clean or "fresh complaint" in clean or "new complaint" in clean or "register one" in clean or "a new one" in clean:
+            return True
+        if tokens.intersection({"new", "fresh", "नया", "नई", "ନୂଆ", "ନୂତନ"}):
             return True
         return any(
             phrase in clean
@@ -666,10 +699,48 @@ class IVRRAGMiniModel:
                 "book a complaint", "book complaint", "lodge a complaint", "lodge complaint",
                 "new complaint", "fresh complaint", "want to complain",
                 "register new complain", "register complain", "file complain", "book complain",
-                "शिकायत दर्ज", "दर्ज करना", "दर्ज करनी", "नया शिकायत", "नई शिकायत",
-                "ଅଭିଯୋଗ ଦାଖଲ", "ନୂଆ ଅଭିଯୋଗ", "ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ",
+                "register a new one", "register new one", "lodge a new one",
+                "शिकायत दर्ज", "दर्ज करना", "दर्ज करनी", "नया शिकायत", "नई शिकायत", "नई वाली", "नया वाला",
+                "ଅଭିଯୋଗ ଦାଖଲ", "ନୂଆ ଅଭିଯୋଗ", "ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ", "ନୂଆ ଗୋଟିଏ",
             )
         )
+
+    def _is_complaint_status_intent(self, lower_query: str) -> bool:
+        """Checks if the user wants to check the status or track an existing complaint."""
+        clean = (lower_query or "").strip().lower()
+        tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
+        if tokens.intersection({"status", "track", "check", "existing", "old", "previous", "स्थिति", "पुरानी", "पुराना", "जांच", "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା"}):
+            return True
+        return any(
+            phrase in clean
+            for phrase in (
+                "check status", "check the status", "status of complaint", "complaint status",
+                "my complaint", "check existing", "existing complaint", "check existing complaint",
+                "existing one", "old complaint", "status check", "know status", "track complaint",
+                "track my complaint", "status dekhna", "status janna", "स्थिति देखना",
+                "स्थिति जांचना", "पुरानी शिकायत", "पुराना शिकायत", "स्थिति बताएं",
+                "ସ୍ଥିତି ଜାଣିବା", "ପୂର୍ବ ଅଭିଯୋଗ", "ପୁରୁଣା ଅଭିଯୋଗ", "ଅଭିଯୋଗ ସ୍ଥିତି",
+            )
+        )
+
+    def _was_asked_status_or_register(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the assistant asked whether the caller wants to check status or register a new complaint."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(
+                    marker in c
+                    for marker in (
+                        "existing complaint, or register a new one",
+                        "check the status of an existing complaint",
+                        "status of an existing complaint, or register",
+                        "पुरानी शिकायत की स्थिति देखना चाहते हैं, या नई शिकायत",
+                        "ପୂର୍ବ ଅଭିଯୋଗର ସ୍ଥିତି ଜାଣିବାକୁ ଚାହାଁନ୍ତି, କିମ୍ବା ନୂଆ ଅଭିଯୋଗ",
+                    )
+                )
+        return False
 
     def _was_asked_for_complaint_description(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for a problem or issue description."""
@@ -883,14 +954,18 @@ class IVRRAGMiniModel:
         ]):
             return AUTONOMOUS_KNOWLEDGE["unrelated_general"][lang]
 
-        # 5. Complaint Registration Dialogue Flow
+        # 5. Complaint Services Dialogue Flow (Status & Registration)
+        is_complaint_context = bool(service_category and "complaint" in service_category.lower())
         awaiting_complaint_desc = self._was_asked_for_complaint_description(messages)
+        awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
+        was_asked_branch = self._was_asked_status_or_register(messages)
         is_register_intent = self._is_complaint_register_intent(lower_query)
+        is_status_intent = self._is_complaint_status_intent(lower_query)
 
         # 5a. If previous turn asked caller to describe their complaint issue:
         if awaiting_complaint_desc:
-            # Check if caller answered with an existing ticket number instead of problem description
-            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
+            # Check if caller answered with an explicit ticket number instead of problem description
+            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=False)
             if cid_probe:
                 ans = self.lookup_complaint_status(cid_probe, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
@@ -904,7 +979,32 @@ class IVRRAGMiniModel:
             )
             return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5b. Caller declared intent to register a complaint:
+        # 5b. If previous turn asked caller for complaint ticket ID or phone:
+        if awaiting_complaint_id:
+            # If caller switched to register intent:
+            if is_register_intent:
+                embedded_desc = self._extract_complaint_description_from_query(clean_query)
+                if embedded_desc:
+                    ans = self.register_new_complaint(
+                        description=embedded_desc,
+                        lang=lang,
+                        caller_phone=caller_phone,
+                        customer_name=customer_name,
+                        call_uuid=call_uuid,
+                    )
+                    return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_details"][lang]
+                return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
+            if cid_probe:
+                ans = self.lookup_complaint_status(cid_probe, lang=lang)
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+            # Prompt again for complaint ticket number
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5c. Caller explicitly declared intent to register a new complaint:
         if is_register_intent:
             embedded_desc = self._extract_complaint_description_from_query(clean_query)
             if embedded_desc:
@@ -920,7 +1020,47 @@ class IVRRAGMiniModel:
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_details"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5c. Extract multi-turn context (e.g. "how much time?", "and what about documents?")
+        # 5d. Caller explicitly declared intent to check status of existing complaint:
+        if is_status_intent:
+            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=False)
+            if cid_probe:
+                ans = self.lookup_complaint_status(cid_probe, lang=lang)
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5e. Caller in Complaint Service context provided a direct ticket ID or digits:
+        if is_complaint_context:
+            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
+            if cid_probe:
+                ans = self.lookup_complaint_status(cid_probe, lang=lang)
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            # Check if caller directly provided an issue description (>= 3 words describing a problem)
+            if any(w in lower_query for w in (
+                "not working", "down", "issue", "problem", "fault", "broken", "deducted", "failed",
+                "kharab", "nahi chal raha", "kaam nahi", "paise", "kat gaye", "बंद", "खराब", "काम नहीं",
+                "କାମ କରୁନାହିଁ", "ବନ୍ଦ", "ପଇସା", "ସମସ୍ୟା",
+            )) and len(clean_query.split()) >= 3:
+                ans = self.register_new_complaint(
+                    description=clean_query,
+                    lang=lang,
+                    caller_phone=caller_phone,
+                    customer_name=customer_name,
+                    call_uuid=call_uuid,
+                )
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            # Re-ask the branching question if initial entry or branch was asked:
+            if was_asked_branch or not messages or len(messages) <= 2:
+                branch_prompt = {
+                    "en": "Would you like to check the status of an existing complaint, or register a new one?",
+                    "hi": "क्या आप अपनी पुरानी शिकायत की स्थिति देखना चाहते हैं, या नई शिकायत दर्ज करना चाहते हैं?",
+                    "or": "ଆପଣ ପୂର୍ବ ଅଭିଯୋଗର ସ୍ଥିତି ଜାଣିବାକୁ ଚାହାଁନ୍ତି, କିମ୍ବା ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି?",
+                }
+                return self.apply_sentiment_tone(branch_prompt.get(lang, branch_prompt["en"]), intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5f. Multi-turn context for Order ID / other services
         inferred_intent = self._infer_intent_with_history(lower_query, messages)
         awaiting_digits = self._was_asked_for_order_digits(messages)
         if awaiting_digits and inferred_intent not in (
@@ -929,20 +1069,7 @@ class IVRRAGMiniModel:
         ):
             inferred_intent = "order_status"
 
-        is_complaint_context = bool(service_category and "complaint" in service_category.lower())
-        awaiting_complaint_id = is_complaint_context or self._was_asked_for_complaint_id(messages)
-        if awaiting_complaint_id:
-            # Check if query contains complaint identifier or bare digits (including telephony mishearings like 'video 1')
-            cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
-            if cid_probe:
-                inferred_intent = "complaint_status"
-            elif inferred_intent not in (
-                "upi_refund", "card_block", "card_pin", "account_balance",
-                "cheque_book", "loans_emi", "netbanking_mpin", "branch_hours", "capabilities", "order_status",
-            ):
-                inferred_intent = "complaint_status"
-
-        # 5d. Dedicated Stateful Order ID Verification & Complete Status Lookup
+        # Dedicated Stateful Order ID Verification & Complete Status Lookup
         if inferred_intent == "order_status":
             digits4 = extract_order_last4_digits(
                 clean_query,
@@ -952,18 +1079,6 @@ class IVRRAGMiniModel:
                 ans = self.lookup_order_status(digits4, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
             ask_ans = AUTONOMOUS_KNOWLEDGE["order_status_ask_digits"][lang]
-            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-
-        # 5e. Dedicated Stateful Complaint ID / Phone Verification & Spoken Status Lookup
-        complaint_id = extract_complaint_identifier(
-            clean_query,
-            allow_bare_digits=awaiting_complaint_id,
-        )
-        if complaint_id:
-            ans = self.lookup_complaint_status(complaint_id, lang=lang)
-            return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-        if inferred_intent == "complaint_status":
-            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 6. RAG Grounding: If pgvector chunks are provided, extract matching factual sentences
@@ -1471,10 +1586,10 @@ class IVRRAGMiniModel:
         # Numeric ticket fallback
         pad_id = f"{int(key):04d}" if key.isdigit() else key
         if lang == "hi":
-            return f"आपके शिकायत टिकट नंबर {key} (सीएमपी {pad_id}) की स्थिति प्रक्रियाधीन है और हमारी सपोर्ट टीम इस पर काम कर रही है।"
+            return f"आपके शिकायत टिकट नंबर {key} (सीएमपी {pad_id}) की स्थिति प्रक्रियाधीन है और हमारी सपोर्ट टीम इस पर काम कर रही है। क्या मैं और कोई सहायता करूँ?"
         elif lang == "or":
-            return f"ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {key} (ସିଏମ୍‌ପି {pad_id}) ପ୍ରକ୍ରିୟାଧୀନ ରହିଛି।"
-        return f"For complaint ticket number {key} (CMP {pad_id}), your ticket is currently in progress and being reviewed by our customer support team."
+            return f"ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {key} (ସିଏମ୍‌ପି {pad_id}) ପ୍ରକ୍ରିୟାଧୀନ ରହିଛି। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
+        return f"For complaint ticket number {key} (CMP {pad_id}), your ticket is currently in progress and being reviewed by our customer support team. Is there anything else I can help you with today?"
 
 
 # Module-level singleton
