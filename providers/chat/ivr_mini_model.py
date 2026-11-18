@@ -249,59 +249,159 @@ ORDER_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
 
 COMPLAINT_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
     "1": {
-        "en": "For your complaint ticket number 1 (CMP 0001) for customer Swagatika Swain, the current status is Canceled. The issue was Discussion handled by Support.",
-        "hi": "आपके शिकायत टिकट नंबर 1 (सीएमपी 0001) की वर्तमान स्थिति रद्द है। यह सपोर्ट विभाग द्वारा संभाला गया था।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୧ (ସିଏମ୍‌ପି ୦୦୦୧) ର ବର୍ତ୍ତମାନର ସ୍ଥିତି ବାତିଲ୍ ରହିଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 1 (reference CMP 0001): "
+            "It was booked for customer Swagatika Swain on 21 September 2026 from Bhubaneswar, Odisha under the Support department. "
+            "The issue category is Discussion, and the current ticket status is Canceled after review. "
+            "Would you like to register a fresh complaint or need help with another service?"
+        ),
+        "hi": (
+            "शिकायत टिकट नंबर 1 (संदर्भ सीएमपी 0001) का पूरा विवरण यह है: "
+            "यह 21 सितंबर 2026 को भुवनेश्वर, ओडिशा से स्वातिका स्वाईं के लिए सपोर्ट विभाग में दर्ज किया गया था। "
+            "समस्या की श्रेणी चर्चा (Discussion) है, और वर्तमान स्थिति समीक्षा के बाद रद्द (Canceled) है। "
+            "क्या आप नई शिकायत दर्ज करना चाहते हैं या किसी अन्य सहायता की आवश्यकता है?"
+        ),
+        "or": (
+            "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୧ (ସିଏମ୍‌ପି ୦୦୦୧) ର ସମ୍ପୂର୍ଣ୍ଣ ବିବରଣୀ: "
+            "ଏହା ୨୧ ସେପ୍ଟେମ୍ବର ୨୦୨୬ ରେ ଭୁବନେଶ୍ୱରରୁ ସ୍ଵାଗତିକା ସ୍ଵାଇଁଙ୍କ ନାମରେ ସପୋର୍ଟ ବିଭାଗରେ ପଞ୍ଜୀକୃତ ହୋଇଥିଲା। "
+            "ବିଷୟ ଶ୍ରେଣୀ ଆଲୋଚନା ଏବଂ ବର୍ତ୍ତମାନର ସ୍ଥିତି ବାତିଲ୍ (Canceled) ରହିଛି। "
+            "ଆପଣ ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି କି?"
+        ),
     },
     "2": {
-        "en": "For your complaint ticket number 2 (CMP 0002) for customer Shantanu, the current status is Solved. The complaint has been verified and resolved.",
-        "hi": "आपके शिकायत टिकट नंबर 2 (सीएमपी 0002) की वर्तमान स्थिति हल (Solved) हो चुकी है और समस्या का समाधान कर दिया गया है।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୨ (ସିଏମ୍‌ପି ୦୦୦୨) ର ସମାଧାନ ହୋଇସାରିଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 2 (reference CMP 0002): "
+            "It was booked for customer Shantanu on 30 September 2026 from Bhadrak, Odisha. "
+            "The current status is Solved, and the resolution has been verified and closed by our Support team."
+        ),
+        "hi": (
+            "शिकायत टिकट नंबर 2 (सीएमपी 0002) का पूरा विवरण: "
+            "यह 30 सितंबर 2026 को भद्रक, ओडिशा से शांतनु के लिए दर्ज हुआ था। "
+            "इसकी वर्तमान स्थिति हल (Solved) हो चुकी है और सपोर्ट टीम द्वारा समस्या का समाधान कर दिया गया है।"
+        ),
+        "or": (
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୨ (ସିଏମ୍‌ପି ୦୦୦୨) ର ବିବରଣୀ: "
+            "ଏହା ୩୦ ସେପ୍ଟେମ୍ବର ୨୦୨୬ ରେ ଭଦ୍ରକରୁ ଶାନ୍ତନୁଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। "
+            "ଏହାର ସମାଧାନ ହୋଇସାରିଛି ଏବଂ ସ୍ଥିତି Solved ରହିଛି।"
+        ),
     },
     "3": {
-        "en": "For your complaint ticket number 3 (CMP 0003) for customer Swarna, the current status is Canceled. The category was Network Issue under Epsumlabs.",
-        "hi": "आपके शिकायत टिकट नंबर 3 (सीएमपी 0003) की वर्तमान स्थिति रद्द है। यह नेटवर्क समस्या के अंतर्गत दर्ज थी।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୩ (ସିଏମ୍‌ପି ୦୦୦୩) ବାତିଲ୍ ହୋଇଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 3 (reference CMP 0003): "
+            "It was booked for customer Swarna on 30 September 2026 from Kendrapada, Odisha for Network Issue under Epsumlabs. "
+            "The current status is Canceled."
+        ),
+        "hi": (
+            "शिकायत टिकट नंबर 3 (सीएमपी 0003) का विवरण: "
+            "यह 30 सितंबर 2026 को केंद्रपाड़ा, ओडिशा से स्वर्णा के लिए एप्समलैब्स में नेटवर्क समस्या हेतु दर्ज था। "
+            "वर्तमान स्थिति रद्द (Canceled) है।"
+        ),
+        "or": (
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୩ (ସିଏମ୍‌ପି ୦୦୦୩) କେନ୍ଦ୍ରାପଡ଼ାରୁ ସ୍ୱର୍ଣ୍ଣାଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଥିଲା, ବର୍ତ୍ତମାନ ଏହା ବାତିଲ୍ ହୋଇଛି।"
+        ),
     },
     "4": {
-        "en": "For your complaint ticket number 4 (CMP 0004) for customer saswat, the current status is Discussion. Active investigation is ongoing with Epsumlabs.",
-        "hi": "आपके शिकायत टिकट नंबर 4 (सीएमपी 0004) की वर्तमान स्थिति अभी चर्चा में (Discussion) है। हमारी टीम जांच कर रही है।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୪ (ସିଏମ୍‌ପି ୦୦୦୪) ର ସ୍ଥିତି ଚର୍ଚ୍ଚାରେ ଅଛି ଏବଂ ଯାଞ୍ଚ ଚାଲିଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 4 (reference CMP 0004): "
+            "It was booked for customer Saswat on 30 September 2026 from Bhadrak, Odisha under Epsumlabs. "
+            "The current status is Discussion with ongoing investigation."
+        ),
+        "hi": (
+            "शिकायत टिकट नंबर 4 (सीएमपी 0004) का विवरण: "
+            "यह 30 सितंबर 2026 को भद्रक से शाश्वत के लिए एप्समलैब्स में दर्ज हुआ था। स्थिति अभी चर्चा में (Discussion) है।"
+        ),
+        "or": (
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୪ (ସିଏମ୍‌ପି ୦୦୦୪) ଭଦ୍ରକରୁ ଶାଶ୍ୱତଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। ଏହା ବର୍ତ୍ତମାନ ଚର୍ଚ୍ଚାରେ ଅଛି।"
+        ),
     },
     "5": {
-        "en": "For your complaint ticket number 5 (CMP 0005) for customer Swarna, the current status is New. The ticket is pending initial review with Support.",
-        "hi": "आपके शिकायत टिकट नंबर 5 (सीएमपी 0005) की वर्तमान स्थिति नई (New) है और यह समीक्षा के लिए लंबित है।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୫ (ସିଏମ୍‌ପି ୦୦୦୫) ର ସ୍ଥିତି ନୂଆ ଅଛି ଏବଂ ଯାଞ୍ଚ ଅପେକ୍ଷାରେ ରହିଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 5 (reference CMP 0005): "
+            "It was booked for customer Swagatika Swain on 30 September 2026 from Bhadrak, Odisha for Network Issue under Support. "
+            "The current status is New and awaiting assignment."
+        ),
+        "hi": (
+            "शिकायत टिकट नंबर 5 (सीएमपी 0005) का विवरण: "
+            "यह 30 सितंबर 2026 को भद्रक से स्वातिका स्वाईं के लिए नेटवर्क समस्या हेतु दर्ज हुआ था। स्थिति नई (New) है।"
+        ),
+        "or": (
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୫ (ସିଏମ୍‌ପି ୦୦୦୫) ସ୍ଵାଗତିକା ସ୍ଵାଇଁଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।"
+        ),
     },
     "6": {
-        "en": "For your complaint ticket number 6 (CMP 0006) for customer Swarna, the current status is Solved. Your issue was successfully resolved.",
-        "hi": "आपके शिकायत टिकट नंबर 6 (सीएमपी 0006) का सफलतापूर्वक समाधान हो चुका है।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୬ ର ସଫଳତାପୂର୍ବକ ସମାଧାନ ହୋଇସାରିଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 6 (reference CMP 0006): "
+            "It was booked for customer Sas on 30 September 2026 from Bhadrak, Odisha under Support for Discussion. "
+            "The current status is New."
+        ),
+        "hi": "शिकायत टिकट नंबर 6 (सीएमपी 0006) भद्रक से दर्ज किया गया था। वर्तमान स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୬ (ସିଏମ୍‌ପି ୦୦୦୬) ଭଦ୍ରକରୁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।",
     },
     "7": {
-        "en": "For your complaint ticket number 7 (CMP 0007) for customer saswat, the current status is Discussion. Investigation is in progress with Support.",
-        "hi": "आपके शिकायत टिकट नंबर 7 (सीएमपी 0007) की स्थिति अभी चर्चा में है और जांच चल रही है।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୭ ର ସ୍ଥିତି ଯାଞ୍ଚାଧୀନ ରହିଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 7 (reference CMP 0007): "
+            "It was booked on 30 September 2026 under the Support department. The current status is New."
+        ),
+        "hi": "शिकायत टिकट नंबर 7 (सीएमपी 0007) सपोर्ट विभाग में दर्ज है। वर्तमान स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୭ (ସିଏମ୍‌ପି ୦୦୦୭) ସପୋର୍ଟ ବିଭାଗରେ ନୂଆ ରହିଛି।",
     },
     "8": {
-        "en": "For your complaint ticket number 8 (CMP 0008) for customer Suvarna Sai, the current status is New. It was booked on 17 November and assigned to Customer Support.",
-        "hi": "आपके शिकायत टिकट नंबर 8 (सीएमपी 0008) की वर्तमान स्थिति नई है। यह 17 नवंबर को दर्ज हुआ था और कस्टमर सपोर्ट को सौंपा गया है।",
-        "or": "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୮ (ସିଏମ୍‌ପି ୦୦୦୮) ର ସ୍ଥିତି ନୂଆ ଅଛି। ଏହା ୧୭ ନଭେମ୍ବରରେ ଦାଖଲ ହୋଇ ଗ୍ରାହକ ସେବାକୁ ଦିଆଯାଇଛି।",
+        "en": (
+            "Here are the complete details for complaint ticket number 8 (reference CMP 0008): "
+            "It was booked for customer Suvarna Sai on 17 November 2026 from Bhubaneswar, Odisha under Customer Support. "
+            "The current status is New and under active review."
+        ),
+        "hi": (
+            "शिकायत टिकट नंबर 8 (सीएमपी 0008) का पूरा विवरण: "
+            "यह 17 नवंबर 2026 को भुवनेश्वर से सुवर्णा साई के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है और समीक्षा में है।"
+        ),
+        "or": (
+            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୮ (ସିଏମ୍‌ପି ୦୦୦୮) ର ବିବରଣୀ: "
+            "ଏହା ୧୭ ନଭେମ୍ବର ୨୦୨୬ ରେ ଭୁବନେଶ୍ୱରରୁ ସୁବର୍ଣ୍ଣା ସାଇଙ୍କ ନାମରେ ଦାଖଲ ହୋଇଥିଲା। ବର୍ତ୍ତମାନର ସ୍ଥିତି ନୂଆ ଅଟେ।"
+        ),
     },
     "8976453421": {
-        "en": "For phone number 8976453421 (Shantanu / Swagatika Swain), you have 2 tickets on file: Ticket 1 is Canceled, and Ticket 2 is Solved.",
-        "hi": "मोबाइल नंबर 8976453421 के लिए 2 टिकट दर्ज हैं: टिकट 1 रद्द है, और टिकट 2 का समाधान हो चुका है।",
-        "or": "ମୋବାଇଲ୍ ନମ୍ବର 8976453421 ପାଇଁ ୨ଟି ଟିକେଟ୍ ରହିଛି: ଟିକେଟ୍ ୧ ବାତିଲ୍ ଏବଂ ଟିକେଟ୍ ୨ ସମାଧାନ ହୋଇଛି।",
+        "en": (
+            "For registered phone number 8976453421 (Shantanu and Swagatika Swain), we found 3 complaints on file: "
+            "Ticket 1 from Bhubaneswar is Canceled, Ticket 2 from Bhadrak is Solved, and Ticket 5 is New. "
+            "Which ticket would you like full details on?"
+        ),
+        "hi": (
+            "पंजीकृत मोबाइल नंबर 8976453421 के लिए 3 टिकट दर्ज हैं: "
+            "टिकट 1 (भुवनेश्वर) रद्द है, टिकट 2 (भद्रक) हल हो चुका है, और टिकट 5 नया है। "
+            "आप किस टिकट की पूरी जानकारी चाहते हैं?"
+        ),
+        "or": (
+            "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ 8976453421 ପାଇଁ ୩ଟି ଟିକେଟ୍ ରହିଛି: "
+            "ଟିକେଟ୍ ୧ ବାତିଲ୍, ଟିକେଟ୍ ୨ ସମାଧାନ ହୋଇଛି, ଏବଂ ଟିକେଟ୍ ୫ ନୂଆ ଅଛି।"
+        ),
     },
     "8976453488": {
-        "en": "For phone number 8976453488 (Swarna), you have multiple tickets on file: Ticket 5 is New, Ticket 6 is Solved, and Ticket 7 is in Discussion.",
-        "hi": "मोबाइल नंबर 8976453488 (स्वर्णा) के लिए टिकट दर्ज हैं: टिकट 5 नया है, टिकट 6 हल हो चुका है, और टिकट 7 चर्चा में है।",
-        "or": "ମୋବାଇଲ୍ ନମ୍ବର 8976453488 ପାଇଁ ଟିକେଟ୍ ୫ ନୂଆ ଅଛି, ଟିକେଟ୍ ୬ ସମାଧାନ ହୋଇଛି ଏବଂ ଟିକେଟ୍ ୭ ଚର୍ଚ୍ଚାରେ ଅଛି।",
+        "en": (
+            "For registered phone number 8976453488 (Swarna and Saswat), we found 2 complaints on file: "
+            "Ticket 3 is Canceled, and Ticket 4 is in Discussion under Epsumlabs. "
+            "Which ticket would you like full details on?"
+        ),
+        "hi": (
+            "पंजीकृत मोबाइल नंबर 8976453488 के लिए 2 टिकट दर्ज हैं: "
+            "टिकट 3 रद्द है और टिकट 4 चर्चा में है। आप किस टिकट की जानकारी चाहते हैं?"
+        ),
+        "or": (
+            "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ 8976453488 ପାଇଁ ଟିକେଟ୍ ୩ ବାତିଲ୍ ଏବଂ ଟିକେଟ୍ ୪ ଚର୍ଚ୍ଚାରେ ଅଛି।"
+        ),
     },
     "9937234512": {
-        "en": "For phone number 9937234512 (Suvarna Sai), you have Ticket 8 on file. Its current status is New, booked on 17 November.",
-        "hi": "मोबाइल नंबर 9937234512 (सुवर्णा साई) के लिए टिकट 8 दर्ज है। इसकी वर्तमान स्थिति नई है।",
-        "or": "ମୋବାଇଲ୍ ନମ୍ବର 9937234512 (ସୁବର୍ଣ୍ଣା ସାଇ) ପାଇଁ ଟିକେଟ୍ ୮ ରହିଛି, ଯାହାର ସ୍ଥିତି ନୂଆ ଅଟେ।",
+        "en": (
+            "For registered phone number 9937234512 (Suvarna Sai), you have Ticket 8 booked on 17 November 2026 from Bhubaneswar. "
+            "The current status is New and assigned to Customer Support."
+        ),
+        "hi": (
+            "पंजीकृत मोबाइल नंबर 9937234512 (सुवर्णा साई) के लिए टिकट 8 दर्ज है, जो 17 नवंबर को भुवनेश्वर से दर्ज हुआ था। "
+            "वर्तमान स्थिति नई (New) है।"
+        ),
+        "or": (
+            "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ 9937234512 (ସୁବର୍ଣ୍ଣା ସାଇ) ପାଇଁ ଟିକେଟ୍ ୮ ରହିଛି, ଯାହାର ସ୍ଥିତି ନୂଆ ଅଟେ।"
+        ),
     },
 }
 
@@ -356,24 +456,22 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
         if re.search(rf"(?:complaint|ticket|case|cmp|शिकायत|ଅଭିଯୋଗ)\s*(?:no|number)?\s*{word}\b", lower):
             return digit
 
-    # 5. When awaiting digits, accept bare numbers or spoken digits (e.g. '0 0 0 1', 'zero, zero, zero, 1', '1')
-    if allow_bare_digits:
-        normalized_spoken = lower
-        for word, digit in _SPOKEN_DIGIT_WORDS.items():
-            normalized_spoken = re.sub(rf'\b{word}\b', digit, normalized_spoken)
-        found_digits = re.findall(r'\d', normalized_spoken)
-        if found_digits:
-            digit_seq = ''.join(found_digits)
-            if len(digit_seq) == 10 and digit_seq[0] in '6789':
-                return digit_seq
-            if len(digit_seq) <= 4:
-                return str(int(digit_seq))
-        bare_m = re.search(r"^\D*0*(\d{1,4})\D*$", lower)
-        if bare_m:
-            return str(int(bare_m.group(1)))
-        for word, digit in _SPOKEN_DIGIT_WORDS.items():
-            if lower == word or lower.startswith(word) or lower.endswith(word):
-                return digit
+    # 5. Direct number sequences, padded zeros, or pure digit utterances (e.g. '0001', '0 0 0 1', 'Zero, zero zero one.', '1')
+    normalized_spoken = lower
+    for word, digit in _SPOKEN_DIGIT_WORDS.items():
+        normalized_spoken = re.sub(rf'\b{word}\b', digit, normalized_spoken)
+    found_digits = re.findall(r'\d', normalized_spoken)
+    if found_digits:
+        digit_seq = ''.join(found_digits)
+        if len(digit_seq) == 10 and digit_seq[0] in '6789':
+            return digit_seq
+        non_digit_words = [
+            w for w in re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', normalized_spoken)
+            if w not in ('and', 'or', 'the', 'is', 'no', 'number', 'ticket', 'id', 'dot', 'zero')
+        ]
+        # Padded numbers (e.g. '0001', '0 0 0 1', 'Zero, zero zero one.') or pure digit utterances without extra text
+        if len(digit_seq) <= 4 and (allow_bare_digits or len(digit_seq) >= 2 or len(non_digit_words) == 0):
+            return str(int(digit_seq))
 
     return None
 
@@ -557,14 +655,14 @@ class IVRRAGMiniModel:
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 5c. Dedicated Stateful Complaint ID / Phone Verification & Spoken Status Lookup
+        complaint_id = extract_complaint_identifier(
+            clean_query,
+            allow_bare_digits=awaiting_complaint_id,
+        )
+        if complaint_id:
+            ans = self.lookup_complaint_status(complaint_id, lang=lang)
+            return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
         if inferred_intent == "complaint_status":
-            complaint_id = extract_complaint_identifier(
-                clean_query,
-                allow_bare_digits=awaiting_complaint_id,
-            )
-            if complaint_id:
-                ans = self.lookup_complaint_status(complaint_id, lang=lang)
-                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 

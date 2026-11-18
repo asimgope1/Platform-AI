@@ -1440,6 +1440,25 @@
     }
   },
   {
+    "id": "4e909e23-e7aa-4bf4-860a-0d411710534c",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 10,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"Zero, zero zero one.\"\nProvisional Assistant Reply: \"I can certainly help you with that order, could you please tell me what you would like to know about order number zero zero zero one?\"\nCall UUID: d25c8f94-6f65-48d0-8de5-44834374e052",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "Zero, zero zero one.",
+      "variants": [
+        "Zero, zero zero one."
+      ],
+      "ask_count": 1,
+      "call_uuid": "d25c8f94-6f65-48d0-8de5-44834374e052"
+    }
+  },
+  {
     "id": "6a585b36-035a-40e3-8238-192d5f58af25",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -1795,33 +1814,6 @@
     }
   },
   {
-    "id": "33b70816-fa8e-4926-9a5c-943bf35c22ba",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 32,
-    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-3)",
-    "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "bench-call-3",
-      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
-      "resolved": false
-    }
-  },
-  {
-    "id": "ccb0e895-310a-4443-938b-0ba682e91170",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 32,
-    "content": "Call Interaction Summary [Session bench-call-4]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "bench-call-4",
-      "turn_count": 2
-    }
-  },
-  {
     "id": "d81fa18f-c324-4a87-a05c-601a1883a893",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -1831,6 +1823,20 @@
     "meta": {
       "type": "voice_interaction_turn",
       "call_uuid": "bench-call-4",
+      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
+      "resolved": false
+    }
+  },
+  {
+    "id": "33b70816-fa8e-4926-9a5c-943bf35c22ba",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 32,
+    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-3)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "bench-call-3",
       "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
       "resolved": false
     }
@@ -1850,6 +1856,19 @@
     }
   },
   {
+    "id": "ccb0e895-310a-4443-938b-0ba682e91170",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 32,
+    "content": "Call Interaction Summary [Session bench-call-4]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "bench-call-4",
+      "turn_count": 2
+    }
+  },
+  {
     "id": "9170750e-e431-4234-aef6-ec2bb089bc2a",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -1863,19 +1882,6 @@
     }
   },
   {
-    "id": "9b39d81c-e5b3-47eb-983b-b5c78e7f146c",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 35,
-    "content": "Call Interaction Summary [Session bench-call-2]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "bench-call-2",
-      "turn_count": 2
-    }
-  },
-  {
     "id": "107f59fe-62b8-4da7-aab4-12a94ef1bc14",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -1885,6 +1891,19 @@
     "meta": {
       "type": "call_summary",
       "call_uuid": "bench-call-1",
+      "turn_count": 2
+    }
+  },
+  {
+    "id": "9b39d81c-e5b3-47eb-983b-b5c78e7f146c",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 35,
+    "content": "Call Interaction Summary [Session bench-call-2]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "bench-call-2",
       "turn_count": 2
     }
   },
@@ -2551,19 +2570,6 @@
     }
   },
   {
-    "id": "55c1fdd5-b8cd-4893-95d4-cb0d2dad118a",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 95,
-    "content": "Call Interaction Summary [Session b32f95aa-3fb6-437b-a4ea-13fee4d5f68c]:\nCaller: Debit card.\nAssistant: I understand you have a question about your debit card; could you please tell me what specifically you need assistance with today?\nCaller: Nothing, thank You.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Debit card., Nothing, thank You.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "b32f95aa-3fb6-437b-a4ea-13fee4d5f68c",
-      "turn_count": 4
-    }
-  },
-  {
     "id": "cc0c2c56-f678-4c6c-aa15-0fbcc119a43a",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2582,16 +2588,16 @@
     }
   },
   {
-    "id": "1c379b99-85ef-4f18-9964-c8118c9454f7",
+    "id": "55c1fdd5-b8cd-4893-95d4-cb0d2dad118a",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 96,
-    "content": "Call Interaction Summary [Session 4870b252-70af-4a88-9462-cfe334e9c53e]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you again.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: I'm\nKey Inquiries: Thank you., Thank you again., I'm",
+    "chunk_index": 95,
+    "content": "Call Interaction Summary [Session b32f95aa-3fb6-437b-a4ea-13fee4d5f68c]:\nCaller: Debit card.\nAssistant: I understand you have a question about your debit card; could you please tell me what specifically you need assistance with today?\nCaller: Nothing, thank You.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Debit card., Nothing, thank You.",
     "meta": {
       "type": "call_summary",
-      "call_uuid": "4870b252-70af-4a88-9462-cfe334e9c53e",
-      "turn_count": 5
+      "call_uuid": "b32f95aa-3fb6-437b-a4ea-13fee4d5f68c",
+      "turn_count": 4
     }
   },
   {
@@ -2605,6 +2611,19 @@
       "type": "call_summary",
       "call_uuid": "f72a7ab8-64a1-404d-b8f0-335601f02349",
       "turn_count": 4
+    }
+  },
+  {
+    "id": "1c379b99-85ef-4f18-9964-c8118c9454f7",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 96,
+    "content": "Call Interaction Summary [Session 4870b252-70af-4a88-9462-cfe334e9c53e]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you again.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: I'm\nKey Inquiries: Thank you., Thank you again., I'm",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "4870b252-70af-4a88-9462-cfe334e9c53e",
+      "turn_count": 5
     }
   },
   {
@@ -2626,19 +2645,6 @@
     }
   },
   {
-    "id": "d66a2d6e-16bb-4a50-b851-050f07580b4e",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 97,
-    "content": "Call Interaction Summary [Session c7eb0134-85c1-423e-8e63-17d38e4526ab]:\nCaller: Hello.\nAssistant: Hello! Welcome to customer support. How can I assist you with your request today?\nCaller: Nothing.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Hello., Nothing.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "c7eb0134-85c1-423e-8e63-17d38e4526ab",
-      "turn_count": 4
-    }
-  },
-  {
     "id": "8ce784da-bb2c-4bc5-b4ca-5b0d8c3b8c1e",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2654,6 +2660,19 @@
       ],
       "ask_count": 1,
       "resolved": false
+    }
+  },
+  {
+    "id": "d66a2d6e-16bb-4a50-b851-050f07580b4e",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 97,
+    "content": "Call Interaction Summary [Session c7eb0134-85c1-423e-8e63-17d38e4526ab]:\nCaller: Hello.\nAssistant: Hello! Welcome to customer support. How can I assist you with your request today?\nCaller: Nothing.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Hello., Nothing.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "c7eb0134-85c1-423e-8e63-17d38e4526ab",
+      "turn_count": 4
     }
   },
   {
@@ -2683,24 +2702,6 @@
     }
   },
   {
-    "id": "02307ba3-fe8f-44ca-b8b9-80289a43227c",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 99,
-    "content": "Customer Spoken Inquiry: \"Thank you. Thank you, thank\"\nVerified Resolution: \"You're welcome! Have a wonderful day!\"\nSource: Live Telephone Interaction (89de332b-02f0-4653-acdc-b62ec0240e05)",
-    "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
-      "caller_query": "Thank you. Thank you, thank",
-      "variants": [
-        "Thank you. Thank you, thank"
-      ],
-      "ask_count": 1,
-      "resolved": true
-    }
-  },
-  {
     "id": "ce8d0af4-23ec-4e1e-8502-bf1466eda52d",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2719,16 +2720,21 @@
     }
   },
   {
-    "id": "147a767b-2421-41a6-adb2-2f2564c7dfbf",
+    "id": "02307ba3-fe8f-44ca-b8b9-80289a43227c",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 100,
-    "content": "Call Interaction Summary [Session 459ef8fb-ad2f-48fa-ba15-248883b91eee]:\nCaller: Tell me about the Video KYC.\nAssistant: For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nKey Inquiries: Tell me about the Video KYC., Thank you., Thank you.",
+    "chunk_index": 99,
+    "content": "Customer Spoken Inquiry: \"Thank you. Thank you, thank\"\nVerified Resolution: \"You're welcome! Have a wonderful day!\"\nSource: Live Telephone Interaction (89de332b-02f0-4653-acdc-b62ec0240e05)",
     "meta": {
-      "type": "call_summary",
-      "call_uuid": "459ef8fb-ad2f-48fa-ba15-248883b91eee",
-      "turn_count": 6
+      "type": "voice_interaction_turn",
+      "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
+      "caller_query": "Thank you. Thank you, thank",
+      "variants": [
+        "Thank you. Thank you, thank"
+      ],
+      "ask_count": 1,
+      "resolved": true
     }
   },
   {
@@ -2742,6 +2748,19 @@
       "type": "call_summary",
       "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
       "turn_count": 8
+    }
+  },
+  {
+    "id": "147a767b-2421-41a6-adb2-2f2564c7dfbf",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 100,
+    "content": "Call Interaction Summary [Session 459ef8fb-ad2f-48fa-ba15-248883b91eee]:\nCaller: Tell me about the Video KYC.\nAssistant: For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nKey Inquiries: Tell me about the Video KYC., Thank you., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "459ef8fb-ad2f-48fa-ba15-248883b91eee",
+      "turn_count": 6
     }
   },
   {
@@ -2776,6 +2795,50 @@
     }
   },
   {
+    "id": "20b67e54-1c70-4ff9-8fd1-79d1a2d2e1d9",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 102,
+    "content": "Call Interaction Summary [Session 75133c52-b5b8-4600-8150-798b9dd34e7d]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "75133c52-b5b8-4600-8150-798b9dd34e7d",
+      "turn_count": 2
+    }
+  },
+  {
+    "id": "17b48e34-4c12-48cf-8bc1-b2ca578be1d5",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 103,
+    "content": "Call Interaction Summary [Session 3cea41e0-c209-44c1-aebf-33d70e993b4a]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "3cea41e0-c209-44c1-aebf-33d70e993b4a",
+      "turn_count": 2
+    }
+  },
+  {
+    "id": "982dddcc-9847-4291-8a79-b80a79225b61",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 104,
+    "content": "Customer Spoken Inquiry: \"I'm sorry, I'm not going to be able to do that.\"\nVerified Resolution: \"Thank you for rating us 2 out of 5! Have a wonderful day ahead.\"\nSource: Live Telephone Interaction (89d9d753-a494-42ad-8292-b817d9089206)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "89d9d753-a494-42ad-8292-b817d9089206",
+      "caller_query": "I'm sorry, I'm not going to be able to do that.",
+      "variants": [
+        "I'm sorry, I'm not going to be able to do that."
+      ],
+      "ask_count": 1,
+      "resolved": true
+    }
+  },
+  {
     "id": "67fc3b0f-9765-4cc7-b4c2-656ea25d948c",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2786,6 +2849,24 @@
       "type": "call_summary",
       "call_uuid": "1f439588-42b8-425e-a893-90de25ed15be",
       "turn_count": 2
+    }
+  },
+  {
+    "id": "c3c8cc95-e09f-4e04-ad29-3cb5006afb2b",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 105,
+    "content": "Customer Spoken Inquiry: \"What is the status of this complaint?\"\nVerified Resolution: \"Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.\"\nSource: Live Telephone Interaction (d25c8f94-6f65-48d0-8de5-44834374e052)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "d25c8f94-6f65-48d0-8de5-44834374e052",
+      "caller_query": "What is the status of this complaint?",
+      "variants": [
+        "What is the status of this complaint?"
+      ],
+      "ask_count": 1,
+      "resolved": false
     }
   },
   {
