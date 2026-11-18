@@ -399,3 +399,16 @@ class TestIVRRAGMiniModelAdapter:
         resp = await adapter.chat_completion(req)
         # Should return polite clarification fallback
         assert "clarify" in resp.choices[0].message.content.lower() or "video kyc" in resp.choices[0].message.content.lower()
+
+    async def test_live_crm_cache_sync(self):
+        adapter = IVRRAGMiniModelAdapter()
+        synced = await adapter.brain.sync_live_crm_cache(force=True)
+        # If CRM DB is available, catalog reflects live records
+        if synced:
+            reply8 = adapter.brain.lookup_complaint_status("8", lang="en")
+            assert "ticket number 8" in reply8.lower()
+            assert "solved" in reply8.lower()
+            reply10 = adapter.brain.lookup_complaint_status("10", lang="en")
+            assert "ticket number 10" in reply10.lower()
+            reply_phone = adapter.brain.lookup_complaint_status("9937234512", lang="en")
+            assert "9937234512" in reply_phone

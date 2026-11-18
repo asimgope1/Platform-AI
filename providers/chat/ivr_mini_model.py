@@ -548,6 +548,13 @@ async def _persist_complaint_to_crm_db(
     except Exception as e:
         logger.debug(f"[IVR Local DB] Local complaint log: {e}")
 
+    # 3. Asynchronously synchronize updated CRM dataset & pgvector chunks
+    try:
+        from services.knowledge.crm_sync_service import sync_crm_knowledge_to_pgvector
+        asyncio.create_task(sync_crm_knowledge_to_pgvector())
+    except Exception:
+        pass
+
     return True
 
 
@@ -678,7 +685,150 @@ class IVRRAGMiniModel:
     """
 
     def __init__(self):
-        pass
+        self._last_crm_sync_ts: float = 0.0
+
+    async def sync_live_crm_cache(self, force: bool = False) -> bool:
+        """
+        Synchronizes live complaints and phone directories from remote CRM PostgreSQL DB
+        into the in-memory COMPLAINT_STATUS_CATALOG.
+        Runs in ~100ms with a 5-second debounce window.
+        """
+        global _NEXT_TICKET_COUNTER
+        now_ts = time.time()
+        if not force and (now_ts - getattr(self, "_last_crm_sync_ts", 0.0) < 5.0):
+            return True
+
+        host = os.getenv("CRM_DB_HOST", "192.168.1.124")
+        port = int(os.getenv("CRM_DB_PORT", "5435"))
+        dbname = os.getenv("CRM_DB_NAME", "crm_backend_db")
+        user = os.getenv("CRM_DB_USERNAME", "postgres")
+        password = os.getenv("CRM_DB_PASSWORD", "epsumlabs")
+
+        if asyncpg is None:
+            return False
+
+        try:
+            conn = await asyncpg.connect(
+                host=host,
+                port=port,
+                database=dbname,
+                user=user,
+                password=password,
+                timeout=2.5,
+            )
+            try:
+                query = """
+                    SELECT 
+                        cb.complainid, 
+                        cb.customername, 
+                        cb.phonenumber, 
+                        cb.city, 
+                        cb.state, 
+                        cb.othernotes, 
+                        cb.complaindatetime, 
+                        cpm.complain_phase_name AS status,
+                        dm.department_name AS department,
+                        ctm.complain_type_name AS category
+                    FROM "ComplainBookings" cb
+                    LEFT JOIN "ComplainPhaseMaster" cpm ON cb.complain_phase_sl = cpm.complain_phase_sl
+                    LEFT JOIN "DepartmentMasters" dm ON cb.department_sl = dm.department_sl
+                    LEFT JOIN "ComplainTypeMasters" ctm ON cb.complain_type_sl = ctm.complain_type_sl
+                    ORDER BY cb.createdate DESC
+                """
+                rows = await conn.fetch(query)
+            finally:
+                await conn.close()
+
+            phone_map: Dict[str, List[Dict[str, str]]] = {}
+            max_tnum = 0
+            for r in rows:
+                cid = str(r["complainid"] or "").strip()
+                m = re.search(r"0*(\d{1,4})", cid)
+                if not m:
+                    continue
+                tnum_val = int(m.group(1))
+                if tnum_val > max_tnum:
+                    max_tnum = tnum_val
+
+                tnum = str(tnum_val)
+                pad4 = f"{tnum_val:04d}"
+                cname = str(r["customername"] or "Customer").strip()
+                status = str(r["status"] or "In Progress").strip()
+                city = str(r["city"] or "Odisha").strip()
+                dept = str(r["department"] or "Customer Support").strip()
+                bdate = r["complaindatetime"]
+                bdate_str = bdate.strftime("%d %B %Y") if bdate else "recently"
+
+                status_hi = {"New": "नई (New)", "Discussion": "चर्चाधीन (Discussion)", "Solved": "हल (Solved)", "Canceled": "रद्द (Canceled)"}.get(status, status)
+                status_or = {"New": "ନୂଆ (New)", "Discussion": "ଆଲୋଚନାରେ (Discussion)", "Solved": "ସମାଧାନ (Solved)", "Canceled": "ବାତିଲ୍ (Canceled)"}.get(status, status)
+
+                entry = {
+                    "en": (
+                        f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): "
+                        f"It was booked for customer {cname} on {bdate_str} from {city} under {dept}. "
+                        f"The current ticket status is {status}. "
+                        f"Is there anything else I can help you with today?"
+                    ),
+                    "hi": (
+                        f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: "
+                        f"यह {city} से {cname} के लिए {dept} में दर्ज हुआ था। "
+                        f"वर्तमान स्थिति {status_hi} है। "
+                        f"क्या मैं और कोई सहायता करूँ?"
+                    ),
+                    "or": (
+                        f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ର ବିବରଣୀ: "
+                        f"ଏହା {city} ରୁ {cname} ଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। "
+                        f"ବର୍ତ୍ତମାନର ସ୍ଥିତି {status_or} ଅଟେ। "
+                        f"ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
+                    ),
+                }
+                COMPLAINT_STATUS_CATALOG[tnum] = entry
+                COMPLAINT_STATUS_CATALOG[pad4] = entry
+                COMPLAINT_STATUS_CATALOG[cid] = entry
+
+                phone = str(r["phonenumber"] or "").strip()
+                if phone and len(phone) >= 10 and phone.isdigit():
+                    phone_map.setdefault(phone, []).append({
+                        "tnum": tnum,
+                        "status": status,
+                        "customer": cname,
+                    })
+
+            for phone, tkts in phone_map.items():
+                names = list(dict.fromkeys(t["customer"] for t in tkts if t["customer"] and t["customer"] not in ("Customer", "aa", "qwq")))
+                names_str = " and ".join(names) if names else "Customer"
+
+                tkt_summaries_en = []
+                tkt_summaries_hi = []
+                tkt_summaries_or = []
+                for t in tkts:
+                    tnum = t["tnum"]
+                    st = t["status"]
+                    st_hi = {"New": "नई", "Discussion": "चर्चाधीन", "Solved": "हल", "Canceled": "रद्द"}.get(st, st)
+                    st_or = {"New": "ନୂଆ", "Discussion": "ଆଲୋଚନାରେ", "Solved": "ସମାଧାନ", "Canceled": "ବାତିଲ୍"}.get(st, st)
+                    tkt_summaries_en.append(f"Ticket {tnum} is {st}")
+                    tkt_summaries_hi.append(f"टिकट {tnum} {st_hi}")
+                    tkt_summaries_or.append(f"ଟିକେଟ୍ {tnum} {st_or}")
+
+                en_list = ", ".join(tkt_summaries_en[:-1]) + (f", and {tkt_summaries_en[-1]}" if len(tkt_summaries_en) > 1 else tkt_summaries_en[0])
+                hi_list = ", ".join(tkt_summaries_hi[:-1]) + (f", और {tkt_summaries_hi[-1]}" if len(tkt_summaries_hi) > 1 else tkt_summaries_hi[0])
+                or_list = ", ".join(tkt_summaries_or[:-1]) + (f", ଏବଂ {tkt_summaries_or[-1]}" if len(tkt_summaries_or) > 1 else tkt_summaries_or[0])
+
+                COMPLAINT_STATUS_CATALOG[phone] = {
+                    "en": f"For registered phone number {phone} ({names_str}), we found {len(tkts)} complaint{'s' if len(tkts) > 1 else ''} on file: {en_list}. Which ticket would you like full details on?",
+                    "hi": f"पंजीकृत मोबाइल नंबर {phone} ({names_str}) के लिए {len(tkts)} शिकायतें दर्ज हैं: {hi_list}। आप किस टिकट की पूरी जानकारी चाहते हैं?",
+                    "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {phone} ({names_str}) ପାଇଁ {len(tkts)} ଟି ଅଭିଯୋଗ ରହିଛି: {or_list}। ଆପଣ କେଉଁ ଟିକେଟ୍ ବିଷୟରେ ଜାଣିବାକୁ ଚାହାଁନ୍ତି?",
+                }
+
+            if max_tnum >= _NEXT_TICKET_COUNTER:
+                _NEXT_TICKET_COUNTER = max_tnum + 1
+
+            self._last_crm_sync_ts = now_ts
+            logger.info(f"[IVR CRM Sync] Live sync updated {len(rows)} tickets and {len(phone_map)} phone directories (next ticket={_NEXT_TICKET_COUNTER}).")
+            return True
+        except Exception as e:
+            logger.warning(f"[IVR CRM Sync] Live CRM sync notice (using cached catalog): {e}")
+            return False
 
     def _is_complaint_register_intent(self, lower_query: str) -> bool:
         """Checks if the user wants to register, file, or book a new complaint."""

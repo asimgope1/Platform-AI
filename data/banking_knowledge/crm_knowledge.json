@@ -21,7 +21,7 @@
     "category": "crm_complaint_status",
     "topic": "complaint_cmp_0002_26_27",
     "title": "Complaint Status for Ticket CMP/0002/26-27 (Shantanu)",
-    "content": "Service complaint ticket CMP/0002/26-27 for customer Shantanu (phone number 8976453421) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'Solved'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically; asas.",
+    "content": "Service complaint ticket CMP/0002/26-27 for customer Shantanu (phone number 8976453421) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically; asas; Reopened.",
     "language": [
       "en",
       "hi",
@@ -123,7 +123,58 @@
     "category": "crm_complaint_status",
     "topic": "complaint_cmp_0008_26_27",
     "title": "Complaint Status for Ticket CMP/0008/26-27 (Suvarna Sai)",
-    "content": "Service complaint ticket CMP/0008/26-27 for customer Suvarna Sai (phone number 9937234512) in BBSR, Odisha was booked on 17 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "content": "Service complaint ticket CMP/0008/26-27 for customer Suvarna Sai (phone number 9937234512) in BBSR, Odisha was booked on 17 November 2026. The current complaint status is 'Solved'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically; solved.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0009_26_27",
+    "title": "Complaint Status for Ticket CMP/0009/26-27 (Swagatika Swain)",
+    "content": "Service complaint ticket CMP/0009/26-27 for customer Swagatika Swain (phone number 8976453421) in Bhubaneswar, Odisha was booked on 18 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Ticket registered in system.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0010_26_27",
+    "title": "Complaint Status for Ticket CMP/0010/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0010/26-27 for customer Customer (phone number 9937234512) in Odisha, Odisha was booked on 18 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Ticket registered in system.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0011_26_27",
+    "title": "Complaint Status for Ticket CMP/0011/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0011/26-27 for customer Customer (phone number 9937234512) in Odisha, Odisha was booked on 18 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: From last two days, the broadband service is not working properly.",
     "language": [
       "en",
       "hi",
@@ -140,7 +191,7 @@
     "category": "crm_customer_directory",
     "topic": "customer_8976453421",
     "title": "Customer Profile and Account Complaints for Swagatika Swain (8976453421)",
-    "content": "Customer profile for Swagatika Swain: Registered contact phone number is 8976453421, location BBSR, Odisha. Account record has 3 complaint(s) on file: Ticket CMP/0001/26-27 (status: Canceled), Ticket CMP/0002/26-27 (status: Solved), Ticket CMP/0005/26-27 (status: New).",
+    "content": "Customer profile for Swagatika Swain: Registered contact phone number is 8976453421, location BBSR, Odisha. Account record has 4 complaint(s) on file: Ticket CMP/0001/26-27 (status: Canceled), Ticket CMP/0002/26-27 (status: New), Ticket CMP/0005/26-27 (status: New), Ticket CMP/0009/26-27 (status: New).",
     "language": [
       "en",
       "hi",
@@ -174,7 +225,7 @@
     "category": "crm_customer_directory",
     "topic": "customer_9937234512",
     "title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
-    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 1 complaint(s) on file: Ticket CMP/0008/26-27 (status: New).",
+    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 3 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New).",
     "language": [
       "en",
       "hi",

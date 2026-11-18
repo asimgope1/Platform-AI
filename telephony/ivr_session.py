@@ -651,6 +651,8 @@ class IVRCallSession:
 
         ack_text = get_service_ack_prompt(self.selected_language, self.selected_service or "customer_support")
         self._history.append(ChatMessage(role="assistant", content=ack_text))
+        if self.selected_service and "complaint" in self.selected_service.lower():
+            asyncio.create_task(ivr_mini_brain.sync_live_crm_cache(force=True))
         try:
             await self._play_prompt(ack_text)
             logger.info(f"[IVR] 🚀 Handoff to AI_CONVERSATION complete. Listening for caller voice...")
@@ -1293,6 +1295,8 @@ class IVRCallSession:
                     previous_attempts=self.conv_state.failed_attempts,
                 )
             else:
+                if self.selected_service and "complaint" in self.selected_service.lower():
+                    await ivr_mini_brain.sync_live_crm_cache()
                 reply_text = ivr_mini_brain.synthesize(
                     user_query=effective_user,
                     messages=self._history,
