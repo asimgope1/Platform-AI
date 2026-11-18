@@ -712,13 +712,24 @@ class IVRRAGMiniModel:
             if l.startswith("[") and l.endswith("]"):
                 continue
 
-            # Filter generic filler phrases that should never be spoken as factual answers
+            # Filter generic filler and clarification phrases that should never be spoken as factual answers
             lower_l = l.lower()
             if any(filler in lower_l for filler in [
                 "what can i do for you", "how can i help you", "ready to help",
                 "anything else i can help", "anything else i can do", "what did you want to know",
-                "is there anything else", "क्या मैं आपकी और कोई सहायता", "କିଛି ସାହାଯ୍ୟ"
+                "is there anything else", "क्या मैं आपकी और कोई सहायता", "କିଛି ସାହାଯ୍ୟ",
+                "could you please", "could you tell me", "can you tell me", "can you please",
+                "what specific details", "could you clarify", "please clarify",
+                "tell me a bit more", "on a scale of", "how satisfied are you",
+                "look up information on", "certainly look up", "did that completely answer",
+                "would you like me to", "please confirm whether", "confirm whether your issue",
+                "i understand you have a question about", "i see you're looking to",
+                "tell me what specific", "confirm your full name",
             ]):
+                continue
+
+            # Skip lines that end with '?' - bot questions / surveys are not factual answers
+            if l.endswith("?"):
                 continue
 
             # Echo Guard: reject lines that repeat the caller's spoken words (>60% word overlap)
@@ -745,15 +756,52 @@ class IVRRAGMiniModel:
         if not clean_lines:
             return None
 
-        # Prioritize line matching query terms
+        # Dedicated synthesis for Video KYC document inquiries:
+        # If multiple document requirements (PAN + Aadhaar) are in the RAG chunks, synthesize a complete spoken summary.
+        if any(w in lower_query for w in ("kyc", "kyicy", "video", "document", "documents", "dastavez", "दस्तावेज", "कागजात", "ପ୍ୟାନ୍")):
+            pan_line = next((c for c in clean_lines if "pan" in c.lower() or "पैन" in c or "ପ୍ୟାନ୍" in c), None)
+            aadhaar_line = next((c for c in clean_lines if "aadhaar" in c.lower() or "aadhar" in c.lower() or "आधार" in c or "ଆଧାର" in c), None)
+            if pan_line and aadhaar_line:
+                if lang == "hi":
+                    return "वीडियो केवाईसी के लिए कृपया अपना मूल भौतिक पैन कार्ड और आधार लिंक मोबाइल तैयार रखें।"
+                elif lang == "or":
+                    return "ଭିଡିଓ କେୱାଇସି ପାଇଁ ଆପଣଙ୍କର ମୂଳ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ମୋବାଇଲ୍ ପ୍ରସ୍ତୁତ ରଖନ୍ତୁ।"
+                else:
+                    return "For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification."
+            elif pan_line:
+                return pan_line.strip()
+
+        # Prioritize line matching query terms with factual domain relevance scoring
         best_line = None
         query_words = set(w for w in re.findall(r'\w+', lower_query) if len(w) > 3)
         if query_words:
+            scored_candidates: List[Tuple[float, str]] = []
             for candidate in clean_lines:
                 cand_lower = candidate.lower()
-                if any(w in cand_lower for w in query_words):
-                    best_line = candidate
-                    break
+                cand_words = set(re.findall(r'\w+', cand_lower))
+                overlap = len(query_words.intersection(cand_words))
+                score = float(overlap)
+
+                # Domain entity boost for concrete factual information
+                if any(w in cand_lower for w in ("pan", "aadhaar", "aadhar", "physical pan", "original physical")):
+                    score += 4.0
+                if any(w in cand_lower for w in ("refund", "banking hours", "working days", "dispatch", "credited back")):
+                    score += 3.0
+                if any(w in cand_lower for w in ("atm pin", "forgot mpin", "otp", "debit card")):
+                    score += 3.0
+                if any(w in cand_lower for w in ("frozen", "block", "replacement")):
+                    score += 3.0
+
+                # Boost complete declarative responses
+                if any(cand_lower.startswith(p) for p in ("for video kyc", "video kyc", "failed upi", "your card", "you can", "हमारी शाखा", "ଭିଡିଓ କେୱାଇସି")):
+                    score += 2.0
+
+                if score > 0:
+                    scored_candidates.append((score, candidate))
+
+            if scored_candidates:
+                scored_candidates.sort(key=lambda x: x[0], reverse=True)
+                best_line = scored_candidates[0][1]
 
         if not best_line:
             # If no candidate line matches query keywords, this chunk does not answer the question

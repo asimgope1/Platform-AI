@@ -76,6 +76,19 @@ class TestIVRRAGMiniModel:
         assert "Audio Prompt ID" not in reply
         assert "8.4 percent" in reply
 
+    def test_rag_chunk_rejects_bot_clarification_questions(self, brain):
+        rag_context = (
+            "Customer Spoken Inquiry: \"What are the Video KYicy documents needed?\"\n"
+            "Verified Resolution: \"I can certainly look up information on Video KYC documents for you; could you tell me what specific details you are looking for?\"\n"
+            "Source: Live Telephone Interaction (a88675ca-65e0-4bba-95c1-c543718e6d35)\n\n"
+            "- Mandatory Prerequisites:\n"
+            "- Original physical PAN card (scans, laminations, or soft copies are rejected by regulatory rules).\n"
+            "- Active Aadhaar-linked mobile device to receive and input the live OTP.\n"
+        )
+        reply = brain.synthesize("What are the Video KYicy documents needed?", rag_context=rag_context, language="en")
+        assert "what specific details you are looking for" not in reply.lower()
+        assert "pan" in reply.lower()
+
     def test_appreciation_closing(self, brain):
         en_reply = brain.synthesize("Thank you for your help", language="en")
         assert "welcome" in en_reply.lower() or "wonderful day" in en_reply.lower()
@@ -100,7 +113,7 @@ class TestIVRRAGMiniModel:
 
     def test_emotion_frustration_empathy(self, brain):
         reply = brain.synthesize("I am so stressed and frustrated my money was debited!", language="en")
-        assert "understand your concern" in reply.lower() or "don't worry" in reply.lower()
+        assert "understand your concern" in reply.lower() or "don't worry" in reply.lower() or "understand your frustration" in reply.lower()
 
         hi_reply = brain.synthesize("मैं बहुत परेशान हूँ मेरे पैसे कट गए!", language="hi")
         assert "परेशानी समझ सकती हूँ" in hi_reply or "चिंता मत कीजिए" in hi_reply

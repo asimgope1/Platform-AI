@@ -67,6 +67,19 @@ APOLOGY_PATTERNS = [
     "माफ़ कीजिये",
     "आपकी आवाज़",
     "could not clearly hear",
+    "look up information on",
+    "certainly look up",
+    "what specific details",
+    "could you please clarify",
+    "please clarify",
+    "tell me a bit more",
+    "on a scale of",
+    "how satisfied are you",
+    "confirm whether your issue",
+    "repeat your question slowly",
+    "what's your monthly payment question",
+    "i understand you have a question about",
+    "i see you're looking to",
 ]
 
 
@@ -83,9 +96,20 @@ def is_informative_interaction(user_text: str, reply_text: str) -> bool:
     if TRIVIAL_GREETINGS.match(u) or CLOSING_PATTERNS.match(u):
         return False
 
-    # Skip bot apology fallbacks
+    # Skip bot apology fallbacks & clarification questions
     lower_r = r.lower()
     if any(pat in lower_r for pat in APOLOGY_PATTERNS):
+        return False
+
+    # A bot clarification prompt or satisfaction inquiry is NOT factual domain knowledge
+    if r.endswith("?") or any(phrase in lower_r for phrase in [
+        "could you tell me", "can you tell me", "what specific details",
+        "could you please", "can you please", "would you like me to",
+        "on a scale of", "how satisfied", "confirm whether your issue",
+        "could you clarify", "please clarify", "tell me what specific",
+        "tell me a bit more", "please confirm", "repeat your question",
+        "certainly look up", "look up information on", "clarify your",
+    ]):
         return False
 
     return True

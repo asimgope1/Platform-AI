@@ -204,3 +204,4 @@ To replace the CRM database or point to a new database server:
    - Check Asterisk service on 192.168.1.133: `asterisk -rx "core show channels"`
    - Ensure port 9093 is open for WebSocket streaming.
 =======================================================================================
+
