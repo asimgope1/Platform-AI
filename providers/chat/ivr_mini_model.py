@@ -478,7 +478,7 @@ async def _persist_complaint_to_crm_db(
     port = int(os.getenv("CRM_DB_PORT", "5435"))
     dbname = os.getenv("CRM_DB_NAME", "crm_backend_db")
     user = os.getenv("CRM_DB_USERNAME", "postgres")
-    password = os.getenv("CRM_DB_PASSWORD")
+    password = os.getenv("CRM_DB_PASSWORD", "epsumlabs")
 
     phone_val = str(caller_phone or "9937234512")
     cust_val = str(customer_name or "Customer")
@@ -493,7 +493,7 @@ async def _persist_complaint_to_crm_db(
                 database=dbname,
                 user=user,
                 password=password,
-                timeout=2.0,
+                timeout=3.0,
             )
             try:
                 await conn.execute(
@@ -518,8 +518,8 @@ async def _persist_complaint_to_crm_db(
                 await conn.execute(
                     """
                     INSERT INTO "ComplainFollowUp" (
-                        follow_up_sl, complainsl, description, follow_up_date, createdby, createdate
-                    ) VALUES ($1, $2, $3, $4, $5, $6)
+                        follow_up_sl, complainsl, description, follow_up_date, created_by, created_date, complain_phase_sl
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
                     """,
                     uuid.uuid4(),
                     complaint_sl,
@@ -527,6 +527,7 @@ async def _persist_complaint_to_crm_db(
                     now,
                     uuid.UUID("a778db92-1d4f-4778-a698-05830387b0ed"),
                     now,
+                    uuid.UUID("c84516c3-1592-4d0e-bc0e-7f50b2758f97"),
                 )
                 logger.info(f"[IVR CRM DB] Successfully inserted {ticket_id} into ComplainBookings & FollowUp.")
             finally:
@@ -742,6 +743,25 @@ class IVRRAGMiniModel:
                 )
         return False
 
+    def _was_asked_anything_else(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the assistant asked if there is anything else they can help with."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(
+                    marker in c
+                    for marker in (
+                        "anything else i can help you with",
+                        "need help with another service",
+                        "और कोई सहायता करूँ",
+                        "किसी अन्य सहायता",
+                        "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର",
+                    )
+                )
+        return False
+
     def _was_asked_for_complaint_description(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for a problem or issue description."""
         if not messages:
@@ -953,6 +973,18 @@ class IVRRAGMiniModel:
             "मौसम", "राजधानी", "क्रिकेट", "जोक", "ଭାରତ", "ପାଣିପାଗ"
         ]):
             return AUTONOMOUS_KNOWLEDGE["unrelated_general"][lang]
+
+        # 4g. Check if caller answered an affirmative 'yeah' / 'yes' to 'Is there anything else I can help you with today?'
+        clean_words = re.sub(r'[^a-zA-Z\u0900-\u097f\u0b00-\u0b7f\s]', '', lower_query).strip()
+        if self._was_asked_anything_else(messages) and any(clean_words == w or clean_words.startswith(w + " ") for w in [
+            "yeah", "yes", "sure", "okay", "yep", "haan", "ha", "ji", "हाँ", "हाँजी", "ହଁ", "ହଁ ଆଜ୍ଞା"
+        ]):
+            follow_up = {
+                "en": "Certainly! Please let me know what else I can help you with today.",
+                "hi": "जी बिल्कुल! बताइए, मैं आपकी और क्या सहायता कर सकती हूँ?",
+                "or": "ନିଶ୍ଚୟ! କୁହନ୍ତୁ, ମୁଁ ଆପଣଙ୍କୁ ଆଉ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?",
+            }
+            return self.apply_sentiment_tone(follow_up.get(lang, follow_up["en"]), intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 5. Complaint Services Dialogue Flow (Status & Registration)
         is_complaint_context = bool(service_category and "complaint" in service_category.lower())

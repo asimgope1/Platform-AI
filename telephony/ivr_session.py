@@ -1300,6 +1300,8 @@ class IVRCallSession:
                     language=self.selected_language,
                     service_category=self.selected_service,
                     intelligence_context=plan.intelligence_context,
+                    caller_phone=self.caller_number,
+                    call_uuid=self.call_uuid,
                 )
 
         await self._finalize_and_speak(effective_user, reply_text)
@@ -1326,6 +1328,8 @@ class IVRCallSession:
                 messages=self._history,
                 language="hi",
                 service_category=self.selected_service,
+                caller_phone=self.caller_number,
+                call_uuid=self.call_uuid,
             )
 
         if not reply_text or "mock response" in reply_text.lower():
