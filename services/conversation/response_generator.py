@@ -59,13 +59,15 @@ def _extract_tool_names(tools: Optional[List[Dict[str, Any]]]) -> List[str]:
 def _needs_live_action_fallback(user_message: str, service_category: Optional[str]) -> bool:
     lower = (user_message or "").lower()
     # Explicit registration/booking actions need the backend live tool loop
-    if any(k in lower for k in ("register a complaint", "file a complaint", "book a complaint", "दर्ज करें", "दर्ज करनी", "नया शिकायत")):
+    if any(k in lower for k in ("register a complaint", "file a complaint", "book a complaint", "दर्ज करें", "दर्ज करनी", "नया शिकायत", "new complaint", "register complaint")):
         return True
-    # Status checks for complaints, orders, or tickets can be synthesized instantly via RAG
-    if any(k in lower for k in ("status", "check", "what is", "where is", "track", "tracking", "cmp", "ticket", "स्थिति")):
+    # Digits, complaint ticket numbers, CMP codes, phone lookups can be synthesized instantly without slow LLM tool loops
+    from providers.chat.ivr_mini_model import extract_complaint_identifier, extract_order_last4_digits
+    if extract_complaint_identifier(user_message, allow_bare_digits=True) or extract_order_last4_digits(user_message, allow_bare_digits=True):
         return False
-    if service_category == "complaint":
-        return True
+    # Status checks for complaints, orders, or tickets can be synthesized instantly via RAG
+    if any(k in lower for k in ("status", "check", "what is", "where is", "track", "tracking", "cmp", "ticket", "case", "phone", "mobile", "number", "स्थिति", "zero", "one", "two", "three")):
+        return False
     return any(
         k in lower
         for k in (
@@ -127,15 +129,11 @@ class RAGFirstResponseGenerator:
         if tool_output:
             rag_context_str = f"{rag_context_str}\n\nVerified Backend Tool Result:\n{tool_output}".strip()
 
-        # If knowledge exists in RAG and the turn is an informational FAQ/policy query (not an action/lookup tool call),
-        # synthesize instantly from RAG with zero latency, without stalling on slow LLMs.
+        # If knowledge exists in RAG or can be answered autonomously by the mini-model (complaint IDs, orders, banking FAQs),
+        # synthesize instantly with zero latency, without stalling on slow CPU LLMs.
         rag_first_enabled = os.getenv("IVR_RAG_FIRST_INSTANT", "true").lower() in ("1", "true", "yes")
         action_intent = _needs_live_action_fallback(user_message, service_category)
-        if rag_first_enabled and retrieved.chunk_texts and not action_intent and not tool_output:
-            logger.info(
-                f"[IVR] ⚡ Instant RAG Synthesis ({len(retrieved.chunk_texts)} chunks, tier={retrieved.evaluation.tier.value}) "
-                f"for query: '{user_message[:60]}'"
-            )
+        if rag_first_enabled and not action_intent and not tool_output:
             rag_reply = ivr_mini_brain.synthesize(
                 user_query=user_message,
                 messages=conversation_history,
@@ -144,7 +142,14 @@ class RAGFirstResponseGenerator:
                 service_category=service_category,
                 intelligence_context=intelligence_context,
             )
-            if rag_reply:
+            from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE
+            generic_fallback = AUTONOMOUS_KNOWLEDGE["fallback"].get(language, AUTONOMOUS_KNOWLEDGE["fallback"]["en"])
+            # Synthesize instantly if mini-brain answered with knowledge/catalog/chunk or if no tools to call
+            if rag_reply and (rag_reply != generic_fallback or retrieved.chunk_texts or not tools):
+                logger.info(
+                    f"[IVR] ⚡ Instant RAG Synthesis ({len(retrieved.chunk_texts)} chunks, tier={retrieved.evaluation.tier.value}) "
+                    f"for query: '{user_message[:60]}'"
+                )
                 formatted_reply = ivr_mini_brain.apply_sentiment_tone(
                     rag_reply,
                     active_emotion,

@@ -208,6 +208,12 @@ class TestIVRRAGMiniModel:
         assert "aadhaar" not in reply.lower()
         assert "physical pan" not in reply.lower()
 
+    def test_complaint_status_first_turn_service_category(self, brain):
+        # Turn 1 right after selecting Menu Option 2 (complaint), without preceding history in messages
+        reply = brain.synthesize("Zero, zero zero one.", service_category="complaint", language="en")
+        assert "ticket number 1" in reply.lower()
+        assert "canceled" in reply.lower()
+
     def test_complaint_status_spaced_digits_recovery(self, brain):
         history = [
             ChatMessage(role="user", content="Check my complaint"),

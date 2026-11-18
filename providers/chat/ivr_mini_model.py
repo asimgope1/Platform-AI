@@ -531,7 +531,8 @@ class IVRRAGMiniModel:
         ):
             inferred_intent = "order_status"
 
-        awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
+        is_complaint_context = bool(service_category and "complaint" in service_category.lower())
+        awaiting_complaint_id = is_complaint_context or self._was_asked_for_complaint_id(messages)
         if awaiting_complaint_id:
             # Check if query contains complaint identifier or bare digits (including telephony mishearings like 'video 1')
             cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
@@ -591,6 +592,8 @@ class IVRRAGMiniModel:
                 return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["loans_emi"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
             elif "account" in cat_lower or "4" in cat_lower:
                 return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["account_balance"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "complaint" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 9. Polite general fallback
         ans = AUTONOMOUS_KNOWLEDGE["fallback"][lang]
