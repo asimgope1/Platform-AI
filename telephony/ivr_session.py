@@ -1096,6 +1096,23 @@ class IVRCallSession:
         effective_user = pkg.transcript.normalized_text or clean_user
         lower_user = effective_user.lower()
 
+        from providers.chat.ivr_mini_model import (
+            AUTONOMOUS_KNOWLEDGE,
+            extract_order_last4_digits,
+            ivr_mini_brain,
+        )
+
+        # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
+        # A. Appreciation / Closing turn (auto-hangup trigger)
+        # Must execute FIRST to respect caller's desire to end the call, preventing
+        # unwanted transfer offers or satisfaction surveys when caller says "Thank you".
+        if ivr_mini_brain._is_closing_intent(lower_user):
+            self.conv_state.awaiting_order_id_digits = False
+            self._order_dtmf_buffer = ""
+            reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
+            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
+            return await self._finalize_and_speak(effective_user, reply_text)
+
         if plan.trigger_transfer_event:
             self.menu_machine.state = IVRState.ESCALATED
             await self._finalize_and_speak(effective_user, plan.text)
@@ -1107,21 +1124,6 @@ class IVRCallSession:
                 self.menu_machine.state = IVRState.FEEDBACK
             await self._finalize_and_speak(effective_user, plan.text)
             return
-
-        from providers.chat.ivr_mini_model import (
-            AUTONOMOUS_KNOWLEDGE,
-            extract_order_last4_digits,
-            ivr_mini_brain,
-        )
-
-        # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
-        # A. Appreciation / Closing turn (auto-hangup trigger)
-        if ivr_mini_brain._is_closing_intent(lower_user):
-            self.conv_state.awaiting_order_id_digits = False
-            self._order_dtmf_buffer = ""
-            reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
-            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
-            return await self._finalize_and_speak(effective_user, reply_text)
 
         # B. Voice clarity / Hearing check
         if any(w in lower_user for w in ["hear me", "loud and clear", "awaaz", "awaz", "sound", "आवाज़", "slow down", "dheere", "धीरे", "ଶୁଣା"]):

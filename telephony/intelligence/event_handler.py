@@ -26,6 +26,10 @@ class IntelligenceEventHandler:
         )
         self._worker_task: Optional[asyncio.Task] = None
 
+    def __del__(self) -> None:
+        if self._worker_task and not self._worker_task.done():
+            self._worker_task.cancel()
+
     def _ensure_worker(self) -> None:
         try:
             loop = asyncio.get_running_loop()
@@ -35,16 +39,19 @@ class IntelligenceEventHandler:
             self._worker_task = loop.create_task(self._worker())
 
     async def _worker(self) -> None:
-        while True:
-            job = await self._queue.get()
-            try:
-                await job()
-            except asyncio.CancelledError:
-                raise
-            except Exception as exc:
-                logger.debug(f"[IntelligenceDB] Non-fatal persistence skip: {exc}")
-            finally:
-                self._queue.task_done()
+        try:
+            while True:
+                job = await self._queue.get()
+                try:
+                    await job()
+                except asyncio.CancelledError:
+                    raise
+                except Exception as exc:
+                    logger.debug(f"[IntelligenceDB] Non-fatal persistence skip: {exc}")
+                finally:
+                    self._queue.task_done()
+        except asyncio.CancelledError:
+            pass
 
     def _enqueue(self, job_factory: Callable[[], Coroutine[Any, Any, None]]) -> None:
         self._ensure_worker()

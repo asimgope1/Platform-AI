@@ -655,6 +655,9 @@ class IVRRAGMiniModel:
         clean = (lower_query or "").strip().lower()
         if any(w in clean for w in ("status", "check", "track", "where is", "existing", "update", "स्थिति", "ଟ୍ରାକ୍")):
             return False
+        tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
+        if tokens.intersection({"register", "lodge", "दर्ज", "पंजीकृत", "पंजीकरण"}):
+            return True
         return any(
             phrase in clean
             for phrase in (
@@ -999,6 +1002,10 @@ class IVRRAGMiniModel:
     _SENTIMENT_ALREADY_EXPRESSIVE_PREFIXES = (
         "i'm sorry", "i apologize", "i understand", "i completely understand", "glad",
         "wonderful", "thank you", "you're most welcome", "you're very welcome",
+        "your complaint has been successfully registered", "आपकी शिकायत सफलतापूर्वक", "ଆପଣଙ୍କ ଅଭିଯୋଗ ସଫଳତାର ସହ",
+        "here are the complete details", "शिकायत टिकट नंबर", "ଅଭିଯୋଗ ଟିକେଟ୍",
+        "for registered phone number", "पंजीकृत मोबाइल", "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍",
+        "certainly! please describe", "जी बिल्कुल! कृपया अपनी समस्या", "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା",
         "माफ़", "मैं आपकी", "मैं समझती", "यह सुनकर", "आपका बहुत", "धन्यवाद",
         "କ୍ଷମା", "ମୁଁ ବୁଝି", "ମୁଁ ଆପଣଙ୍କ", "ଏହା ଜାଣି", "ଧନ୍ୟବାଦ",
     )

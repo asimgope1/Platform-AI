@@ -226,6 +226,11 @@ class TestIVRRAGMiniModel:
         assert "ticket number 1" in reply_commas.lower()
 
     def test_complaint_registration_flow_turn1_prompts_details(self, brain):
+        # Caller speaks single word 'Register.' as instructed by menu prompt
+        bare_reply = brain.synthesize("Register.", service_category="complaint", language="en")
+        assert "describe the issue" in bare_reply.lower() or "problem you are facing" in bare_reply.lower()
+        assert "ticket number" not in bare_reply.lower()
+
         # Caller expresses intent to register a new complaint
         en_reply = brain.synthesize("Yes, I want to register a new complaint.", language="en")
         assert "describe the issue" in en_reply.lower() or "problem you are facing" in en_reply.lower()
