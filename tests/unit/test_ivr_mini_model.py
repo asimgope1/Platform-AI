@@ -225,6 +225,59 @@ class TestIVRRAGMiniModel:
         reply_commas = brain.synthesize("0, 0, 0, 1", messages=history, language="en")
         assert "ticket number 1" in reply_commas.lower()
 
+    def test_complaint_registration_flow_turn1_prompts_details(self, brain):
+        # Caller expresses intent to register a new complaint
+        en_reply = brain.synthesize("Yes, I want to register a new complaint.", language="en")
+        assert "describe the issue" in en_reply.lower() or "problem you are facing" in en_reply.lower()
+
+        hi_reply = brain.synthesize("मुझे एक नई शिकायत दर्ज करनी है", language="hi")
+        assert "समस्या का विवरण" in hi_reply
+
+        or_reply = brain.synthesize("ମୁଁ ଏକ ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହୁଁଛି", language="or")
+        assert "ସମସ୍ୟା ବିଷୟରେ" in or_reply
+
+    def test_complaint_registration_flow_turn2_registers_and_lookups_status(self, brain):
+        history = [
+            ChatMessage(role="user", content="Yes, I want to register a new complaint."),
+            ChatMessage(role="assistant", content="Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away."),
+        ]
+        # Turn 2: Caller describes the issue
+        reply = brain.synthesize(
+            "My broadband internet is down since yesterday.",
+            messages=history,
+            language="en",
+            caller_phone="9937234512",
+        )
+        assert "successfully registered" in reply.lower()
+        assert "ticket number" in reply.lower()
+        assert "cmp" in reply.lower()
+
+        # Extract assigned ticket number from reply or catalog
+        from providers.chat.ivr_mini_model import extract_complaint_identifier, COMPLAINT_STATUS_CATALOG
+        tkt_id = extract_complaint_identifier(reply)
+        assert tkt_id is not None
+        assert tkt_id in COMPLAINT_STATUS_CATALOG
+
+        # Turn 3: Caller asks for status of the newly registered ticket
+        status_reply = brain.synthesize(f"What is the status of ticket {tkt_id}?", language="en")
+        assert f"ticket number {tkt_id}" in status_reply.lower()
+        assert "broadband internet is down" in status_reply.lower()
+
+    def test_complaint_registration_single_turn_embedded_description(self, brain):
+        reply = brain.synthesize(
+            "I want to register a complaint that my broadband internet is not working.",
+            language="en",
+        )
+        assert "successfully registered" in reply.lower()
+        assert "ticket number" in reply.lower()
+
+    def test_response_generator_does_not_stall_on_complaint_registration(self):
+        from services.conversation.response_generator import _needs_live_action_fallback
+        # Must return False so Turn 1 synthesizes instantly in < 2ms without slow Ollama tool stalls
+        assert not _needs_live_action_fallback("Yes, I want to register a new complaint.", "complaint")
+        assert not _needs_live_action_fallback("lets register new complain", "complaint")
+        assert not _needs_live_action_fallback("file a complaint", "complaint")
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

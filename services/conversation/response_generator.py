@@ -58,20 +58,20 @@ def _extract_tool_names(tools: Optional[List[Dict[str, Any]]]) -> List[str]:
 
 def _needs_live_action_fallback(user_message: str, service_category: Optional[str]) -> bool:
     lower = (user_message or "").lower()
-    # Explicit registration/booking actions need the backend live tool loop
-    if any(k in lower for k in ("register a complaint", "file a complaint", "book a complaint", "दर्ज करें", "दर्ज करनी", "नया शिकायत", "new complaint", "register complaint")):
-        return True
     # Digits, complaint ticket numbers, CMP codes, phone lookups can be synthesized instantly without slow LLM tool loops
-    from providers.chat.ivr_mini_model import extract_complaint_identifier, extract_order_last4_digits
+    from providers.chat.ivr_mini_model import extract_complaint_identifier, extract_order_last4_digits, ivr_mini_brain
     if extract_complaint_identifier(user_message, allow_bare_digits=True) or extract_order_last4_digits(user_message, allow_bare_digits=True):
         return False
     # Status checks for complaints, orders, or tickets can be synthesized instantly via RAG
     if any(k in lower for k in ("status", "check", "what is", "where is", "track", "tracking", "cmp", "ticket", "case", "phone", "mobile", "number", "स्थिति", "zero", "one", "two", "three")):
         return False
+    # Complaint registration flows (intent or details) are handled instantly by ivr_mini_brain without slow LLM tool stalls
+    if ivr_mini_brain._is_complaint_register_intent(lower) or any(k in lower for k in ("register a complaint", "file a complaint", "book a complaint", "दर्ज करें", "दर्ज करनी", "नया शिकायत", "new complaint", "register complaint", "register new complain", "शिकायत दर्ज", "ଅଭିଯୋଗ")):
+        return False
     return any(
         k in lower
         for k in (
-            "register", "book", "file", "invoice",
+            "book", "invoice",
         )
     )
 
@@ -141,6 +141,8 @@ class RAGFirstResponseGenerator:
                 language=language,
                 service_category=service_category,
                 intelligence_context=intelligence_context,
+                caller_phone=caller_number,
+                call_uuid=call_uuid,
             )
             from providers.chat.ivr_mini_model import AUTONOMOUS_KNOWLEDGE
             generic_fallback = AUTONOMOUS_KNOWLEDGE["fallback"].get(language, AUTONOMOUS_KNOWLEDGE["fallback"]["en"])
@@ -304,6 +306,8 @@ class RAGFirstResponseGenerator:
                     language=language,
                     service_category=service_category,
                     intelligence_context=intelligence_context,
+                    caller_phone=caller_number,
+                    call_uuid=call_uuid,
                 )
             grounded = bool(tool_output or (not tools and retrieved.evaluation.tier != RetrievalConfidenceTier.NONE))
             logger.info(f"[IVR] 🧠 Technical fallback reply (source={source}): '{reply_text}'")
