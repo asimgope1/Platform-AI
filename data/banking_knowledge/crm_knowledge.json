@@ -1,0 +1,206 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0001_26_27",
+    "title": "Complaint Status for Ticket CMP/0001/26-27 (Swagatika Swain)",
+    "content": "Service complaint ticket CMP/0001/26-27 for customer Swagatika Swain (phone number 8976453421) in BBSR, Odisha was booked on 21 September 2026. The current complaint status is 'Canceled'. Issue category is 'Discussion' assigned to Support. Latest progress notes: Initial follow-up created automatically; dgrd; cancel.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0002_26_27",
+    "title": "Complaint Status for Ticket CMP/0002/26-27 (Shantanu)",
+    "content": "Service complaint ticket CMP/0002/26-27 for customer Shantanu (phone number 8976453421) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'Solved'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically; asas.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0003_26_27",
+    "title": "Complaint Status for Ticket CMP/0003/26-27 (Swarna)",
+    "content": "Service complaint ticket CMP/0003/26-27 for customer Swarna (phone number 8976453488) in Kendrapada, Odisha was booked on 30 September 2026. The current complaint status is 'Canceled'. Issue category is 'Network Issue' assigned to Epsumlabs. Latest progress notes: Initial follow-up created automatically; solved; canceled.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0004_26_27",
+    "title": "Complaint Status for Ticket CMP/0004/26-27 (saswat)",
+    "content": "Service complaint ticket CMP/0004/26-27 for customer saswat (phone number 8976453488) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'Discussion'. Issue category is 'General Service Issue' assigned to Epsumlabs. Latest progress notes: Initial follow-up created automatically; Discussion.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0005_26_27",
+    "title": "Complaint Status for Ticket CMP/0005/26-27 (Swagatika Swain)",
+    "content": "Service complaint ticket CMP/0005/26-27 for customer Swagatika Swain (phone number 8976453421) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'Network Issue' assigned to Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0006_26_27",
+    "title": "Complaint Status for Ticket CMP/0006/26-27 (Sas)",
+    "content": "Service complaint ticket CMP/0006/26-27 for customer Sas (phone number aa) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'Discussion' assigned to Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0007_26_27",
+    "title": "Complaint Status for Ticket CMP/0007/26-27 (aa)",
+    "content": "Service complaint ticket CMP/0007/26-27 for customer aa (phone number qwq) in aa, aa was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'New' assigned to Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0008_26_27",
+    "title": "Complaint Status for Ticket CMP/0008/26-27 (Suvarna Sai)",
+    "content": "Service complaint ticket CMP/0008/26-27 for customer Suvarna Sai (phone number 9937234512) in BBSR, Odisha was booked on 17 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_customer_directory",
+    "topic": "customer_8976453421",
+    "title": "Customer Profile and Account Complaints for Swagatika Swain (8976453421)",
+    "content": "Customer profile for Swagatika Swain: Registered contact phone number is 8976453421, location BBSR, Odisha. Account record has 3 complaint(s) on file: Ticket CMP/0001/26-27 (status: Canceled), Ticket CMP/0002/26-27 (status: Solved), Ticket CMP/0005/26-27 (status: New).",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_customer_directory",
+    "topic": "customer_8976453488",
+    "title": "Customer Profile and Account Complaints for Swarna (8976453488)",
+    "content": "Customer profile for Swarna: Registered contact phone number is 8976453488, location Kendrapada, Odisha. Account record has 2 complaint(s) on file: Ticket CMP/0003/26-27 (status: Canceled), Ticket CMP/0004/26-27 (status: Discussion).",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_customer_directory",
+    "topic": "customer_9937234512",
+    "title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
+    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 1 complaint(s) on file: Ticket CMP/0008/26-27 (status: New).",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_support_policy",
+    "topic": "crm_complaint_phases_and_sla",
+    "title": "CRM Complaint Phases, Department Routing, and SLA Resolution Rules",
+    "content": "Customer Service Complaint Escalation & Department Routing Protocol: Complaints in the CRM progress through four standard phases: 1. New: The complaint has been registered and is pending initial review (escalation SLA: 3 hours). 2. Discussion: Active investigation and customer follow-up in progress (escalation SLA: 1 hour). 3. Solved: The issue has been completely resolved and closed with customer confirmation. 4. Canceled: The ticket has been closed or cancelled per customer request. Specialized routing departments include: Support, Epsumlabs, Default Department, Management. Urgent Network Issues are targeted for resolution within 2 hours. Callers can check the live status of any ticket by providing their Ticket ID (e.g. CMP/0001/26-27) or registered phone number.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  }
+]

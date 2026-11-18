@@ -1,5 +1,74 @@
 [
   {
+    "id": "2b864df6-8747-4085-b66f-a08ba5ecd88d",
+    "document_id": "030a5974-82fa-4708-9ce0-aab247b25fc2",
+    "document_title": "Customer Profile and Account Complaints for Swagatika Swain (8976453421)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_customer_directory] Customer Profile and Account Complaints for Swagatika Swain (8976453421)\nCustomer profile for Swagatika Swain: Registered contact phone number is 8976453421, location BBSR, Odisha. Account record has 3 complaint(s) on file: Ticket CMP/0001/26-27 (status: Canceled), Ticket CMP/0002/26-27 (status: Solved), Ticket CMP/0005/26-27 (status: New).",
+    "meta": {
+      "category": "crm_customer_directory",
+      "topic": "customer_8976453421",
+      "title": "Customer Profile and Account Complaints for Swagatika Swain (8976453421)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "cea3dc0a-c0e5-4bfa-9102-3f446dfb3c66",
+    "document_id": "0b07b40b-9411-4948-91ad-8a57572a7e31",
+    "document_title": "Complaint Status for Ticket CMP/0006/26-27 (Sas)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0006/26-27 (Sas)\nService complaint ticket CMP/0006/26-27 for customer Sas (phone number aa) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'Discussion' assigned to Support. Latest progress notes: Initial follow-up created automatically.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0006_26_27",
+      "title": "Complaint Status for Ticket CMP/0006/26-27 (Sas)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "ee35823b-909e-4eae-9839-d74033585171",
+    "document_id": "1b1b1a77-c2a6-411d-8fee-dbf4c191a874",
+    "document_title": "Complaint Status for Ticket CMP/0003/26-27 (Swarna)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0003/26-27 (Swarna)\nService complaint ticket CMP/0003/26-27 for customer Swarna (phone number 8976453488) in Kendrapada, Odisha was booked on 30 September 2026. The current complaint status is 'Canceled'. Issue category is 'Network Issue' assigned to Epsumlabs. Latest progress notes: Initial follow-up created automatically; solved; canceled.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0003_26_27",
+      "title": "Complaint Status for Ticket CMP/0003/26-27 (Swarna)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "9c67b06a-4ab7-45ca-8e19-48842db8bf64",
     "document_id": "2421730f-f5b5-4898-8938-8938f7c5733d",
     "document_title": "E-Commerce Orders, Live Delivery Tracking, Returns & Cancellations",
@@ -397,6 +466,29 @@
     "meta": null
   },
   {
+    "id": "09c77503-381d-487f-af84-01906cce3a3b",
+    "document_id": "5d390a53-6ad8-40e7-8e9a-3c73f8a28f12",
+    "document_title": "Complaint Status for Ticket CMP/0008/26-27 (Suvarna Sai)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0008/26-27 (Suvarna Sai)\nService complaint ticket CMP/0008/26-27 for customer Suvarna Sai (phone number 9937234512) in BBSR, Odisha was booked on 17 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0008_26_27",
+      "title": "Complaint Status for Ticket CMP/0008/26-27 (Suvarna Sai)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "da838340-0c2a-468b-92f7-4aea4c402d11",
     "document_id": "5d3e75a7-c9a5-4817-9258-165968e85093",
     "document_title": "UPI Transaction Failure and Auto-Reversal Policy",
@@ -506,6 +598,29 @@
     }
   },
   {
+    "id": "4fd826b9-7ed5-4eeb-b940-40ab0e718bbe",
+    "document_id": "6b14c010-b560-467e-a03c-861eb6d65db7",
+    "document_title": "Complaint Status for Ticket CMP/0007/26-27 (aa)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0007/26-27 (aa)\nService complaint ticket CMP/0007/26-27 for customer aa (phone number qwq) in aa, aa was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'New' assigned to Support. Latest progress notes: Initial follow-up created automatically.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0007_26_27",
+      "title": "Complaint Status for Ticket CMP/0007/26-27 (aa)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "ae2373a4-587f-4ba9-b9a6-39765bd12c36",
     "document_id": "6e85a400-b094-4a48-b1a8-36bf4d19efef",
     "document_title": "Internet Banking, Mobile App Login & MPIN Reset Guidelines",
@@ -567,6 +682,29 @@
     "chunk_index": 3,
     "content": "12-digit UTR (Unique Transaction Reference) number from your bank statement or UPI application.\n- In support chat, message 'REFUND <12-digit UTR>' or enter it on the IVR keypad after selecting option 2.\n- If funds are not credited after 48 banking hours, an automated dispute ticket is created and routed directly to the bank nodal officer.\"",
     "meta": null
+  },
+  {
+    "id": "ae8dc36c-bde3-4fd5-9df3-c5e4f330ea86",
+    "document_id": "77d510f7-cce3-4cf0-92da-e168872fca73",
+    "document_title": "CRM Complaint Phases, Department Routing, and SLA Resolution Rules",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_support_policy] CRM Complaint Phases, Department Routing, and SLA Resolution Rules\nCustomer Service Complaint Escalation & Department Routing Protocol: Complaints in the CRM progress through four standard phases: 1. New: The complaint has been registered and is pending initial review (escalation SLA: 3 hours). 2. Discussion: Active investigation and customer follow-up in progress (escalation SLA: 1 hour). 3. Solved: The issue has been completely resolved and closed with customer confirmation. 4. Canceled: The ticket has been closed or cancelled per customer request. Specialized routing departments include: Support, Epsumlabs, Default Department, Management. Urgent Network Issues are targeted for resolution within 2 hours. Callers can check the live status of any ticket by providing their Ticket ID (e.g. CMP/0001/26-27) or registered phone number.",
+    "meta": {
+      "category": "crm_support_policy",
+      "topic": "crm_complaint_phases_and_sla",
+      "title": "CRM Complaint Phases, Department Routing, and SLA Resolution Rules",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
   },
   {
     "id": "f4776918-dacf-4cb2-9333-3accc9680c19",
@@ -674,6 +812,29 @@
     "meta": null
   },
   {
+    "id": "ad2d979e-62fb-4d1d-b385-d3b4c90cc191",
+    "document_id": "832115b0-ea85-4113-8b76-af6f7b480556",
+    "document_title": "Customer Profile and Account Complaints for Swarna (8976453488)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_customer_directory] Customer Profile and Account Complaints for Swarna (8976453488)\nCustomer profile for Swarna: Registered contact phone number is 8976453488, location Kendrapada, Odisha. Account record has 2 complaint(s) on file: Ticket CMP/0003/26-27 (status: Canceled), Ticket CMP/0004/26-27 (status: Discussion).",
+    "meta": {
+      "category": "crm_customer_directory",
+      "topic": "customer_8976453488",
+      "title": "Customer Profile and Account Complaints for Swarna (8976453488)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "252ea501-f80b-4c30-a835-9f27fa6c2508",
     "document_id": "85306cc6-0564-44e6-a7c8-aed85a00fdf2",
     "document_title": "UPI Payment Failures, NPCI Auto-Refund SLA & UTR Tracking",
@@ -770,6 +931,52 @@
       "source_version": "1.0",
       "verified": true,
       "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "9f7caeaf-2241-4f0a-839d-bcebe5c60b98",
+    "document_id": "a4da0677-5823-41c5-81ba-f97bbe6adf8a",
+    "document_title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_customer_directory] Customer Profile and Account Complaints for Suvarna Sai (9937234512)\nCustomer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 1 complaint(s) on file: Ticket CMP/0008/26-27 (status: New).",
+    "meta": {
+      "category": "crm_customer_directory",
+      "topic": "customer_9937234512",
+      "title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "f7232128-4e95-4b4b-9cb6-603747e2785f",
+    "document_id": "a5028250-bac7-42e4-a3a5-5c30d3486b59",
+    "document_title": "Complaint Status for Ticket CMP/0002/26-27 (Shantanu)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0002/26-27 (Shantanu)\nService complaint ticket CMP/0002/26-27 for customer Shantanu (phone number 8976453421) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'Solved'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically; asas.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0002_26_27",
+      "title": "Complaint Status for Ticket CMP/0002/26-27 (Shantanu)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
       "ask_count": 1
     }
   },
@@ -873,6 +1080,29 @@
     "meta": null
   },
   {
+    "id": "c57dc30d-2a27-4156-a308-23309b10435f",
+    "document_id": "b5cada9c-010e-4790-bdb0-1708f7971bd5",
+    "document_title": "Complaint Status for Ticket CMP/0001/26-27 (Swagatika Swain)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0001/26-27 (Swagatika Swain)\nService complaint ticket CMP/0001/26-27 for customer Swagatika Swain (phone number 8976453421) in BBSR, Odisha was booked on 21 September 2026. The current complaint status is 'Canceled'. Issue category is 'Discussion' assigned to Support. Latest progress notes: Initial follow-up created automatically; dgrd; cancel.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0001_26_27",
+      "title": "Complaint Status for Ticket CMP/0001/26-27 (Swagatika Swain)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "e57e4a4c-b273-49ef-b8b7-b7409e941f51",
     "document_id": "b65c1e21-97b3-43c2-8059-a0d24a7d98a2",
     "document_title": "ବ୍ୟାଙ୍କ ଖାତା ବାଲାନ୍ସ ଏବଂ ମିନି ଷ୍ଟେଟମେଣ୍ଟ ଯାଞ୍ଚ (Odia Balance Enquiry)",
@@ -930,6 +1160,52 @@
     "chunk_index": 2,
     "content": "racking: Type 'TRACK <Order_ID>' in chat or press 3 on the IVR. Real-time courier partner tracking and OTP details are sent via SMS.\n- Free Cancellation: You can cancel orders free of charge at any moment prior to dispatch.\n- Refund SLAs:\n  - UPI & Digital Wallets: Within 24 hours.\n  - Credit/Debit Cards & NetBanking: 5 to 7 business days depending on the card-issuing bank.\n- Returns: 7-day hassle-free return window for damaged, defective, or incorrect items with zero pickup fees.\"",
     "meta": null
+  },
+  {
+    "id": "2bbbaaed-b862-4bf3-b9b8-6d3e36b67183",
+    "document_id": "d197d2af-cb7e-41a1-b0b2-7093ae57e7be",
+    "document_title": "Complaint Status for Ticket CMP/0004/26-27 (saswat)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0004/26-27 (saswat)\nService complaint ticket CMP/0004/26-27 for customer saswat (phone number 8976453488) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'Discussion'. Issue category is 'General Service Issue' assigned to Epsumlabs. Latest progress notes: Initial follow-up created automatically; Discussion.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0004_26_27",
+      "title": "Complaint Status for Ticket CMP/0004/26-27 (saswat)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "929522c0-e4ef-4151-abef-f741e540d1e0",
+    "document_id": "d6910bde-5348-4840-94c6-47cd3166880f",
+    "document_title": "Complaint Status for Ticket CMP/0005/26-27 (Swagatika Swain)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0005/26-27 (Swagatika Swain)\nService complaint ticket CMP/0005/26-27 for customer Swagatika Swain (phone number 8976453421) in Bhadrak, Odisha was booked on 30 September 2026. The current complaint status is 'New'. Issue category is 'Network Issue' assigned to Support. Latest progress notes: Initial follow-up created automatically.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0005_26_27",
+      "title": "Complaint Status for Ticket CMP/0005/26-27 (Swagatika Swain)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
   },
   {
     "id": "9a471643-406e-4826-b10b-9873f2120ede",
@@ -1104,6 +1380,63 @@
       ],
       "ask_count": 1,
       "call_uuid": "7da0867d-4de7-47c3-a2e0-9e336a2013de"
+    }
+  },
+  {
+    "id": "9396b4ae-7774-482e-bc8c-5abe68afba14",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 7,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"You have all the fans on.\"\nProvisional Assistant Reply: \"I apologize, I'm not sure I understand what you mean by \"You have all the fans on.\" Can you please rephrase your question about the Video KYC documents?\"\nCall UUID: bf89c62f-116b-452d-b554-65e24cae64f5",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "You have all the fans on.",
+      "variants": [
+        "You have all the fans on."
+      ],
+      "ask_count": 1,
+      "call_uuid": "bf89c62f-116b-452d-b554-65e24cae64f5"
+    }
+  },
+  {
+    "id": "ecb818ae-2c14-4930-99a0-fdfb0bf171bc",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 8,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"What are the videos you want to document?\"\nProvisional Assistant Reply: \"I'm sorry, I'm here to help with your account, orders, or any banking concerns you might have. Can I assist you with something specific today?\"\nCall UUID: 9f9740cd-47cc-4576-9575-921deeebf035",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "What are the videos you want to document?",
+      "variants": [
+        "What are the videos you want to document?"
+      ],
+      "ask_count": 1,
+      "call_uuid": "9f9740cd-47cc-4576-9575-921deeebf035"
+    }
+  },
+  {
+    "id": "9e009a16-7b28-4a1a-943b-067b03fb0318",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 9,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"No, thank\"\nProvisional Assistant Reply: \"Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\"\nCall UUID: 9f9740cd-47cc-4576-9575-921deeebf035",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "No, thank",
+      "variants": [
+        "No, thank"
+      ],
+      "ask_count": 1,
+      "call_uuid": "9f9740cd-47cc-4576-9575-921deeebf035"
     }
   },
   {
@@ -1448,42 +1781,15 @@
     }
   },
   {
-    "id": "ccb0e895-310a-4443-938b-0ba682e91170",
+    "id": "f94a4bab-d156-44f4-9d07-5638356333ad",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
     "chunk_index": 32,
-    "content": "Call Interaction Summary [Session bench-call-4]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "bench-call-4",
-      "turn_count": 2
-    }
-  },
-  {
-    "id": "d81fa18f-c324-4a87-a05c-601a1883a893",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 32,
-    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-4)",
+    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-2)",
     "meta": {
       "type": "voice_interaction_turn",
-      "call_uuid": "bench-call-4",
-      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
-      "resolved": false
-    }
-  },
-  {
-    "id": "33b70816-fa8e-4926-9a5c-943bf35c22ba",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 32,
-    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-3)",
-    "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "bench-call-3",
+      "call_uuid": "bench-call-2",
       "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
       "resolved": false
     }
@@ -1503,17 +1809,44 @@
     }
   },
   {
-    "id": "f94a4bab-d156-44f4-9d07-5638356333ad",
+    "id": "33b70816-fa8e-4926-9a5c-943bf35c22ba",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
     "chunk_index": 32,
-    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-2)",
+    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-3)",
     "meta": {
       "type": "voice_interaction_turn",
-      "call_uuid": "bench-call-2",
+      "call_uuid": "bench-call-3",
       "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
       "resolved": false
+    }
+  },
+  {
+    "id": "d81fa18f-c324-4a87-a05c-601a1883a893",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 32,
+    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-4)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "bench-call-4",
+      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
+      "resolved": false
+    }
+  },
+  {
+    "id": "ccb0e895-310a-4443-938b-0ba682e91170",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 32,
+    "content": "Call Interaction Summary [Session bench-call-4]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "bench-call-4",
+      "turn_count": 2
     }
   },
   {
@@ -2231,6 +2564,50 @@
     }
   },
   {
+    "id": "cc0c2c56-f678-4c6c-aa15-0fbcc119a43a",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 95,
+    "content": "Customer Spoken Inquiry: \"Thank you again.\"\nVerified Resolution: \"I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\"\nSource: Live Telephone Interaction (4870b252-70af-4a88-9462-cfe334e9c53e)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "4870b252-70af-4a88-9462-cfe334e9c53e",
+      "caller_query": "Thank you again.",
+      "variants": [
+        "Thank you again."
+      ],
+      "ask_count": 1,
+      "resolved": true
+    }
+  },
+  {
+    "id": "1c379b99-85ef-4f18-9964-c8118c9454f7",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 96,
+    "content": "Call Interaction Summary [Session 4870b252-70af-4a88-9462-cfe334e9c53e]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you again.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: I'm\nKey Inquiries: Thank you., Thank you again., I'm",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "4870b252-70af-4a88-9462-cfe334e9c53e",
+      "turn_count": 5
+    }
+  },
+  {
+    "id": "57c88dac-1a9b-4c88-92dd-0ee011db1131",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 96,
+    "content": "Call Interaction Summary [Session f72a7ab8-64a1-404d-b8f0-335601f02349]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nKey Inquiries: Thank you., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "f72a7ab8-64a1-404d-b8f0-335601f02349",
+      "turn_count": 4
+    }
+  },
+  {
     "id": "d66a2d6e-16bb-4a50-b851-050f07580b4e",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2241,6 +2618,68 @@
       "type": "call_summary",
       "call_uuid": "c7eb0134-85c1-423e-8e63-17d38e4526ab",
       "turn_count": 4
+    }
+  },
+  {
+    "id": "acb17ab4-82f7-455d-a802-215fb55aee73",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 97,
+    "content": "Customer Spoken Inquiry: \"UPI payment refund status.\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (225a230e-c9bc-4636-91ad-9775d95b3b81)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "225a230e-c9bc-4636-91ad-9775d95b3b81",
+      "caller_query": "UPI payment refund status.",
+      "variants": [
+        "UPI payment refund status."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "8ce784da-bb2c-4bc5-b4ca-5b0d8c3b8c1e",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 97,
+    "content": "Customer Spoken Inquiry: \"Video KYF document.\"\nVerified Resolution: \"For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification.\"\nSource: Live Telephone Interaction (aa491d36-31ed-46f5-88f8-c398dab374b5)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "aa491d36-31ed-46f5-88f8-c398dab374b5",
+      "caller_query": "Video KYF document.",
+      "variants": [
+        "Video KYF document."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "05333686-5ec6-4198-a48d-a23208df0dc8",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 98,
+    "content": "Call Interaction Summary [Session 225a230e-c9bc-4636-91ad-9775d95b3b81]:\nCaller: UPI payment refund status.\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nCaller: Okay, thank\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Yes, it is a result now.\nKey Inquiries: UPI payment refund status., Okay, thank, Yes, it is a result now.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "225a230e-c9bc-4636-91ad-9775d95b3b81",
+      "turn_count": 5
+    }
+  },
+  {
+    "id": "edcae829-996e-4f79-ac6e-f975d71cff45",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 98,
+    "content": "Call Interaction Summary [Session aa491d36-31ed-46f5-88f8-c398dab374b5]:\nCaller: Video KYF document.\nAssistant: For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Food.\nAssistant: I can certainly help you with banking or order inquiries, but I am not able to assist with food-related requests.\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Video KYF document., Thank you., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "aa491d36-31ed-46f5-88f8-c398dab374b5",
+      "turn_count": 10
     }
   },
   {
@@ -2288,19 +2727,6 @@
     }
   },
   {
-    "id": "18593578-834f-4745-8d23-6225f5b4e96c",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 103,
-    "content": "Call Interaction Summary [Session 58c7e0c8-753c-45e4-8b8a-887a1c77ab1e]:\nCaller: Till me about the Video KYC document.\nAssistant: I can certainly look up information on Video KYC documents for you; could you tell me what specific details you are looking for?\nKey Inquiries: Till me about the Video KYC document.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "58c7e0c8-753c-45e4-8b8a-887a1c77ab1e",
-      "turn_count": 2
-    }
-  },
-  {
     "id": "67fc3b0f-9765-4cc7-b4c2-656ea25d948c",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2324,19 +2750,6 @@
       "type": "call_summary",
       "call_uuid": "15a3626f-ec70-4732-a4a3-76220813c333",
       "turn_count": 2
-    }
-  },
-  {
-    "id": "18461308-2683-4383-a986-8abaf0ecca77",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 107,
-    "content": "Call Interaction Summary [Session bfd95bb9-dc5d-47fb-bc27-4272b8643b97]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Hello. Tell me about the Video KYC documents.\nAssistant: I can certainly look up information on Video KYC documents for you; could you tell me what specific details you are looking for?\nCaller: Thank you.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nKey Inquiries: Thank you., Hello. Tell me about the Video KYC documents., Thank you.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "bfd95bb9-dc5d-47fb-bc27-4272b8643b97",
-      "turn_count": 6
     }
   },
   {

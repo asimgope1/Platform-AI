@@ -335,8 +335,8 @@ class IVRRAGMiniModel:
         if any(w in lower_query for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
             return AUTONOMOUS_KNOWLEDGE["human_agent"][lang]
 
-        # 4b. Feedback intent
-        if any(w in lower_query for w in ["feedback", "rating", "suggestion", "service is good", "service is bad", "complaint", "सुझाव", "शिकायत", "प्रतिक्रिया", "ମତାମତ", "ଅଭିଯୋଗ"]):
+        # 4b. Feedback intent (ratings, suggestions, service quality feedback)
+        if any(w in lower_query for w in ["feedback", "rating", "suggestion", "give feedback", "service is good", "service is bad", "सुझाव", "प्रतिक्रिया", "ମତାମତ"]) and not any(w in lower_query for w in ["complaint", "ticket", "cmp", "शिकायत", "ଅଭିଯୋଗ"]):
             return AUTONOMOUS_KNOWLEDGE["feedback"][lang]
 
         # 4c. Satisfaction acknowledgment
@@ -791,10 +791,12 @@ class IVRRAGMiniModel:
                     score += 3.0
                 if any(w in cand_lower for w in ("frozen", "block", "replacement")):
                     score += 3.0
+                if any(w in cand_lower for w in ("complaint", "ticket", "cmp/", "cmp_", "phase", "sla", "resolved", "solved", "canceled")):
+                    score += 4.0
 
                 # Boost complete declarative responses
-                if any(cand_lower.startswith(p) for p in ("for video kyc", "video kyc", "failed upi", "your card", "you can", "हमारी शाखा", "ଭିଡିଓ କେୱାଇସି")):
-                    score += 2.0
+                if any(cand_lower.startswith(p) for p in ("for video kyc", "video kyc", "failed upi", "your card", "you can", "service complaint", "customer service complaint", "registered customer profile", "हमारी शाखा", "ଭିଡିଓ କେୱାଇସି")):
+                    score += 3.0
 
                 if score > 0:
                     scored_candidates.append((score, candidate))
