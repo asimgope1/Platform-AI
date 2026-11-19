@@ -89,11 +89,14 @@ SILENCE_GAP_SECONDS = SILENCE_GAP_CONVERSATION
 # Delay between sending 20 ms PCM reply frames (throttles playback to real-time)
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv(usecwd=True))
+
 # Barge-in speech protection:
 # In telephony over Asterisk/SIP without hardware acoustic echo cancellation (AEC), voice barge-in
-# can pick up speaker/mic bleed. Set IVR_VOICE_BARGE_IN_ENABLED=false in .env to disable mic interruption.
+# can pick up speaker/mic bleed and cut off bot voice. Default to false so bot speech is NEVER cut off!
 # DTMF keypad barge-in (pressing 1, 2, 3...) is ALWAYS enabled and 100% reliable.
-VOICE_BARGE_IN_ENABLED = os.getenv("IVR_VOICE_BARGE_IN_ENABLED", "true").lower() in ("1", "true", "yes")
+VOICE_BARGE_IN_ENABLED = os.getenv("IVR_VOICE_BARGE_IN_ENABLED", "false").lower() in ("1", "true", "yes")
 BARGE_IN_COOLDOWN_SECONDS = float(os.getenv("IVR_BARGE_IN_COOLDOWN_SECONDS", "0.25"))
 BARGE_IN_DUCK_RMS_THRESHOLD = float(os.getenv("IVR_BARGE_IN_DUCK_RMS_THRESHOLD", "420.0"))
 BARGE_IN_RMS_THRESHOLD = float(os.getenv("IVR_BARGE_IN_RMS_THRESHOLD", "650.0"))

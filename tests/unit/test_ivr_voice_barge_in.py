@@ -25,6 +25,7 @@ class TestIVRVoiceBargeIn:
             orchestrator=mock_orch,
             audio_service=mock_audio,
         )
+        session.voice_barge_in_enabled = True
         session.menu_machine.state = IVRState.AI_CONVERSATION
 
         # Simulate bot actively speaking
@@ -54,6 +55,7 @@ class TestIVRVoiceBargeIn:
             orchestrator=mock_orch,
             audio_service=mock_audio,
         )
+        session.voice_barge_in_enabled = True
         session.menu_machine.state = IVRState.AI_CONVERSATION
         session.ignore_pbx_transcript = False
 
@@ -81,6 +83,7 @@ class TestIVRVoiceBargeIn:
             orchestrator=mock_orch,
             audio_service=mock_audio,
         )
+        session.voice_barge_in_enabled = True
         session.menu_machine.state = IVRState.AI_CONVERSATION
         session.ignore_pbx_transcript = True
         session._is_playing = True
@@ -113,6 +116,7 @@ class TestIVRVoiceBargeIn:
             orchestrator=mock_orch,
             audio_service=mock_audio,
         )
+        session.voice_barge_in_enabled = True
         session.menu_machine.state = IVRState.AI_CONVERSATION
         session.ignore_pbx_transcript = False
         session._run_ai_and_reply = AsyncMock()
@@ -142,6 +146,7 @@ class TestIVRVoiceBargeIn:
             orchestrator=mock_orch,
             audio_service=mock_audio,
         )
+        session.voice_barge_in_enabled = True
         session.menu_machine.state = IVRState.AI_CONVERSATION
         session._is_playing = True
         dummy_task = asyncio.create_task(asyncio.sleep(10))
