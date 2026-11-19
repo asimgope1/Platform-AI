@@ -1124,8 +1124,12 @@ class IVRCallSession:
             return
 
         if not plan.use_llm and plan.text:
-            if plan.action == Action.FEEDBACK and self.conv_state.awaiting_feedback:
-                self.menu_machine.state = IVRState.FEEDBACK
+            if plan.action == Action.FEEDBACK:
+                if self.conv_state.feedback_received or self.conv_state.explicit_rating is not None:
+                    self.conv_state.awaiting_feedback = False
+                    self.menu_machine.state = IVRState.AI_CONVERSATION
+                elif self.conv_state.awaiting_feedback:
+                    self.menu_machine.state = IVRState.FEEDBACK
             await self._finalize_and_speak(effective_user, plan.text)
             return
 
@@ -1455,6 +1459,12 @@ class IVRCallSession:
             self._last_playback_end_ts = self._last_voice_ts
 
         # 5. Auto Cut after Thank You / Closing turn (do NOT auto-cut when awaiting caller reply)
+        if any(marker in reply_text.lower() for marker in ("rating us", "valuable feedback", "honest feedback", "बहुमूल्य प्रतिक्रिया", "ମୂଲ୍ୟବାନ ମତାମତ")):
+            self.conv_state.awaiting_feedback = False
+            self.conv_state.feedback_received = True
+            if self.menu_machine.state == IVRState.FEEDBACK:
+                self.menu_machine.state = IVRState.AI_CONVERSATION
+
         is_pending_reply = any(
             getattr(self.conv_state, flag, False)
             for flag in (
@@ -1633,7 +1643,8 @@ def is_closing_turn(user_text: str, reply_text: str) -> bool:
         "हमारी ग्राहक सेवा में संपर्क करने के लिए आभार",
         "thank you for contacting our customer support",
         "ଆମ ଗ୍ରାହକ ସେବା ସହିତ ଯୋଗାଯୋଗ କରିଥିବାରୁ କୃତଜ୍ଞତା",
-        "you are most welcome"
+        "you are most welcome",
+        "rating us"
     ]
     if any(k.lower() in r for k in closing_reply_keywords):
         return True

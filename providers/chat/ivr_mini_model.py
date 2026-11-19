@@ -490,7 +490,9 @@ async def _persist_complaint_to_crm_db(
     user = os.getenv("CRM_DB_USERNAME", "postgres")
     password = os.getenv("CRM_DB_PASSWORD", "epsumlabs")
 
-    phone_val = str(caller_phone or "9937234512")
+    phone_val = str(caller_phone or "").strip()
+    if not phone_val or phone_val.lower() in ("unknown", "anonymous", "none", "s"):
+        phone_val = "9937234512"
     cust_val = str(customer_name or "Customer")
     now = datetime.now(timezone.utc)
 
@@ -1094,7 +1096,9 @@ class IVRRAGMiniModel:
         pad_4 = f"{ticket_num:04d}"
         ticket_cmp = f"CMP/{pad_4}/26-27"
         comp_sl = uuid.uuid4()
-        phone = caller_phone or "9937234512"
+        phone = str(caller_phone or "").strip()
+        if not phone or phone.lower() in ("unknown", "anonymous", "none", "s"):
+            phone = "9937234512"
         cust_name = customer_name or "Customer"
 
         # Update in-memory catalog so immediate follow-up status queries work
