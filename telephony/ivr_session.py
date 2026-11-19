@@ -89,13 +89,16 @@ SILENCE_GAP_SECONDS = SILENCE_GAP_CONVERSATION
 # Delay between sending 20 ms PCM reply frames (throttles playback to real-time)
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
 
-# Barge-in speech protection & responsive ducking ("slowdown AI voice and start listening")
+# Barge-in speech protection:
+# In telephony over Asterisk/SIP without hardware acoustic echo cancellation (AEC), voice barge-in
+# can pick up speaker/mic bleed. Set IVR_VOICE_BARGE_IN_ENABLED=false in .env to disable mic interruption.
+# DTMF keypad barge-in (pressing 1, 2, 3...) is ALWAYS enabled and 100% reliable.
+VOICE_BARGE_IN_ENABLED = os.getenv("IVR_VOICE_BARGE_IN_ENABLED", "true").lower() in ("1", "true", "yes")
 BARGE_IN_COOLDOWN_SECONDS = float(os.getenv("IVR_BARGE_IN_COOLDOWN_SECONDS", "0.25"))
 BARGE_IN_DUCK_RMS_THRESHOLD = float(os.getenv("IVR_BARGE_IN_DUCK_RMS_THRESHOLD", "420.0"))
 BARGE_IN_RMS_THRESHOLD = float(os.getenv("IVR_BARGE_IN_RMS_THRESHOLD", "650.0"))
 BARGE_IN_MIN_CONSECUTIVE_FRAMES = int(os.getenv("IVR_BARGE_IN_MIN_CONSECUTIVE_FRAMES", "2"))  # ~40 ms strong speech
 BARGE_IN_DUCK_GAIN = float(os.getenv("IVR_BARGE_IN_DUCK_GAIN", "0.22"))
-BARGE_IN_DUCK_SLOWDOWN_FACTOR = float(os.getenv("IVR_BARGE_IN_DUCK_SLOWDOWN_FACTOR", "1.35"))
 
 # Gentle waiting / processing chime played while RAG/LLM -> TTS is running (delay 1.5s so fast replies don't chime)
 PROCESSING_SOUND_ENABLED = os.getenv("IVR_PROCESSING_SOUND_ENABLED", "true").lower() in ("1", "true", "yes")
@@ -297,6 +300,7 @@ class IVRCallSession:
         self._duck_gain: float = 1.0
         self._cancelled_by_barge_in: bool = False
         self._barge_in_captured: bool = False
+        self.voice_barge_in_enabled: bool = VOICE_BARGE_IN_ENABLED
         self._last_playback_end_ts: float = 0.0
         self._latest_pbx_transcript: str = ""
         self._order_dtmf_buffer: str = ""
@@ -765,9 +769,12 @@ class IVRCallSession:
             return
 
         # When bot is actively speaking back to user:
-        # 1) Softly duck & slow down AI voice on first signs of caller speech (RMS > BARGE_IN_DUCK_RMS_THRESHOLD)
-        # 2) Cancel AI playback and start listening immediately on sustained speech
+        # If voice barge-in is disabled, ignore microphone frames to guarantee 100% uncut, clean playback.
+        # Keypad DTMF barge-in (digits 1, 2, 3...) remains fully active via on_dtmf().
         if self._is_playing:
+            if not self.voice_barge_in_enabled:
+                return
+
             if (
                 len(data) >= 4
                 and (time.monotonic() - self._playback_started_ts) >= BARGE_IN_COOLDOWN_SECONDS
@@ -1549,7 +1556,7 @@ class IVRCallSession:
                     return
 
                 # PREBUFFERING: Send initial burst of 3 frames (60 ms) immediately to fill
-                # Asterisk/MizoDroid jitter buffer smoothly without clipping or long startup bursts.
+                # Asterisk/MizoDroid jitter buffer smoothly without packet drop or glitchy startup.
                 PREBUFFER_FRAMES = min(3, total_chunks)
                 for i in range(PREBUFFER_FRAMES):
                     await self._ws.send_bytes(chunks[i])
@@ -1562,11 +1569,9 @@ class IVRCallSession:
                     frame = chunks[i]
                     if self._is_ducking:
                         self._duck_gain = max(BARGE_IN_DUCK_GAIN, self._duck_gain * 0.65)
-                        frame_interval = FRAME_INTERVAL_SECONDS * BARGE_IN_DUCK_SLOWDOWN_FACTOR
                     else:
                         if self._duck_gain < 0.999:
                             self._duck_gain = min(1.0, self._duck_gain + 0.15)
-                        frame_interval = FRAME_INTERVAL_SECONDS
 
                     if self._duck_gain < 0.999:
                         frame = _scale_pcm_frame(frame, self._duck_gain)
@@ -1574,13 +1579,13 @@ class IVRCallSession:
                     await self._ws.send_bytes(frame)
                     chunks_sent += 1
 
-                    # Calculate target wall-clock time for subsequent frames
-                    target_time += frame_interval
+                    # Calculate target wall-clock time for subsequent frames (strict 20ms real-time pacing)
+                    target_time += FRAME_INTERVAL_SECONDS
                     now = time.monotonic()
                     sleep_duration = target_time - now
 
-                    # If behind by more than 100ms due to a system freeze, resync to avoid a huge burst
-                    if sleep_duration < -0.100:
+                    # If behind by more than 80ms due to system freeze, resync smoothly
+                    if sleep_duration < -0.080:
                         target_time = now
                         sleep_duration = 0
 
