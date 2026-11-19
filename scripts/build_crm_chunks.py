@@ -33,16 +33,27 @@ TENANT_ID = os.getenv("CRM_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
 
 
 async def extract_and_generate_crm_knowledge() -> str:
-    logger.info(f"Connecting to CRM Database on {HOST}:{PORT}/{DBNAME}...")
-    conn = await asyncpg.connect(
-        host=HOST,
-        port=PORT,
-        database=DBNAME,
-        user=USER,
-        password=PASSWORD,
-        ssl=False,
-        timeout=5,
-    )
+    out_path = os.path.join(ROOT_DIR, "data", "banking_knowledge", "crm_knowledge.json")
+    conn = None
+    try:
+        logger.info(f"Connecting to CRM Database on {HOST}:{PORT}/{DBNAME}...")
+        conn = await asyncpg.connect(
+            host=HOST,
+            port=PORT,
+            database=DBNAME,
+            user=USER,
+            password=PASSWORD,
+            ssl=False,
+            timeout=1.5,
+        )
+    except Exception as exc:
+        logger.warning(
+            f"[CRMSync] Remote CRM DB ({HOST}:{PORT}) is currently unreachable ({exc}); "
+            f"preserving active local CRM knowledge dataset."
+        )
+        if os.path.exists(out_path):
+            return out_path
+        raise
 
     phases_rows = await conn.fetch("SELECT complain_phase_sl, complain_phase_name FROM \"ComplainPhaseMaster\"")
     phases = {r["complain_phase_sl"]: r["complain_phase_name"] for r in phases_rows}
@@ -175,7 +186,8 @@ async def extract_and_generate_crm_knowledge() -> str:
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(docs, f, indent=2, ensure_ascii=False)
 
-    await conn.close()
+    if conn:
+        await conn.close()
     logger.info(f"Successfully generated {len(docs)} CRM knowledge documents written to {out_path}!")
     return out_path
 

@@ -40,7 +40,7 @@ async def sync_crm_knowledge_to_pgvector(tenant_id: Optional[str] = None) -> Dic
         ingest_stats = await run_ingestion(dataset_dir=os.path.dirname(out_path), tenant_id=tid)
 
         logger.info("[CRMSync] 3/3 Refreshing IVR in-memory catalog cache...")
-        await ivr_mini_brain.sync_live_crm_cache(force=True)
+        await ivr_mini_brain.sync_live_crm_cache(force=False)
 
         logger.info(f"[CRMSync] ✓ Completed CRM pgvector sync: {ingest_stats}")
         return {
@@ -49,7 +49,7 @@ async def sync_crm_knowledge_to_pgvector(tenant_id: Optional[str] = None) -> Dic
             "ingestion": ingest_stats,
         }
     except Exception as exc:
-        logger.error(f"[CRMSync] Failed to sync CRM to pgvector: {exc}", exc_info=True)
+        logger.warning(f"[CRMSync] Background CRM sync notice (remote DB offline): {exc}")
         return {
             "success": False,
             "error": str(exc),
