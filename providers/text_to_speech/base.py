@@ -26,11 +26,17 @@ def _get_odia_vits():
     global _ODIA_VITS_MODEL, _ODIA_VITS_TOKENIZER
     if _ODIA_VITS_MODEL is None:
         try:
+            import warnings
+            warnings.filterwarnings("ignore", category=FutureWarning, module="torch.jit")
             import torch
             from transformers import VitsModel, AutoTokenizer
             model_id = "facebook/mms-tts-ory"
-            _ODIA_VITS_TOKENIZER = AutoTokenizer.from_pretrained(model_id)
-            _ODIA_VITS_MODEL = VitsModel.from_pretrained(model_id)
+            try:
+                _ODIA_VITS_TOKENIZER = AutoTokenizer.from_pretrained(model_id, local_files_only=True)
+                _ODIA_VITS_MODEL = VitsModel.from_pretrained(model_id, local_files_only=True)
+            except Exception:
+                _ODIA_VITS_TOKENIZER = AutoTokenizer.from_pretrained(model_id)
+                _ODIA_VITS_MODEL = VitsModel.from_pretrained(model_id)
             _ODIA_VITS_MODEL.eval()
         except Exception:
             _ODIA_VITS_MODEL = False

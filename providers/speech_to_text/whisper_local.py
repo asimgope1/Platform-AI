@@ -120,7 +120,10 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
                     warnings.filterwarnings("ignore", message=".*clean_up_tokenization_spaces.*")
                     from transformers import pipeline
                     logger.info(f"Loading local Whisper STT model: '{self.model_name}' on CPU...")
-                    self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu")
+                    try:
+                        self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu", model_kwargs={"local_files_only": True})
+                    except Exception:
+                        self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu")
                     # Clear conflicting default max_length on both model and pipeline generation_config
                     for cfg_owner in (self._pipe, getattr(self._pipe, "model", None)):
                         gen_cfg = getattr(cfg_owner, "generation_config", None)
