@@ -87,29 +87,25 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("PBX_WS_URL not set — PBX connector disabled (set it in .env to enable)")
 
-    # Pre-warm IVR prompts and Whisper STT in background so incoming callers experience 0ms latency
+    # Autonomous AI Warmup Daemon: Pre-warms Whisper, TTS, Ollama Gemma (keep_alive=-1),
+    # SentenceTransformers embeddings, pgvector DB pool, and starts continuous keep-alive heartbeat loop
     try:
-        from audio.service import AudioService
-        from telephony.ivr_audio_cache import warm_up_ivr_prompts
-        audio_service = AudioService()
-        asyncio.create_task(warm_up_ivr_prompts(audio_service))
-        logger.info("[IVR] Audio prompt cache warmup initiated in background.")
-
-        stt_adapter = provider_registry.get_stt_adapter("default")
-        if hasattr(stt_adapter, "warmup"):
-            asyncio.create_task(asyncio.to_thread(stt_adapter.warmup))
-
-        if "semantic-default" in getattr(provider_registry, "embedding_adapters", {}):
-            emb_adapter = provider_registry.get_embedding_adapter("semantic-default")
-            if hasattr(emb_adapter, "warmup"):
-                asyncio.create_task(asyncio.to_thread(emb_adapter.warmup))
-                logger.info("[IVR] Semantic embedding model warmup initiated in background.")
-    except Exception as cache_err:
-        logger.warning(f"[IVR] Failed to initiate audio cache warmup: {cache_err}")
+        from services.ai_warmup_daemon import warmup_all_ai_components, start_ai_keepalive_loop
+        asyncio.create_task(warmup_all_ai_components())
+        start_ai_keepalive_loop()
+        logger.info("[AI Warmup] Autonomous AI warmup & keep-alive daemon successfully launched.")
+    except Exception as warmup_err:
+        logger.warning(f"[AI Warmup] Failed to launch AI warmup daemon: {warmup_err}")
 
     yield
 
     # Shutdown
+    try:
+        from services.ai_warmup_daemon import stop_ai_keepalive_loop
+        stop_ai_keepalive_loop()
+    except Exception:
+        pass
+
     pbx_connector.stop()
     try:
         from data_access.connectors.connection_manager import connection_manager

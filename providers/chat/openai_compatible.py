@@ -79,7 +79,7 @@ class OpenAICompatibleChatAdapter(BaseChatAdapter):
         if self.reasoning_effort:
             payload["reasoning_effort"] = self.reasoning_effort
         if "ollama" in (self.provider_id or "").lower() or ":11434" in (self.base_url or ""):
-            payload["keep_alive"] = "15m"
+            payload["keep_alive"] = -1
 
         try:
             timeout_cfg = httpx.Timeout(self.timeout, connect=min(3.0, self.timeout))
