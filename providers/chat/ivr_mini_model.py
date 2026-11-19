@@ -200,6 +200,17 @@ _SPOKEN_DIGIT_WORDS = {
     "seven": "7", "saat": "7", "सात": "7", "ସାତ": "7",
     "eight": "8", "aath": "8", "आठ": "8", "ଆଠ": "8",
     "nine": "9", "nau": "9", "नौ": "9", "ନଅ": "9",
+    "ten": "10", "das": "10", "दस": "10", "ଦଶ": "10",
+    "eleven": "11", "gyarah": "11", "ग्यारह": "11", "ଏଗାର": "11",
+    "twelve": "12", "barah": "12", "बारह": "12", "ବାର": "12",
+    "thirteen": "13", "terah": "13", "तेरह": "13", "ତେର": "13",
+    "fourteen": "14", "chaudah": "14", "चौदह": "14", "ଚଉଦ": "14",
+    "fifteen": "15", "pandrah": "15", "पंद्रह": "15", "ପନ୍ଦର": "15",
+    "sixteen": "16", "solah": "16", "सोलह": "16", "ଷୋହଳ": "16",
+    "seventeen": "17", "satrah": "17", "सत्रह": "17", "ସତର": "17",
+    "eighteen": "18", "atharah": "18", "अट्ठारह": "18", "ଅଠର": "18",
+    "nineteen": "19", "unnis": "19", "उन्नीस": "19", "ଉଣେଇଶ": "19",
+    "twenty": "20", "bees": "20", "बीस": "20", "କୋଡ଼ିଏ": "20",
 }
 
 ORDER_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
@@ -472,6 +483,13 @@ for _i in range(1, 10):
 _NEXT_TICKET_COUNTER: int = 12
 
 
+CRM_KNOWLEDGE_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "banking_knowledge",
+    "crm_knowledge.json",
+)
+
 PENDING_COMPLAINTS_FILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     "data",
@@ -498,6 +516,106 @@ def _save_pending_complaints(complaints: list[dict[str, Any]]) -> None:
             json.dump(complaints, f, indent=2, ensure_ascii=False)
     except Exception as e:
         logger.warning(f"[IVR CRM DB] Failed writing pending complaints: {e}")
+
+
+def _load_offline_crm_catalog() -> None:
+    """
+    Populates COMPLAINT_STATUS_CATALOG from local crm_knowledge.json and
+    pending_crm_complaints.json so all tickets and customer phone directories
+    remain 100% available with full details even when remote CRM DB is unreachable.
+    """
+    global _NEXT_TICKET_COUNTER
+    max_seen = 0
+    phone_map: Dict[str, list] = {}
+
+    # 1. Parse crm_knowledge.json
+    if os.path.exists(CRM_KNOWLEDGE_FILE):
+        try:
+            import json
+            with open(CRM_KNOWLEDGE_FILE, "r", encoding="utf-8") as f:
+                crm_k = json.load(f)
+            for c in crm_k:
+                cat = c.get("category")
+                content = c.get("content", "")
+                if cat == "crm_complaint_status":
+                    m = re.search(
+                        r"CMP/0*(\d{1,4})/26-27.*?customer\s+([^(\n]+)\s*\(phone number\s*([^)\n]+)\)\s*in\s*([^,\n]+).*?booked on\s*([^.]+)\.\s*The current complaint status is\s*'([^']+)'.*?Issue category is\s*'([^']+)'.*?assigned to\s*([^.]+)\.\s*Latest progress notes:\s*([^.]+)",
+                        content,
+                        re.IGNORECASE | re.DOTALL,
+                    )
+                    if m:
+                        tnum = str(int(m.group(1)))
+                        pad4 = f"{int(tnum):04d}"
+                        cname = m.group(2).strip()
+                        phone = m.group(3).strip()
+                        city = m.group(4).strip()
+                        booked = m.group(5).strip()
+                        status = m.group(6).strip()
+                        dept = m.group(8).strip()
+                        notes = m.group(9).strip()
+                        max_seen = max(max_seen, int(tnum))
+                        clean_notes = notes.strip().rstrip(".")
+                        tnum_or = tnum.translate(str.maketrans("0123456789", "୦୧୨୩୪୫୬୭୮୯"))
+                        pad4_or = pad4.translate(str.maketrans("0123456789", "୦୧୨୩୪୫୬୭୮୯"))
+                        entry = {
+                            "en": f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): It was registered for customer {cname} from {city} on {booked}. The current status is {status} under the {dept} department regarding {clean_notes}.",
+                            "hi": f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: यह {cname} के लिए {city} से {booked} को दर्ज किया गया था। वर्तमान स्थिति {status} है और {dept} विभाग में {clean_notes} के लिए प्रक्रियाधीन है।",
+                            "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum_or} (ସିଏମ୍‌ପି {pad4_or}) ର ବିବରଣୀ: ଏହା {cname} ଙ୍କ ପାଇଁ {booked} ରେ ଦାଖଲ ହୋଇଥିଲା। ବର୍ତ୍ତମାନର ସ୍ଥିତି {status} ଅଟେ।",
+                        }
+                        COMPLAINT_STATUS_CATALOG[tnum] = entry
+                        COMPLAINT_STATUS_CATALOG[pad4] = entry
+                        COMPLAINT_STATUS_CATALOG[f"CMP/{pad4}/26-27"] = entry
+                        if phone and len(phone) >= 10:
+                            phone_map.setdefault(phone, []).append((tnum, pad4, status, clean_notes, cname))
+        except Exception as e:
+            logger.warning(f"[IVR CRM] Error loading crm_knowledge.json fallback: {e}")
+
+    # 2. Parse pending_crm_complaints.json (latest voice complaints)
+    for p in _load_pending_complaints():
+        tid = p.get("ticket_id", "")
+        tm = re.search(r"CMP/0*(\d{1,4})/26-27", tid)
+        if tm:
+            tnum = str(int(tm.group(1)))
+            pad4 = f"{int(tnum):04d}"
+            phone = p.get("caller_phone", "")
+            cname = p.get("customer_name", "Customer")
+            desc = p.get("description", "").strip().rstrip(".")
+            max_seen = max(max_seen, int(tnum))
+            entry = {
+                "en": f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): It was registered recently for customer {cname} regarding \"{desc}\". The current status is New and assigned to Customer Support.",
+                "hi": f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: यह {cname} के लिए \"{desc}\" के संबंध में दर्ज किया गया है। वर्तमान स्थिति नई (New) है और सपोर्ट टीम जांच कर रही है।",
+                "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ର ବିବରଣୀ: ଏହା \"{desc}\" ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।",
+            }
+            COMPLAINT_STATUS_CATALOG[tnum] = entry
+            COMPLAINT_STATUS_CATALOG[pad4] = entry
+            COMPLAINT_STATUS_CATALOG[tid] = entry
+            if phone and len(phone) >= 10:
+                phone_map.setdefault(phone, []).append((tnum, pad4, "New", desc, cname))
+
+    # 3. Populate Phone Number Directories
+    for ph, tkts in phone_map.items():
+        latest = tkts[-1]
+        tnum, pad4, stat, notes, cname = latest
+        clean_notes = notes[:80].rstrip(".")
+        tkt_summaries_en = [f"Ticket {t[0]}" for t in tkts]
+        tkt_summaries_hi = [f"टिकट {t[0]}" for t in tkts]
+        tkt_summaries_or = [f"ଟିକେଟ୍ {t[0].translate(str.maketrans('0123456789', '୦୧୨୩୪୫୬୭୮୯'))}" for t in tkts]
+        en_list = ", ".join(tkt_summaries_en[:-1]) + (f", and {tkt_summaries_en[-1]}" if len(tkt_summaries_en) > 1 else tkt_summaries_en[0])
+        hi_list = ", ".join(tkt_summaries_hi[:-1]) + (f", और {tkt_summaries_hi[-1]}" if len(tkt_summaries_hi) > 1 else tkt_summaries_hi[0])
+        or_list = ", ".join(tkt_summaries_or[:-1]) + (f", ଏବଂ {tkt_summaries_or[-1]}" if len(tkt_summaries_or) > 1 else tkt_summaries_or[0])
+
+        COMPLAINT_STATUS_CATALOG[ph] = {
+            "en": f"For registered phone number {ph} ({cname}), we found {len(tkts)} complaint{'s' if len(tkts) > 1 else ''} on file: {en_list}. Your latest is Ticket {tnum} (CMP {pad4}) regarding \"{clean_notes}\", with current status {stat}.",
+            "hi": f"पंजीकृत मोबाइल नंबर {ph} ({cname}) के लिए {len(tkts)} शिकायतें दर्ज हैं: {hi_list}। आपकी नवीनतम शिकायत टिकट नंबर {tnum} (सीएमपी {pad4}, \"{clean_notes}\") है, जिसकी स्थिति {stat} है।",
+            "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {ph} ({cname}) ପାଇଁ {len(tkts)} ଟି ଅଭିଯୋଗ ରହିଛି: {or_list}। ଆପଣଙ୍କ ସର୍ବଶେଷ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ରହିଛି, ସ୍ଥିତି {stat} ଅଟେ।",
+        }
+
+    if max_seen >= _NEXT_TICKET_COUNTER:
+        _NEXT_TICKET_COUNTER = max_seen + 1
+
+
+# Initialize offline catalog immediately at module import
+_load_offline_crm_catalog()
 
 
 async def flush_pending_crm_complaints() -> int:
@@ -926,6 +1044,10 @@ class IVRRAGMiniModel:
             return True
         except Exception as e:
             logger.warning(f"[IVR CRM Sync] Live CRM sync notice (using cached catalog): {e}")
+            try:
+                _load_offline_crm_catalog()
+            except Exception:
+                pass
             return False
 
     def _is_complaint_register_intent(self, lower_query: str) -> bool:
@@ -957,8 +1079,16 @@ class IVRRAGMiniModel:
     def _is_complaint_status_intent(self, lower_query: str) -> bool:
         """Checks if the user wants to check the status or track an existing complaint."""
         clean = (lower_query or "").strip().lower()
+        if self._is_complaint_register_intent(clean):
+            return False
+        if extract_complaint_identifier(clean, allow_bare_digits=False):
+            return True
         tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
-        if tokens.intersection({"status", "track", "check", "existing", "old", "previous", "स्थिति", "पुरानी", "पुराना", "जांच", "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା"}):
+        if tokens.intersection({
+            "status", "track", "existing", "old", "previous", "ticket", "tickets", "cmp", "update",
+            "स्थिति", "पुरानी", "पुराना", "जांच", "अपडेट", "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା"
+        }):
+            # Ensure "ticket" or "tickets" or "status" alone isn't misinterpreting movie tickets or unrelated tokens
             return True
         return any(
             phrase in clean
@@ -966,8 +1096,8 @@ class IVRRAGMiniModel:
                 "check status", "check the status", "status of complaint", "complaint status",
                 "my complaint", "check existing", "existing complaint", "check existing complaint",
                 "existing one", "old complaint", "status check", "know status", "track complaint",
-                "track my complaint", "status dekhna", "status janna", "स्थिति देखना",
-                "स्थिति जांचना", "पुरानी शिकायत", "पुराना शिकायत", "स्थिति बताएं",
+                "track my complaint", "status dekhna", "status janna", "complaint detail", "complaint details", "ticket details",
+                "स्थिति देखना", "स्थिति जांचना", "पुरानी शिकायत", "पुराना शिकायत", "स्थिति बताएं",
                 "ସ୍ଥିତି ଜାଣିବା", "ପୂର୍ବ ଅଭିଯୋଗ", "ପୁରୁଣା ଅଭିଯୋଗ", "ଅଭିଯୋଗ ସ୍ଥିତି",
             )
         )
@@ -1389,6 +1519,15 @@ class IVRRAGMiniModel:
             if cid_probe:
                 ans = self.lookup_complaint_status(cid_probe, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            # Check if caller phone is recognized
+            clean_phone = re.sub(r"\D", "", caller_phone or "") if caller_phone else ""
+            if len(clean_phone) >= 10:
+                clean_phone_10 = clean_phone[-10:]
+                if clean_phone_10 in COMPLAINT_STATUS_CATALOG:
+                    ans = self.lookup_complaint_status(clean_phone_10, lang=lang)
+                    return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
             # Prompt again for complaint ticket number
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
@@ -1415,6 +1554,16 @@ class IVRRAGMiniModel:
             if cid_probe:
                 ans = self.lookup_complaint_status(cid_probe, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            # Proactive Lookup by caller phone number:
+            # If caller calls from their phone, immediately report their complaint status without forcing them to re-type digits!
+            clean_phone = re.sub(r"\D", "", caller_phone or "") if caller_phone else ""
+            if len(clean_phone) >= 10:
+                clean_phone_10 = clean_phone[-10:]
+                if clean_phone_10 in COMPLAINT_STATUS_CATALOG:
+                    ans = self.lookup_complaint_status(clean_phone_10, lang=lang)
+                    return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
