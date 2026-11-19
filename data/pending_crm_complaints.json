@@ -1,0 +1,12 @@
+[
+  {
+    "ticket_id": "CMP/0012/26-27",
+    "complaint_sl": "3b29c91f-0e42-498b-bd85-0568c07e0c12",
+    "description": "The delivery is not done as it is expected by today.",
+    "caller_phone": "9937234512",
+    "customer_name": "Customer",
+    "call_uuid": "bf5e6829-601e-40e6-8fb1-f61915f5790f",
+    "created_at": "2026-11-19T07:18:37Z",
+    "synced_to_crm": false
+  }
+]

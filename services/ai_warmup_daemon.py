@@ -193,9 +193,10 @@ async def _ai_keepalive_heartbeat_loop(interval_seconds: int = 120):
             except Exception:
                 pass
 
-            # 3. Touch CRM catalog if older than 5 minutes
+            # 3. Touch CRM catalog and flush any pending offline complaints
             try:
-                from providers.chat.ivr_mini_model import ivr_mini_brain
+                from providers.chat.ivr_mini_model import ivr_mini_brain, flush_pending_crm_complaints
+                await flush_pending_crm_complaints()
                 if time.time() - ivr_mini_brain._last_crm_sync_ts > 300:
                     await ivr_mini_brain.sync_live_crm_cache(force=False)
             except Exception:

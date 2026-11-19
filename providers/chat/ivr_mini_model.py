@@ -472,6 +472,112 @@ for _i in range(1, 10):
 _NEXT_TICKET_COUNTER: int = 12
 
 
+PENDING_COMPLAINTS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "pending_crm_complaints.json",
+)
+
+
+def _load_pending_complaints() -> list[dict[str, Any]]:
+    if not os.path.exists(PENDING_COMPLAINTS_FILE):
+        return []
+    try:
+        import json
+        with open(PENDING_COMPLAINTS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f) or []
+    except Exception:
+        return []
+
+
+def _save_pending_complaints(complaints: list[dict[str, Any]]) -> None:
+    os.makedirs(os.path.dirname(PENDING_COMPLAINTS_FILE), exist_ok=True)
+    try:
+        import json
+        with open(PENDING_COMPLAINTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(complaints, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        logger.warning(f"[IVR CRM DB] Failed writing pending complaints: {e}")
+
+
+async def flush_pending_crm_complaints() -> int:
+    """
+    Connects to remote CRM DB if reachable and inserts any un-synced complaints.
+    Returns the number of successfully flushed complaints.
+    """
+    pending = _load_pending_complaints()
+    to_sync = [c for c in pending if not c.get("synced_to_crm")]
+    if not to_sync or asyncpg is None:
+        return 0
+
+    host = os.getenv("CRM_DB_HOST", "192.168.1.124")
+    port = int(os.getenv("CRM_DB_PORT", "5435"))
+    dbname = os.getenv("CRM_DB_NAME", "crm_backend_db")
+    user = os.getenv("CRM_DB_USERNAME", "postgres")
+    password = os.getenv("CRM_DB_PASSWORD", "epsumlabs")
+
+    try:
+        conn = await asyncpg.connect(
+            host=host, port=port, database=dbname, user=user, password=password, ssl=False, timeout=2.0
+        )
+    except Exception as e:
+        logger.debug(f"[IVR CRM DB] Pending flush skipped (remote CRM DB offline): {e}")
+        return 0
+
+    flushed_count = 0
+    try:
+        for c in to_sync:
+            try:
+                c_sl = uuid.UUID(c["complaint_sl"])
+                c_time_str = c.get("created_at")
+                c_time = datetime.fromisoformat(c_time_str) if c_time_str else datetime.now(timezone.utc)
+                await conn.execute(
+                    """
+                    INSERT INTO "ComplainBookings" (
+                        complainsl, complainid, customername, phonenumber, department_sl,
+                        complain_phase_sl, createdby, complaindatetime, createdate, reopened, othernotes
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                    ON CONFLICT (complainsl) DO NOTHING
+                    """,
+                    c_sl,
+                    c["ticket_id"],
+                    c.get("customer_name") or "Customer",
+                    c.get("caller_phone") or "9937234512",
+                    uuid.UUID("d6b3256a-fa21-4708-9910-3ea086831c6f"),
+                    uuid.UUID("c84516c3-1592-4d0e-bc0e-7f50b2758f97"),
+                    uuid.UUID("a778db92-1d4f-4778-a698-05830387b0ed"),
+                    c_time,
+                    c_time,
+                    False,
+                    c["description"],
+                )
+                await conn.execute(
+                    """
+                    INSERT INTO "ComplainFollowUp" (
+                        follow_up_sl, complainsl, description, follow_up_date, created_by, created_date, complain_phase_sl
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    ON CONFLICT (follow_up_sl) DO NOTHING
+                    """,
+                    uuid.uuid4(),
+                    c_sl,
+                    f"Voice IVR Registration: {c['description']}",
+                    c_time,
+                    uuid.UUID("a778db92-1d4f-4778-a698-05830387b0ed"),
+                    c_time,
+                    uuid.UUID("c84516c3-1592-4d0e-bc0e-7f50b2758f97"),
+                )
+                c["synced_to_crm"] = True
+                flushed_count += 1
+                logger.info(f"[IVR CRM DB] Flushed queued ticket {c['ticket_id']} into ComplainBookings & FollowUp.")
+            except Exception as item_err:
+                logger.warning(f"[IVR CRM DB] Failed to insert queued ticket {c.get('ticket_id')}: {item_err}")
+    finally:
+        await conn.close()
+        _save_pending_complaints(pending)
+
+    return flushed_count
+
+
 async def _persist_complaint_to_crm_db(
     ticket_id: str,
     complaint_sl: uuid.UUID,
@@ -484,78 +590,41 @@ async def _persist_complaint_to_crm_db(
     Asynchronously persists a newly registered complaint into the remote CRM PostgreSQL DB
     ('ComplainBookings' and 'ComplainFollowUp') and registers locally without blocking audio.
     """
-    host = os.getenv("CRM_DB_HOST", "192.168.1.124")
-    port = int(os.getenv("CRM_DB_PORT", "5435"))
-    dbname = os.getenv("CRM_DB_NAME", "crm_backend_db")
-    user = os.getenv("CRM_DB_USERNAME", "postgres")
-    password = os.getenv("CRM_DB_PASSWORD", "epsumlabs")
-
     phone_val = str(caller_phone or "").strip()
     if not phone_val or phone_val.lower() in ("unknown", "anonymous", "none", "s"):
         phone_val = "9937234512"
     cust_val = str(customer_name or "Customer")
     now = datetime.now(timezone.utc)
 
-    # 1. Insert into remote PostgreSQL CRM DB if reachable
-    if asyncpg is not None:
-        try:
-            conn = await asyncpg.connect(
-                host=host,
-                port=port,
-                database=dbname,
-                user=user,
-                password=password,
-                ssl=False,
-                timeout=3.0,
-            )
-            try:
-                await conn.execute(
-                    """
-                    INSERT INTO "ComplainBookings" (
-                        complainsl, complainid, customername, phonenumber, department_sl,
-                        complain_phase_sl, createdby, complaindatetime, createdate, reopened, othernotes
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-                    """,
-                    complaint_sl,
-                    ticket_id,
-                    cust_val,
-                    phone_val,
-                    uuid.UUID("d6b3256a-fa21-4708-9910-3ea086831c6f"),
-                    uuid.UUID("c84516c3-1592-4d0e-bc0e-7f50b2758f97"),
-                    uuid.UUID("a778db92-1d4f-4778-a698-05830387b0ed"),
-                    now,
-                    now,
-                    False,
-                    description,
-                )
-                await conn.execute(
-                    """
-                    INSERT INTO "ComplainFollowUp" (
-                        follow_up_sl, complainsl, description, follow_up_date, created_by, created_date, complain_phase_sl
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-                    """,
-                    uuid.uuid4(),
-                    complaint_sl,
-                    f"Voice IVR Registration: {description}",
-                    now,
-                    uuid.UUID("a778db92-1d4f-4778-a698-05830387b0ed"),
-                    now,
-                    uuid.UUID("c84516c3-1592-4d0e-bc0e-7f50b2758f97"),
-                )
-                logger.info(f"[IVR CRM DB] Successfully inserted {ticket_id} into ComplainBookings & FollowUp.")
-            finally:
-                await conn.close()
-        except Exception as e:
-            logger.debug(f"[IVR CRM DB] Remote insert notice ({ticket_id}): {e}")
+    # 0. Always save to persistent local disk queue first (guarantees zero data loss even if remote DB is down)
+    pending = _load_pending_complaints()
+    if not any(p.get("ticket_id") == ticket_id for p in pending):
+        pending.append({
+            "ticket_id": ticket_id,
+            "complaint_sl": str(complaint_sl),
+            "description": description,
+            "caller_phone": phone_val,
+            "customer_name": cust_val,
+            "call_uuid": call_uuid,
+            "created_at": now.isoformat(),
+            "synced_to_crm": False,
+        })
+        _save_pending_complaints(pending)
+
+    # 1. Attempt immediate flush to remote CRM DB if reachable
+    await flush_pending_crm_complaints()
 
     # 2. Insert into local SQLite / Postgres complaints table if available
     try:
         from tools.business_data.complaints import register_complaint
+        from platform_core.security.tenant_context import TenantContext
+        ctx = TenantContext(tenant_id="879e9bda-8049-4824-9aa0-fc5e9f0012d9", roles=["caller"])
         await register_complaint(
             description=description,
             caller_phone=phone_val,
             service_category="complaint",
             call_uuid=call_uuid,
+            tenant_context=ctx,
         )
         logger.info(f"[IVR Local DB] Registered local complaint record for {ticket_id}.")
     except Exception as e:
@@ -740,6 +809,11 @@ class IVRRAGMiniModel:
                 ssl=False,
                 timeout=2.5,
             )
+            # Flush any pending complaints that were queued while DB was offline
+            try:
+                await flush_pending_crm_complaints()
+            except Exception:
+                pass
             try:
                 query = """
                     SELECT 
