@@ -126,9 +126,19 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ମୁଁ ଭିଡିଓ କେୱାଇସି, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍ ଏବଂ ବାଲାନ୍ସ ସେବାରେ ସାହାଯ୍ୟ କରିପାରିବି।",
     },
     "feedback": {
-        "en": "Thank you for your valuable feedback! We truly appreciate you sharing your thoughts with us.",
-        "hi": "आपकी बहुमूल्य प्रतिक्रिया के लिए बहुत-बहुत धन्यवाद! हम आपके सुझाव की सराहना करते हैं।",
-        "or": "ଆପଣଙ୍କ ମୂଲ୍ୟବାନ ମତାମତ ପାଇଁ ଅଶେଷ ଧନ୍ୟବାଦ! ଆମେ ଆପଣଙ୍କ ପରାମର୍ଶକୁ ସମ୍ମାନ କରୁଛୁ।",
+        "en": "Thank you for your valuable feedback! We truly appreciate you sharing your thoughts with us. Have a wonderful day!",
+        "hi": "आपकी बहुमूल्य प्रतिक्रिया और रेटिंग के लिए बहुत-बहुत धन्यवाद! हम आपके सुझाव की सराहना करते हैं। आपका दिन शुभ हो!",
+        "or": "ଆପଣଙ୍କ ମୂଲ୍ୟବାନ ମତାମତ ଏବଂ ରେଟିଂ ପାଇଁ ଅଶେଷ ଧନ୍ୟବାଦ! ଆମେ ଆପଣଙ୍କ ପରାମର୍ଶକୁ ସମ୍ମାନ କରୁଛୁ। ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
+    },
+    "feedback_ask": {
+        "en": "We would love to hear your feedback! Please rate your experience on a scale of 1 to 5, or share your thoughts.",
+        "hi": "हम आपकी प्रतिक्रिया सुनना पसंद करेंगे! कृपया 1 से 5 के पैमाने पर रेटिंग दें या अपने विचार साझा करें।",
+        "or": "ଆମେ ଆପଣଙ୍କ ମତାମତ ଜାଣିବାକୁ ଚାହୁଁ! ଦୟାକରି ୧ ରୁ ୫ ମଧ୍ୟରେ ରେଟିଂ ଦିଅନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ମତାମତ ଜଣାନ୍ତୁ।",
+    },
+    "feedback_negative": {
+        "en": "Thank you for your honest feedback. We apologize for the inconvenience and will work to improve our service. Have a good day.",
+        "hi": "आपकी स्पष्ट प्रतिक्रिया के लिए धन्यवाद। हमें हुई असुविधा के लिए खेद है, और हम अपनी सेवा में सुधार करेंगे। आपका दिन शुभ हो।",
+        "or": "ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ। ହୋଇଥିବା ଅସୁବିଧା ପାଇଁ ଆମେ ଦୁଃଖିତ, ଆମେ ଆମର ସେବାରେ ଉନ୍ନତି ଆଣିବୁ।",
     },
     "confirmation": {
         "en": "Understood. Just to confirm, would you like me to proceed with this request for you?",
@@ -577,6 +587,15 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
     # Guard against 'new one', 'another one', 'register a new one', etc. being misheard or parsed as digit 1
     lower = re.sub(r'\b(?:new|another|a\s+new|fresh)\s+one\b', 'new_ticket', lower)
 
+    # Guard against feedback, ratings, and star numbers being extracted as ticket IDs
+    if re.search(r"\b[1-5]\s*(?:star|stars|स्टार|ଷ୍ଟାର୍)\b", lower):
+        return None
+    if any(w in lower for w in (
+        "feedback", "feed back", "rating", "ratings", "rate", "स्टार", "रेटिंग",
+        "प्रतिक्रिया", "सुझाव", "फीडबैक", "ମତାମତ", "ରେଟିଂ", "ଷ୍ଟାର୍"
+    )):
+        return None
+
     # 1. 10-digit Indian phone number lookup
     phone_m = re.search(r"\b([6-9]\d{9})\b", lower)
     if phone_m:
@@ -625,9 +644,10 @@ def extract_complaint_identifier(text: str, allow_bare_digits: bool = False) -> 
             w for w in re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', normalized_spoken)
             if w not in ('and', 'or', 'the', 'is', 'it', 'my', 'please', 'no', 'number', 'ticket', 'id', 'dot', 'zero')
         ]
-        # Padded numbers (e.g. '0001', '0 0 0 1', 'Zero, zero zero one.') or pure digit utterances without extra text
-        if len(digit_seq) <= 4 and ((allow_bare_digits and len(non_digit_words) <= 1) or len(digit_seq) >= 2 or len(non_digit_words) == 0):
-            return str(int(digit_seq))
+        # Padded numbers (e.g. '0001', '0 0 0 1', 'Zero, zero zero one.') or pure digit utterances when permitted
+        if len(digit_seq) <= 4:
+            if len(digit_seq) >= 2 or (allow_bare_digits and len(non_digit_words) <= 1):
+                return str(int(digit_seq))
 
     return None
 
@@ -948,6 +968,108 @@ class IVRRAGMiniModel:
                     return desc
         return None
 
+    def _was_complaint_just_registered(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if a complaint was registered in the previous assistant turn."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(
+                    marker in c
+                    for marker in (
+                        "successfully registered under ticket number",
+                        "सफलतापूर्वक टिकट नंबर",
+                        "ସଫଳତାର ସହ ଟିକେଟ୍ ନମ୍ବର",
+                        "reference cmp",
+                        "संदर्भ सीएमपी",
+                        "ସିଏମ୍‌ପି",
+                    )
+                )
+        return False
+
+    def _was_asked_feedback(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the assistant asked for feedback or rating."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(
+                    marker in c
+                    for marker in (
+                        "rate your experience",
+                        "scale of 1 to 5",
+                        "love to hear your feedback",
+                        "रेटिंग दें",
+                        "प्रतिक्रिया सुनना",
+                        "ରେଟିଂ ଦିଅନ୍ତୁ",
+                    )
+                )
+        return False
+
+    def _is_feedback_ask_intent(self, lower_query: str) -> bool:
+        """Checks if the caller is asking to give feedback."""
+        clean = (lower_query or "").strip().lower()
+        clean = re.sub(r'[^a-zA-Z\u0900-\u097f\u0b00-\u0b7f\s]', '', clean)
+        ask_phrases = [
+            "give feedback", "want to give feedback", "can i give feedback", "like to give feedback",
+            "leave feedback", "provide feedback", "share feedback",
+            "फीडबैक देना", "फीडबैक देना चाहता", "फीडबैक देना चाहती", "फीडबैक देना है",
+            "प्रतिक्रिया देना", "सुझाव देना", "मदद का फीडबैक",
+            "ମତାମତ ଦେବା", "ମତାମତ ଦେବାକୁ ଚାହୁଁଛି"
+        ]
+        return any(p in clean for p in ask_phrases) or clean in ("feedback", "give feedback", "फीडबैक")
+
+    def _is_feedback_or_rating_intent(
+        self,
+        query: str,
+        messages: Optional[List[ChatMessage]] = None,
+    ) -> bool:
+        """
+        Detects whether caller is submitting feedback, rating, service quality comments,
+        or a numerical satisfaction rating (1-5).
+        """
+        clean = (query or "").strip().lower()
+        clean_no_punct = re.sub(r'[.,!?\'"]', '', clean).strip()
+
+        # 1. Explicit rating / star / feedback expressions with word boundaries
+        if re.search(r'\b(?:ratings?|rate\s+(?:the|this|your|our|service)|stars?|feed\s*back|स्टार|रेटिंग|प्रतिक्रिया|सुझाव|फीडबैक|ମତାମତ|ରେଟିଂ|ଷ୍ଟାର୍)\b', clean_no_punct):
+            return True
+
+        # 2. Service evaluation comments with word boundaries
+        service_evals = [
+            r'\b(?:good|great|excellent|bad|poor|worst|very good|very bad)\s+service\b',
+            r'\bservice\s+(?:is|was)\s+(?:good|great|excellent|bad|poor|worst|very good|very bad)\b',
+            r'\b(?:अच्छी सेवा|सेवा अच्छी|बहुत अच्छी सेवा|खराब सेवा|सेवा खराब|ଭଲ ସେବା|ଉତ୍ତମ ସେବା)\b',
+        ]
+        if any(re.search(p, clean_no_punct) for p in service_evals):
+            return True
+
+        # 4. If complaint was just registered, or assistant asked 'anything else' or 'feedback':
+        was_registered = self._was_complaint_just_registered(messages)
+        was_anything_else = self._was_asked_anything_else(messages)
+        was_feedback_asked = self._was_asked_feedback(messages)
+
+        if was_registered or was_anything_else or was_feedback_asked:
+            rating_tokens = {
+                "1", "2", "3", "4", "5",
+                "one", "two", "three", "four", "five",
+                "१", "२", "३", "४", "५",
+                "୧", "୨", "୩", "୪", "୫",
+                "1/5", "2/5", "3/5", "4/5", "5/5",
+                "5 out of 5", "4 out of 5",
+                "five stars", "four stars", "three stars", "two stars", "one star",
+                "i give 5", "i give 4", "give 5", "give 4",
+                "very good", "excellent", "super", "poor", "terrible", "awesome"
+            }
+            if clean_no_punct in rating_tokens:
+                return True
+            if re.fullmatch(r"[1-5]\s*(?:star|stars|स्टार|ଷ୍ଟାର୍)?", clean_no_punct):
+                return True
+
+        return False
+
     def register_new_complaint(
         self,
         description: str,
@@ -1079,8 +1201,13 @@ class IVRRAGMiniModel:
         if any(w in lower_query for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
             return AUTONOMOUS_KNOWLEDGE["human_agent"][lang]
 
-        # 4b. Feedback intent (ratings, suggestions, service quality feedback)
-        if any(w in lower_query for w in ["feedback", "rating", "suggestion", "give feedback", "service is good", "service is bad", "सुझाव", "प्रतिक्रिया", "ମତାମତ"]) and not any(w in lower_query for w in ["complaint", "ticket", "cmp", "शिकायत", "ଅଭିଯୋଗ"]):
+        # 4b. Feedback intent (ratings, suggestions, service quality feedback, post-complaint rating)
+        if self._is_feedback_ask_intent(lower_query):
+            return AUTONOMOUS_KNOWLEDGE["feedback_ask"][lang]
+
+        if self._is_feedback_or_rating_intent(clean_query, messages):
+            if any(w in lower_query for w in ["bad", "poor", "terrible", "worst", "खराब", "बकवास", "ଖରାପ"]):
+                return AUTONOMOUS_KNOWLEDGE["feedback_negative"][lang]
             return AUTONOMOUS_KNOWLEDGE["feedback"][lang]
 
         # 4c. Satisfaction acknowledgment

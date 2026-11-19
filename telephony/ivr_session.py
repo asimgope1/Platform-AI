@@ -1111,6 +1111,7 @@ class IVRCallSession:
         # unwanted transfer offers or satisfaction surveys when caller says "Thank you".
         if ivr_mini_brain._is_closing_intent(lower_user):
             self.conv_state.awaiting_order_id_digits = False
+            self.conv_state.awaiting_feedback = False
             self._order_dtmf_buffer = ""
             reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
             logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
@@ -1307,6 +1308,17 @@ class IVRCallSession:
                     caller_phone=self.caller_number,
                     call_uuid=self.call_uuid,
                 )
+
+        if reply_text:
+            if any(m in reply_text for m in ("successfully registered under ticket number", "सफलतापूर्वक टिकट नंबर", "ସଫଳତାର ସହ ଟିକେଟ୍ ନମ୍ବର")):
+                self.conv_state.resolution_status = "resolved"
+                self.conv_state.customer_confirmed = True
+                self.conv_state.awaiting_feedback = True
+                logger.info(f"[IVR] 🎫 Complaint registered successfully on call. Setting awaiting_feedback=True (uuid={self.call_uuid}).")
+            elif any(m in reply_text for m in ("valuable feedback", "बहुमूल्य प्रतिक्रिया", "ମୂଲ୍ୟବାନ ମତାମତ", "feedback and rating")):
+                self.conv_state.awaiting_feedback = False
+                self.conv_state.feedback_received = True
+                logger.info(f"[IVR] ⭐ Customer feedback collected. Finalizing turn (uuid={self.call_uuid}).")
 
         await self._finalize_and_speak(effective_user, reply_text)
 

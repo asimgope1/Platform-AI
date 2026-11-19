@@ -356,6 +356,61 @@ class TestIVRRAGMiniModel:
         or_reg = brain.synthesize("ନୂଆ ଗୋଟିଏ", messages=or_history, language="or", service_category="complaint")
         assert "ସମସ୍ୟା" in or_reg or "ଅଭିଯୋଗ" in or_reg
 
+    def test_post_complaint_registration_feedback_flow(self, brain):
+        """Verifies that feedback, ratings, and stars after complaint registration are handled correctly."""
+        post_reg_history = [
+            ChatMessage(role="user", content="My internet is down please lodge complaint"),
+            ChatMessage(
+                role="assistant",
+                content=(
+                    "Your complaint has been successfully registered under ticket number 12 (reference CMP 0012). "
+                    "Our support team will investigate and contact you shortly. Is there anything else I can help you with today?"
+                ),
+            ),
+        ]
+
+        # 1. Lone digit 5 rating
+        r_digit = brain.synthesize("5", messages=post_reg_history, service_category="complaint")
+        assert "valuable feedback" in r_digit.lower()
+        assert "wonderful day" in r_digit.lower()
+
+        # 2. 5 stars / rating
+        r_stars = brain.synthesize("5 stars", messages=post_reg_history, service_category="complaint")
+        assert "valuable feedback" in r_stars.lower()
+
+        # 3. Rating 5
+        r_rate = brain.synthesize("rating 5", messages=post_reg_history, service_category="complaint")
+        assert "valuable feedback" in r_rate.lower()
+
+        # 4. Service evaluation comment
+        r_serv = brain.synthesize("service was very good", messages=post_reg_history, service_category="complaint")
+        assert "valuable feedback" in r_serv.lower()
+
+        # 5. Negative feedback
+        r_neg = brain.synthesize("very bad service", messages=post_reg_history, service_category="complaint")
+        assert "honest feedback" in r_neg.lower() or "apologize" in r_neg.lower()
+
+        # 6. Ask for feedback prompt
+        r_ask = brain.synthesize("I want to give feedback", messages=post_reg_history, service_category="complaint")
+        assert "love to hear your feedback" in r_ask.lower() or "1 to 5" in r_ask.lower()
+
+        # 7. Multilingual Hindi feedback
+        hi_post_reg = [
+            ChatMessage(role="user", content="इंटरनेट काम नहीं कर रहा शिकायत दर्ज करें"),
+            ChatMessage(
+                role="assistant",
+                content=(
+                    "आपकी शिकायत सफलतापूर्वक टिकट नंबर 12 (संदर्भ सीएमपी 0012) के तहत दर्ज कर ली गई है। "
+                    "हमारी सपोर्ट टीम जल्द जांच करके आपसे संपर्क करेगी। क्या मैं और कोई सहायता करूँ?"
+                ),
+            ),
+        ]
+        hi_r_ask = brain.synthesize("फीडबैक देना है", messages=hi_post_reg, language="hi", service_category="complaint")
+        assert "1 से 5" in hi_r_ask or "प्रतिक्रिया" in hi_r_ask
+
+        hi_r_star = brain.synthesize("५ स्टार", messages=hi_post_reg, language="hi", service_category="complaint")
+        assert "प्रतिक्रिया" in hi_r_star or "धन्यवाद" in hi_r_star
+
     def test_response_generator_does_not_stall_on_complaint_registration(self):
         from services.conversation.response_generator import _needs_live_action_fallback
         # Must return False so Turn 1 synthesizes instantly in < 2ms without slow Ollama tool stalls
