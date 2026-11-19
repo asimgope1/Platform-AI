@@ -76,12 +76,15 @@ logger = logging.getLogger(__name__)
 # ──────────────────────────────────────────────────────────────────────────────
 
 # How much PCM to accumulate before running STT (avoid dropping crisp short words like 'yes'/'no')
-MIN_SPEECH_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.25)    # 0.25 second minimum (4,000 bytes)
+MIN_SPEECH_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.45)    # 0.45 second minimum (7,200 bytes) for conversational phrases
 MIN_SHORT_REPLY_BYTES = int(PBX_SAMPLE_RATE * 2 * 0.12)  # 0.12 second minimum for crisp 1–5 digits / yes-no
-MAX_SPEECH_BYTES = PBX_SAMPLE_RATE * 2 * 8           # 8 seconds hard cap
+MAX_SPEECH_BYTES = PBX_SAMPLE_RATE * 2 * 10          # 10 seconds hard cap
 
-# Silence gap before closing an utterance for STT (0.65s feels responsive without chopping brief pauses)
-SILENCE_GAP_SECONDS = float(os.getenv("IVR_SILENCE_GAP_SECONDS", "0.65"))
+# Adaptive silence gap before closing an utterance for STT:
+# Conversational speech needs ~1.05s so callers can speak natural phrases without cutoff; short replies need 0.70s.
+SILENCE_GAP_CONVERSATION = float(os.getenv("IVR_SILENCE_GAP_CONVERSATION", "1.05"))
+SILENCE_GAP_SHORT_REPLY = float(os.getenv("IVR_SILENCE_GAP_SHORT_REPLY", "0.70"))
+SILENCE_GAP_SECONDS = SILENCE_GAP_CONVERSATION
 
 # Delay between sending 20 ms PCM reply frames (throttles playback to real-time)
 FRAME_INTERVAL_SECONDS = 0.020   # 20 ms
@@ -94,9 +97,9 @@ BARGE_IN_MIN_CONSECUTIVE_FRAMES = int(os.getenv("IVR_BARGE_IN_MIN_CONSECUTIVE_FR
 BARGE_IN_DUCK_GAIN = float(os.getenv("IVR_BARGE_IN_DUCK_GAIN", "0.22"))
 BARGE_IN_DUCK_SLOWDOWN_FACTOR = float(os.getenv("IVR_BARGE_IN_DUCK_SLOWDOWN_FACTOR", "1.35"))
 
-# Gentle waiting / processing chime played while STT -> RAG/LLM -> TTS is running
+# Gentle waiting / processing chime played while RAG/LLM -> TTS is running (delay 1.5s so fast replies don't chime)
 PROCESSING_SOUND_ENABLED = os.getenv("IVR_PROCESSING_SOUND_ENABLED", "true").lower() in ("1", "true", "yes")
-PROCESSING_SOUND_INITIAL_DELAY_SECONDS = float(os.getenv("IVR_PROCESSING_SOUND_DELAY_SECONDS", "0.35"))
+PROCESSING_SOUND_INITIAL_DELAY_SECONDS = float(os.getenv("IVR_PROCESSING_SOUND_DELAY_SECONDS", "1.5"))
 PROCESSING_SOUND_INTERVAL_SECONDS = float(os.getenv("IVR_PROCESSING_SOUND_INTERVAL_SECONDS", "1.4"))
 
 # Model used for chat; override via env / config
@@ -476,6 +479,17 @@ class IVRCallSession:
             return MIN_SHORT_REPLY_BYTES
         return MIN_SPEECH_BYTES
 
+    def _silence_gap_seconds(self) -> float:
+        """Adaptive silence gap: 0.70s for crisp single-digit/rating replies, 1.05s for conversational speech."""
+        if (
+            self.menu_machine.state == IVRState.FEEDBACK
+            or self.conv_state.awaiting_feedback
+            or self.conv_state.awaiting_resolution_confirmation
+            or self.conv_state.awaiting_order_id_digits
+        ):
+            return SILENCE_GAP_SHORT_REPLY
+        return SILENCE_GAP_CONVERSATION
+
     async def on_dtmf(self, digit: str, event: Optional[dict[str, Any]] = None) -> None:
         """
         Processes a keypad digit pressed by the caller.
@@ -819,13 +833,13 @@ class IVRCallSession:
             if len(self._pcm_buffer) == 0:
                 self._preroll_buffer.append(data)
 
-            # Schedule a flush after SILENCE_GAP_SECONDS of quiet
+            # Schedule a flush after adaptive quiet gap (1.05s for conversation, 0.70s for short replies)
             if (
                 len(self._pcm_buffer) >= self._min_speech_bytes()
                 and (self._silence_task is None or self._silence_task.done())
             ):
                 self._silence_task = asyncio.create_task(
-                    self._delayed_flush(SILENCE_GAP_SECONDS)
+                    self._delayed_flush(self._silence_gap_seconds())
                 )
 
     async def on_transcript(self, event: dict[str, Any]) -> None:
@@ -959,14 +973,13 @@ class IVRCallSession:
             or self.conv_state.awaiting_order_id_digits
         )
         rms_floor = 60.0 if expecting_short_reply else 90.0
-        min_speech_ms = 80.0 if expecting_short_reply else 160.0
+        min_speech_ms = 80.0 if expecting_short_reply else 220.0
         if (not quality.is_speech_present and quality.rms < rms_floor) or (
             quality.speech_duration_ms < min_speech_ms and quality.rms < 250.0
         ):
             logger.info("[IVR] 🔇 Audio Intelligence rejected non-speech noise burst; skipping STT.")
             return
 
-        self._start_processing_sound()
         try:
             enhanced_result = await self.audio_pipeline.enhance(pcm, quality=quality)
             self.last_enhanced_audio = enhanced_result
@@ -995,7 +1008,7 @@ class IVRCallSession:
                     return
                 if (
                     norm_utt in {"thank you", "thanks", "thanks for watching", "thank you very much", "bye", "you", "okay"}
-                    and (quality.speech_duration_ms < 500.0 or quality.rms < 150.0)
+                    and (quality.speech_duration_ms < 600.0 or quality.rms < 160.0)
                 ):
                     logger.info(
                         f"[IVR] 🔇 Ignoring low-energy/short Whisper hallucination '{user_text}' "
@@ -1038,6 +1051,9 @@ class IVRCallSession:
                 f"[IVR] 🎙️ Caller Voice Transcribed (Whisper lang={self._language}): "
                 f"'{mask_sensitive_text(user_text)}'"
             )
+
+            # Start subtle background waiting chime only for valid utterances entering LLM/RAG
+            self._start_processing_sound()
             await self._run_ai_and_reply(user_text)
         finally:
             await self._stop_processing_sound()
