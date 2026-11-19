@@ -7,6 +7,6 @@
     "customer_name": "Customer",
     "call_uuid": "bf5e6829-601e-40e6-8fb1-f61915f5790f",
     "created_at": "2026-11-19T07:18:37Z",
-    "synced_to_crm": false
+    "synced_to_crm": true
   }
 ]
