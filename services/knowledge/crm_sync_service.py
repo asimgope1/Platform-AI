@@ -61,3 +61,4 @@ if __name__ == "__main__":
     load_dotenv(os.path.join(ROOT_DIR, ".env"))
     result = asyncio.run(sync_crm_knowledge_to_pgvector())
     print(result)
+

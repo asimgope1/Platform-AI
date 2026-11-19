@@ -493,6 +493,7 @@ async def _persist_complaint_to_crm_db(
                 database=dbname,
                 user=user,
                 password=password,
+                ssl=False,
                 timeout=3.0,
             )
             try:
@@ -714,6 +715,7 @@ class IVRRAGMiniModel:
                 database=dbname,
                 user=user,
                 password=password,
+                ssl=False,
                 timeout=2.5,
             )
             try:
