@@ -206,11 +206,18 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         try:
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
                 out_path = tf.name
-            subprocess.run(
-                ["say", "-v", voice, "-r", "165", "-o", out_path, "--data-format=LEI16@22050", text],
-                check=True,
-                timeout=5,
-            )
+            try:
+                subprocess.run(
+                    ["say", "-v", voice, "-r", "165", "-o", out_path, "--data-format=LEI16@8000", text],
+                    check=True,
+                    timeout=5,
+                )
+            except Exception:
+                subprocess.run(
+                    ["say", "-v", voice, "-r", "165", "-o", out_path, "--data-format=LEI16@22050", text],
+                    check=True,
+                    timeout=5,
+                )
             with open(out_path, "rb") as f:
                 data = f.read()
             if os.path.exists(out_path):
@@ -309,7 +316,7 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         try:
             edge_audio = await asyncio.wait_for(
                 self._synthesize_edge_tts(spoken_text, neural_voice, rate=speech_rate, pitch=speech_pitch),
-                timeout=7.0
+                timeout=2.2
             )
             if edge_audio:
                 if len(_TTS_CACHE) < 250:
@@ -328,12 +335,12 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         elif has_hindi or has_odia:
             say_voice = "Lekha"
         else:
-            say_voice = "Tara"
+            say_voice = "Rishi"
 
         say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, say_voice)
         if not say_audio:
-            # Fallback to Rishi or Samantha
-            say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, "Rishi") or await asyncio.to_thread(self._synthesize_say_sync, spoken_text, "Samantha")
+            # Fallback to Samantha
+            say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, "Samantha")
         if say_audio:
             if len(_TTS_CACHE) < 250:
                 _TTS_CACHE[cache_key] = say_audio

@@ -142,7 +142,13 @@ class HybridRetrievalService:
         strong_th = strong_threshold if strong_threshold is not None else float(os.getenv("RAG_MATCH_THRESHOLD", "0.55"))
         partial_th = partial_threshold if partial_threshold is not None else max(0.38, strong_th - 0.15)
 
-        if use_cache:
+        # Do not fast-cache live transactional or complaint status queries so dynamic CRM status changes are always fresh
+        is_live_crm_query = bool(
+            preferred_category == "crm_complaint_status"
+            or any(kw in clean_query.lower() for kw in ("complaint", "ticket", "status", "cmp/", "ord-", "order", "status of"))
+        )
+
+        if use_cache and not is_live_crm_query:
             cached_texts = get_fast_rag_chunks(tenant_id, clean_query)
             if cached_texts:
                 synthetic_scored = [
@@ -185,7 +191,7 @@ class HybridRetrievalService:
         chunk_objs = [c for c, s in scored_chunks if s >= partial_th]
         chunk_texts = [getattr(c, "content", "") for c in chunk_objs if getattr(c, "content", "")]
 
-        if use_cache and chunk_texts and eval_res.tier == RetrievalConfidenceTier.STRONG:
+        if use_cache and not is_live_crm_query and chunk_texts and eval_res.tier == RetrievalConfidenceTier.STRONG:
             cache_rag_chunks(tenant_id, clean_query, chunk_texts)
 
         return RetrievedContext(

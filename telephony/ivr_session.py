@@ -1384,19 +1384,27 @@ class IVRCallSession:
         # 3. TTS → raw PCM 8 kHz (clean spoken text of markdown/bullets/emojis)
         spoken_reply = _clean_spoken_text(reply_text)
         self._is_synthesizing = True
+        pcm_reply = b""
         try:
-            logger.info(
-                f"[IVR] Synthesizing speech for reply ({len(spoken_reply)} chars, emotion={active_emotion})..."
-            )
-            tts_bytes = await self._audio_service.synthesize(
-                text=spoken_reply,
-                model="tts-1",
-                voice="alloy",
-                response_format="wav",
-                emotion=active_emotion,
-            )
-            pcm_reply = await asyncio.to_thread(_tts_output_to_pcm8k, tts_bytes)
-            logger.info(f"[IVR] TTS ready: {len(pcm_reply)} bytes PCM ({len(pcm_reply)/16000:.1f}s)")
+            cached_pcm = get_cached_prompt_pcm(spoken_reply)
+            if cached_pcm and len(cached_pcm) > 500:
+                pcm_reply = cached_pcm
+                logger.info(f"[IVR] ⚡ Instant TTS Cache Hit ({len(spoken_reply)} chars): {len(pcm_reply)} bytes PCM ({len(pcm_reply)/16000:.1f}s)")
+            else:
+                logger.info(
+                    f"[IVR] Synthesizing speech for reply ({len(spoken_reply)} chars, emotion={active_emotion})..."
+                )
+                tts_bytes = await self._audio_service.synthesize(
+                    text=spoken_reply,
+                    model="tts-1",
+                    voice="alloy",
+                    response_format="wav",
+                    emotion=active_emotion,
+                )
+                pcm_reply = await asyncio.to_thread(_tts_output_to_pcm8k, tts_bytes)
+                logger.info(f"[IVR] TTS ready: {len(pcm_reply)} bytes PCM ({len(pcm_reply)/16000:.1f}s)")
+                if pcm_reply and len(pcm_reply) > 500:
+                    store_cached_prompt_pcm(spoken_reply, pcm_reply)
         except Exception as exc:
             logger.error(f"[IVR] TTS error: {exc}")
             return

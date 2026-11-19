@@ -113,6 +113,11 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         if self._pipe is None:
             with self._load_lock:
                 if self._pipe is None:
+                    import warnings
+                    warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+                    warnings.filterwarnings("ignore", message=".*max_new_tokens.*")
+                    warnings.filterwarnings("ignore", message=".*forced_decoder_ids.*")
+                    warnings.filterwarnings("ignore", message=".*clean_up_tokenization_spaces.*")
                     from transformers import pipeline
                     logger.info(f"Loading local Whisper STT model: '{self.model_name}' on CPU...")
                     self._pipe = pipeline("automatic-speech-recognition", model=self.model_name, device="cpu")
@@ -240,6 +245,7 @@ class WhisperLocalSpeechToTextAdapter(BaseSpeechToTextAdapter):
         pipe = self._get_pipeline()
         gen_kwargs = {
             "max_new_tokens": 96,
+            "max_length": None,
             "num_beams": 1,
             "do_sample": False,
             "no_repeat_ngram_size": 3,

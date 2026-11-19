@@ -195,6 +195,23 @@ async def warm_up_ivr_prompts(audio_service) -> None:
         MAX_RETRIES_EXCEEDED["en"],
         MAX_RETRIES_EXCEEDED["hi"],
         MAX_RETRIES_EXCEEDED["or"],
+        # Pre-warm standard conversational complaint and feedback templates
+        "Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.",
+        "Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
+        "Certainly! Please tell me the last 4 digits of your Order ID so I can check and share its complete status.",
+        "Certainly! Please let me know what else I can help you with today.",
+        "You're welcome! Have a wonderful day!",
+        "Thank you for rating us 5 out of 5! Have a wonderful day ahead.",
+        "Sorry, I could not hear that clearly. Could you please repeat?",
+        "I'm sorry, I couldn't clearly hear that. Could you please repeat your request?",
+        "कृपया अपनी समस्या का विवरण दें, मैं आपकी शिकायत तुरंत दर्ज करूँगी।",
+        "कृपया अपना शिकायत टिकट नंबर या पंजीकृत फोन नंबर बताएं।",
+        "5 में से 5 स्टार रेटिंग देने के लिए आपका बहुत-बहुत धन्यवाद! आपका दिन शुभ हो।",
+        "माफ़ कीजिए, आपकी आवाज़ साफ़ समझ नहीं आई। कृपया दोबारा बोलें।",
+        "ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା ବିଷୟରେ କୁହନ୍ତୁ, ମୁଁ ତୁରନ୍ତ ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ କରିବି।",
+        "ଦୟାକରି ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର କିମ୍ବା ପଞ୍ଜୀକୃତ ଫୋନ୍ ନମ୍ବର କୁହନ୍ତୁ।",
+        "ଆମକୁ ୫ ଷ୍ଟାର୍ ରେଟିଂ ଦେଇଥିବାରୁ ବହୁତ ଧନ୍ୟବାଦ! ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ।",
+        "କ୍ଷମା କରିବେ, ଆପଣଙ୍କ କଥା ସ୍ପଷ୍ଟ ଭାବରେ ଶୁଣାଗଲା ନାହିଁ। ଦୟାକରି ପୁଣି କୁହନ୍ତୁ।",
     ]
 
     # Add service acknowledgements

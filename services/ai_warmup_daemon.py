@@ -232,3 +232,4 @@ def get_warmup_status() -> Dict[str, Any]:
         "uptime_warm_seconds": (time.time() - _LAST_WARMUP_TIME) if _LAST_WARMUP_TIME > 0 else 0,
         "components": _WARMUP_STATS,
     }
+
