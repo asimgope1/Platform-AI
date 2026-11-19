@@ -468,8 +468,8 @@ for _i in range(1, 10):
     if str(_i) in COMPLAINT_STATUS_CATALOG:
         COMPLAINT_STATUS_CATALOG[_pad] = COMPLAINT_STATUS_CATALOG[str(_i)]
 
-# Dynamic complaint ticket counter initialized beyond existing CRM tickets
-_NEXT_TICKET_COUNTER: int = 10
+# Dynamic complaint ticket counter initialized beyond existing CRM tickets (latest is 11)
+_NEXT_TICKET_COUNTER: int = 12
 
 
 async def _persist_complaint_to_crm_db(

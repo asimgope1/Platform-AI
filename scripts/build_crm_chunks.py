@@ -40,7 +40,8 @@ async def extract_and_generate_crm_knowledge() -> str:
         database=DBNAME,
         user=USER,
         password=PASSWORD,
-        timeout=10,
+        ssl=False,
+        timeout=5,
     )
 
     phases_rows = await conn.fetch("SELECT complain_phase_sl, complain_phase_name FROM \"ComplainPhaseMaster\"")
