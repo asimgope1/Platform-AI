@@ -1131,19 +1131,6 @@ class IVRCallSession:
             ivr_mini_brain,
         )
 
-        # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
-        # A. Appreciation / Closing turn (auto-hangup trigger)
-        # Must execute FIRST to respect caller's desire to end the call, preventing
-        # unwanted transfer offers or satisfaction surveys when caller says "Thank you".
-        if ivr_mini_brain._is_closing_intent(lower_user):
-            self.conv_state.awaiting_order_id_digits = False
-            self.conv_state.awaiting_complaint_slots = False
-            self.conv_state.awaiting_feedback = False
-            self._order_dtmf_buffer = ""
-            reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
-            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
-            return await self._finalize_and_speak(effective_user, reply_text)
-
         # Check if conversation is actively engaged in complaint flow (state, city, address, problem, or ticket lookup)
         is_in_complaint_flow = (
             ivr_mini_brain._was_asked_for_state(self._history)
@@ -1153,10 +1140,23 @@ class IVRCallSession:
             or ivr_mini_brain._was_asked_for_complaint_id(self._history)
             or ivr_mini_brain._is_complaint_register_intent(lower_user)
             or ivr_mini_brain._is_complaint_status_intent(lower_user)
+            or getattr(self.conv_state, "awaiting_complaint_slots", False)
         )
         if is_in_complaint_flow:
             self.conv_state.awaiting_complaint_slots = True
             self.conv_state.failed_attempts = 0
+
+        # ── 1. Fast Telephony Protocol Signals (instant response) ─────────────
+        # A. Appreciation / Closing turn (auto-hangup trigger)
+        # Must execute only if caller is NOT in the middle of active complaint data collection
+        if ivr_mini_brain._is_closing_intent(lower_user) and not is_in_complaint_flow:
+            self.conv_state.awaiting_order_id_digits = False
+            self.conv_state.awaiting_complaint_slots = False
+            self.conv_state.awaiting_feedback = False
+            self._order_dtmf_buffer = ""
+            reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
+            logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
+            return await self._finalize_and_speak(effective_user, reply_text)
 
         # If decision manager offered transfer but caller is actively engaged in registering or checking a complaint:
         if (plan.action in (Action.OFFER_TRANSFER, Action.TRANSFER) or plan.trigger_transfer_event) and is_in_complaint_flow and not self.conv_state.explicit_agent_request:

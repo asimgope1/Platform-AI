@@ -176,9 +176,9 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ନିଶ୍ଚୟ! ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ କରିବା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ ରାଜ୍ୟର (State) ନାମ କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_city": {
-        "en": "Thank you. What is your City?",
-        "hi": "धन्यवाद। आपके शहर (City) का नाम क्या है?",
-        "or": "ଧନ୍ୟବାଦ। ଆପଣଙ୍କ ସହରର (City) ନାମ କ’ଣ?",
+        "en": "Got it! What is your City?",
+        "hi": "बहुत अच्छा! आपके शहर (City) का नाम क्या है?",
+        "or": "ବହୁତ ଭଲ! ଆପଣଙ୍କ ସହରର (City) ନାମ କ’ଣ?",
     },
     "complaint_register_ask_address": {
         "en": "Got it. Please provide your Area or Street Address.",
@@ -186,9 +186,9 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ଠିକ୍ ଅଛି। ଦୟାକରି ଆପଣଙ୍କ ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା (Address) କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_problem": {
-        "en": "Thank you. Now please describe the issue or problem you are facing.",
-        "hi": "धन्यवाद। अब कृपया अपनी समस्या या शिकायत का पूरा विवरण बताएं।",
-        "or": "ଧନ୍ୟବାଦ। ଏବେ ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
+        "en": "Understood. Now please describe the issue or problem you are facing.",
+        "hi": "ठीक है। अब कृपया अपनी समस्या या शिकायत का पूरा विवरण बताएं।",
+        "or": "ଠିକ୍ ଅଛି। ଏବେ ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_details": {
         "en": "Certainly! To register your complaint, please tell me your State.",
@@ -1726,9 +1726,28 @@ class IVRRAGMiniModel:
         lower_query = clean_query.lower()
         lang = self._detect_language(clean_query, messages, default_lang=language)
 
+        # Check active slot collection guards in complaint registration
+        awaiting_complaint_desc = self._was_asked_for_complaint_description(messages)
+        awaiting_address = self._was_asked_for_address(messages)
+        awaiting_city = self._was_asked_for_city(messages)
+        awaiting_state = self._was_asked_for_state(messages)
+        awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
+        is_in_reg_slots = bool(awaiting_complaint_desc or awaiting_address or awaiting_city or awaiting_state)
+
         # 1. Check for appreciation / closing farewell turns (triggers auto-cut)
+        # Note: Must NOT trigger if caller is currently in the middle of active complaint data collection
         if self._is_closing_intent(lower_query):
-            return AUTONOMOUS_KNOWLEDGE["appreciation"][lang]
+            if not is_in_reg_slots:
+                return AUTONOMOUS_KNOWLEDGE["appreciation"][lang]
+            # If in registration questionnaire, re-prompt for the pending slot rather than closing the call:
+            if awaiting_state:
+                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
+            elif awaiting_city:
+                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_city"][lang]
+            elif awaiting_address:
+                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_address"][lang]
+            elif awaiting_complaint_desc:
+                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
 
         # 2. Check for pure greetings
         if self._is_greeting_intent(lower_query):
