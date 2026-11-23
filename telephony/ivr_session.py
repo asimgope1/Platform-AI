@@ -1137,11 +1137,34 @@ class IVRCallSession:
         # unwanted transfer offers or satisfaction surveys when caller says "Thank you".
         if ivr_mini_brain._is_closing_intent(lower_user):
             self.conv_state.awaiting_order_id_digits = False
+            self.conv_state.awaiting_complaint_slots = False
             self.conv_state.awaiting_feedback = False
             self._order_dtmf_buffer = ""
             reply_text = AUTONOMOUS_KNOWLEDGE["appreciation"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["appreciation"]["en"])
             logger.info(f"[IVR] 📞 Closing farewell turn detected: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
             return await self._finalize_and_speak(effective_user, reply_text)
+
+        # Check if conversation is actively engaged in complaint flow (state, city, address, problem, or ticket lookup)
+        is_in_complaint_flow = (
+            ivr_mini_brain._was_asked_for_state(self._history)
+            or ivr_mini_brain._was_asked_for_city(self._history)
+            or ivr_mini_brain._was_asked_for_address(self._history)
+            or ivr_mini_brain._was_asked_for_complaint_description(self._history)
+            or ivr_mini_brain._was_asked_for_complaint_id(self._history)
+            or ivr_mini_brain._is_complaint_register_intent(lower_user)
+            or ivr_mini_brain._is_complaint_status_intent(lower_user)
+        )
+        if is_in_complaint_flow:
+            self.conv_state.awaiting_complaint_slots = True
+            self.conv_state.failed_attempts = 0
+
+        # If decision manager offered transfer but caller is actively engaged in registering or checking a complaint:
+        if (plan.action in (Action.OFFER_TRANSFER, Action.TRANSFER) or plan.trigger_transfer_event) and is_in_complaint_flow and not self.conv_state.explicit_agent_request:
+            logger.info(f"[IVR] 🛡️ Suppressing unwanted transfer offer during active complaint registration/inquiry flow.")
+            plan.action = Action.CONTINUE
+            plan.use_llm = True
+            plan.text = None
+            plan.trigger_transfer_event = None
 
         if plan.trigger_transfer_event:
             self.menu_machine.state = IVRState.ESCALATED
@@ -1344,6 +1367,7 @@ class IVRCallSession:
                 self.conv_state.resolution_status = "resolved"
                 self.conv_state.customer_confirmed = True
                 self.conv_state.awaiting_feedback = True
+                self.conv_state.awaiting_complaint_slots = False
                 logger.info(f"[IVR] 🎫 Complaint registered successfully on call. Setting awaiting_feedback=True (uuid={self.call_uuid}).")
             elif any(m in reply_text for m in ("valuable feedback", "बहुमूल्य प्रतिक्रिया", "ମୂଲ୍ୟବାନ ମତାମତ", "feedback and rating")):
                 self.conv_state.awaiting_feedback = False

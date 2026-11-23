@@ -69,6 +69,7 @@ class ConversationState:
     awaiting_resolution_confirmation: bool = False
     awaiting_feedback: bool = False
     awaiting_order_id_digits: bool = False
+    awaiting_complaint_slots: bool = False
     order_id_last4: Optional[str] = None
 
     last_transcript: str = ""
@@ -150,12 +151,13 @@ class ConversationState:
         )
 
         # Increment failed attempts if caller repeats unresolved intent or explicitly rejects resolution.
-        # Do not penalize legitimate multi-turn slot filling (e.g. supplying order ID digits) or positive/closing turns.
-        non_failure_intents = {"appreciation", "greeting", "feedback_rating", "confirmation_yes"}
+        # Do not penalize legitimate multi-turn slot filling (order ID digits, complaint registration/status) or positive/closing turns.
+        non_failure_intents = {"appreciation", "greeting", "feedback_rating", "confirmation_yes", "complaint", "order_status"}
         if (
             (
                 self.memory.consecutive_same_intent >= 1
                 and not self.awaiting_order_id_digits
+                and not self.awaiting_complaint_slots
                 and intelligence.intent.intent not in non_failure_intents
             )
             or (self.awaiting_resolution_confirmation and intelligence.intent.intent == "confirmation_no")

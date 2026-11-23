@@ -1347,62 +1347,104 @@ class IVRRAGMiniModel:
                 )
         return False
 
-    def _was_asked_for_state(self, messages: Optional[List[ChatMessage]]) -> bool:
-        """Returns True if the previous assistant turn asked for the caller's State."""
+    def _last_substantive_assistant_message(self, messages: Optional[List[ChatMessage]]) -> Optional[str]:
+        """Finds the latest assistant prompt, ignoring brief fillers or greetings."""
         if not messages:
-            return False
+            return None
+        fillers = (
+            "yes, i am listening", "हाँजी, मैं सुन रही हूँ", "ହଁ ଆଜ୍ଞା, ମୁଁ ଶୁଣୁଛି",
+            "how can i help you today", "what else i can help you", "sure, please let me know"
+        )
         for m in reversed(messages):
             if m.role == "assistant" and m.content:
-                c = str(m.content).lower()
-                return any(marker in c for marker in (
-                    "tell me your state", "your state", "state name", "राज्य (state)", "राज्य का नाम", "ରାଜ୍ୟର (state)", "ରାଜ୍ୟର ନାମ"
-                ))
-        return False
+                c = str(m.content).lower().strip()
+                if not any(f in c for f in fillers):
+                    return c
+        return None
+
+    def _was_asked_for_state(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the previous assistant turn asked for the caller's State."""
+        c = self._last_substantive_assistant_message(messages)
+        if not c:
+            return False
+        return any(marker in c for marker in (
+            "tell me your state", "your state", "state name", "राज्य (state)", "राज्य का नाम", "ରାଜ୍ୟର (state)", "ରାଜ୍ୟର ନାମ"
+        ))
 
     def _was_asked_for_city(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for the caller's City."""
-        if not messages:
+        c = self._last_substantive_assistant_message(messages)
+        if not c:
             return False
-        for m in reversed(messages):
-            if m.role == "assistant" and m.content:
-                c = str(m.content).lower()
-                return any(marker in c for marker in (
-                    "what is your city", "which city", "city or district", "शहर (city)", "शहर का नाम", "ସହରର (city)", "ସହରର ନାମ"
-                ))
-        return False
+        return any(marker in c for marker in (
+            "what is your city", "which city", "city or district", "शहर (city)", "शहर का नाम", "ସହରର (city)", "ସହରର ନାମ"
+        ))
 
     def _was_asked_for_address(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for the caller's Address / Area / Street."""
-        if not messages:
+        c = self._last_substantive_assistant_message(messages)
+        if not c:
             return False
-        for m in reversed(messages):
-            if m.role == "assistant" and m.content:
-                c = str(m.content).lower()
-                return any(marker in c for marker in (
-                    "street address", "area or street address", "provide your area", "locality, area", "पते (address)", "क्षेत्र या पते", "ଠିକଣା (address)", "ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା"
-                ))
-        return False
+        return any(marker in c for marker in (
+            "street address", "area or street address", "provide your area", "locality, area", "पते (address)", "क्षेत्र या पते", "ଠିକଣା (address)", "ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା"
+        ))
 
     def _was_asked_for_complaint_description(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for a problem or issue description."""
-        if not messages:
+        c = self._last_substantive_assistant_message(messages)
+        if not c:
             return False
-        for m in reversed(messages):
-            if m.role == "assistant" and m.content:
-                c = str(m.content).lower()
-                return any(
-                    marker in c
-                    for marker in (
-                        "describe the issue", "describe the problem", "problem you are facing",
-                        "अपनी समस्या या शिकायत", "समस्या का विवरण", "ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ", "ସମସ୍ୟା ବିଷୟରେ", "register your complaint right away",
-                    )
-                )
-        return False
+        return any(
+            marker in c
+            for marker in (
+                "describe the issue", "describe the problem", "problem you are facing",
+                "अपनी समस्या या शिकायत", "समस्या का विवरण", "ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ", "ସମସ୍ୟା ବିଷୟରେ", "register your complaint right away",
+            )
+        )
 
     def _extract_registration_slots_from_history(self, messages: Optional[List[ChatMessage]]) -> Dict[str, str]:
         """
         Traverses conversation history and extracts previously collected State, City, and Address.
         Uses canonical Indian state and city normalization to resolve vernacular variants.
+        """
+        slots = {"state": "Odisha", "city": "Bhubaneswar", "address": ""}
+        if not messages:
+            return slots
+
+        for i, m in enumerate(messages):
+            if m.role == "assistant" and m.content and i + 1 < len(messages):
+                asst_text = str(m.content).lower()
+                user_msg = messages[i + 1]
+                if user_msg.role == "user" and user_msg.content:
+                    u_val = str(user_msg.content).strip().rstrip(".")
+                    u_clean = re.sub(r'^(?:i am in|i live in|my state is|my city is|it is|state is|city is|in)\s+', '', u_val, flags=re.IGNORECASE).strip()
+                    if any(w in asst_text for w in ("your state", "state name", "राज्य", "ରାଜ୍ୟ")):
+                        norm_st = normalize_indian_state(u_clean or u_val)
+                        if norm_st:
+                            slots["state"] = norm_st
+                        else:
+                            norm_ct = normalize_indian_city(u_clean or u_val)
+                            if norm_ct:
+                                slots["city"] = norm_ct[0]
+                                slots["state"] = norm_ct[1]
+                            else:
+                                slots["state"] = u_clean.title() if u_clean else u_val.title()
+                    elif any(w in asst_text for w in ("your city", "which city", "शहर", "ସହର")):
+                        norm_ct = normalize_indian_city(u_clean or u_val)
+                        if norm_ct:
+                            slots["city"] = norm_ct[0]
+                            if norm_ct[1] and slots.get("state") in ("Odisha", ""):
+                                slots["state"] = norm_ct[1]
+                        else:
+                            slots["city"] = u_clean.title() if u_clean else u_val.title()
+                    elif any(w in asst_text for w in ("street address", "area or street", "पते", "क्षेत्र", "ଠିକଣା")):
+                        slots["address"] = u_val
+
+        return slots
+
+    def _extract_registration_slots_from_history(self, messages: Optional[List[ChatMessage]]) -> Dict[str, str]:
+        """
+        Traverses conversation history and extracts previously collected State, City, and Address.
         """
         slots = {"state": "Odisha", "city": "Bhubaneswar", "address": ""}
         if not messages:
@@ -1963,6 +2005,10 @@ class IVRRAGMiniModel:
         "your complaint has been successfully registered", "आपकी शिकायत सफलतापूर्वक", "ଆପଣଙ୍କ ଅଭିଯୋଗ ସଫଳତାର ସହ",
         "here are the complete details", "शिकायत टिकट नंबर", "ଅଭିଯୋଗ ଟିକେଟ୍",
         "for registered phone number", "पंजीकृत मोबाइल", "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍",
+        "certainly! to register your complaint", "जी बिल्कुल! आपकी शिकायत दर्ज", "ନିଶ୍ଚୟ! ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ",
+        "thank you. what is your city", "धन्यवाद। आपके शहर", "ଧନ୍ୟବାଦ। ଆପଣଙ୍କ ସହରର",
+        "got it. please provide your area", "ठीक है। कृपया अपने इलाके", "ଠିକ୍ ଅଛି। ଦୟାକରି ଆପଣଙ୍କ",
+        "thank you. now please describe", "धन्यवाद। अब कृपया अपनी समस्या", "ଧନ୍ୟବାଦ। ଏବେ ଦୟାକରି ଆପଣଙ୍କ",
         "certainly! please describe", "जी बिल्कुल! कृपया अपनी समस्या", "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା",
         "माफ़", "मैं आपकी", "मैं समझती", "यह सुनकर", "आपका बहुत", "धन्यवाद",
         "କ୍ଷମା", "ମୁଁ ବୁଝି", "ମୁଁ ଆପଣଙ୍କ", "ଏହା ଜାଣି", "ଧନ୍ୟବାଦ",

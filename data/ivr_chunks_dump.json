@@ -46,6 +46,29 @@
     }
   },
   {
+    "id": "0569b051-cb2a-4452-8756-e5cf4765f54b",
+    "document_id": "0d84fc36-c428-4987-aa4d-d7c8724b053b",
+    "document_title": "Southern India - Karnataka, Telangana, Andhra Pradesh, Tamil Nadu, and Kerala",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Southern India - Karnataka, Telangana, Andhra Pradesh, Tamil Nadu, and Kerala\nThe Southern Region includes major technology and commercial capitals. In Karnataka: Bengaluru (Bangalore, Whitefield, Koramangala, Indiranagar, Electronic City, HSR Layout), Mysuru (Mysore), Hubballi-Dharwad, Mangaluru, and Belagavi. In Telangana: Hyderabad (capital, Hitec City, Gachibowli, Banjara Hills, Secunderabad) and Warangal. In Andhra Pradesh: Visakhapatnam (Vizag), Vijayawada, Guntur, Tirupati, Nellore, and Kurnool. In Tamil Nadu: Chennai (capital, Anna Nagar, T. Nagar, OMR IT corridor, Guindy), Coimbatore, Madurai, Tiruchirappalli (Trichy), and Salem. In Kerala: Thiruvananthapuram (Trivandrum), Kochi (Cochin, Ernakulam, Kakkanad InfoPark), Kozhikode (Calicut), and Thrissur.",
+    "meta": {
+      "category": "geography",
+      "topic": "southern_india_states_and_cities",
+      "title": "Southern India - Karnataka, Telangana, Andhra Pradesh, Tamil Nadu, and Kerala",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "ee35823b-909e-4eae-9839-d74033585171",
     "document_id": "1b1b1a77-c2a6-411d-8fee-dbf4c191a874",
     "document_title": "Complaint Status for Ticket CMP/0003/26-27 (Swarna)",
@@ -126,6 +149,29 @@
     "chunk_index": 3,
     "content": ".\n  - Credit/Debit cards & Net Banking: Processed within 5 to 7 banking business days.\n  - Cash on Delivery (COD): Add your preferred UPI ID or Bank account in the app for instant direct-to-bank transfer.\n- 7-Day Hassle-Free Returns: Free door-step reverse pickup and replacement for any damaged, defective, or incorrect items.\"",
     "meta": null
+  },
+  {
+    "id": "cd4ee380-a06a-41c2-b4ea-8adc1293f0da",
+    "document_id": "25070b2b-5541-4f04-932d-bd9d00bf35a5",
+    "document_title": "Western India - Maharashtra, Gujarat, and Goa Cities",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Western India - Maharashtra, Gujarat, and Goa Cities\nThe Western Zone features major financial centers in Maharashtra, Gujarat, and Goa. In Maharashtra, key cities include Mumbai (financial capital, Nariman Point, Bandra-Kurla Complex BKC, Andheri, Borivali), Pune (Hinjawadi, Shivaji Nagar, Kothrud, Viman Nagar), Nagpur, Nashik, Thane, Navi Mumbai (Vashi, Belapur), Aurangabad (Chhatrapati Sambhajinagar), Solapur, and Kolhapur. In Gujarat, major business centers include Ahmedabad (SG Highway, Maninagar, Navrangpura), Surat (diamond and textile hub), Vadodara (Baroda), Rajkot, Gandhinagar (state capital), Bhavnagar, and Jamnagar. In Goa, service centers operate in Panaji (capital) and Margao.",
+    "meta": {
+      "category": "geography",
+      "topic": "western_india_maharashtra_gujarat_goa",
+      "title": "Western India - Maharashtra, Gujarat, and Goa Cities",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
   },
   {
     "id": "6f4f7346-16cc-4185-956c-3cf89ea19ff1",
@@ -251,6 +297,29 @@
         "or"
       ],
       "source": "official_bank_policy",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "ac23349c-06a6-4d1e-988f-e8e4aee78ad2",
+    "document_id": "33933c57-e18a-4e2d-9b4c-7440fe1132b8",
+    "document_title": "Indian Postal Pin Code Zones and Address Verification Policy",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Indian Postal Pin Code Zones and Address Verification Policy\nPostal Index Numbers (PIN codes) in India consist of 6 digits divided into 9 postal zones: Zone 1 (Delhi, Haryana, Punjab, Himachal Pradesh, Jammu & Kashmir, Ladakh, Chandigarh), Zone 2 (Uttar Pradesh, Uttarakhand), Zone 3 (Rajasthan, Gujarat, Daman and Diu, Dadra and Nagar Haveli), Zone 4 (Maharashtra, Goa, Madhya Pradesh, Chhattisgarh), Zone 5 (Andhra Pradesh, Telangana, Karnataka), Zone 6 (Tamil Nadu, Kerala, Lakshadweep, Puducherry), Zone 7 (West Bengal, Odisha, Andaman & Nicobar Islands, Arunachal Pradesh, Nagaland, Manipur, Mizoram, Tripura, Meghalaya, Assam, Sikkim), Zone 8 (Bihar, Jharkhand), and Zone 9 (Army Post Office). Odisha PIN codes start with 75 or 76, West Bengal with 70 to 74, Bihar and Jharkhand with 80 to 85, Delhi with 11, Maharashtra with 40 to 44, and Karnataka with 56 to 59. When registering customer complaints or updating KYC address details, stating city, state, or PIN code ensures precise dispatch and field technician routing.",
+    "meta": {
+      "category": "geography",
+      "topic": "pin_code_and_postal_zones_india",
+      "title": "Indian Postal Pin Code Zones and Address Verification Policy",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
       "source_version": "1.0",
       "verified": true,
       "effective_date": "2026-01-01",
@@ -408,6 +477,29 @@
     }
   },
   {
+    "id": "1f4ba17f-f5b2-4fa2-828e-3f8c28045147",
+    "document_id": "448bd392-1a32-4687-b83b-096ba3bfd3f4",
+    "document_title": "State-wise Customer Grievance and Support Jurisdiction",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] State-wise Customer Grievance and Support Jurisdiction\nCustomer support requests and registered complaints are automatically mapped to regional nodal grievance centers based on the caller's state and city: Eastern Circle (Bhubaneswar, Cuttack, Kolkata, Patna, Ranchi), Northern Circle (New Delhi, Lucknow, Jaipur, Chandigarh), Western Circle (Mumbai, Pune, Ahmedabad), Southern Circle (Bengaluru, Hyderabad, Chennai, Kochi), and Central Circle (Bhopal, Raipur). If a caller is traveling or residing in another state, their registered complaint remains accessible across all circles nationwide, and tracking by complaint ticket number (e.g. 1, 15, CMP 0015) is universally synchronized.",
+    "meta": {
+      "category": "geography",
+      "topic": "state_wise_customer_support_jurisdiction",
+      "title": "State-wise Customer Grievance and Support Jurisdiction",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "3018ba75-e9c8-42c1-8a2f-15539097dca0",
     "document_id": "465b95d6-eb66-469d-9f16-252c095bed04",
     "document_title": "ୟୁପିଆଇ ପେମେଣ୍ଟ ବିଫଳତା ଏବଂ ସ୍ୱୟଂଚାଳିତ ରିଫଣ୍ଡ (Odia UPI Refund SLA)",
@@ -463,6 +555,52 @@
     }
   },
   {
+    "id": "71d6a700-dfac-405c-a721-55f939d7ac9b",
+    "document_id": "4f8b92fb-a124-42da-bf51-4c88964513ee",
+    "document_title": "Central India - Madhya Pradesh and Chhattisgarh Cities",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Central India - Madhya Pradesh and Chhattisgarh Cities\nThe Central Region covers Madhya Pradesh and Chhattisgarh. In Madhya Pradesh, major banking and service cities include Bhopal (state capital, MP Nagar, Arera Colony), Indore (commercial hub, Vijay Nagar, Palasia), Gwalior, Jabalpur, Ujjain, and Sagar. In Chhattisgarh, primary industrial and administrative centers include Raipur (state capital, Pandri, Telibandha), Bilaspur, Durg, Bhilai (Steel City), and Korba. Customer requests from these regions are processed with standard 3 to 5 business day SLAs.",
+    "meta": {
+      "category": "geography",
+      "topic": "central_india_madhya_pradesh_chhattisgarh",
+      "title": "Central India - Madhya Pradesh and Chhattisgarh Cities",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "1051b90e-3387-4618-ba78-69469245d818",
+    "document_id": "52b2c6f1-ba4c-4be5-819b-e8a7ce68f2f6",
+    "document_title": "Complaint Status for Ticket CMP/0016/26-27 (Customer)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0016/26-27 (Customer)\nService complaint ticket CMP/0016/26-27 for customer Customer (phone number 9937234512) in भुवनेश्वर, ओडिशा was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: मेरा ब्रॉडबैंड इंटरनेट दो दिन से बंद है.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0016_26_27",
+      "title": "Complaint Status for Ticket CMP/0016/26-27 (Customer)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "277041f1-4f5f-4e22-a58b-e16c7cf01fee",
     "document_id": "537085b0-db33-4ce1-b339-d3c637cb3306",
     "document_title": "Debit Card, Credit Card, ATM & Emergency Fraud Resolution",
@@ -497,6 +635,29 @@
     "chunk_index": 3,
     "content": "t of ₹40,000 to ₹1,00,000 depending on your card variant.\n- Unblocking Temporarily Locked Card: If your card was locked due to 3 incorrect PIN attempts, it unlocks automatically after 24 hours, or you can unlock it immediately in Mobile Banking under 'Manage Cards'.",
     "meta": null
+  },
+  {
+    "id": "1cfac2ad-c287-4755-9892-3307ae82cc32",
+    "document_id": "5b4c4af9-65d1-407b-9e4c-6873ac83ca69",
+    "document_title": "Complaint Status for Ticket CMP/0018/26-27 (Customer)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0018/26-27 (Customer)\nService complaint ticket CMP/0018/26-27 for customer Customer (phone number 9937234512) in Nabukaro, You Are Kind was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: Optical fiber of the broadband is broken..",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0018_26_27",
+      "title": "Complaint Status for Ticket CMP/0018/26-27 (Customer)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
   },
   {
     "id": "3517e737-80c1-4170-a115-0fdafc0b5743",
@@ -644,6 +805,29 @@
     "meta": null
   },
   {
+    "id": "a150d101-7cc5-4a6f-a2e5-1461083566a1",
+    "document_id": "65a926aa-cc9a-44dc-9d25-fbd1beafda09",
+    "document_title": "Northern India - Delhi NCR, Uttar Pradesh, Punjab, and Haryana Cities",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Northern India - Delhi NCR, Uttar Pradesh, Punjab, and Haryana Cities\nThe Northern Region encompasses Delhi NCR, Uttar Pradesh, Punjab, Haryana, Rajasthan, Uttarakhand, and Himachal Pradesh. In Delhi NCR, coverage includes New Delhi (Connaught Place, South Extension, Dwarka, Rohini), Noida, Greater Noida, Gurugram (Gurgaon, Cyber City, Golf Course Road), Faridabad, and Ghaziabad. In Uttar Pradesh, major hubs are Lucknow (capital, Hazratganj, Gomti Nagar), Kanpur, Varanasi, Agra, Prayagraj (Allahabad), Meerut, Bareilly, Aligarh, and Moradabad. In Punjab and Haryana, service hubs include Chandigarh (capital), Ludhiana, Amritsar, Jalandhar, Patiala, Panchkula, Panipat, Karnal, and Ambala. In Rajasthan, cities include Jaipur (Pink City capital, Malviya Nagar, Vaishali Nagar), Jodhpur, Udaipur, Kota, and Bikaner. In Uttarakhand, hubs include Dehradun and Haridwar.",
+    "meta": {
+      "category": "geography",
+      "topic": "delhi_ncr_and_northern_india_cities",
+      "title": "Northern India - Delhi NCR, Uttar Pradesh, Punjab, and Haryana Cities",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "c2787791-aaa0-4ad7-a214-34edf7e24fea",
     "document_id": "66fcb622-0839-415c-a101-880a07fac1c9",
     "document_title": "ATM and Debit Card Green PIN Generation Policy",
@@ -660,6 +844,29 @@
         "or"
       ],
       "source": "official_bank_policy",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "6323c7e4-a224-4c61-b97d-b87d7943fc65",
+    "document_id": "69b044c4-1e24-4881-8e89-99aa5a3b3f07",
+    "document_title": "North Eastern States of India - Assam, Meghalaya, Tripura, and Regional Hubs",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] North Eastern States of India - Assam, Meghalaya, Tripura, and Regional Hubs\nThe North Eastern Region comprises the eight sister states: Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura. Key administrative and service centers include Guwahati (Assam commercial gateway, Dispur capital, Paltan Bazaar, GS Road), Dibrugarh, Silchar, Jorhat, Tezpur, Shillong (Meghalaya capital), Agartala (Tripura capital), Imphal (Manipur capital), Aizawl (Mizoram capital), Kohima and Dimapur (Nagaland), Gangtok (Sikkim capital), and Itanagar (Arunachal Pradesh capital). All standard banking and grievance channels operate with full PIN-code coverage across North Eastern circles.",
+    "meta": {
+      "category": "geography",
+      "topic": "north_eastern_india_states_and_cities",
+      "title": "North Eastern States of India - Assam, Meghalaya, Tripura, and Regional Hubs",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
       "source_version": "1.0",
       "verified": true,
       "effective_date": "2026-01-01",
@@ -835,6 +1042,29 @@
     "meta": {
       "language": "or",
       "category": "ivr_policy"
+    }
+  },
+  {
+    "id": "b2a78153-af1c-41c7-ad0f-4bd6d0fa0607",
+    "document_id": "79c1eca9-d42f-4390-9c25-b7ceb7a05274",
+    "document_title": "Eastern India - West Bengal, Bihar, and Jharkhand Cities",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Eastern India - West Bengal, Bihar, and Jharkhand Cities\nThe Eastern Zone covers West Bengal, Bihar, and Jharkhand. In West Bengal, key service cities include Kolkata (state capital, Salt Lake, New Town, Park Street, Howrah), Asansol, Durgapur, Siliguri, Bardhaman, Kharagpur, and Haldia. In Bihar, major cities include Patna (state capital, Kankarbagh, Boring Road, Bailey Road), Gaya, Muzaffarpur, Bhagalpur, Darbhanga, Purnia, Begusarai, and Ara. In Jharkhand, primary industrial and banking centers include Ranchi (state capital, Doranda, Harmu), Jamshedpur (Tatanagar, Bistupur, Sakchi), Dhanbad, Bokaro Steel City, Deoghar, and Hazaribagh. Customers in these cities enjoy next-day door-step document verification and express replacement.",
+    "meta": {
+      "category": "geography",
+      "topic": "eastern_india_states_and_cities",
+      "title": "Eastern India - West Bengal, Bihar, and Jharkhand Cities",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
     }
   },
   {
@@ -1027,12 +1257,35 @@
     }
   },
   {
+    "id": "ce8d089b-acd6-435e-bb77-af83eb74e066",
+    "document_id": "a41a99e9-1ba7-4776-a40b-226ab9b70ba2",
+    "document_title": "Complaint Status for Ticket CMP/0015/26-27 (Customer)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0015/26-27 (Customer)\nService complaint ticket CMP/0015/26-27 for customer Customer (phone number 9937234512) in Bhubaneswar, Odisha was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: Broadband internet optical fiber damaged and red blinking light on router.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0015_26_27",
+      "title": "Complaint Status for Ticket CMP/0015/26-27 (Customer)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "9f7caeaf-2241-4f0a-839d-bcebe5c60b98",
     "document_id": "a4da0677-5823-41c5-81ba-f97bbe6adf8a",
     "document_title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
     "source_type": "live_crm_database",
     "chunk_index": 0,
-    "content": "[crm_customer_directory] Customer Profile and Account Complaints for Suvarna Sai (9937234512)\nCustomer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 6 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New), Ticket CMP/0012/26-27 (status: New), Ticket CMP/0013/26-27 (status: New), Ticket CMP/0014/26-27 (status: New).",
+    "content": "[crm_customer_directory] Customer Profile and Account Complaints for Suvarna Sai (9937234512)\nCustomer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 10 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New), Ticket CMP/0012/26-27 (status: New), Ticket CMP/0013/26-27 (status: New), Ticket CMP/0014/26-27 (status: New), Ticket CMP/0015/26-27 (status: New), Ticket CMP/0016/26-27 (status: New), Ticket CMP/0017/26-27 (status: New), Ticket CMP/0018/26-27 (status: New).",
     "meta": {
       "category": "crm_customer_directory",
       "topic": "customer_9937234512",
@@ -1098,6 +1351,29 @@
     "chunk_index": 2,
     "content": "z nahi aa rahi' or 'Can you hear me?':\n  \"हाँजी, मुझे आपकी आवाज़ बिल्कुल साफ़ और स्पष्ट आ रही है। कृपया अपनी समस्या बताइए, मैं तुरंत समाधान करूँगा।\"\n  \"Yes, I can hear you loud and clear! Please go ahead with your question and I will assist you right away.\"\n- If caller says 'Slow down' or 'Thoda dheere bolo':\n  \"जी बिल्कुल, मैं थोड़ा धीरे बोलता हूँ। आप आराम से अपनी बात बताइए।\"\n  \"Certainly! I will speak more slowly for you. Please tell me how I can help.\"\n- If caller says 'Thank you' or 'Dhanyaw",
     "meta": null
+  },
+  {
+    "id": "0d5912a1-aa47-4e7e-a88d-1e7c9f5c2928",
+    "document_id": "af4b3c93-0a19-47cb-9208-224dce3e4bf9",
+    "document_title": "States and Union Territories of India - Administrative and Banking Network",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] States and Union Territories of India - Administrative and Banking Network\nOur service and banking platform operates across all 28 States and 8 Union Territories in India. The states covered include Andhra Pradesh, Arunachal Pradesh, Assam, Bihar, Chhattisgarh, Goa, Gujarat, Haryana, Himachal Pradesh, Jharkhand, Karnataka, Kerala, Madhya Pradesh, Maharashtra, Manipur, Meghalaya, Mizoram, Nagaland, Odisha, Punjab, Rajasthan, Sikkim, Tamil Nadu, Telangana, Tripura, Uttar Pradesh, Uttarakhand, and West Bengal. The Union Territories include Delhi (National Capital Territory), Andaman and Nicobar Islands, Chandigarh, Dadra and Nagar Haveli and Daman and Diu, Jammu and Kashmir, Ladakh, Lakshadweep, and Puducherry. Customer complaints, accounts, and service requests can be registered from any state, city, district, or rural postal circle across the country with full multi-lingual support in English, Hindi, and regional languages including Odia.",
+    "meta": {
+      "category": "geography",
+      "topic": "national_states_and_union_territories",
+      "title": "States and Union Territories of India - Administrative and Banking Network",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
   },
   {
     "id": "1c95f8fd-94fd-485e-98bf-da61b200dc2a",
@@ -1332,6 +1608,29 @@
     "meta": null
   },
   {
+    "id": "bea70ff7-ee93-4fe3-9241-8fdd2476e8ec",
+    "document_id": "e311e8f0-6f0a-4260-9459-f5dc70782ef7",
+    "document_title": "Odisha State - Major Cities, Districts, and Operational Hubs",
+    "source_type": "official_bank_geography",
+    "chunk_index": 0,
+    "content": "[geography] Odisha State - Major Cities, Districts, and Operational Hubs\nOdisha (state capital: Bhubaneswar, smart city code 751001-751030) is the primary operating circle for our regional support center. Key cities and district headquarters in Odisha include: Bhubaneswar (Saheed Nagar, Patia, Nayapalli, Khandagiri, Chandrasekharpur, Rasulgarh, Old Town), Cuttack (Badambadi, CDA, Choudwar, Link Road), Rourkela (Panposh, Civil Township, Koel Nagar), Berhampur (Ganjam district), Sambalpur (Western Odisha hub, Burla, Hirakud), Puri (Grand Road, Sea Beach), Balasore (Remuna, Chandipur road), Bhadrak (Charampa, Bonth), Kendrapara, Baripada (Mayurbhanj), Angul, Dhenkanal, Jharsuguda, Bargarh, Jeypore, Koraput, Rayagada, Jagatsinghpur, Paradeep, and Khordha (Jatani). Callers from Odisha can lodge service tickets and track orders across all 30 districts with native Odia language IVR assistance.",
+    "meta": {
+      "category": "geography",
+      "topic": "odisha_state_and_cities",
+      "title": "Odisha State - Major Cities, Districts, and Operational Hubs",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "official_bank_geography",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
     "id": "fdceabca-6fa8-46f4-a2ac-e4b3909cb5ed",
     "document_id": "e52bbea6-76ae-4c3f-ad7c-e7122eb5120c",
     "document_title": "ଋଣ ଏବଂ ଇଏମଆଇ ପରାମର୍ଶ (Odia Loan and EMI Guidance)",
@@ -1360,6 +1659,29 @@
       "source_version": "1.0",
       "verified": true,
       "effective_date": "2026-01-01",
+      "ask_count": 1
+    }
+  },
+  {
+    "id": "1abaf7a0-9c17-44eb-a6b9-5a7fec522f43",
+    "document_id": "ee055b7b-b047-4a96-bc0d-4a98b1db3ae2",
+    "document_title": "Complaint Status for Ticket CMP/0017/26-27 (Customer)",
+    "source_type": "live_crm_database",
+    "chunk_index": 0,
+    "content": "[crm_complaint_status] Complaint Status for Ticket CMP/0017/26-27 (Customer)\nService complaint ticket CMP/0017/26-27 for customer Customer (phone number 9937234512) in କଟକ, ଓଡ଼ିଶା was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: ବ୍ରୋଡବ୍ୟାଣ୍ଡ ସେବା ସମ୍ପୂର୍ଣ୍ଣ ବନ୍ଦ ଅଛି.",
+    "meta": {
+      "category": "crm_complaint_status",
+      "topic": "complaint_cmp_0017_26_27",
+      "title": "Complaint Status for Ticket CMP/0017/26-27 (Customer)",
+      "language": [
+        "en",
+        "hi",
+        "or"
+      ],
+      "source": "live_crm_database",
+      "source_version": "1.0",
+      "verified": true,
+      "effective_date": "2026-11-18",
       "ask_count": 1
     }
   },
@@ -1416,9 +1738,9 @@
       "variants": [
         "Thank you."
       ],
-      "ask_count": 27,
+      "ask_count": 28,
       "call_uuid": "833de165-7056-4d45-b2bc-4d7fd9c6f5cd",
-      "last_asked_at": "2026-11-19T09:54:25.929671+00:00"
+      "last_asked_at": "2026-11-23T06:45:39.240175+00:00"
     }
   },
   {
@@ -1882,6 +2204,161 @@
     }
   },
   {
+    "id": "8d024e80-ffe8-41e6-815c-5a4999e39114",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 27,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"Bar kind.\"\nProvisional Assistant Reply: \"Thank you. What is your City?\"\nCall UUID: bec9d864-f08d-4480-bdfc-de8edf34ab48",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "Bar kind.",
+      "variants": [
+        "Bar kind."
+      ],
+      "ask_count": 1,
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48"
+    }
+  },
+  {
+    "id": "2ca9c875-c5cf-43da-ab8f-7a09b6b91071",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 28,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"Book IDOL.\"\nProvisional Assistant Reply: \"I understand you've already tried this earlier — let me help you with the next option right away. Got it. Please provide your Area or Street Address.\"\nCall UUID: bec9d864-f08d-4480-bdfc-de8edf34ab48",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "Book IDOL.",
+      "variants": [
+        "Book IDOL."
+      ],
+      "ask_count": 1,
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48"
+    }
+  },
+  {
+    "id": "e3a512c4-cc26-4fcf-980d-b94313b64523",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 29,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"House number 62.\"\nProvisional Assistant Reply: \"Thank you. Now please describe the issue or problem you are facing.\"\nCall UUID: bec9d864-f08d-4480-bdfc-de8edf34ab48",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "House number 62.",
+      "variants": [
+        "House number 62."
+      ],
+      "ask_count": 2,
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+      "last_asked_at": "2026-11-23T06:45:04.965033+00:00"
+    }
+  },
+  {
+    "id": "2c2036bd-2cc0-4434-83d8-816a7691d570",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 30,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"There is a issue in my broadband, the optical fiber got broken.\"\nProvisional Assistant Reply: \"I understand this has been frustrating. Would you like me to transfer you to a live customer care agent?\"\nCall UUID: bec9d864-f08d-4480-bdfc-de8edf34ab48",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "There is a issue in my broadband, the optical fiber got broken.",
+      "variants": [
+        "There is a issue in my broadband, the optical fiber got broken.",
+        "Optical fiber of the broadband is broken."
+      ],
+      "ask_count": 2,
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+      "last_asked_at": "2026-11-23T06:45:20.800565+00:00"
+    }
+  },
+  {
+    "id": "89f86e0a-36fb-48f6-a78c-bb87e42350ee",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 31,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"You are kind.\"\nProvisional Assistant Reply: \"Thank you. What is your City?\"\nCall UUID: bec9d864-f08d-4480-bdfc-de8edf34ab48",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "You are kind.",
+      "variants": [
+        "You are kind."
+      ],
+      "ask_count": 1,
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48"
+    }
+  },
+  {
+    "id": "f7e3fe7c-4818-47a9-a5fd-30185430127d",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 32,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"I'm a harassed dude.\"\nProvisional Assistant Reply: \"Thank you. What is your City?\"\nCall UUID: e49b3477-76fd-4720-ab20-f4a450e48795",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "I'm a harassed dude.",
+      "variants": [
+        "I'm a harassed dude."
+      ],
+      "ask_count": 1,
+      "call_uuid": "e49b3477-76fd-4720-ab20-f4a450e48795"
+    }
+  },
+  {
+    "id": "361d71a8-dfbf-41e0-993e-e322b47a4651",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 33,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"I'm very waiting.\"\nProvisional Assistant Reply: \"Thank you. Now please describe the issue or problem you are facing.\"\nCall UUID: e49b3477-76fd-4720-ab20-f4a450e48795",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "I'm very waiting.",
+      "variants": [
+        "I'm very waiting."
+      ],
+      "ask_count": 1,
+      "call_uuid": "e49b3477-76fd-4720-ab20-f4a450e48795"
+    }
+  },
+  {
+    "id": "c464a80a-e2f6-4d63-85e3-b73f66d2df70",
+    "document_id": "f35cb85d-7d55-4c50-a650-94cdf637694d",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 34,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"The broadband wire is broken.\"\nProvisional Assistant Reply: \"I understand this has been frustrating. Would you like me to transfer you to a live customer care agent?\"\nCall UUID: e49b3477-76fd-4720-ab20-f4a450e48795",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "The broadband wire is broken.",
+      "variants": [
+        "The broadband wire is broken."
+      ],
+      "ask_count": 1,
+      "call_uuid": "e49b3477-76fd-4720-ab20-f4a450e48795"
+    }
+  },
+  {
     "id": "6a585b36-035a-40e3-8238-192d5f58af25",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2223,20 +2700,6 @@
     }
   },
   {
-    "id": "33b70816-fa8e-4926-9a5c-943bf35c22ba",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 32,
-    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-3)",
-    "meta": {
-      "type": "voice_interaction_turn",
-      "call_uuid": "bench-call-3",
-      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
-      "resolved": false
-    }
-  },
-  {
     "id": "ccb0e895-310a-4443-938b-0ba682e91170",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2278,6 +2741,20 @@
     }
   },
   {
+    "id": "33b70816-fa8e-4926-9a5c-943bf35c22ba",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 32,
+    "content": "Customer Spoken Inquiry: \"My UPI payment of 5000 rupees failed, please check refund status\"\nVerified Resolution: \"Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\"\nSource: Live Telephone Interaction (bench-call-3)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "bench-call-3",
+      "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
+      "resolved": false
+    }
+  },
+  {
     "id": "bf5b07c9-66f2-4752-b4a1-112b4b4ed4d0",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -2289,19 +2766,6 @@
       "call_uuid": "bench-call-0",
       "caller_query": "My UPI payment of 5000 rupees failed, please check refund status",
       "resolved": false
-    }
-  },
-  {
-    "id": "9170750e-e431-4234-aef6-ec2bb089bc2a",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 35,
-    "content": "Call Interaction Summary [Session bench-call-3]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "bench-call-3",
-      "turn_count": 2
     }
   },
   {
@@ -2327,6 +2791,19 @@
     "meta": {
       "type": "call_summary",
       "call_uuid": "bench-call-2",
+      "turn_count": 2
+    }
+  },
+  {
+    "id": "9170750e-e431-4234-aef6-ec2bb089bc2a",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 35,
+    "content": "Call Interaction Summary [Session bench-call-3]:\nCaller: My UPI payment of 5000 rupees failed, please check refund status\nAssistant: Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.\nKey Inquiries: My UPI payment of 5000 rupees failed, please check refund status",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "bench-call-3",
       "turn_count": 2
     }
   },
@@ -3024,19 +3501,6 @@
     }
   },
   {
-    "id": "1c379b99-85ef-4f18-9964-c8118c9454f7",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 96,
-    "content": "Call Interaction Summary [Session 4870b252-70af-4a88-9462-cfe334e9c53e]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you again.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: I'm\nKey Inquiries: Thank you., Thank you again., I'm",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "4870b252-70af-4a88-9462-cfe334e9c53e",
-      "turn_count": 5
-    }
-  },
-  {
     "id": "57c88dac-1a9b-4c88-92dd-0ee011db1131",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -3050,16 +3514,16 @@
     }
   },
   {
-    "id": "d66a2d6e-16bb-4a50-b851-050f07580b4e",
+    "id": "1c379b99-85ef-4f18-9964-c8118c9454f7",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
     "source_type": "voice_call",
-    "chunk_index": 97,
-    "content": "Call Interaction Summary [Session c7eb0134-85c1-423e-8e63-17d38e4526ab]:\nCaller: Hello.\nAssistant: Hello! Welcome to customer support. How can I assist you with your request today?\nCaller: Nothing.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Hello., Nothing.",
+    "chunk_index": 96,
+    "content": "Call Interaction Summary [Session 4870b252-70af-4a88-9462-cfe334e9c53e]:\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you again.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: I'm\nKey Inquiries: Thank you., Thank you again., I'm",
     "meta": {
       "type": "call_summary",
-      "call_uuid": "c7eb0134-85c1-423e-8e63-17d38e4526ab",
-      "turn_count": 4
+      "call_uuid": "4870b252-70af-4a88-9462-cfe334e9c53e",
+      "turn_count": 5
     }
   },
   {
@@ -3078,6 +3542,19 @@
       ],
       "ask_count": 1,
       "resolved": false
+    }
+  },
+  {
+    "id": "d66a2d6e-16bb-4a50-b851-050f07580b4e",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 97,
+    "content": "Call Interaction Summary [Session c7eb0134-85c1-423e-8e63-17d38e4526ab]:\nCaller: Hello.\nAssistant: Hello! Welcome to customer support. How can I assist you with your request today?\nCaller: Nothing.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Hello., Nothing.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "c7eb0134-85c1-423e-8e63-17d38e4526ab",
+      "turn_count": 4
     }
   },
   {
@@ -3161,19 +3638,6 @@
     }
   },
   {
-    "id": "30bbfb78-a95a-4be9-86f0-ed4f74dc20f7",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 100,
-    "content": "Call Interaction Summary [Session 89de332b-02f0-4653-acdc-b62ec0240e05]:\nCaller: It's very thank you, it's thank you very.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you. Thank you, thank.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you. Thank you, thank\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: It's very thank you, it's thank you very., Thank you. Thank you, thank., Thank you. Thank you, thank",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
-      "turn_count": 8
-    }
-  },
-  {
     "id": "147a767b-2421-41a6-adb2-2f2564c7dfbf",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -3184,6 +3648,19 @@
       "type": "call_summary",
       "call_uuid": "459ef8fb-ad2f-48fa-ba15-248883b91eee",
       "turn_count": 6
+    }
+  },
+  {
+    "id": "30bbfb78-a95a-4be9-86f0-ed4f74dc20f7",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 100,
+    "content": "Call Interaction Summary [Session 89de332b-02f0-4653-acdc-b62ec0240e05]:\nCaller: It's very thank you, it's thank you very.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Thank you. Thank you, thank.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Thank you. Thank you, thank\nAssistant: You're welcome! Have a wonderful day!\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: It's very thank you, it's thank you very., Thank you. Thank you, thank., Thank you. Thank you, thank",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "89de332b-02f0-4653-acdc-b62ec0240e05",
+      "turn_count": 8
     }
   },
   {
@@ -3407,6 +3884,19 @@
     }
   },
   {
+    "id": "79ad121d-8176-4b92-9c24-531d16b2002c",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 111,
+    "content": "Call Interaction Summary [Session 37cbf293-bf30-413b-a938-449e1443bf91]:\nCaller: My complaint ID is 0, 0, zero five. I want to know my status.\nAssistant: For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: My complaint ID is 0, 0, zero five. I want to know my status., Thank you.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "37cbf293-bf30-413b-a938-449e1443bf91",
+      "turn_count": 4
+    }
+  },
+  {
     "id": "ca8b3e47-5c2a-42ee-a640-5243a11b2486",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -3422,19 +3912,6 @@
       ],
       "ask_count": 1,
       "resolved": false
-    }
-  },
-  {
-    "id": "79ad121d-8176-4b92-9c24-531d16b2002c",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 111,
-    "content": "Call Interaction Summary [Session 37cbf293-bf30-413b-a938-449e1443bf91]:\nCaller: My complaint ID is 0, 0, zero five. I want to know my status.\nAssistant: For complaint ticket number 0 (CMP 0000), your ticket is currently in progress and being reviewed by our customer support team.\nCaller: Thank you.\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nKey Inquiries: My complaint ID is 0, 0, zero five. I want to know my status., Thank you.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "37cbf293-bf30-413b-a938-449e1443bf91",
-      "turn_count": 4
     }
   },
   {
@@ -3456,19 +3933,6 @@
     }
   },
   {
-    "id": "eb2149d6-2bee-4684-9225-63a54b37afba",
-    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 113,
-    "content": "Call Interaction Summary [Session f9d1d30f-face-4d43-b87a-1e0ec0dea1d2]:\nCaller: End me about their credit card.\nAssistant: Your card is frozen for security. A replacement will be dispatched in 5 to 7 business days.\nCaller: Okay, thank\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Yes, it is resolved.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Do.\nAssistant: Thank you for rating us 2 out of 5! Have a wonderful day ahead.\nCaller: Thank you.\nAssistant: Thank you for rating us 2 out of 5! Have a wonderful day ahead.\nKey Inquiries: End me about their credit card., Okay, thank, Yes, it is resolved.",
-    "meta": {
-      "type": "call_summary",
-      "call_uuid": "f9d1d30f-face-4d43-b87a-1e0ec0dea1d2",
-      "turn_count": 10
-    }
-  },
-  {
     "id": "2c590eb3-14b1-4d9b-b6c2-5f34c1aea6b5",
     "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
     "document_title": "Continuous Voice Call Learnings",
@@ -3479,6 +3943,19 @@
       "type": "call_summary",
       "call_uuid": "ea1e6963-4397-45a8-a60f-692405dd7088",
       "turn_count": 4
+    }
+  },
+  {
+    "id": "eb2149d6-2bee-4684-9225-63a54b37afba",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 113,
+    "content": "Call Interaction Summary [Session f9d1d30f-face-4d43-b87a-1e0ec0dea1d2]:\nCaller: End me about their credit card.\nAssistant: Your card is frozen for security. A replacement will be dispatched in 5 to 7 business days.\nCaller: Okay, thank\nAssistant: Can you please confirm whether your issue is resolved now, or is there anything else I can assist with?\nCaller: Yes, it is resolved.\nAssistant: I'm glad your issue is resolved! On a scale of 1 to 5, how satisfied are you with today's support?\nCaller: Do.\nAssistant: Thank you for rating us 2 out of 5! Have a wonderful day ahead.\nCaller: Thank you.\nAssistant: Thank you for rating us 2 out of 5! Have a wonderful day ahead.\nKey Inquiries: End me about their credit card., Okay, thank, Yes, it is resolved.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "f9d1d30f-face-4d43-b87a-1e0ec0dea1d2",
+      "turn_count": 10
     }
   },
   {
@@ -4071,6 +4548,184 @@
       "caller_query": "I want to register a new complaint.",
       "variants": [
         "I want to register a new complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "347c9103-31a9-4e59-9f6b-fc87dd62cb92",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 154,
+    "content": "Call Interaction Summary [Session e9d1f44d-cb33-4ea6-a873-8a562f99a6f8]:\nAssistant: Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?\nCaller: I want to register a new complaint.\nAssistant: Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.\nKey Inquiries: I want to register a new complaint.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "e9d1f44d-cb33-4ea6-a873-8a562f99a6f8",
+      "turn_count": 3
+    }
+  },
+  {
+    "id": "30d4d53e-98d1-438c-ad21-06dca730e0de",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 155,
+    "content": "Customer Spoken Inquiry: \"I want to register a new complaint.\"\nVerified Resolution: \"Certainly! To register your complaint, please tell me your State.\"\nSource: Live Telephone Interaction (bec9d864-f08d-4480-bdfc-de8edf34ab48)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+      "caller_query": "I want to register a new complaint.",
+      "variants": [
+        "I want to register a new complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "d9474546-4d86-441e-bf67-9cbf684c15c7",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 156,
+    "content": "Customer Spoken Inquiry: \"No, just register the complaint.\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Certainly! To register your complaint, please tell me your State.\"\nSource: Live Telephone Interaction (bec9d864-f08d-4480-bdfc-de8edf34ab48)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+      "caller_query": "No, just register the complaint.",
+      "variants": [
+        "No, just register the complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "bd3be959-26e4-4413-b6d0-790f188be1d6",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 157,
+    "content": "Call Interaction Summary [Session bec9d864-f08d-4480-bdfc-de8edf34ab48]:\nCaller: Bar kind.\nAssistant: Thank you. What is your City?\nCaller: Book IDOL.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Got it. Please provide your Area or Street Address.\nCaller: House number 62.\nAssistant: Thank you. Now please describe the issue or problem you are facing.\nCaller: There is a issue in my broadband, the optical fiber got broken.\nAssistant: I understand this has been frustrating. Would you like me to transfer you to a live customer care agent?\nCaller: No, just register the complaint.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Certainly! To register your complaint, please tell me your State.\nCaller: You are kind.\nAssistant: Thank you. What is your City?\nCaller: Nabukaro\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Got it. Please provide your Area or Street Address.\nCaller: House number 62.\nAssistant: Thank you. Now please describe the issue or problem you are facing.\nCaller: Optical fiber of the broadband is broken.\nAssistant: Your complaint has been successfully registered under ticket number 18 (reference CMP 0018) for Nabukaro, You Are Kind. Our support team will investigate the issue and update you shortly. Is there anything else I can help you with today?\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Bar kind., Book IDOL., House number 62.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+      "turn_count": 20
+    }
+  },
+  {
+    "id": "497fd1be-b46c-44dc-a19a-80e5824a9c43",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 158,
+    "content": "Customer Spoken Inquiry: \"Yes, I want to register a new complaint also.\"\nVerified Resolution: \"Certainly! Please let me know what else I can help you with today.\"\nSource: Live Telephone Interaction (f0e35695-3c1a-460f-a236-a4d5e0eb13d6)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "f0e35695-3c1a-460f-a236-a4d5e0eb13d6",
+      "caller_query": "Yes, I want to register a new complaint also.",
+      "variants": [
+        "Yes, I want to register a new complaint also."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "1d2641a9-e56d-4d71-9db3-2b43b0dcca4b",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 159,
+    "content": "Customer Spoken Inquiry: \"I want to register a new complaint.\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Certainly! To register your complaint, please tell me your State.\"\nSource: Live Telephone Interaction (f0e35695-3c1a-460f-a236-a4d5e0eb13d6)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "f0e35695-3c1a-460f-a236-a4d5e0eb13d6",
+      "caller_query": "I want to register a new complaint.",
+      "variants": [
+        "I want to register a new complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "b5d1680c-75d0-4b37-a755-e5dea0b89aba",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 160,
+    "content": "Call Interaction Summary [Session f0e35695-3c1a-460f-a236-a4d5e0eb13d6]:\nAssistant: Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?\nCaller: Tell me about the status of the complaint, 0011.\nAssistant: Here are the complete details for complaint ticket number 11 (reference CMP 0011): It was registered for customer Customer from Odisha on 18 November 2026 under Support regarding 'From last two days, the broadband service is not working properly'. The current ticket status is New. Is there anything else I can help you with today?\nCaller: Yes, I want to register a new complaint also.\nAssistant: Certainly! Please let me know what else I can help you with today.\nCaller: I want to register a new complaint.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Certainly! To register your complaint, please tell me your State.\nCaller: Maharaj.\nAssistant: Thank you. What is your City?\nKey Inquiries: Tell me about the status of the complaint, 0011., Yes, I want to register a new complaint also., I want to register a new complaint.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "f0e35695-3c1a-460f-a236-a4d5e0eb13d6",
+      "turn_count": 9
+    }
+  },
+  {
+    "id": "f4736e78-470c-4223-8b3a-0c0893ed159f",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 161,
+    "content": "Customer Spoken Inquiry: \"Just a new complaint.\"\nVerified Resolution: \"Certainly! To register your complaint, please tell me your State.\"\nSource: Live Telephone Interaction (e49b3477-76fd-4720-ab20-f4a450e48795)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "e49b3477-76fd-4720-ab20-f4a450e48795",
+      "caller_query": "Just a new complaint.",
+      "variants": [
+        "Just a new complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "bfea6e15-13fc-4a90-986d-a6c215dcae05",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 162,
+    "content": "Customer Spoken Inquiry: \"I want to do the extra complaint.\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Certainly! To register your complaint, please tell me your State.\"\nSource: Live Telephone Interaction (e49b3477-76fd-4720-ab20-f4a450e48795)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "e49b3477-76fd-4720-ab20-f4a450e48795",
+      "caller_query": "I want to do the extra complaint.",
+      "variants": [
+        "I want to do the extra complaint."
+      ],
+      "ask_count": 1,
+      "resolved": false
+    }
+  },
+  {
+    "id": "59323e54-9c26-4f40-9762-d3f394138340",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 163,
+    "content": "Call Interaction Summary [Session e49b3477-76fd-4720-ab20-f4a450e48795]:\nAssistant: Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?\nCaller: Just a new complaint.\nAssistant: Certainly! To register your complaint, please tell me your State.\nCaller: I'm a harassed dude.\nAssistant: Thank you. What is your City?\nCaller: Mumbai.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Got it. Please provide your Area or Street Address.\nCaller: I'm very waiting.\nAssistant: Thank you. Now please describe the issue or problem you are facing.\nCaller: The broadband wire is broken.\nAssistant: I understand this has been frustrating. Would you like me to transfer you to a live customer care agent?\nCaller: Hello.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Yes, I am listening. How can I help you today?\nCaller: I want to do the extra complaint.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Certainly! To register your complaint, please tell me your State.\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Just a new complaint., I'm a harassed dude., Mumbai.",
+    "meta": {
+      "type": "call_summary",
+      "call_uuid": "e49b3477-76fd-4720-ab20-f4a450e48795",
+      "turn_count": 17
+    }
+  },
+  {
+    "id": "dbcdb4c1-a601-4b19-a5a1-5bc6f759474b",
+    "document_id": "f35eb143-223b-4f1f-9f9c-303937fdd302",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 164,
+    "content": "Customer Spoken Inquiry: \"This is a new complaint.\"\nVerified Resolution: \"Certainly! To register your complaint, please tell me your State.\"\nSource: Live Telephone Interaction (7b7879eb-544e-4a29-9052-44b4574fb266)",
+    "meta": {
+      "type": "voice_interaction_turn",
+      "call_uuid": "7b7879eb-544e-4a29-9052-44b4574fb266",
+      "caller_query": "This is a new complaint.",
+      "variants": [
+        "This is a new complaint."
       ],
       "ask_count": 1,
       "resolved": false

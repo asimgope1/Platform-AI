@@ -67,5 +67,18 @@
     "address": "ବଜ୍ରକବାଟୀ ରୋଡ୍",
     "created_at": "2026-11-23T06:38:35.905186+00:00",
     "synced_to_crm": true
+  },
+  {
+    "ticket_id": "CMP/0018/26-27",
+    "complaint_sl": "4e038ade-229f-4f8e-8ab5-9f8f4135c4e5",
+    "description": "Optical fiber of the broadband is broken.",
+    "caller_phone": "9937234512",
+    "customer_name": "Customer",
+    "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+    "state": "You Are Kind",
+    "city": "Nabukaro",
+    "address": "House number 62",
+    "created_at": "2026-11-23T06:45:16.638985+00:00",
+    "synced_to_crm": true
   }
 ]

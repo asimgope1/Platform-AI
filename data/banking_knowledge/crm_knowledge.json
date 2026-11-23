@@ -239,6 +239,74 @@
   },
   {
     "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0015_26_27",
+    "title": "Complaint Status for Ticket CMP/0015/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0015/26-27 for customer Customer (phone number 9937234512) in Bhubaneswar, Odisha was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: Broadband internet optical fiber damaged and red blinking light on router.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0016_26_27",
+    "title": "Complaint Status for Ticket CMP/0016/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0016/26-27 for customer Customer (phone number 9937234512) in भुवनेश्वर, ओडिशा was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: मेरा ब्रॉडबैंड इंटरनेट दो दिन से बंद है.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0017_26_27",
+    "title": "Complaint Status for Ticket CMP/0017/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0017/26-27 for customer Customer (phone number 9937234512) in କଟକ, ଓଡ଼ିଶା was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: ବ୍ରୋଡବ୍ୟାଣ୍ଡ ସେବା ସମ୍ପୂର୍ଣ୍ଣ ବନ୍ଦ ଅଛି.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0018_26_27",
+    "title": "Complaint Status for Ticket CMP/0018/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0018/26-27 for customer Customer (phone number 9937234512) in Nabukaro, You Are Kind was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: Optical fiber of the broadband is broken..",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
     "category": "crm_customer_directory",
     "topic": "customer_8976453421",
     "title": "Customer Profile and Account Complaints for Swagatika Swain (8976453421)",
@@ -276,7 +344,7 @@
     "category": "crm_customer_directory",
     "topic": "customer_9937234512",
     "title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
-    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 6 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New), Ticket CMP/0012/26-27 (status: New), Ticket CMP/0013/26-27 (status: New), Ticket CMP/0014/26-27 (status: New).",
+    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 10 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New), Ticket CMP/0012/26-27 (status: New), Ticket CMP/0013/26-27 (status: New), Ticket CMP/0014/26-27 (status: New), Ticket CMP/0015/26-27 (status: New), Ticket CMP/0016/26-27 (status: New), Ticket CMP/0017/26-27 (status: New), Ticket CMP/0018/26-27 (status: New).",
     "language": [
       "en",
       "hi",

@@ -52,6 +52,14 @@ class EscalationRules:
                 reason="caller_accepted_transfer",
             )
 
+        # Do not interrupt active multi-turn data collection (complaint slot filling or order ID entry)
+        if getattr(state, "awaiting_complaint_slots", False) or getattr(state, "awaiting_order_id_digits", False):
+            return EscalationEvaluation(
+                should_transfer_immediately=False,
+                should_offer_transfer=False,
+                reason=None,
+            )
+
         if (
             not state.transfer_offered
             and state.satisfaction_score is not None
