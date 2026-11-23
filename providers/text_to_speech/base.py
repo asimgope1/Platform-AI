@@ -320,16 +320,17 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
 
         # Secondary: Ultra-realistic neural speech modulated by caller emotion
         try:
+            tts_timeout = max(10.0, len(spoken_text) * 0.06)
             edge_audio = await asyncio.wait_for(
                 self._synthesize_edge_tts(spoken_text, neural_voice, rate=speech_rate, pitch=speech_pitch),
-                timeout=2.2
+                timeout=tts_timeout
             )
             if edge_audio:
                 if len(_TTS_CACHE) < 250:
                     _TTS_CACHE[cache_key] = edge_audio
                 return edge_audio
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[TTS] Edge-TTS notice for '{neural_voice}': {e}")
 
         # Secondary Fallback: native macOS system voice for respective Indian languages
         if has_tamil:
@@ -341,7 +342,7 @@ class MockTextToSpeechAdapter(BaseTextToSpeechAdapter):
         elif has_hindi or has_odia:
             say_voice = "Lekha"
         else:
-            say_voice = "Rishi"
+            say_voice = "Tara"
 
         say_audio = await asyncio.to_thread(self._synthesize_say_sync, spoken_text, say_voice)
         if not say_audio:
