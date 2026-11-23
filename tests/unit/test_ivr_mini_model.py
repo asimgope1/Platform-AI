@@ -435,6 +435,43 @@ class TestIVRRAGMiniModel:
         assert not _needs_live_action_fallback("lets register new complain", "complaint")
         assert not _needs_live_action_fallback("file a complaint", "complaint")
 
+    def test_geography_state_and_city_normalization(self):
+        from providers.chat.ivr_mini_model import normalize_indian_state, normalize_indian_city
+
+        # State normalization
+        assert normalize_indian_state("odisha") == "Odisha"
+        assert normalize_indian_state("ଓଡ଼ିଶା") == "Odisha"
+        assert normalize_indian_state("ओडिशा") == "Odisha"
+        assert normalize_indian_state("my state is maharashtra") == "Maharashtra"
+        assert normalize_indian_state("delhi") == "Delhi"
+        assert normalize_indian_state("पश्चिम बंगाल") == "West Bengal"
+        assert normalize_indian_state("bihar") == "Bihar"
+
+        # City normalization
+        assert normalize_indian_city("bhubaneswar") == ("Bhubaneswar", "Odisha")
+        assert normalize_indian_city("ଭୁବନେଶ୍ୱର") == ("Bhubaneswar", "Odisha")
+        assert normalize_indian_city("कटक") == ("Cuttack", "Odisha")
+        assert normalize_indian_city("mumbai") == ("Mumbai", "Maharashtra")
+        assert normalize_indian_city("patna") == ("Patna", "Bihar")
+        assert normalize_indian_city("ranchi") == ("Ranchi", "Jharkhand")
+        assert normalize_indian_city("bengaluru") == ("Bengaluru", "Karnataka")
+
+    def test_registration_with_vernacular_location_slots(self, brain):
+        history = [
+            ChatMessage(role="user", content="Register complaint"),
+            ChatMessage(role="assistant", content="Certainly! To register your complaint, please tell me your State."),
+            ChatMessage(role="user", content="ଓଡ଼ିଶା"),  # Odia for Odisha
+            ChatMessage(role="assistant", content="Thank you. What is your City?"),
+            ChatMessage(role="user", content="ଭୁବନେଶ୍ୱର"),  # Odia for Bhubaneswar
+            ChatMessage(role="assistant", content="Got it. Please provide your Area or Street Address."),
+            ChatMessage(role="user", content="Plot 102, Saheed Nagar"),
+            ChatMessage(role="assistant", content="Thank you. Now please describe the issue or problem you are facing."),
+        ]
+        slots = brain._extract_registration_slots_from_history(history)
+        assert slots["state"] == "Odisha"
+        assert slots["city"] == "Bhubaneswar"
+        assert slots["address"] == "Plot 102, Saheed Nagar"
+
 
 @pytest.mark.asyncio
 class TestIVRRAGMiniModelAdapter:

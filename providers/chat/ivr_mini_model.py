@@ -233,6 +233,140 @@ _SPOKEN_DIGIT_WORDS = {
     "twenty": "20", "bees": "20", "बीस": "20", "କୋଡ଼ିଏ": "20",
 }
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Geographic Entity Catalog: Indian States & Major Cities Normalization
+# ──────────────────────────────────────────────────────────────────────────────
+
+CANONICAL_INDIAN_STATES: Dict[str, str] = {
+    # Odisha
+    "odisha": "Odisha", "orissa": "Odisha", "ओडिशा": "Odisha", "उड़ीसा": "Odisha", "उड़ीसा": "Odisha", "ଓଡ଼ିଶା": "Odisha",
+    # West Bengal
+    "west bengal": "West Bengal", "bengal": "West Bengal", "wb": "West Bengal", "पश्चिम बंगाल": "West Bengal", "ପଶ୍ଚିମ ବଙ୍ଗ": "West Bengal",
+    # Bihar
+    "bihar": "Bihar", "बिहार": "Bihar", "ବିହାର": "Bihar",
+    # Jharkhand
+    "jharkhand": "Jharkhand", "झारखंड": "Jharkhand", "ଝାଡ଼ଖଣ୍ଡ": "Jharkhand",
+    # Maharashtra
+    "maharashtra": "Maharashtra", "महाराष्ट्र": "Maharashtra", "ମହାରାଷ୍ଟ୍ର": "Maharashtra",
+    # Delhi NCT
+    "delhi": "Delhi", "new delhi": "Delhi", "nct of delhi": "Delhi", "दिल्ली": "Delhi", "नई दिल्ली": "Delhi", "ଦିଲ୍ଲୀ": "Delhi",
+    # Karnataka
+    "karnataka": "Karnataka", "कर्नाटक": "Karnataka", "କର୍ଣ୍ଣାଟକ": "Karnataka",
+    # Telangana
+    "telangana": "Telangana", "तेलंगाना": "Telangana", "ତେଲେଙ୍ଗାନା": "Telangana",
+    # Andhra Pradesh
+    "andhra pradesh": "Andhra Pradesh", "andhra": "Andhra Pradesh", "आंध्र प्रदेश": "Andhra Pradesh", "ଆନ୍ଧ୍ର ପ୍ରଦେଶ": "Andhra Pradesh",
+    # Tamil Nadu
+    "tamil nadu": "Tamil Nadu", "tamilnadu": "Tamil Nadu", "तमिलनाडु": "Tamil Nadu", "ତାମିଲନାଡୁ": "Tamil Nadu",
+    # Kerala
+    "kerala": "Kerala", "केरल": "Kerala", "କେରଳ": "Kerala",
+    # Gujarat
+    "gujarat": "Gujarat", "गुजरात": "Gujarat", "ଗୁଜରାଟ": "Gujarat",
+    # Rajasthan
+    "rajasthan": "Rajasthan", "राजस्थान": "Rajasthan", "ରାଜସ୍ଥାନ": "Rajasthan",
+    # Uttar Pradesh
+    "uttar pradesh": "Uttar Pradesh", "up": "Uttar Pradesh", "उत्तर प्रदेश": "Uttar Pradesh", "ଉତ୍ତର ପ୍ରଦେଶ": "Uttar Pradesh",
+    # Madhya Pradesh
+    "madhya pradesh": "Madhya Pradesh", "mp": "Madhya Pradesh", "मध्य प्रदेश": "Madhya Pradesh", "ମଧ୍ୟ ପ୍ରଦେଶ": "Madhya Pradesh",
+    # Chhattisgarh
+    "chhattisgarh": "Chhattisgarh", "छत्तीसगढ़": "Chhattisgarh", "ଛତିଶଗଡ଼": "Chhattisgarh",
+    # Punjab
+    "punjab": "Punjab", "पंजाब": "Punjab", "ପଞ୍ଜାବ": "Punjab",
+    # Haryana
+    "haryana": "Haryana", "हरियाणा": "Haryana", "ହରିୟାଣା": "Haryana",
+    # Assam
+    "assam": "Assam", "असम": "Assam", "ଆସାମ": "Assam",
+    # Goa
+    "goa": "Goa", "गोवा": "Goa", "ଗୋଆ": "Goa",
+    # Uttarakhand
+    "uttarakhand": "Uttarakhand", "उत्तराखंड": "Uttarakhand", "ଉତ୍ତରାଖଣ୍ଡ": "Uttarakhand",
+    # Himachal Pradesh
+    "himachal pradesh": "Himachal Pradesh", "himachal": "Himachal Pradesh", "हिमाचल प्रदेश": "Himachal Pradesh", "ହିମାଚଳ ପ୍ରଦେଶ": "Himachal Pradesh",
+    # Jammu and Kashmir
+    "jammu and kashmir": "Jammu and Kashmir", "jammu & kashmir": "Jammu and Kashmir", "j&k": "Jammu and Kashmir", "जम्मू और कश्मीर": "Jammu and Kashmir", "ଜମ୍ମୁ ଓ କାଶ୍ମୀର": "Jammu and Kashmir",
+}
+
+CANONICAL_INDIAN_CITIES: Dict[str, Tuple[str, str]] = {
+    # Odisha Cities
+    "bhubaneswar": ("Bhubaneswar", "Odisha"), "bbsr": ("Bhubaneswar", "Odisha"), "भुवनेश्वर": ("Bhubaneswar", "Odisha"), "ଭୁବନେଶ୍ୱର": ("Bhubaneswar", "Odisha"),
+    "cuttack": ("Cuttack", "Odisha"), "कटक": ("Cuttack", "Odisha"), "କଟକ": ("Cuttack", "Odisha"),
+    "rourkela": ("Rourkela", "Odisha"), "राउरकेला": ("Rourkela", "Odisha"), "ରାଉରକେଲା": ("Rourkela", "Odisha"),
+    "berhampur": ("Berhampur", "Odisha"), "brahmapur": ("Berhampur", "Odisha"), "बरहमपुर": ("Berhampur", "Odisha"), "ବ୍ରହ୍ମପୁର": ("Berhampur", "Odisha"),
+    "sambalpur": ("Sambalpur", "Odisha"), "संबलपुर": ("Sambalpur", "Odisha"), "ସମ୍ବଲପୁର": ("Sambalpur", "Odisha"),
+    "puri": ("Puri", "Odisha"), "पुरी": ("Puri", "Odisha"), "ପୁରୀ": ("Puri", "Odisha"),
+    "balasore": ("Balasore", "Odisha"), "baleswar": ("Balasore", "Odisha"), "बालासोर": ("Balasore", "Odisha"), "ବାଲେଶ୍ୱର": ("Balasore", "Odisha"),
+    "bhadrak": ("Bhadrak", "Odisha"), "भद्रक": ("Bhadrak", "Odisha"), "ଭଦ୍ରକ": ("Bhadrak", "Odisha"),
+    "kendrapara": ("Kendrapara", "Odisha"), "केद्रपाड़ा": ("Kendrapara", "Odisha"), "କେନ୍ଦ୍ରାପଡ଼ା": ("Kendrapara", "Odisha"),
+    "angul": ("Angul", "Odisha"), "अनुगुल": ("Angul", "Odisha"), "ଅନୁଗୋଳ": ("Angul", "Odisha"),
+    "dhenkanal": ("Dhenkanal", "Odisha"), "धेनकनाल": ("Dhenkanal", "Odisha"), "ଢେଙ୍କାନାଳ": ("Dhenkanal", "Odisha"),
+    "jharsuguda": ("Jharsuguda", "Odisha"), "झारसुगुड़ा": ("Jharsuguda", "Odisha"), "ଝାରସୁଗୁଡ଼ା": ("Jharsuguda", "Odisha"),
+    "bargarh": ("Bargarh", "Odisha"), "बरगढ़": ("Bargarh", "Odisha"), "ବରଗଡ଼": ("Bargarh", "Odisha"),
+    "jeypore": ("Jeypore", "Odisha"), "जयपुर ओडिशा": ("Jeypore", "Odisha"), "ଜୟପୁର": ("Jeypore", "Odisha"),
+    "baripada": ("Baripada", "Odisha"), "बारीपदा": ("Baripada", "Odisha"), "ବାରିପଦା": ("Baripada", "Odisha"),
+    "rayagada": ("Rayagada", "Odisha"), "रायगड़ा": ("Rayagada", "Odisha"), "ରାୟଗଡ଼ା": ("Rayagada", "Odisha"),
+    "koraput": ("Koraput", "Odisha"), "कोरापुट": ("Koraput", "Odisha"), "କୋରାପୁଟ": ("Koraput", "Odisha"),
+    "jagatsinghpur": ("Jagatsinghpur", "Odisha"), "जगतसिंहपुर": ("Jagatsinghpur", "Odisha"), "ଜଗତସିଂହପୁର": ("Jagatsinghpur", "Odisha"),
+    "paradeep": ("Paradeep", "Odisha"), "paradip": ("Paradeep", "Odisha"), "पारादीप": ("Paradeep", "Odisha"), "ପାରାଦ୍ୱୀପ": ("Paradeep", "Odisha"),
+    "khordha": ("Khordha", "Odisha"), "khurda": ("Khordha", "Odisha"), "खोर्धा": ("Khordha", "Odisha"), "ଖୋର୍ଦ୍ଧା": ("Khordha", "Odisha"),
+    # Major Metro & State Hubs
+    "mumbai": ("Mumbai", "Maharashtra"), "bombay": ("Mumbai", "Maharashtra"), "मुंबई": ("Mumbai", "Maharashtra"), "ମୁମ୍ବାଇ": ("Mumbai", "Maharashtra"),
+    "pune": ("Pune", "Maharashtra"), "पुणे": ("Pune", "Maharashtra"), "ପୁଣେ": ("Pune", "Maharashtra"),
+    "nagpur": ("Nagpur", "Maharashtra"), "नागपुर": ("Nagpur", "Maharashtra"), "ନାଗପୁର": ("Nagpur", "Maharashtra"),
+    "kolkata": ("Kolkata", "West Bengal"), "calcutta": ("Kolkata", "West Bengal"), "कोलकाता": ("Kolkata", "West Bengal"), "କୋଲକାତା": ("Kolkata", "West Bengal"),
+    "howrah": ("Howrah", "West Bengal"), "हावड़ा": ("Howrah", "West Bengal"), "ହାଓଡ଼ା": ("Howrah", "West Bengal"),
+    "patna": ("Patna", "Bihar"), "पटना": ("Patna", "Bihar"), "ପାଟନା": ("Patna", "Bihar"),
+    "gaya": ("Gaya", "Bihar"), "गया": ("Gaya", "Bihar"), "ଗୟା": ("Gaya", "Bihar"),
+    "ranchi": ("Ranchi", "Jharkhand"), "रांची": ("Ranchi", "Jharkhand"), "ରାଞ୍ଚି": ("Ranchi", "Jharkhand"),
+    "jamshedpur": ("Jamshedpur", "Jharkhand"), "tatanagar": ("Jamshedpur", "Jharkhand"), "जमशेदपुर": ("Jamshedpur", "Jharkhand"), "ଜାମସେଦପୁର": ("Jamshedpur", "Jharkhand"),
+    "dhanbad": ("Dhanbad", "Jharkhand"), "धनबाद": ("Dhanbad", "Jharkhand"), "ଧନବାଦ": ("Dhanbad", "Jharkhand"),
+    "delhi": ("New Delhi", "Delhi"), "new delhi": ("New Delhi", "Delhi"), "नई दिल्ली": ("New Delhi", "Delhi"), "दिल्ली": ("New Delhi", "Delhi"), "ଦିଲ୍ଲୀ": ("New Delhi", "Delhi"),
+    "noida": ("Noida", "Uttar Pradesh"), "नोएडा": ("Noida", "Uttar Pradesh"), "ନୋଇଡା": ("Noida", "Uttar Pradesh"),
+    "gurugram": ("Gurugram", "Haryana"), "gurgaon": ("Gurugram", "Haryana"), "गुरुग्राम": ("Gurugram", "Haryana"), "ଗୁରୁଗ୍ରାମ": ("Gurugram", "Haryana"),
+    "lucknow": ("Lucknow", "Uttar Pradesh"), "लखनऊ": ("Lucknow", "Uttar Pradesh"), "ଲକ୍ଷ୍ନୌ": ("Lucknow", "Uttar Pradesh"),
+    "kanpur": ("Kanpur", "Uttar Pradesh"), "कानपुर": ("Kanpur", "Uttar Pradesh"), "କାନପୁର": ("Kanpur", "Uttar Pradesh"),
+    "varanasi": ("Varanasi", "Uttar Pradesh"), "kashi": ("Varanasi", "Uttar Pradesh"), "वाराणसी": ("Varanasi", "Uttar Pradesh"), "ବାରାଣସୀ": ("Varanasi", "Uttar Pradesh"),
+    "jaipur": ("Jaipur", "Rajasthan"), "जयपुर": ("Jaipur", "Rajasthan"), "ଜୟପୁର": ("Jaipur", "Rajasthan"),
+    "bengaluru": ("Bengaluru", "Karnataka"), "bangalore": ("Bengaluru", "Karnataka"), "बेंगलुरु": ("Bengaluru", "Karnataka"), "ବାଙ୍ଗାଲୋର": ("Bengaluru", "Karnataka"),
+    "hyderabad": ("Hyderabad", "Telangana"), "हैदराबाद": ("Hyderabad", "Telangana"), "ହାଇଦ୍ରାବାଦ": ("Hyderabad", "Telangana"),
+    "chennai": ("Chennai", "Tamil Nadu"), "madras": ("Chennai", "Tamil Nadu"), "चेन्नई": ("Chennai", "Tamil Nadu"), "ଚେନ୍ନାଇ": ("Chennai", "Tamil Nadu"),
+    "kochi": ("Kochi", "Kerala"), "cochin": ("Kochi", "Kerala"), "कोच्चि": ("Kochi", "Kerala"), "କୋଚି": ("Kochi", "Kerala"),
+    "ahmedabad": ("Ahmedabad", "Gujarat"), "अहमदाबाद": ("Ahmedabad", "Gujarat"), "ଅହମଦାବାଦ": ("Ahmedabad", "Gujarat"),
+    "surat": ("Surat", "Gujarat"), "सूरत": ("Surat", "Gujarat"), "ସୁରଟ": ("Surat", "Gujarat"),
+    "bhopal": ("Bhopal", "Madhya Pradesh"), "भोपाल": ("Bhopal", "Madhya Pradesh"), "ଭୋପାଲ": ("Bhopal", "Madhya Pradesh"),
+    "indore": ("Indore", "Madhya Pradesh"), "इंदौर": ("Indore", "Madhya Pradesh"), "ଇନ୍ଦୋର": ("Indore", "Madhya Pradesh"),
+    "raipur": ("Raipur", "Chhattisgarh"), "रायपुर": ("Raipur", "Chhattisgarh"), "ରାୟପୁର": ("Raipur", "Chhattisgarh"),
+    "guwahati": ("Guwahati", "Assam"), "गुवाहाटी": ("Guwahati", "Assam"), "ଗୁଆହାଟୀ": ("Guwahati", "Assam"),
+    "chandigarh": ("Chandigarh", "Punjab"), "चंडीगढ़": ("Chandigarh", "Punjab"), "ଚଣ୍ଡିଗଡ଼": ("Chandigarh", "Punjab"),
+}
+
+
+def normalize_indian_state(text: str) -> Optional[str]:
+    """Resolves raw spoken or typed state text to canonical English state name."""
+    if not text:
+        return None
+    raw = str(text).strip().lower()
+    clean = re.sub(r"^(?:my state is|i am in|i live in|state is|state|in)\s+", "", raw).strip()
+    if clean in CANONICAL_INDIAN_STATES:
+        return CANONICAL_INDIAN_STATES[clean]
+    for key, val in CANONICAL_INDIAN_STATES.items():
+        if key in clean.split() or key == clean:
+            return val
+    return None
+
+
+def normalize_indian_city(text: str) -> Optional[Tuple[str, str]]:
+    """Resolves raw spoken or typed city text to (canonical_city, default_state)."""
+    if not text:
+        return None
+    raw = str(text).strip().lower()
+    clean = re.sub(r"^(?:my city is|i am in|i live in|city is|city|in)\s+", "", raw).strip()
+    if clean in CANONICAL_INDIAN_CITIES:
+        return CANONICAL_INDIAN_CITIES[clean]
+    for key, val in CANONICAL_INDIAN_CITIES.items():
+        if key in clean.split() or key == clean:
+            return val
+    return None
+
 ORDER_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
     "4821": {
         "en": (
@@ -1268,6 +1402,7 @@ class IVRRAGMiniModel:
     def _extract_registration_slots_from_history(self, messages: Optional[List[ChatMessage]]) -> Dict[str, str]:
         """
         Traverses conversation history and extracts previously collected State, City, and Address.
+        Uses canonical Indian state and city normalization to resolve vernacular variants.
         """
         slots = {"state": "Odisha", "city": "Bhubaneswar", "address": ""}
         if not messages:
@@ -1281,9 +1416,24 @@ class IVRRAGMiniModel:
                     u_val = str(user_msg.content).strip().rstrip(".")
                     u_clean = re.sub(r'^(?:i am in|i live in|my state is|my city is|it is|state is|city is|in)\s+', '', u_val, flags=re.IGNORECASE).strip()
                     if any(w in asst_text for w in ("your state", "state name", "राज्य", "ରାଜ୍ୟ")):
-                        slots["state"] = u_clean.title() if u_clean else u_val.title()
+                        norm_st = normalize_indian_state(u_clean or u_val)
+                        if norm_st:
+                            slots["state"] = norm_st
+                        else:
+                            norm_ct = normalize_indian_city(u_clean or u_val)
+                            if norm_ct:
+                                slots["city"] = norm_ct[0]
+                                slots["state"] = norm_ct[1]
+                            else:
+                                slots["state"] = u_clean.title() if u_clean else u_val.title()
                     elif any(w in asst_text for w in ("your city", "which city", "शहर", "ସହର")):
-                        slots["city"] = u_clean.title() if u_clean else u_val.title()
+                        norm_ct = normalize_indian_city(u_clean or u_val)
+                        if norm_ct:
+                            slots["city"] = norm_ct[0]
+                            if norm_ct[1] and slots.get("state") in ("Odisha", ""):
+                                slots["state"] = norm_ct[1]
+                        else:
+                            slots["city"] = u_clean.title() if u_clean else u_val.title()
                     elif any(w in asst_text for w in ("street address", "area or street", "पते", "क्षेत्र", "ଠିକଣା")):
                         slots["address"] = u_val
 
