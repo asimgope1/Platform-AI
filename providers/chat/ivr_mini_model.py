@@ -978,22 +978,28 @@ class IVRRAGMiniModel:
                 status_hi = {"New": "नई (New)", "Discussion": "चर्चाधीन (Discussion)", "Solved": "हल (Solved)", "Canceled": "रद्द (Canceled)"}.get(status, status)
                 status_or = {"New": "ନୂଆ (New)", "Discussion": "ଆଲୋଚନାରେ (Discussion)", "Solved": "ସମାଧାନ (Solved)", "Canceled": "ବାତିଲ୍ (Canceled)"}.get(status, status)
 
+                raw_notes = str(r["othernotes"] or "").strip()
+                clean_notes = raw_notes.rstrip(".")
+                issue_en = f" regarding '{clean_notes}'" if clean_notes else ""
+                issue_hi = f", जो '{clean_notes}' के संबंध में है" if clean_notes else ""
+                issue_or = f", ଯାହା '{clean_notes}' ବିଷୟରେ ଅଟେ" if clean_notes else ""
+
                 entry = {
                     "en": (
                         f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): "
-                        f"It was booked for customer {cname} on {bdate_str} from {city} under {dept}. "
+                        f"It was registered for customer {cname} from {city} on {bdate_str} under {dept}{issue_en}. "
                         f"The current ticket status is {status}. "
                         f"Is there anything else I can help you with today?"
                     ),
                     "hi": (
                         f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: "
-                        f"यह {city} से {cname} के लिए {dept} में दर्ज हुआ था। "
+                        f"यह {city} से {cname} के लिए {dept} में {bdate_str} को दर्ज हुआ था{issue_hi}। "
                         f"वर्तमान स्थिति {status_hi} है। "
                         f"क्या मैं और कोई सहायता करूँ?"
                     ),
                     "or": (
                         f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ର ବିବରଣୀ: "
-                        f"ଏହା {city} ରୁ {cname} ଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। "
+                        f"ଏହା {city} ରୁ {cname} ଙ୍କ ପାଇଁ {dept} ଅଧୀନରେ ଦାଖଲ ହୋଇଥିଲା{issue_or}। "
                         f"ବର୍ତ୍ତମାନର ସ୍ଥିତି {status_or} ଅଟେ। "
                         f"ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
                     ),
@@ -1006,35 +1012,62 @@ class IVRRAGMiniModel:
                 if phone and len(phone) >= 10 and phone.isdigit():
                     phone_map.setdefault(phone, []).append({
                         "tnum": tnum,
+                        "pad4": pad4,
                         "status": status,
                         "customer": cname,
+                        "notes": clean_notes,
                     })
 
             for phone, tkts in phone_map.items():
                 names = list(dict.fromkeys(t["customer"] for t in tkts if t["customer"] and t["customer"] not in ("Customer", "aa", "qwq")))
-                names_str = " and ".join(names) if names else "Customer"
+                names_str = f" ({', '.join(names)})" if names else ""
 
-                tkt_summaries_en = []
-                tkt_summaries_hi = []
-                tkt_summaries_or = []
-                for t in tkts:
+                if len(tkts) == 1:
+                    t = tkts[0]
                     tnum = t["tnum"]
+                    pad4 = t["pad4"]
                     st = t["status"]
-                    st_hi = {"New": "नई", "Discussion": "चर्चाधीन", "Solved": "हल", "Canceled": "रद्द"}.get(st, st)
-                    st_or = {"New": "ନୂଆ", "Discussion": "ଆଲୋଚନାରେ", "Solved": "ସମାଧାନ", "Canceled": "ବାତିଲ୍"}.get(st, st)
-                    tkt_summaries_en.append(f"Ticket {tnum} is {st}")
-                    tkt_summaries_hi.append(f"टिकट {tnum} {st_hi}")
-                    tkt_summaries_or.append(f"ଟିକେଟ୍ {tnum} {st_or}")
+                    st_hi = {"New": "नई (New)", "Discussion": "चर्चाधीन (Discussion)", "Solved": "हल (Solved)", "Canceled": "रद्द (Canceled)"}.get(st, st)
+                    st_or = {"New": "ନୂଆ (New)", "Discussion": "ଆଲୋଚନାରେ (Discussion)", "Solved": "ସମାଧାନ (Solved)", "Canceled": "ବାତିଲ୍ (Canceled)"}.get(st, st)
+                    notes = t["notes"]
+                    issue_en = f" regarding '{notes}'" if notes else ""
+                    issue_hi = f", जो '{notes}' के संबंध में है," if notes else ""
+                    issue_or = f", ଯାହା '{notes}' ବିଷୟରେ ଅଟେ," if notes else ""
+                    COMPLAINT_STATUS_CATALOG[phone] = {
+                        "en": f"For your registered number {phone}{names_str}, we found complaint Ticket {tnum} (reference CMP {pad4}){issue_en}. The current ticket status is {st}. Is there anything else I can help you with today?",
+                        "hi": f"आपके पंजीकृत नंबर {phone}{names_str} के लिए शिकायत टिकट नंबर {tnum} (सीएमपी {pad4}){issue_hi} दर्ज है। वर्तमान स्थिति {st_hi} है। क्या मैं और कोई सहायता करूँ?",
+                        "or": f"ଆପଣଙ୍କ ପଞ୍ଜୀକୃତ ନମ୍ବର {phone}{names_str} ପାଇଁ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}){issue_or} ରହିଛି। ବର୍ତ୍ତମାନର ସ୍ଥିତି {st_or} ଅଟେ। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?",
+                    }
+                else:
+                    latest = tkts[0]
+                    latest_tnum = latest["tnum"]
+                    latest_st = latest["status"]
+                    latest_notes = latest["notes"]
+                    latest_issue_en = f" regarding '{latest_notes}'" if latest_notes else ""
+                    latest_issue_hi = f", जो '{latest_notes}' के संबंध में है," if latest_notes else ""
+                    latest_issue_or = f", ଯାହା '{latest_notes}' ବିଷୟରେ ଅଟେ," if latest_notes else ""
 
-                en_list = ", ".join(tkt_summaries_en[:-1]) + (f", and {tkt_summaries_en[-1]}" if len(tkt_summaries_en) > 1 else tkt_summaries_en[0])
-                hi_list = ", ".join(tkt_summaries_hi[:-1]) + (f", और {tkt_summaries_hi[-1]}" if len(tkt_summaries_hi) > 1 else tkt_summaries_hi[0])
-                or_list = ", ".join(tkt_summaries_or[:-1]) + (f", ଏବଂ {tkt_summaries_or[-1]}" if len(tkt_summaries_or) > 1 else tkt_summaries_or[0])
+                    tkt_summaries_en = []
+                    tkt_summaries_hi = []
+                    tkt_summaries_or = []
+                    for t in tkts:
+                        tnum = t["tnum"]
+                        st = t["status"]
+                        st_hi = {"New": "नई", "Discussion": "चर्चाधीन", "Solved": "हल", "Canceled": "रद्द"}.get(st, st)
+                        st_or = {"New": "ନୂଆ", "Discussion": "ଆଲୋଚନାରେ", "Solved": "ସମାଧାନ", "Canceled": "ବାତିଲ୍"}.get(st, st)
+                        tkt_summaries_en.append(f"Ticket {tnum} is {st}")
+                        tkt_summaries_hi.append(f"टिकट {tnum} {st_hi}")
+                        tkt_summaries_or.append(f"ଟିକେଟ୍ {tnum} {st_or}")
 
-                COMPLAINT_STATUS_CATALOG[phone] = {
-                    "en": f"For registered phone number {phone} ({names_str}), we found {len(tkts)} complaint{'s' if len(tkts) > 1 else ''} on file: {en_list}. Which ticket would you like full details on?",
-                    "hi": f"पंजीकृत मोबाइल नंबर {phone} ({names_str}) के लिए {len(tkts)} शिकायतें दर्ज हैं: {hi_list}। आप किस टिकट की पूरी जानकारी चाहते हैं?",
-                    "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {phone} ({names_str}) ପାଇଁ {len(tkts)} ଟି ଅଭିଯୋଗ ରହିଛି: {or_list}। ଆପଣ କେଉଁ ଟିକେଟ୍ ବିଷୟରେ ଜାଣିବାକୁ ଚାହାଁନ୍ତି?",
-                }
+                    en_list = ", ".join(tkt_summaries_en[:-1]) + (f", and {tkt_summaries_en[-1]}" if len(tkt_summaries_en) > 1 else tkt_summaries_en[0])
+                    hi_list = ", ".join(tkt_summaries_hi[:-1]) + (f", और {tkt_summaries_hi[-1]}" if len(tkt_summaries_hi) > 1 else tkt_summaries_hi[0])
+                    or_list = ", ".join(tkt_summaries_or[:-1]) + (f", ଏବଂ {tkt_summaries_or[-1]}" if len(tkt_summaries_or) > 1 else tkt_summaries_or[0])
+
+                    COMPLAINT_STATUS_CATALOG[phone] = {
+                        "en": f"For registered phone number {phone}{names_str}, we found {len(tkts)} complaints on file: {en_list}. Your latest is Ticket {latest_tnum}{latest_issue_en} with status {latest_st}. Which ticket would you like full details on?",
+                        "hi": f"पंजीकृत मोबाइल नंबर {phone}{names_str} के लिए {len(tkts)} शिकायतें दर्ज हैं: {hi_list}। आपकी नवीनतम शिकायत टिकट {latest_tnum}{latest_issue_hi} की स्थिति {latest_st} है। आप किस टिकट का पूरा विवरण चाहते हैं?",
+                        "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {phone}{names_str} ପାଇଁ {len(tkts)} ଟି ଅଭିଯୋଗ ରହିଛି: {or_list}। ଆପଣଙ୍କ ସର୍ବଶେଷ ଅଭିଯୋଗ ଟିକେଟ୍ {latest_tnum}{latest_issue_or} ର ସ୍ଥିତି {latest_st} ଅଟେ। ଆପଣ କେଉଁ ଟିକେଟ୍ ବିଷୟରେ ଜାଣିବାକୁ ଚାହାଁନ୍ତି?",
+                    }
 
             if max_tnum >= _NEXT_TICKET_COUNTER:
                 _NEXT_TICKET_COUNTER = max_tnum + 1
@@ -1086,6 +1119,13 @@ class IVRRAGMiniModel:
         tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
         if tokens.intersection({
             "status", "track", "existing", "old", "previous", "ticket", "tickets", "cmp", "update",
+            "explain", "detail", "details", "problem", "issue", "notes", "regarding",
+            "स्थिति", "पुरानी", "पुराना", "जांच", "अपडेट", "विवरण", "विस्तार", "समस्या",
+            "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା", "ବିବରଣୀ", "ସମସ୍ୟା"
+        }) and any(w in clean for w in ("complaint", "ticket", "cmp", "शिकायत", "टिकट", "ଅଭିଯୋଗ", "ଟିକେଟ୍")):
+            return True
+        if tokens.intersection({
+            "status", "track", "existing", "old", "previous", "ticket", "tickets", "cmp", "update",
             "स्थिति", "पुरानी", "पुराना", "जांच", "अपडेट", "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା"
         }):
             # Ensure "ticket" or "tickets" or "status" alone isn't misinterpreting movie tickets or unrelated tokens
@@ -1094,11 +1134,14 @@ class IVRRAGMiniModel:
             phrase in clean
             for phrase in (
                 "check status", "check the status", "status of complaint", "complaint status",
-                "my complaint", "check existing", "existing complaint", "check existing complaint",
+                "my complaint", "the complaint", "about complaint", "about the complaint", "about my complaint",
+                "explain complaint", "explain the complaint", "explain about the complaint", "tell me about my complaint",
+                "tell me about the complaint", "what is my complaint", "what is the complaint",
+                "what did i complain", "check existing", "existing complaint", "check existing complaint",
                 "existing one", "old complaint", "status check", "know status", "track complaint",
                 "track my complaint", "status dekhna", "status janna", "complaint detail", "complaint details", "ticket details",
-                "स्थिति देखना", "स्थिति जांचना", "पुरानी शिकायत", "पुराना शिकायत", "स्थिति बताएं",
-                "ସ୍ଥିତି ଜାଣିବା", "ପୂର୍ବ ଅଭିଯୋଗ", "ପୁରୁଣା ଅଭିଯୋଗ", "ଅଭିଯୋଗ ସ୍ଥିତି",
+                "स्थिति देखना", "स्थिति जांचना", "पुरानी शिकायत", "पुराना शिकायत", "स्थिति बताएं", "शिकायत का विवरण", "शिकायत के बारे में",
+                "ସ୍ଥିତି ଜାଣିବା", "ପୂର୍ବ ଅଭିଯୋଗ", "ପୁରୁଣା ଅଭିଯୋଗ", "ଅଭିଯୋଗ ସ୍ଥିତି", "ଅଭିଯୋଗ ବିବରଣୀ",
             )
         )
 
@@ -1323,10 +1366,12 @@ class IVRRAGMiniModel:
         }
         COMPLAINT_STATUS_CATALOG[pad_4] = COMPLAINT_STATUS_CATALOG[str(ticket_num)]
         if phone:
+            issue_hi_reg = f", जो '{clean_desc}' के बारे में है," if clean_desc else ""
+            issue_or_reg = f", ଯାହା '{clean_desc}' ବିଷୟରେ ଅଟେ," if clean_desc else ""
             COMPLAINT_STATUS_CATALOG[phone] = {
-                "en": f"For registered phone number {phone}, complaint ticket number {ticket_num} (reference CMP {pad_4}) is on file with status New.",
-                "hi": f"पंजीकृत मोबाइल नंबर {phone} के लिए शिकायत टिकट नंबर {ticket_num} (सीएमपी {pad_4}) नई (New) स्थिति में दर्ज है।",
-                "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {phone} ପାଇଁ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}) ନୂଆ ଅଟେ।",
+                "en": f"For registered phone number {phone}, complaint ticket number {ticket_num} (reference CMP {pad_4}) regarding '{clean_desc}' is on file with status New.",
+                "hi": f"पंजीकृत मोबाइल नंबर {phone} के लिए शिकायत टिकट नंबर {ticket_num} (सीएमपी {pad_4}){issue_hi_reg} नई (New) स्थिति में दर्ज है।",
+                "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {phone} ପାଇଁ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}){issue_or_reg} ନୂଆ ଅଟେ।",
             }
 
         # Fire async background task to persist to CRM DB & local DB
