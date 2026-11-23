@@ -170,10 +170,30 @@ AUTONOMOUS_KNOWLEDGE = {
         "hi": "जी बिल्कुल, कृपया अपना शिकायत टिकट नंबर (जैसे 1 या 0001) या अपना पंजीकृत मोबाइल नंबर बताइए।",
         "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର (ଯେପରି ୧ ବା ୦୦୦୧) କିମ୍ବା ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବର କୁହନ୍ତୁ।",
     },
+    "complaint_register_ask_state": {
+        "en": "Certainly! To register your complaint, please tell me your State.",
+        "hi": "जी बिल्कुल! आपकी शिकायत दर्ज करने के लिए, कृपया अपने राज्य (State) का नाम बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ କରିବା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ ରାଜ୍ୟର (State) ନାମ କୁହନ୍ତୁ।",
+    },
+    "complaint_register_ask_city": {
+        "en": "Thank you. What is your City?",
+        "hi": "धन्यवाद। आपके शहर (City) का नाम क्या है?",
+        "or": "ଧନ୍ୟବାଦ। ଆପଣଙ୍କ ସହରର (City) ନାମ କ’ଣ?",
+    },
+    "complaint_register_ask_address": {
+        "en": "Got it. Please provide your Area or Street Address.",
+        "hi": "ठीक है। कृपया अपने इलाके, क्षेत्र या पते (Address) का विवरण दें।",
+        "or": "ଠିକ୍ ଅଛି। ଦୟାକରି ଆପଣଙ୍କ ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା (Address) କୁହନ୍ତୁ।",
+    },
+    "complaint_register_ask_problem": {
+        "en": "Thank you. Now please describe the issue or problem you are facing.",
+        "hi": "धन्यवाद। अब कृपया अपनी समस्या या शिकायत का पूरा विवरण बताएं।",
+        "or": "ଧନ୍ୟବାଦ। ଏବେ ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
+    },
     "complaint_register_ask_details": {
-        "en": "Certainly! Please describe the issue or problem you are facing, and I will register your complaint right away.",
-        "hi": "जी बिल्कुल! कृपया अपनी समस्या का विवरण बताइए, मैं अभी आपकी शिकायत दर्ज कर देती हूँ।",
-        "or": "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା ବିଷୟରେ କୁହନ୍ତୁ, ମୁଁ ଏବେ ଆପଣଙ୍କ ଅଭିଯୋଗ ପଞ୍ଜୀକୃତ କରିଦେବି।",
+        "en": "Certainly! To register your complaint, please tell me your State.",
+        "hi": "जी बिल्कुल! आपकी शिकायत दर्ज करने के लिए, कृपया अपने राज्य (State) का नाम बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ କରିବା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ ରାଜ୍ୟର (State) ନାମ କୁହନ୍ତୁ।",
     },
     "complaint_status": {
         "en": "Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
@@ -653,8 +673,9 @@ async def flush_pending_crm_complaints() -> int:
                     """
                     INSERT INTO "ComplainBookings" (
                         complainsl, complainid, customername, phonenumber, department_sl,
-                        complain_phase_sl, createdby, complaindatetime, createdate, reopened, othernotes
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                        complain_phase_sl, createdby, complaindatetime, createdate, reopened,
+                        othernotes, state, city, address
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                     ON CONFLICT (complainsl) DO NOTHING
                     """,
                     c_sl,
@@ -668,6 +689,9 @@ async def flush_pending_crm_complaints() -> int:
                     c_time,
                     False,
                     c["description"],
+                    c.get("state") or "Odisha",
+                    c.get("city") or "Bhubaneswar",
+                    c.get("address") or "",
                 )
                 await conn.execute(
                     """
@@ -703,6 +727,9 @@ async def _persist_complaint_to_crm_db(
     caller_phone: Optional[str] = None,
     customer_name: Optional[str] = "Customer",
     call_uuid: Optional[str] = None,
+    state: Optional[str] = "Odisha",
+    city: Optional[str] = "Bhubaneswar",
+    address: Optional[str] = "",
 ) -> bool:
     """
     Asynchronously persists a newly registered complaint into the remote CRM PostgreSQL DB
@@ -724,6 +751,9 @@ async def _persist_complaint_to_crm_db(
             "caller_phone": phone_val,
             "customer_name": cust_val,
             "call_uuid": call_uuid,
+            "state": state or "Odisha",
+            "city": city or "Bhubaneswar",
+            "address": address or "",
             "created_at": now.isoformat(),
             "synced_to_crm": False,
         })
@@ -1183,6 +1213,42 @@ class IVRRAGMiniModel:
                 )
         return False
 
+    def _was_asked_for_state(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the previous assistant turn asked for the caller's State."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(marker in c for marker in (
+                    "tell me your state", "your state", "state name", "राज्य (state)", "राज्य का नाम", "ରାଜ୍ୟର (state)", "ରାଜ୍ୟର ନାମ"
+                ))
+        return False
+
+    def _was_asked_for_city(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the previous assistant turn asked for the caller's City."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(marker in c for marker in (
+                    "what is your city", "which city", "city or district", "शहर (city)", "शहर का नाम", "ସହରର (city)", "ସହରର ନାମ"
+                ))
+        return False
+
+    def _was_asked_for_address(self, messages: Optional[List[ChatMessage]]) -> bool:
+        """Returns True if the previous assistant turn asked for the caller's Address / Area / Street."""
+        if not messages:
+            return False
+        for m in reversed(messages):
+            if m.role == "assistant" and m.content:
+                c = str(m.content).lower()
+                return any(marker in c for marker in (
+                    "street address", "area or street address", "provide your area", "locality, area", "पते (address)", "क्षेत्र या पते", "ଠିକଣା (address)", "ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା"
+                ))
+        return False
+
     def _was_asked_for_complaint_description(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for a problem or issue description."""
         if not messages:
@@ -1194,10 +1260,34 @@ class IVRRAGMiniModel:
                     marker in c
                     for marker in (
                         "describe the issue", "describe the problem", "problem you are facing",
-                        "समस्या का विवरण", "ସମସ୍ୟା ବିଷୟରେ", "register your complaint right away",
+                        "अपनी समस्या या शिकायत", "समस्या का विवरण", "ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ", "ସମସ୍ୟା ବିଷୟରେ", "register your complaint right away",
                     )
                 )
         return False
+
+    def _extract_registration_slots_from_history(self, messages: Optional[List[ChatMessage]]) -> Dict[str, str]:
+        """
+        Traverses conversation history and extracts previously collected State, City, and Address.
+        """
+        slots = {"state": "Odisha", "city": "Bhubaneswar", "address": ""}
+        if not messages:
+            return slots
+
+        for i, m in enumerate(messages):
+            if m.role == "assistant" and m.content and i + 1 < len(messages):
+                asst_text = str(m.content).lower()
+                user_msg = messages[i + 1]
+                if user_msg.role == "user" and user_msg.content:
+                    u_val = str(user_msg.content).strip().rstrip(".")
+                    u_clean = re.sub(r'^(?:i am in|i live in|my state is|my city is|it is|state is|city is|in)\s+', '', u_val, flags=re.IGNORECASE).strip()
+                    if any(w in asst_text for w in ("your state", "state name", "राज्य", "ରାଜ୍ୟ")):
+                        slots["state"] = u_clean.title() if u_clean else u_val.title()
+                    elif any(w in asst_text for w in ("your city", "which city", "शहर", "ସହର")):
+                        slots["city"] = u_clean.title() if u_clean else u_val.title()
+                    elif any(w in asst_text for w in ("street address", "area or street", "पते", "क्षेत्र", "ଠିକଣା")):
+                        slots["address"] = u_val
+
+        return slots
 
     def _extract_complaint_description_from_query(self, query: str) -> Optional[str]:
         """
@@ -1326,6 +1416,9 @@ class IVRRAGMiniModel:
         caller_phone: Optional[str] = None,
         customer_name: Optional[str] = "Customer",
         call_uuid: Optional[str] = None,
+        state: Optional[str] = "Odisha",
+        city: Optional[str] = "Bhubaneswar",
+        address: Optional[str] = "",
     ) -> str:
         """
         Registers a new complaint instantly (< 2ms) without stalling telephony audio on slow LLMs.
@@ -1347,21 +1440,25 @@ class IVRRAGMiniModel:
         if not phone or phone.lower() in ("unknown", "anonymous", "none", "s"):
             phone = "9937234512"
         cust_name = customer_name or "Customer"
+        clean_state = (state or "Odisha").strip()
+        clean_city = (city or "Bhubaneswar").strip()
+        clean_addr = (address or "").strip()
+        loc_str = f" from {clean_city}, {clean_state}" if clean_city and clean_state else (f" from {clean_city}" if clean_city else "")
 
         # Update in-memory catalog so immediate follow-up status queries work
         COMPLAINT_STATUS_CATALOG[str(ticket_num)] = {
             "en": (
                 f"Here are the complete details for complaint ticket number {ticket_num} (reference CMP {pad_4}): "
-                f"It was registered recently for customer {cust_name} regarding '{clean_desc}'. "
+                f"It was registered recently for customer {cust_name}{loc_str} regarding '{clean_desc}'. "
                 f"The current status is New and assigned to Customer Support for investigation."
             ),
             "hi": (
                 f"शिकायत टिकट नंबर {ticket_num} (संदर्भ सीएमपी {pad_4}) का पूरा विवरण: "
-                f"यह '{clean_desc}' के लिए दर्ज किया गया है। वर्तमान स्थिति नई (New) है और सपोर्ट टीम जांच कर रही है।"
+                f"यह {clean_city or 'आपके क्षेत्र'} से '{clean_desc}' के लिए दर्ज किया गया है। वर्तमान स्थिति नई (New) है और सपोर्ट टीम जांच कर रही है।"
             ),
             "or": (
                 f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}) ର ବିବରଣୀ: "
-                f"ଏହା '{clean_desc}' ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।"
+                f"ଏହା {clean_city or 'ଆପଣଙ୍କ ଅଞ୍ଚଳ'} ରୁ '{clean_desc}' ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।"
             ),
         }
         COMPLAINT_STATUS_CATALOG[pad_4] = COMPLAINT_STATUS_CATALOG[str(ticket_num)]
@@ -1385,6 +1482,9 @@ class IVRRAGMiniModel:
                     caller_phone=phone,
                     customer_name=cust_name,
                     call_uuid=call_uuid,
+                    state=clean_state,
+                    city=clean_city,
+                    address=clean_addr,
                 )
             )
         except RuntimeError:
@@ -1392,21 +1492,25 @@ class IVRRAGMiniModel:
 
         logger.info(
             f"[IVR Mini Brain] Registered new complaint ticket={ticket_num} ({ticket_cmp}) "
-            f"phone={phone} desc='{clean_desc[:40]}'"
+            f"phone={phone} loc='{clean_city}, {clean_state}' desc='{clean_desc[:40]}'"
         )
+
+        loc_confirm_en = f" for {clean_city}, {clean_state}" if clean_city and clean_state else (f" for {clean_city}" if clean_city else "")
+        loc_confirm_hi = f" {clean_city}, {clean_state} के लिए" if clean_city and clean_state else (f" {clean_city} के लिए" if clean_city else "")
+        loc_confirm_or = f" {clean_city}, {clean_state} ପାଇଁ" if clean_city and clean_state else (f" {clean_city} ପାଇଁ" if clean_city else "")
 
         if lang == "hi":
             return (
-                f"आपकी शिकायत सफलतापूर्वक टिकट नंबर {ticket_num} (संदर्भ सीएमपी {pad_4}) के तहत दर्ज कर ली गई है। "
+                f"आपकी शिकायत{loc_confirm_hi} सफलतापूर्वक टिकट नंबर {ticket_num} (संदर्भ सीएमपी {pad_4}) के तहत दर्ज कर ली गई है। "
                 f"हमारी सपोर्ट टीम जल्द जांच करके आपसे संपर्क करेगी। क्या मैं और कोई सहायता करूँ?"
             )
         elif lang == "or":
             return (
-                f"ଆପଣଙ୍କ ଅଭିଯୋଗ ସଫଳତାର ସହ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}) ଅଧୀନରେ ପଞ୍ଜୀକୃତ ହୋଇଛି। "
+                f"ଆପଣଙ୍କ ଅଭିଯୋଗ{loc_confirm_or} ସଫଳତାର ସହ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}) ଅଧୀନରେ ପଞ୍ଜୀକୃତ ହୋଇଛି। "
                 f"ଆମ ସପୋର୍ଟ ଟିମ୍ ଖୁବ୍ ଶୀଘ୍ର ଯୋଗାଯୋଗ କରିବେ। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
             )
         return (
-            f"Your complaint has been successfully registered under ticket number {ticket_num} (reference CMP {pad_4}). "
+            f"Your complaint has been successfully registered under ticket number {ticket_num} (reference CMP {pad_4}){loc_confirm_en}. "
             f"Our support team will investigate the issue and update you shortly. Is there anything else I can help you with today?"
         )
 
@@ -1518,9 +1622,12 @@ class IVRRAGMiniModel:
             }
             return self.apply_sentiment_tone(follow_up.get(lang, follow_up["en"]), intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5. Complaint Services Dialogue Flow (Status & Registration)
+        # 5. Complaint Services Dialogue Flow (Status & Step-by-Step Registration)
         is_complaint_context = bool(service_category and "complaint" in service_category.lower())
         awaiting_complaint_desc = self._was_asked_for_complaint_description(messages)
+        awaiting_address = self._was_asked_for_address(messages)
+        awaiting_city = self._was_asked_for_city(messages)
+        awaiting_state = self._was_asked_for_state(messages)
         awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
         was_asked_branch = self._was_asked_status_or_register(messages)
         is_register_intent = self._is_complaint_register_intent(lower_query)
@@ -1533,31 +1640,41 @@ class IVRRAGMiniModel:
             if cid_probe:
                 ans = self.lookup_complaint_status(cid_probe, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-            # Register the caller's described issue
+            
+            # Extract collected State, City, and Address from previous turns
+            slots = self._extract_registration_slots_from_history(messages)
             ans = self.register_new_complaint(
                 description=clean_query,
                 lang=lang,
                 caller_phone=caller_phone,
                 customer_name=customer_name,
                 call_uuid=call_uuid,
+                state=slots.get("state") or "Odisha",
+                city=slots.get("city") or "Bhubaneswar",
+                address=slots.get("address") or "",
             )
             return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5b. If previous turn asked caller for complaint ticket ID or phone:
+        # 5b. If previous turn asked caller for Address / Locality:
+        if awaiting_address:
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5c. If previous turn asked caller for City:
+        if awaiting_city:
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_address"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5d. If previous turn asked caller for State:
+        if awaiting_state:
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_city"][lang]
+            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+        # 5e. If previous turn asked caller for complaint ticket ID or phone:
         if awaiting_complaint_id:
             # If caller switched to register intent:
             if is_register_intent:
-                embedded_desc = self._extract_complaint_description_from_query(clean_query)
-                if embedded_desc:
-                    ans = self.register_new_complaint(
-                        description=embedded_desc,
-                        lang=lang,
-                        caller_phone=caller_phone,
-                        customer_name=customer_name,
-                        call_uuid=call_uuid,
-                    )
-                    return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_details"][lang]
+                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
                 return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
             cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
@@ -1577,23 +1694,13 @@ class IVRRAGMiniModel:
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5c. Caller explicitly declared intent to register a new complaint:
+        # 5f. Caller explicitly declared intent to register a new complaint:
         if is_register_intent:
-            embedded_desc = self._extract_complaint_description_from_query(clean_query)
-            if embedded_desc:
-                ans = self.register_new_complaint(
-                    description=embedded_desc,
-                    lang=lang,
-                    caller_phone=caller_phone,
-                    customer_name=customer_name,
-                    call_uuid=call_uuid,
-                )
-                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-            # Prompt caller to describe the issue in detail
-            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_details"][lang]
+            # Start step-by-step registration with Step 1: State
+            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5d. Caller explicitly declared intent to check status of existing complaint:
+        # 5g. Caller explicitly declared intent to check status of existing complaint:
         if is_status_intent:
             cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=False)
             if cid_probe:
@@ -1601,7 +1708,6 @@ class IVRRAGMiniModel:
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
             # Proactive Lookup by caller phone number:
-            # If caller calls from their phone, immediately report their complaint status without forcing them to re-type digits!
             clean_phone = re.sub(r"\D", "", caller_phone or "") if caller_phone else ""
             if len(clean_phone) >= 10:
                 clean_phone_10 = clean_phone[-10:]
@@ -1612,12 +1718,16 @@ class IVRRAGMiniModel:
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5e. Caller in Complaint Service context provided a direct ticket ID or digits:
+        # 5h. Caller in Complaint Service context provided a direct ticket ID or digits:
         if is_complaint_context:
             cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
             if cid_probe:
                 ans = self.lookup_complaint_status(cid_probe, lang=lang)
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            if self._is_complaint_register_intent(lower_query):
+                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
+                return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
             # Check if caller directly provided an issue description (>= 3 words describing a problem)
             if any(w in lower_query for w in (

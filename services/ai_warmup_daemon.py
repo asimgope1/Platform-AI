@@ -70,7 +70,7 @@ async def warmup_all_ai_components(force: bool = False) -> Dict[str, Any]:
         logger.warning(f"[AI Warmup] TTS prompt warm-up notice: {e}")
 
     # 3. Ollama LLM Warmup (Gemma) with keep_alive: -1 (Never Unload)
-    ollama_url = os.getenv("OLLAMA_BASE_URL", "http://192.168.1.117:11434/v1")
+    ollama_url = os.getenv("OLLAMA_BASE_URL", "http://192.168.1.108:11434/v1")
     ollama_host = ollama_url.replace("/v1", "").rstrip("/")
     target_model = os.getenv("OLLAMA_GEMMA_MODEL", "gemma4:latest")
 
@@ -152,7 +152,7 @@ async def _ai_keepalive_heartbeat_loop(interval_seconds: int = 120):
     to ensure the OS, PyTorch, or Ollama never page out or unload models.
     """
     logger.info(f"[AI Warmup] 💓 Autonomous AI keep-alive heartbeat loop started (interval={interval_seconds}s).")
-    ollama_url = os.getenv("OLLAMA_BASE_URL", "http://192.168.1.117:11434/v1")
+    ollama_url = os.getenv("OLLAMA_BASE_URL", "http://192.168.1.108:11434/v1")
     ollama_host = ollama_url.replace("/v1", "").rstrip("/")
     target_model = os.getenv("OLLAMA_GEMMA_MODEL", "gemma4:latest")
 

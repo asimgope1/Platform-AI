@@ -228,18 +228,18 @@ class TestIVRRAGMiniModel:
     def test_complaint_registration_flow_turn1_prompts_details(self, brain):
         # Caller speaks single word 'Register.' as instructed by menu prompt
         bare_reply = brain.synthesize("Register.", service_category="complaint", language="en")
-        assert "describe the issue" in bare_reply.lower() or "problem you are facing" in bare_reply.lower()
+        assert "state" in bare_reply.lower()
         assert "ticket number" not in bare_reply.lower()
 
         # Caller expresses intent to register a new complaint
         en_reply = brain.synthesize("Yes, I want to register a new complaint.", language="en")
-        assert "describe the issue" in en_reply.lower() or "problem you are facing" in en_reply.lower()
+        assert "state" in en_reply.lower()
 
         hi_reply = brain.synthesize("मुझे एक नई शिकायत दर्ज करनी है", language="hi")
-        assert "समस्या का विवरण" in hi_reply
+        assert "राज्य" in hi_reply
 
         or_reply = brain.synthesize("ମୁଁ ଏକ ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହୁଁଛି", language="or")
-        assert "ସମସ୍ୟା ବିଷୟରେ" in or_reply
+        assert "ରାଜ୍ୟ" in or_reply
 
     def test_complaint_registration_flow_turn2_registers_and_lookups_status(self, brain):
         history = [
@@ -273,8 +273,7 @@ class TestIVRRAGMiniModel:
             "I want to register a complaint that my broadband internet is not working.",
             language="en",
         )
-        assert "successfully registered" in reply.lower()
-        assert "ticket number" in reply.lower()
+        assert "state" in reply.lower()
 
     def test_conversational_branch_status_flow(self, brain):
         history = [
@@ -308,28 +307,46 @@ class TestIVRRAGMiniModel:
                 content="Welcome to Complaint Services. Would you like to check the status of an existing complaint, or register a new one?",
             )
         ]
-        # Turn 1: Caller says 'new one' or 'register a new one'
+        # Turn 1: Caller says 'new one' or 'register a new one' -> asks State
         reply1 = brain.synthesize("new one", messages=history, service_category="complaint", language="en")
-        assert "describe the issue" in reply1.lower() or "problem you are facing" in reply1.lower()
+        assert "state" in reply1.lower()
         assert "ticket number 1" not in reply1.lower()  # MUST NOT extract digit 1 from 'one'
         history.append(ChatMessage(role="user", content="new one"))
         history.append(ChatMessage(role="assistant", content=reply1))
 
-        # Turn 2: Caller describes their issue
-        reply2 = brain.synthesize(
+        # Turn 2: Caller gives State -> asks City
+        reply2 = brain.synthesize("Odisha", messages=history, service_category="complaint", language="en")
+        assert "city" in reply2.lower()
+        history.append(ChatMessage(role="user", content="Odisha"))
+        history.append(ChatMessage(role="assistant", content=reply2))
+
+        # Turn 3: Caller gives City -> asks Address
+        reply3 = brain.synthesize("Bhubaneswar", messages=history, service_category="complaint", language="en")
+        assert "address" in reply3.lower()
+        history.append(ChatMessage(role="user", content="Bhubaneswar"))
+        history.append(ChatMessage(role="assistant", content=reply3))
+
+        # Turn 4: Caller gives Address -> asks Problem description
+        reply4 = brain.synthesize("Plot 102, Saheed Nagar", messages=history, service_category="complaint", language="en")
+        assert "describe" in reply4.lower() or "problem" in reply4.lower() or "issue" in reply4.lower()
+        history.append(ChatMessage(role="user", content="Plot 102, Saheed Nagar"))
+        history.append(ChatMessage(role="assistant", content=reply4))
+
+        # Turn 5: Caller describes their issue -> registers ticket with all details
+        reply5 = brain.synthesize(
             "My wifi router has a red blinking light and no connection",
             messages=history,
             service_category="complaint",
             language="en",
         )
-        assert "successfully registered" in reply2.lower()
-        assert "ticket number" in reply2.lower()
+        assert "successfully registered" in reply5.lower()
+        assert "ticket number" in reply5.lower()
         history.append(ChatMessage(role="user", content="My wifi router has a red blinking light and no connection"))
-        history.append(ChatMessage(role="assistant", content=reply2))
+        history.append(ChatMessage(role="assistant", content=reply5))
 
-        # Turn 3: Caller says 'No that is all, thank you'
-        reply3 = brain.synthesize("No that is all, thank you", messages=history, service_category="complaint", language="en")
-        assert "welcome" in reply3.lower()
+        # Turn 6: Caller says 'No that is all, thank you'
+        reply6 = brain.synthesize("No that is all, thank you", messages=history, service_category="complaint", language="en")
+        assert "welcome" in reply6.lower()
 
     def test_conversational_branch_multilingual(self, brain):
         hi_history = [
@@ -342,7 +359,7 @@ class TestIVRRAGMiniModel:
         assert "टिकट नंबर" in hi_status
 
         hi_reg = brain.synthesize("नया वाला", messages=hi_history, language="hi", service_category="complaint")
-        assert "विवरण" in hi_reg or "समस्या" in hi_reg
+        assert "राज्य" in hi_reg
 
         or_history = [
             ChatMessage(
@@ -354,7 +371,7 @@ class TestIVRRAGMiniModel:
         assert "ଟିକେଟ୍ ନମ୍ବର" in or_status
 
         or_reg = brain.synthesize("ନୂଆ ଗୋଟିଏ", messages=or_history, language="or", service_category="complaint")
-        assert "ସମସ୍ୟା" in or_reg or "ଅଭିଯୋଗ" in or_reg
+        assert "ରାଜ୍ୟ" in or_reg
 
     def test_post_complaint_registration_feedback_flow(self, brain):
         """Verifies that feedback, ratings, and stars after complaint registration are handled correctly."""
