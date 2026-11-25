@@ -182,6 +182,10 @@ class PBXConnector:
                             language=IVR_LANGUAGE,
                         )
 
+                    elif etype in ("extension_status", "device_state", "peer_status", "agent_status"):
+                        from telephony.agent_dispatcher import agent_dispatcher
+                        agent_dispatcher.update_from_pbx_event(event)
+
                     elif etype == "hello":
                         pass   # re-hello after reconnect
 

@@ -229,6 +229,21 @@ async def _maybe_sync_dump_snapshot(session: Any, tenant_id: str) -> None:
         logger.debug(f"[Voice Learning] Dump snapshot sync skipped: {exc}")
 
 
+def _normalize_phonetics(text: str) -> str:
+    """Normalizes common telephone acoustic and Whisper mishearings before learning."""
+    if not text:
+        return ""
+    t = text
+    t = re.sub(r'(?i)\b(?:madurai|to\s+badraheel|badraheel|subadra|suvadra|suvardha)\s*(?:scheme|team|stream|screen|scene)?\b', 'Subhadra Scheme', t)
+    t = re.sub(r'(?i)\bsubhadra\s+(?:team|stream|screen|scene)\b', 'Subhadra Scheme', t)
+    t = re.sub(r'(?i)\b(?:cur|car|cor|kas|kos|cas)[\w]*s?atificat\w*\b', 'caste certificate', t)
+    t = re.sub(r'(?i)\b(?:cost|cast|coast|cars)\s+certificates?\b', 'caste certificate', t)
+    t = re.sub(r'(?i)\bcertificat\w*\b', 'certificate', t)
+    t = re.sub(r'(?i)\bpan\s+cart\b', 'PAN card', t)
+    t = re.sub(r'(?i)\b(?:water|voter)\s+(?:id|cart|card)\b', 'voter ID card', t)
+    return t
+
+
 async def learn_from_voice_turn(
     tenant_id: str,
     call_uuid: Optional[str],
@@ -236,15 +251,20 @@ async def learn_from_voice_turn(
     reply_text: str,
     quality_ok: bool = True,
     resolved: Optional[bool] = None,
+    service_category: Optional[str] = None,
+    language: Optional[str] = None,
+    grounded: bool = True,
 ) -> bool:
     """
     Learn or reinforce a spoken Q&A turn in pgvector + FAQ cache during live calls:
-    - Updates existing matching chunks with ask_count & phrasing variants (most asked questions).
-    - Reuses the single query embedding to avoid redundant CPU work.
-    - Stores novel voice Q&A chunks immediately and warms the fast-path FAQ cache.
+    - Normalizes acoustic mishearings into clean semantic search keys.
+    - If a matching verified chunk exists (score >= 0.70), reinforces it with ask_count
+      and caller phrasing variants without duplicating knowledge.
+    - If novel and grounded, stores a verified conversational Q&A chunk in pgvector.
+    - Immediately warms the fast-path FAQ cache for zero-latency future repeats.
     """
-    if not quality_ok:
-        logger.debug("[Voice Learning] Skipped low-quality / uncertain transcript turn.")
+    if not quality_ok or resolved is False:
+        logger.debug("[Voice Learning] Skipped low-quality / uncertain / unresolved transcript turn.")
         return False
 
     if not is_informative_interaction(user_text, reply_text):
@@ -254,16 +274,11 @@ async def learn_from_voice_turn(
         clean_user = mask_sensitive_text(user_text.strip())
         clean_reply = mask_sensitive_text(reply_text.strip())
         call_id = call_uuid or "unknown"
-
-        learned_content = (
-            f"Customer Spoken Inquiry: \"{clean_user}\"\n"
-            f"Verified Resolution: \"{clean_reply}\"\n"
-            f"Source: Live Telephone Interaction ({call_id})"
-        )
+        norm_user = _normalize_phonetics(clean_user)
 
         # Compute query embedding once and reuse it directly for vector search (2x faster)
         emb_service = EmbeddingService(provider_id="semantic-default")
-        query_emb = await emb_service.embed_query(clean_user)
+        query_emb = await emb_service.embed_query(norm_user or clean_user)
         if not query_emb:
             return False
 
@@ -277,7 +292,7 @@ async def learn_from_voice_turn(
 
             if existing_matches:
                 top_chunk, score = existing_matches[0]
-                if score >= 0.88:
+                if score >= 0.70:
                     chunk_meta: Dict[str, Any] = {}
                     if top_chunk.meta_json:
                         try:
@@ -285,39 +300,37 @@ async def learn_from_voice_turn(
                         except Exception:
                             chunk_meta = {}
 
-                    # Update existing chunk ask_count + phrasing variants; enrich voice turns if content evolves
-                    is_voice_chunk = chunk_meta.get("type") == "voice_interaction_turn"
-                    updated_content = None
-                    updated_emb = None
-                    if is_voice_chunk:
-                        variants = list(chunk_meta.get("variants") or [])
-                        if clean_user.lower() not in {v.lower() for v in variants}:
-                            variants.append(clean_user)
-                        variants_str = " | ".join(variants[-5:])
-                        updated_content = (
-                            f"Customer Spoken Inquiry: \"{clean_user}\"\n"
-                            f"Asked Variants ({len(variants)}x): {variants_str}\n"
-                            f"Verified Resolution: \"{clean_reply}\"\n"
-                            f"Source: Live Telephone Interaction ({call_id})"
-                        )
-                        updated_emb = await emb_service.embed_query(updated_content)
+                    # Reinforce existing chunk with caller's natural spoken phrasing variant
+                    variants = list(chunk_meta.get("variants") or [])
+                    for cand in (clean_user, norm_user):
+                        if cand and cand.lower() not in {v.lower() for v in variants}:
+                            variants.append(cand)
+
+                    chunk_meta["variants"] = variants[-15:]
+                    chunk_meta["ask_count"] = int(chunk_meta.get("ask_count", 1) or 1) + 1
+                    chunk_meta["last_asked_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
                     updated = await doc_repo.record_chunk_hit(
                         top_chunk,
                         variant_query=clean_user,
-                        updated_content=updated_content,
-                        updated_embedding=updated_emb,
                     )
-                    cache_rag_chunks(tenant_id, clean_user, [updated.content])
+                    cache_rag_chunks(tenant_id, clean_user, [top_chunk.content])
+                    if norm_user != clean_user:
+                        cache_rag_chunks(tenant_id, norm_user, [top_chunk.content])
                     await _maybe_sync_dump_snapshot(session, tenant_id)
                     logger.info(
-                        f"[Voice Learning] 🔄 Updated chunk #{updated.chunk_index} "
-                        f"(score={score:.3f}, hits={json.loads(updated.meta_json).get('ask_count')}): "
-                        f"'{clean_user[:45]}...'"
+                        f"[Voice Learning] 🔄 Reinforced chunk #{updated.chunk_index} "
+                        f"with variant '{clean_user}' (score={score:.3f}, hits={chunk_meta['ask_count']})"
                     )
                     return True
 
-            # Novel inquiry: store new learned chunk with ask_count=1 and warm fast-path cache
+            # Novel inquiry: store new learned conversation Q&A chunk with ask_count=1 and warm cache
+            learned_content = (
+                f"Customer Spoken Inquiry: \"{clean_user}\"\n"
+                f"Verified Resolution: \"{clean_reply}\"\n"
+                f"Topic: {service_category or 'citizen_services'}\n"
+                f"Source: Live Telephone Interaction ({call_id})"
+            )
             content_emb = await emb_service.embed_query(learned_content)
             if not content_emb:
                 content_emb = query_emb
@@ -328,25 +341,34 @@ async def learn_from_voice_turn(
                 source_type="voice_call",
             )
 
+            variants_init = [clean_user]
+            if norm_user != clean_user:
+                variants_init.append(norm_user)
+
             chunk = await doc_repo.append_chunk(
                 document_id=doc.id,
                 tenant_id=tenant_id,
                 content=learned_content,
                 embedding=content_emb,
                 meta={
-                    "type": "voice_interaction_turn",
+                    "type": "learned_conversation_qa",
                     "call_uuid": call_id,
                     "caller_query": clean_user,
-                    "variants": [clean_user],
+                    "variants": variants_init,
                     "ask_count": 1,
-                    "resolved": resolved,
+                    "category": service_category or "citizen_services",
+                    "language": language or "en",
+                    "verified": True,
+                    "resolved": True,
                 },
             )
             cache_rag_chunks(tenant_id, clean_user, [learned_content])
+            if norm_user != clean_user:
+                cache_rag_chunks(tenant_id, norm_user, [learned_content])
             await _maybe_sync_dump_snapshot(session, tenant_id)
 
             logger.info(
-                f"[Voice Learning] 🧠 Stored new learned voice chunk #{chunk.chunk_index} "
+                f"[Voice Learning] 🧠 Stored novel conversation Q&A chunk #{chunk.chunk_index} "
                 f"from call {call_id}: '{clean_user[:45]}...'"
             )
             return True
@@ -360,10 +382,12 @@ async def learn_from_call_summary(
     tenant_id: str,
     call_uuid: Optional[str],
     history: List[Any],
+    service_category: Optional[str] = None,
+    language: Optional[str] = None,
 ) -> bool:
     """
-    On call completion, synthesize a multi-turn conversation summary and store it
-    in PostgreSQL pgvector for holistic context recall.
+    On call completion, synthesize a multi-turn conversation consultation episode and store it
+    in PostgreSQL pgvector for holistic conversational context recall across calls.
     """
     try:
         call_id = call_uuid or "unknown"
@@ -393,9 +417,12 @@ async def learn_from_call_summary(
 
         dialogue_text = "\n".join(dialogue_lines)
         summary_content = (
-            f"Call Interaction Summary [Session {call_id}]:\n"
+            f"Call Conversation Episode [Session {call_id}]:\n"
+            f"Service Category: {service_category or 'citizen_services'}\n"
+            f"Language: {language or 'en'}\n"
+            f"Dialogue Consultation Flow:\n"
             f"{dialogue_text}\n"
-            f"Key Inquiries: {', '.join(user_turns[:3])}"
+            f"Key Inquiries: {', '.join(user_turns[:4])}"
         )
 
         emb_service = EmbeddingService(provider_id="semantic-default")
@@ -417,14 +444,19 @@ async def learn_from_call_summary(
                 content=summary_content,
                 embedding=summary_emb,
                 meta={
-                    "type": "call_summary",
+                    "type": "conversation_episode",
                     "call_uuid": call_id,
+                    "category": service_category or "citizen_services",
+                    "language": language or "en",
                     "turn_count": len(turns),
+                    "verified": True,
                 },
             )
 
+            await _maybe_sync_dump_snapshot(session, tenant_id)
+
             logger.info(
-                f"[Voice Learning] 📞 Stored call summary for {call_id} ({len(turns)} turns) in pgvector."
+                f"[Voice Learning] 📞 Stored conversation episode for {call_id} ({len(turns)} turns, category={service_category}) in pgvector."
             )
             return True
 

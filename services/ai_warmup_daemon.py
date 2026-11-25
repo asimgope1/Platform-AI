@@ -79,16 +79,15 @@ async def warmup_all_ai_components(force: bool = False) -> Dict[str, Any]:
             endpoint = f"{ollama_host}/api/generate"
             payload = json.dumps({
                 "model": target_model,
-                "prompt": "hi",
+                "prompt": "",
                 "keep_alive": -1,
-                "stream": False,
             }).encode("utf-8")
             req = urllib.request.Request(
                 endpoint,
                 data=payload,
                 headers={"Content-Type": "application/json"},
             )
-            with urllib.request.urlopen(req, timeout=12.0) as resp:
+            with urllib.request.urlopen(req, timeout=30.0) as resp:
                 return json.loads(resp.read().decode("utf-8"))
 
         try:

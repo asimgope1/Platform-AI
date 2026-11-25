@@ -1,0 +1,122 @@
+[
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "netbanking_and_cheque_book",
+    "title": "Internet Banking Unlock and Cheque Book Issuance Policy",
+    "content": "Locked Internet Banking profiles resulting from repeated incorrect password attempts automatically unlock after 24 hours or can be reset immediately using the Forgot Password flow with Debit Card and OTP verification. Cheque books of 10, 25, or 50 leaves can be ordered inside Mobile Banking or Internet Banking and arrive at the registered mailing address within 5 to 7 working days.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "electronic_fund_transfers_neft_rtgs_imps",
+    "title": "Electronic Fund Transfers (NEFT, RTGS, IMPS) Operating Rules and Timings",
+    "content": "Fund transfer facilities are available 24x7x365 across digital channels: IMPS (Immediate Payment Service) enables instant transfers up to ₹5,00,000 per transaction with zero delay; NEFT (National Electronic Funds Transfer) processes transactions in half-hourly batches 24x7 with zero processing charges for retail customers; RTGS (Real Time Gross Settlement) is designed for large-value transfers of ₹2,00,000 and above, settling instantly in real time.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "safe_deposit_locker_policy",
+    "title": "Safe Deposit Locker Allocation, Rent, and RBI Compensation Policy",
+    "content": "Safe deposit lockers in small, medium, and large sizes are available at designated branches. Locker rent is charged annually in advance (₹1,500 to ₹7,000 depending on size and metro/rural location). Under RBI guidelines, banks are liable for customer compensation up to 100 times the annual locker rent in the event of theft, burglary, dacoity, robbery, or building collapse caused by bank negligence.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "standing_instructions_and_ecs",
+    "title": "Standing Instructions (SI) and Electronic Clearing Service (ECS) Setup",
+    "content": "Customers can set up automated Standing Instructions (SI) for recurring internal transfers between accounts (e.g. from savings to RD or loan account) with zero fees. External ECS / NACH mandates for utility bill payments, insurance premiums, and investments can be configured digitally with a one-time e-mandate authentication via Debit Card or NetBanking.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "foreign_inward_remittance_firc",
+    "title": "Foreign Inward Remittance Certificate (FIRC) and Purpose Codes",
+    "content": "Funds received from abroad in foreign currency (USD, EUR, GBP) via wire transfer are converted to INR at prevailing competitive interbank card rates. A Foreign Inward Remittance Certificate (FIRC) or electronic FIRC advisory (e-FIRA) is issued digitally within 48 hours for export of software, professional services, or family maintenance, specifying the RBI purpose code.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "sovereign_gold_bonds_sgb",
+    "title": "Sovereign Gold Bonds (SGB) Issuance, Interest, and Tax-Free Redemption",
+    "content": "Sovereign Gold Bonds (SGB) issued by RBI on behalf of the Government of India offer an annual interest rate of 2.50% payable semi-annually. Bonds carry a tenure of 8 years with exit options from the 5th year onwards. Capital gains arising on redemption of SGBs at maturity (8 years) are 100% tax-free for individuals under Income Tax Section 47.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "public_provident_fund_ppf",
+    "title": "Public Provident Fund (PPF) Investment, Interest, and Tax-Exempt Status",
+    "content": "PPF accounts can be opened digitally with a minimum deposit of ₹500 and maximum of ₹1,50,000 per financial year across a 15-year tenure. Deposits qualify for tax deduction under Section 80C. Interest earned and maturity proceeds are completely tax-exempt (EEE status). Partial withdrawals are permitted from the 7th financial year.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "sukanya_samriddhi_yojana_ssy",
+    "title": "Sukanya Samriddhi Yojana (SSY) for Girl Child Welfare and High Interest",
+    "content": "Parents or legal guardians can open an SSY account for a girl child below 10 years of age. Maximum 2 accounts per family. Offers attractive government-backed interest rates (currently 8.20% p.a.). Deposits qualify for Section 80C deductions up to ₹1,50,000, and interest and maturity proceeds are fully tax-exempt (EEE). Account matures after 21 years from opening date.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "national_pension_system_nps",
+    "title": "National Pension System (NPS Tier 1 & Tier 2) and Additional 50k Tax Benefit",
+    "content": "NPS is a voluntary retirement savings scheme for Indian citizens aged 18 to 70. Tier 1 is a pension account with lock-in until age 60; Tier 2 is a flexible voluntary savings account with instant withdrawals. Investments in Tier 1 qualify for an exclusive additional income tax deduction of up to ₹50,000 under Section 80CCD(1B), over and above the ₹1.5 Lakh limit of Section 80C.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "policies",
+    "topic": "cheque_truncation_system_cts2010",
+    "title": "Cheque Truncation System (CTS-2010) Standards and Clearing Schedule",
+    "content": "Under RBI guidelines, all physical cheques must comply with CTS-2010 security standards (watermark, bank logo in invisible ink, void pantograph, uniform dimensions). Cheques deposited before 12:00 PM on working days are scanned electronically and presented in the CTS clearing grid, with cleared funds credited to beneficiary accounts on T+1 business day.",
+    "language": ["en", "hi", "or"],
+    "source": "official_bank_policy",
+    "source_version": "2.0",
+    "verified": true,
+    "effective_date": "2026-01-01"
+  }
+]

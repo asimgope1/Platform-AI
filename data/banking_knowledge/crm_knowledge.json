@@ -324,10 +324,197 @@
   },
   {
     "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0020_26_27",
+    "title": "Complaint Status for Ticket CMP/0020/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0020/26-27 for customer Customer (phone number 9937234512) in Ballet Shirt, Odisha was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: My Syro Tech Smart Switch device is not working properly..",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0021_26_27",
+    "title": "Complaint Status for Ticket CMP/0021/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0021/26-27 for customer Customer (phone number 9937234512) in Bhubaneswar, Odisha was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: Yes, the issue is in progress..",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0022_26_27",
+    "title": "Complaint Status for Ticket CMP/0022/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0022/26-27 for customer Customer (phone number 9937234512) in Abhanesha, Odisha was booked on 23 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: I have an employee named Swagadhika Swain, he is not wearing eye card, so I have to register a complaint I guess..",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0023_26_27",
+    "title": "Complaint Status for Ticket CMP/0023/26-27 (linkan mohapatra)",
+    "content": "Service complaint ticket CMP/0023/26-27 for customer linkan mohapatra (phone number 8976453421) in Odisha, Odisha was booked on 23 November 2026. The current complaint status is 'Discussion'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0024_26_27",
+    "title": "Complaint Status for Ticket CMP/0024/26-27 (swarna sai)",
+    "content": "Service complaint ticket CMP/0024/26-27 for customer swarna sai (phone number 9937234512) in Odisha, Odisha was booked on 23 November 2026. The current complaint status is 'Discussion'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0025_26_27",
+    "title": "Complaint Status for Ticket CMP/0025/26-27 (Rohan kumar)",
+    "content": "Service complaint ticket CMP/0025/26-27 for customer Rohan kumar (phone number 8976453420) in Odisha, Odisha was booked on 23 November 2026. The current complaint status is 'Discussion'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0026_26_27",
+    "title": "Complaint Status for Ticket CMP/0026/26-27 (acddd)",
+    "content": "Service complaint ticket CMP/0026/26-27 for customer acddd (phone number +918340431775) in Odisha, Odisha was booked on 23 November 2026. The current complaint status is 'Discussion'. Issue category is 'General Service Issue' assigned to Customer Support. Latest progress notes: Initial follow-up created automatically.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0023_26_27",
+    "title": "Complaint Status for Ticket CMP/0023/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0023/26-27 for customer Customer (phone number 9937234512) in Bhubaneswar, Odisha was booked on 25 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: I want to register a complaint my water meter is leaking.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0027_26_27",
+    "title": "Complaint Status for Ticket CMP/0027/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0027/26-27 for customer Customer (phone number 9937234512) in Bhubaneswar, Odisha was booked on 25 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: I want to register and your complaint..",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0028_26_27",
+    "title": "Complaint Status for Ticket CMP/0028/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0028/26-27 for customer Customer (phone number registered phone) in Odisha, Odisha was booked on 25 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: How to register on civil service team?.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_complaint_status",
+    "topic": "complaint_cmp_0029_26_27",
+    "title": "Complaint Status for Ticket CMP/0029/26-27 (Customer)",
+    "content": "Service complaint ticket CMP/0029/26-27 for customer Customer (phone number registered phone) in Odisha, Odisha was booked on 25 November 2026. The current complaint status is 'New'. Issue category is 'General Service Issue' assigned to Support. Latest progress notes: Voice IVR Registration: मूजे, सु बद्र यवेदना के बारे में बताशतियाँ पुर बुते नब प्रेटाट।.",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
     "category": "crm_customer_directory",
     "topic": "customer_8976453421",
     "title": "Customer Profile and Account Complaints for Swagatika Swain (8976453421)",
-    "content": "Customer profile for Swagatika Swain: Registered contact phone number is 8976453421, location BBSR, Odisha. Account record has 4 complaint(s) on file: Ticket CMP/0001/26-27 (status: Canceled), Ticket CMP/0002/26-27 (status: New), Ticket CMP/0005/26-27 (status: New), Ticket CMP/0009/26-27 (status: New).",
+    "content": "Customer profile for Swagatika Swain: Registered contact phone number is 8976453421, location BBSR, Odisha. Account record has 5 complaint(s) on file: Ticket CMP/0001/26-27 (status: Canceled), Ticket CMP/0002/26-27 (status: New), Ticket CMP/0005/26-27 (status: New), Ticket CMP/0009/26-27 (status: New), Ticket CMP/0023/26-27 (status: Discussion).",
     "language": [
       "en",
       "hi",
@@ -344,7 +531,7 @@
     "category": "crm_customer_directory",
     "topic": "customer_8976453488",
     "title": "Customer Profile and Account Complaints for Swarna (8976453488)",
-    "content": "Customer profile for Swarna: Registered contact phone number is 8976453488, location Kendrapada, Odisha. Account record has 2 complaint(s) on file: Ticket CMP/0003/26-27 (status: Canceled), Ticket CMP/0004/26-27 (status: Discussion).",
+    "content": "Customer profile for Swarna: Registered contact phone number is 8976453488, location Kendrapada, Odisha. Account record has 3 complaint(s) on file: Ticket CMP/0003/26-27 (status: Canceled), Ticket CMP/0004/26-27 (status: Discussion), Ticket CMP/0026/26-27 (status: Discussion).",
     "language": [
       "en",
       "hi",
@@ -361,7 +548,41 @@
     "category": "crm_customer_directory",
     "topic": "customer_9937234512",
     "title": "Customer Profile and Account Complaints for Suvarna Sai (9937234512)",
-    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 11 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New), Ticket CMP/0012/26-27 (status: New), Ticket CMP/0013/26-27 (status: New), Ticket CMP/0014/26-27 (status: New), Ticket CMP/0015/26-27 (status: New), Ticket CMP/0016/26-27 (status: New), Ticket CMP/0017/26-27 (status: New), Ticket CMP/0018/26-27 (status: New), Ticket CMP/0019/26-27 (status: New).",
+    "content": "Customer profile for Suvarna Sai: Registered contact phone number is 9937234512, location BBSR, Odisha. Account record has 17 complaint(s) on file: Ticket CMP/0008/26-27 (status: Solved), Ticket CMP/0010/26-27 (status: New), Ticket CMP/0011/26-27 (status: New), Ticket CMP/0012/26-27 (status: New), Ticket CMP/0013/26-27 (status: New), Ticket CMP/0014/26-27 (status: New), Ticket CMP/0015/26-27 (status: New), Ticket CMP/0016/26-27 (status: New), Ticket CMP/0017/26-27 (status: New), Ticket CMP/0018/26-27 (status: New), Ticket CMP/0019/26-27 (status: New), Ticket CMP/0020/26-27 (status: New), Ticket CMP/0021/26-27 (status: New), Ticket CMP/0022/26-27 (status: New), Ticket CMP/0024/26-27 (status: Discussion), Ticket CMP/0023/26-27 (status: New), Ticket CMP/0027/26-27 (status: New).",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_customer_directory",
+    "topic": "customer_8976453420",
+    "title": "Customer Profile and Account Complaints for Rohan kumar (8976453420)",
+    "content": "Customer profile for Rohan kumar: Registered contact phone number is 8976453420, location Bhubaneswar, Odisha. Account record has 1 complaint(s) on file: Ticket CMP/0025/26-27 (status: Discussion).",
+    "language": [
+      "en",
+      "hi",
+      "or"
+    ],
+    "source": "live_crm_database",
+    "source_version": "1.0",
+    "verified": true,
+    "effective_date": "2026-11-18",
+    "ask_count": 1
+  },
+  {
+    "tenant_id": "879e9bda-8049-4824-9aa0-fc5e9f0012d9",
+    "category": "crm_customer_directory",
+    "topic": "customer_8798654321",
+    "title": "Customer Profile and Account Complaints for Rohan kumar (8798654321)",
+    "content": "Customer profile for Rohan kumar: Registered contact phone number is 8798654321, location Bhubaneswar, Odisha. Account record has no active complaints on file.",
     "language": [
       "en",
       "hi",

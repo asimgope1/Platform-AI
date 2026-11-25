@@ -7,7 +7,7 @@ from typing import Dict
 # ── 1. Initial Welcome & Language Selection ──────────────────────────────────
 # Measured pacing with authentic Indian phonetics & native Odia VITS
 WELCOME_AND_LANGUAGE = (
-    "Namaste! Thank you for calling customer support. "
+    "Namaste! Thank you for calling Jana Seva Citizen Helpline. "
     "Please choose your preferred language to continue. ... "
     "Press one for English. ... "
     "हिंदी के लिए दो दबाएं। ... "
@@ -19,75 +19,75 @@ WELCOME_AND_LANGUAGE = (
 SERVICE_MENUS: Dict[str, str] = {
     "en": (
         "How can I help you today? "
-        "Press 1 for Customer Support, "
+        "Press 1 for Citizen Services and Schemes, "
         "2 for Complaint Status and Registration, "
-        "3 for UPI and payment issues, "
-        "4 for account and banking services, "
-        "5 for card-related issues, "
-        "6 for loans and EMI queries, "
-        "7 for other enquiries, "
+        "3 for Subhadra Scheme, "
+        "4 for Certificates like Caste, Income, or Residence, "
+        "5 for Aadhaar, PAN card, or Voter ID, "
+        "6 for Legal Documents and Affidavits, "
+        "7 for Jana Seva Kendra helpdesk, "
         "or press 9 to speak with a representative."
     ),
     "hi": (
-        "नमस्ते! हम आपकी क्या मदद कर सकते हैं? ... "
-        "कस्टमर सपोर्ट के लिए 1 दबाएं, ... "
+        "नमस्ते! जन सेवा नागरिक सहायता में आपका स्वागत है। ... "
+        "नागरिक सेवाओं और सरकारी योजनाओं के लिए 1 दबाएं, ... "
         "शिकायत स्थिति और पंजीकरण के लिए 2, ... "
-        "यूपीआई और पेमेंट समस्या के लिए 3, ... "
-        "खाता और बैंकिंग सेवा के लिए 4, ... "
-        "कार्ड संबंधित समस्या के लिए 5, ... "
-        "लोन और ईएमआई के लिए 6, ... "
-        "अन्य जानकारी के लिए 7, ... "
+        "सुभद्रा योजना के लिए 3, ... "
+        "जाति, आय या निवास प्रमाण पत्र के लिए 4, ... "
+        "आधार, पैन कार्ड या वोटर आईडी के लिए 5, ... "
+        "कानूनी दस्तावेज और शपथ पत्र के लिए 6, ... "
+        "जन सेवा केंद्र सहायता के लिए 7, ... "
         "या प्रतिनिधि से बात करने के लिए 9 दबाएं।"
     ),
     "or": (
-        "ନମସ୍କାର! ଆମେ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରି ପାରିବୁ? ... "
-        "ଗ୍ରାହକ ସେବା ପାଇଁ ଏକ ଦବାନ୍ତୁ, ... "
+        "ନମସ୍କାର! ଜନ ସେବା ଓଡ଼ିଶା ସହାୟତା କେନ୍ଦ୍ରକୁ ସ୍ୱାଗତ। ... "
+        "ନାଗରିକ ସେବା ଏବଂ ସରକାରୀ ଯୋଜନା ପାଇଁ ଏକ ଦବାନ୍ତୁ, ... "
         "ଅଭିଯୋଗ ସ୍ଥିତି ଏବଂ ପଞ୍ଜୀକରଣ ପାଇଁ ଦୁଇ, ... "
-        "ୟୁପିଆଇ ଏବଂ ପେମେଣ୍ଟ ପାଇଁ ତିନି, ... "
-        "ଖାତା ଏବଂ ବ୍ୟାଙ୍କିଙ୍ଗ ପାଇଁ ଚାରି, ... "
-        "କାର୍ଡ ପାଇଁ ପାଞ୍ଚ, ... "
-        "ଋଣ ପାଇଁ ଛଅ, ... "
-        "ଅନ୍ୟାନ୍ୟ ସୂଚନା ପାଇଁ ସାତ, ... "
+        "ସୁଭଦ୍ରା ଯୋଜନା ପାଇଁ ତିନି, ... "
+        "ଜାତି, ଆୟ ବା ବାସସ୍ଥାନ ପ୍ରମାଣପତ୍ର ପାଇଁ ଚାରି, ... "
+        "ଆଧାର, ପ୍ୟାନ୍ ବା ଭୋଟର ଆଇଡି ପାଇଁ ପାଞ୍ଚ, ... "
+        "ଆଇନଗତ ଦଲିଲ ଏବଂ ସତ୍ୟପାଠ ପାଇଁ ଛଅ, ... "
+        "ଜନ ସେବା କେନ୍ଦ୍ର ସୂଚନା ପାଇଁ ସାତ, ... "
         "ବା ପ୍ରତିନିଧିଙ୍କ ସହିତ କଥା ହେବା ପାଇଁ ନଅ ଦବାନ୍ତୁ।"
     ),
 }
 
 # ── 3. Service Names & Friendly Acknowledgements ─────────────────────────────
 SERVICE_NAMES: Dict[str, Dict[str, str]] = {
-    "customer_support": {
-        "en": "Customer Support",
-        "hi": "ग्राहक सेवा",
-        "or": "ଗ୍ରାହକ ସେବା",
+    "citizen_services": {
+        "en": "Citizen Services & Welfare Schemes",
+        "hi": "नागरिक सेवाएं और योजनाएं",
+        "or": "ନାଗରିକ ସେବା ଓ ଯୋଜନା",
     },
     "complaint": {
         "en": "Complaint Status and Registration",
         "hi": "शिकायत स्थिति और पंजीकरण",
         "or": "ଅଭିଯୋଗ ଏବଂ ସ୍ଥିତି",
     },
-    "upi_payment": {
-        "en": "UPI and Payment Support",
-        "hi": "यूपीआई और भुगतान सहायता",
-        "or": "ୟୁପିଆଇ ଏବଂ ପେମେଣ୍ଟ ସହାୟତା",
+    "subhadra_scheme": {
+        "en": "Subhadra Scheme Assistance",
+        "hi": "सुभद्रा योजना सहायता",
+        "or": "ସୁଭଦ୍ରା ଯୋଜନା ସହାୟତା",
     },
-    "account_services": {
-        "en": "Account and Banking Services",
-        "hi": "खाता और बैंकिंग सेवाएं",
-        "or": "ଖାତା ଏବଂ ବ୍ୟାଙ୍କିଙ୍ଗ ସେବା",
+    "certificates": {
+        "en": "Certificate Services",
+        "hi": "प्रमाण पत्र सेवाएं",
+        "or": "ପ୍ରମାଣପତ୍ର ସେବା",
     },
-    "card_services": {
-        "en": "Card Services",
-        "hi": "कार्ड सेवाएं",
-        "or": "କାର୍ଡ ସେବା",
+    "identity_cards": {
+        "en": "Identity Cards and Documents",
+        "hi": "पहचान पत्र सेवाएं",
+        "or": "ପରିଚୟ ପତ୍ର ସେବା",
     },
-    "loans_emi": {
-        "en": "Loans and EMI Support",
-        "hi": "ऋण और ईएमआई सहायता",
-        "or": "ଋଣ ଏବଂ ଇଏମଆଇ ସହାୟତା",
+    "legal_documents": {
+        "en": "Legal Documents and Affidavits",
+        "hi": "कानूनी दस्तावेज और शपथ पत्र",
+        "or": "ଆଇନଗତ ଦଲିଲ ଏବଂ ସତ୍ୟପାଠ",
     },
-    "other_enquiries": {
-        "en": "General Enquiries",
-        "hi": "सामान्य पूछताछ",
-        "or": "ସାଧାରଣ ପଚରାଉଚରା",
+    "kendra_helpdesk": {
+        "en": "Jana Seva Kendra Enquiries",
+        "hi": "जन सेवा केंद्र पूछताछ",
+        "or": "ଜନ ସେବା କେନ୍ଦ୍ର ସୂଚନା",
     },
 }
 

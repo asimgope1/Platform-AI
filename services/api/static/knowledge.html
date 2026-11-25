@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Knowledge Management Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col gap-2">
+    <div class="text-lg font-bold text-indigo-400 mb-4">AI Knowledge Admin</div>
+    <button onclick="showTab('dashboard')" class="nav-btn text-left px-3 py-2 rounded-lg bg-indigo-600/20 text-indigo-300" data-tab="dashboard">📊 Dashboard</button>
+    <button onclick="showTab('categories')" class="nav-btn text-left px-3 py-2 rounded-lg hover:bg-slate-800" data-tab="categories">🗂️ Categories</button>
+    <button onclick="showTab('documents')" class="nav-btn text-left px-3 py-2 rounded-lg hover:bg-slate-800" data-tab="documents">📄 Document Ingestion</button>
+    <button onclick="showTab('jobs')" class="nav-btn text-left px-3 py-2 rounded-lg hover:bg-slate-800" data-tab="jobs">⚙️ Ingestion Jobs</button>
+    <button onclick="showTab('playground')" class="nav-btn text-left px-3 py-2 rounded-lg hover:bg-slate-800" data-tab="playground">🧪 RAG Playground</button>
+    <button onclick="showTab('config')" class="nav-btn text-left px-3 py-2 rounded-lg hover:bg-slate-800" data-tab="config">🎛️ AI Configuration</button>
+    <button onclick="showTab('audit')" class="nav-btn text-left px-3 py-2 rounded-lg hover:bg-slate-800" data-tab="audit">🛡️ Audit & Permissions</button>
+    <div class="mt-auto pt-4 border-t border-slate-800 text-xs text-slate-400">
+      <div>Tenant ID:</div>
+      <input id="tenantId" value="879e9bda-8049-4824-9aa0-fc5e9f0012d9" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs" />
+      <div class="mt-2">API Key:</div>
+      <input id="apiKey" type="password" value="sk-platform-master-key-change-in-production" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs" />
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <!-- 1. Dashboard -->
+    <section id="tab-dashboard" class="tab-panel space-y-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Knowledge Platform Overview</h1>
+        <button onclick="loadDashboard()" class="px-3 py-1.5 bg-indigo-600 rounded-lg text-sm">Refresh</button>
+      </div>
+      <div class="grid grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">Total Documents</div><div id="stat-docs" class="text-3xl font-bold mt-1">-</div></div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">Knowledge Chunks</div><div id="stat-chunks" class="text-3xl font-bold mt-1">-</div></div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">Active Categories</div><div id="stat-cats" class="text-3xl font-bold mt-1">-</div></div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl"><div class="text-slate-400 text-xs">Ingestion Jobs (Failed)</div><div id="stat-jobs" class="text-3xl font-bold mt-1">-</div></div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="font-semibold mb-3">Recent Documents</h2>
+        <div id="recent-docs" class="text-sm text-slate-300 space-y-2">Loading...</div>
+      </div>
+    </section>
+
+    <!-- 2. Categories -->
+    <section id="tab-categories" class="tab-panel hidden space-y-6">
+      <h1 class="text-2xl font-bold">Category Management</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 grid grid-cols-2 gap-3">
+        <input id="cat-name" placeholder="Category Name (e.g. Agriculture Services)" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" />
+        <input id="cat-slug" placeholder="Slug (e.g. agriculture_services)" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" />
+        <select id="cat-domain" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm">
+          <option value="citizen_services">Citizen Services</option>
+          <option value="complaint">Complaint & Troubleshooting</option>
+          <option value="banking_services">Banking Services</option>
+        </select>
+        <input id="cat-desc" placeholder="Description" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" />
+        <button onclick="createCategory()" class="col-span-2 bg-indigo-600 hover:bg-indigo-500 py-2 rounded-lg font-medium text-sm">+ Create Category</button>
+      </div>
+      <div id="categories-list" class="space-y-2"></div>
+    </section>
+
+    <!-- 3. Document Ingestion -->
+    <section id="tab-documents" class="tab-panel hidden space-y-6">
+      <h1 class="text-2xl font-bold">Document Ingestion</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+        <input id="doc-file" type="file" accept=".pdf,.docx,.txt,.md,.csv" class="block w-full text-sm text-slate-300" />
+        <div class="grid grid-cols-3 gap-3">
+          <select id="doc-cat" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"><option value="">-- Select Category --</option></select>
+          <select id="doc-lang" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm">
+            <option value="en">English (en)</option>
+            <option value="hi">Hindi (hi)</option>
+            <option value="or">Odia (or)</option>
+          </select>
+          <input id="doc-source" placeholder="Source (e.g. Official Guide)" value="Official Guide" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm" />
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input id="doc-verified" type="checkbox" /> Mark Verified & Publish Immediately</label>
+        <button onclick="uploadDocument()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-sm font-medium">Upload & Queue Ingestion</button>
+        <div id="upload-status" class="text-sm text-emerald-400"></div>
+      </div>
+      <div id="documents-list" class="space-y-2"></div>
+    </section>
+
+    <!-- 4. Ingestion Jobs -->
+    <section id="tab-jobs" class="tab-panel hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Ingestion Jobs</h1>
+        <button onclick="loadJobs()" class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm">Refresh</button>
+      </div>
+      <div id="jobs-list" class="space-y-2"></div>
+    </section>
+
+    <!-- 5. RAG Playground -->
+    <section id="tab-playground" class="tab-panel hidden space-y-6">
+      <h1 class="text-2xl font-bold">RAG Playground</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+        <textarea id="pg-query" rows="2" placeholder="Ask a test question in English, Hindi, or Odia..." class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"></textarea>
+        <div class="flex gap-3">
+          <select id="pg-lang" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm">
+            <option value="en">English</option><option value="hi">Hindi</option><option value="or">Odia</option>
+          </select>
+          <select id="pg-cat" class="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"><option value="">All Categories</option></select>
+          <button onclick="runPlayground()" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 rounded-lg text-sm font-medium">Run Query</button>
+        </div>
+      </div>
+      <div id="pg-result" class="bg-slate-900 border border-slate-800 rounded-xl p-5 hidden space-y-4"></div>
+    </section>
+
+    <!-- 6. AI Configuration -->
+    <section id="tab-config" class="tab-panel hidden space-y-6">
+      <h1 class="text-2xl font-bold">AI & RAG Configuration</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 grid grid-cols-2 gap-4 text-sm">
+        <div><label>Chunk Size</label><input id="cfg-chunk-size" type="number" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2" /></div>
+        <div><label>Chunk Overlap</label><input id="cfg-overlap" type="number" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2" /></div>
+        <div><label>Top-K</label><input id="cfg-topk" type="number" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2" /></div>
+        <div><label>Confidence Threshold</label><input id="cfg-thresh" type="number" step="0.05" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded px-3 py-2" /></div>
+        <button onclick="saveConfig()" class="col-span-2 bg-indigo-600 hover:bg-indigo-500 py-2 rounded-lg font-medium">Save Configuration</button>
+      </div>
+    </section>
+
+    <!-- 7. Audit & Permissions -->
+    <section id="tab-audit" class="tab-panel hidden space-y-6">
+      <h1 class="text-2xl font-bold">Audit Logs & Role Permissions</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300">
+        Roles: <span class="text-indigo-300 font-medium">Superadmin</span> · <span class="text-indigo-300 font-medium">Knowledge Admin</span> · <span class="text-indigo-300 font-medium">Reviewer</span> · <span class="text-indigo-300 font-medium">Read-Only Auditor</span>
+      </div>
+      <div id="audit-list" class="space-y-2 text-sm"></div>
+    </section>
+  </main>
+
+  <script>
+    const headers = () => ({
+      'Authorization': 'Bearer ' + document.getElementById('apiKey').value,
+      'X-Tenant-ID': document.getElementById('tenantId').value
+    });
+
+    function showTab(name) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById('tab-' + name).classList.remove('hidden');
+      if (name === 'dashboard') loadDashboard();
+      if (name === 'categories') loadCategories();
+      if (name === 'documents') { loadCategories(); loadDocuments(); }
+      if (name === 'jobs') loadJobs();
+      if (name === 'playground') loadCategories();
+      if (name === 'config') loadConfig();
+      if (name === 'audit') loadAudit();
+    }
+
+    async function loadDashboard() {
+      const r = await fetch('/api/v1/knowledge/dashboard', { headers: headers() });
+      const d = await r.json();
+      document.getElementById('stat-docs').textContent = d.total_documents ?? 0;
+      document.getElementById('stat-chunks').textContent = d.total_chunks ?? 0;
+      document.getElementById('stat-cats').textContent = d.active_categories ?? 0;
+      document.getElementById('stat-jobs').textContent = `${d.total_jobs ?? 0} (${d.failed_jobs ?? 0})`;
+      document.getElementById('recent-docs').innerHTML = (d.recent_documents || []).map(x =>
+        `<div class="flex justify-between bg-slate-800/60 px-3 py-2 rounded"><span>${x.title}</span><span class="text-slate-400">${x.total_chunks} chunks</span></div>`
+      ).join('') || 'No documents yet.';
+    }
+
+    async function loadCategories() {
+      const r = await fetch('/api/v1/knowledge/categories', { headers: headers() });
+      const cats = await r.json();
+      document.getElementById('categories-list').innerHTML = cats.map(c =>
+        `<div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-lg">
+          <div><div class="font-medium">${c.name} <span class="text-xs text-indigo-400">(${c.slug})</span></div><div class="text-xs text-slate-400">${c.domain} · ${c.description || ''}</div></div>
+          <button onclick="archiveCategory('${c.id}')" class="text-xs text-rose-400 hover:underline">Archive</button>
+        </div>`
+      ).join('') || '<div class="text-slate-400 text-sm">No custom categories created yet.</div>';
+
+      const opts = '<option value="">-- Select Category --</option>' + cats.map(c => `<option value="${c.id}" data-slug="${c.slug}">${c.name} (${c.domain})</option>`).join('');
+      document.getElementById('doc-cat').innerHTML = opts;
+      document.getElementById('pg-cat').innerHTML = '<option value="">All Categories</option>' + cats.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+    }
+
+    async function createCategory() {
+      const res = await fetch('/api/v1/knowledge/categories', {
+        method: 'POST',
+        headers: { ...headers(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('cat-name').value,
+          slug: document.getElementById('cat-slug').value,
+          domain: document.getElementById('cat-domain').value,
+          description: document.getElementById('cat-desc').value,
+        })
+      });
+      if (res.ok) { loadCategories(); } else { alert(await res.text()); }
+    }
+
+    async function archiveCategory(id) {
+      await fetch('/api/v1/knowledge/categories/' + id, { method: 'DELETE', headers: headers() });
+      loadCategories();
+    }
+
+    async function uploadDocument() {
+      const f = document.getElementById('doc-file').files[0];
+      if (!f) return alert('Select a file first');
+      const fd = new FormData();
+      fd.append('file', f);
+      const catId = document.getElementById('doc-cat').value;
+      if (catId) fd.append('category_id', catId);
+      fd.append('language', document.getElementById('doc-lang').value);
+      fd.append('source', document.getElementById('doc-source').value);
+      fd.append('verified', document.getElementById('doc-verified').checked);
+      const r = await fetch('/api/v1/knowledge/documents/upload', { method: 'POST', headers: headers(), body: fd });
+      const d = await r.json();
+      document.getElementById('upload-status').textContent = `Queued job ${d.job_id} (${d.filename})`;
+      loadDocuments();
+    }
+
+    async function loadDocuments() {
+      const r = await fetch('/api/v1/knowledge/documents', { headers: headers() });
+      const docs = await r.json();
+      document.getElementById('documents-list').innerHTML = docs.map(d =>
+        `<div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-lg text-sm">
+          <div><span class="font-medium">${d.title}</span> <span class="text-slate-400">(${d.total_chunks} chunks)</span></div>
+          <div class="flex gap-2">
+            <button onclick="publishDoc('${d.id}')" class="px-2 py-1 bg-emerald-600/20 text-emerald-300 rounded text-xs">Publish</button>
+            <button onclick="archiveDoc('${d.id}')" class="px-2 py-1 bg-rose-600/20 text-rose-300 rounded text-xs">Archive</button>
+          </div>
+        </div>`
+      ).join('');
+    }
+
+    async function publishDoc(id) { await fetch(`/api/v1/knowledge/documents/${id}/publish`, { method: 'POST', headers: headers() }); loadDocuments(); }
+    async function archiveDoc(id) { await fetch(`/api/v1/knowledge/documents/${id}/archive`, { method: 'POST', headers: headers() }); loadDocuments(); }
+
+    async function loadJobs() {
+      const r = await fetch('/api/v1/knowledge/jobs', { headers: headers() });
+      const jobs = await r.json();
+      document.getElementById('jobs-list').innerHTML = jobs.map(j =>
+        `<div class="bg-slate-900 border border-slate-800 p-3 rounded-lg text-sm flex justify-between">
+          <div><span class="font-medium">${j.filename}</span> · <span class="text-indigo-400">${j.status}</span></div>
+          <div class="text-slate-400">${j.embedded_chunks}/${j.total_chunks} chunks</div>
+        </div>`
+      ).join('') || '<div class="text-slate-400 text-sm">No ingestion jobs yet.</div>';
+    }
+
+    async function runPlayground() {
+      const r = await fetch('/api/v1/knowledge/playground', {
+        method: 'POST',
+        headers: { ...headers(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: document.getElementById('pg-query').value,
+          language: document.getElementById('pg-lang').value,
+          category_slug: document.getElementById('pg-cat').value || null,
+        })
+      });
+      const d = await r.json();
+      const el = document.getElementById('pg-result');
+      el.classList.remove('hidden');
+      el.innerHTML = `
+        <div><div class="text-xs text-slate-400">Generated Answer (tier=${d.confidence_tier}, top_score=${d.top_score})</div><div class="mt-1 text-base text-emerald-300">${d.answer}</div></div>
+        <div class="space-y-2"><div class="text-xs text-slate-400">Retrieved Chunks</div>${(d.chunks || []).map(c =>
+          `<div class="bg-slate-800/70 p-3 rounded text-xs"><div class="text-indigo-300 mb-1">Score: ${c.score} · Category: ${c.category}</div>${c.content}</div>`
+        ).join('')}</div>`;
+    }
+
+    async function loadConfig() {
+      const r = await fetch('/api/v1/knowledge/config', { headers: headers() });
+      const c = await r.json();
+      document.getElementById('cfg-chunk-size').value = c.chunk_size;
+      document.getElementById('cfg-overlap').value = c.chunk_overlap;
+      document.getElementById('cfg-topk').value = c.top_k;
+      document.getElementById('cfg-thresh').value = c.confidence_threshold;
+    }
+
+    async function saveConfig() {
+      await fetch('/api/v1/knowledge/config', {
+        method: 'PATCH',
+        headers: { ...headers(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chunk_size: parseInt(document.getElementById('cfg-chunk-size').value),
+          chunk_overlap: parseInt(document.getElementById('cfg-overlap').value),
+          top_k: parseInt(document.getElementById('cfg-topk').value),
+          confidence_threshold: parseFloat(document.getElementById('cfg-thresh').value),
+        })
+      });
+      alert('Configuration saved');
+    }
+
+    async function loadAudit() {
+      const r = await fetch('/api/v1/knowledge/audit-logs', { headers: headers() });
+      const logs = await r.json();
+      document.getElementById('audit-list').innerHTML = logs.map(a =>
+        `<div class="bg-slate-900 border border-slate-800 p-3 rounded flex justify-between"><span>${a.action} (${a.resource_type})</span><span class="text-slate-400">${a.created_at || ''}</span></div>`
+      ).join('') || '<div class="text-slate-400">No audit events yet.</div>';
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -51,54 +51,79 @@ logger = logging.getLogger(__name__)
 
 AUTONOMOUS_KNOWLEDGE = {
     "greeting": {
-        "en": "Hello! Welcome to customer support. How can I assist you with your request today?",
-        "hi": "नमस्ते! ग्राहक सेवा में आपका स्वागत है। बताइए मैं आपकी क्या सहायता कर सकती हूँ?",
-        "or": "ନମସ୍କାର! ଆମ ଗ୍ରାହକ ସେବାକୁ ସ୍ୱାଗତ। କୁହନ୍ତୁ ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିବି?",
+        "en": "Hello! Welcome to Jana Seva Citizen Helpline. How can I assist you with government services or schemes today?",
+        "hi": "नमस्ते! जन सेवा नागरिक सहायता में आपका स्वागत है। बताइए मैं सरकारी सेवाओं या योजनाओं में आपकी क्या सहायता करूँ?",
+        "or": "ନମସ୍କାର! ଜନ ସେବା ନାଗରିକ ସହାୟତା କେନ୍ଦ୍ରକୁ ସ୍ୱାଗତ। କୁହନ୍ତୁ ସରକାରୀ ଯୋଜନା ବା ସେବାରେ ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
-    "video_kyc": {
-        "en": "For Video KYC, please keep your physical PAN card and Aadhaar phone ready. It takes 2 minutes.",
-        "hi": "वीडियो केवाईसी के लिए कृपया अपना मूल भौतिक पैन कार्ड और आधार लिंक मोबाइल तैयार रखें।",
-        "or": "ଭିଡିଓ କେୱାଇସି ପାଇଁ ଆପଣଙ୍କର ମୂଳ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ମୋବାଇଲ୍ ପ୍ରସ୍ତୁତ ରଖନ୍ତୁ।",
+    "subhadra_scheme": {
+        "en": "Under Subhadra Scheme, eligible women residents of Odisha aged 18 to 60 with family income below 2.5 Lakhs receive financial assistance up to 50,000 rupees. Required documents are Aadhaar card, income certificate, residence certificate, bank passbook, and photo.",
+        "hi": "सुभद्रा योजना के तहत ओडिशा की 18 से 60 वर्ष की पात्र महिलाएं (वार्षिक आय 2.5 लाख से कम) 50,000 रुपये तक सहायता प्राप्त कर सकती हैं। आवश्यक दस्तावेज: आधार कार्ड, आय प्रमाण पत्र, निवास प्रमाण पत्र, बैंक पासबुक और फोटो।",
+        "or": "ସୁଭଦ୍ରା ଯୋଜନା ଅଧୀନରେ ଓଡ଼ିଶାର ୧୮ ରୁ ୬୦ ବର୍ଷ ବୟସ୍କା ମହିଳା (ପାରିବାରିକ ଆୟ ୨.୫ ଲକ୍ଷରୁ କମ୍) ୫୦,୦୦୦ ଟଙ୍କା ପର୍ଯ୍ୟନ୍ତ ସହାୟତା ପାଇପାରିବେ। ଆବଶ୍ୟକ ଡକ୍ୟୁମେଣ୍ଟ: ଆଧାର କାର୍ଡ, ଆୟ ପ୍ରମାଣପତ୍ର, ବାସସ୍ଥାନ ପ୍ରମାଣପତ୍ର, ବ୍ୟାଙ୍କ ପାସବୁକ୍ ଏବଂ ଫଟୋ।",
     },
-    "upi_refund": {
-        "en": "Failed UPI transaction refunds are credited back to your account within 24 to 48 banking hours.",
-        "hi": "असफल यूपीआई लेन-देन का रिफंड 24 से 48 बैंकिंग घंटों में आपके खाते में वापस आ जाएगा।",
-        "or": "ବିଫଳ ୟୁପିଆଇ କାରବାର ଟଙ୍କା ୨୪ ରୁ ୪୮ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଖାତାକୁ ଫେରିଆସିବ।",
+    "caste_certificate": {
+        "en": "To apply for a Caste Certificate (SC/ST/OBC/SEBC), you need your RoR land record, family caste certificate copy, voter ID or Aadhaar, and photo. Applications can be submitted at your nearest Jana Seva Kendra.",
+        "hi": "जाति प्रमाण पत्र (SC/ST/OBC/SEBC) के लिए जमीन का खतियान (RoR), परिवार का जाति प्रमाण पत्र, आधार या वोटर कार्ड और फोटो आवश्यक है। आवेदन जन सेवा केंद्र से किया जा सकता है।",
+        "or": "ଜାତି ପ୍ରମାଣପତ୍ର ପାଇଁ ଜମି ପଟ୍ଟା (RoR), ପରିବାରର ଜାତି ପ୍ରମାଣପତ୍ର, ଆଧାର କାର୍ଡ ଏବଂ ଫଟୋ ଆବଶ୍ୟକ। ଆପଣ ନିକଟସ୍ଥ ଜନ ସେବା କେନ୍ଦ୍ରରୁ ଆବେଦନ କରିପାରିବେ।",
     },
-    "card_block": {
-        "en": "Your card is frozen for security. A replacement will be dispatched in 5 to 7 business days.",
-        "hi": "सुरक्षा के लिए आपका कार्ड तुरंत ब्लॉक कर दिया गया है। नया कार्ड 5 से 7 कार्यदिवसों में मिलेगा।",
-        "or": "ସୁରକ୍ଷା ପାଇଁ ଆପଣଙ୍କ କାର୍ଡକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ନୂଆ କାର୍ଡ ୫ ରୁ ୭ କାର୍ଯ୍ୟଦିବସରେ ପହଞ୍ଚିବ।",
+    "income_certificate": {
+        "en": "For an Income Certificate, submit your salary slip or ITR, land revenue receipt, Aadhaar card, and self-declaration. The local Revenue Inspector conducts verification before issuance.",
+        "hi": "आय प्रमाण पत्र के लिए वेतन पर्ची (Salary Slip), जमीन का लगान रसीद, आधार कार्ड और स्व-घोषणा पत्र आवश्यक है। राजस्व अधिकारी द्वारा सत्यापन के बाद यह जारी होता है।",
+        "or": "ଆୟ ପ୍ରମାଣପତ୍ର ପାଇଁ ଦରମା ସ୍ଲିପ୍ ବା ଆଇଟିଆର୍, ଜମି ଖଜଣା ରସିଦ, ଆଧାର କାର୍ଡ ଆବଶ୍ୟକ। ରାଜସ୍ୱ ନିରୀକ୍ଷକଙ୍କ ଯାଞ୍ଚ ପରେ ଏହା ପ୍ରଦାନ କରାଯାଏ।",
     },
-    "card_pin": {
-        "en": "You can instantly generate your ATM PIN using our mobile banking app or any nearby bank ATM.",
-        "hi": "आप मोबाइल बैंकिंग ऐप या किसी नजदीकी एटीएम पर ओटीपी से तुरंत नया पिन बना सकते हैं।",
-        "or": "ଆପଣ ମୋବାଇଲ୍ ବ୍ୟାଙ୍କିଙ୍ଗ୍ ଆପ୍ ବା ଏଟିଏମ୍‌ରେ ଓଟିପି ମାଧ୍ୟମରେ ତୁରନ୍ତ ନୂଆ ପିନ୍ ସେଟ୍ କରିପାରିବେ।",
+    "residence_certificate": {
+        "en": "For a Residence / Domicile Certificate, you must be a resident of Odisha. Required documents are your RoR land record or house tax receipt, electricity bill, Aadhaar card, and educational records.",
+        "hi": "निवास प्रमाण पत्र के लिए ओडिशा का निवासी होना आवश्यक है। आवश्यक दस्तावेज: जमीन का खतियान, बिजली बिल या हाउस टैक्स रसीद, आधार कार्ड और शैक्षणिक प्रमाण पत्र।",
+        "or": "ବାସସ୍ଥାନ ପ୍ରମାଣପତ୍ର ପାଇଁ ଓଡ଼ିଶାର ବାସିନ୍ଦା ହେବା ଆବଶ୍ୟକ। ଆବଶ୍ୟକ ଡକ୍ୟୁମେଣ୍ଟ: ଜମି ପଟ୍ଟା, ବିଦ୍ୟୁତ ବିଲ୍, ଆଧାର କାର୍ଡ ଏବଂ ଶିକ୍ଷାଗତ ପ୍ରମାଣପତ୍ର।",
     },
-    "account_balance": {
-        "en": "Your account balance and mini-statement have been sent via SMS to your registered mobile number.",
-        "hi": "आपके बैंक खाते का बैलेंस विवरण आपके पंजीकृत मोबाइल नंबर पर एसएमएस द्वारा भेज दिया गया है।",
-        "or": "ଆପଣଙ୍କ ଖାତାର ବାଲାନ୍ସ ବିବରଣୀ ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବରକୁ ଏସଏମଏସ ଯୋଗେ ପଠାଯାଇଛି।",
+    "bonafide_certificate": {
+        "en": "Bonafide certificates verify genuine student enrollment. Required documents: Institute ID card, admission fee receipt, mark sheet, and Aadhaar card.",
+        "hi": "बोनाफाइड प्रमाण पत्र छात्रों के वैध नामांकन के लिए जारी होता है। आवश्यक दस्तावेज: संस्थान का आईडी कार्ड, प्रवेश शुल्क रसीद और आधार कार्ड।",
+        "or": "ବୋନାଫାଇଡ୍ ପ୍ରମାଣପତ୍ର ଛାତ୍ରଛାତ୍ରୀଙ୍କ ନାମଲେଖା ପ୍ରମାଣ ପାଇଁ ଦିଆଯାଏ। ଆବଶ୍ୟକ ଡକ୍ୟୁମେଣ୍ଟ: କଲେଜ ଆଇଡି କାର୍ଡ, ଫିସ୍ ରସିଦ ଏବଂ ଆଧାର କାର୍ଡ।",
     },
-    "cheque_book": {
-        "en": "Your cheque book request is placed. Delivery takes 3 to 5 working days to your address.",
-        "hi": "नई चेकबुक का अनुरोध दर्ज कर लिया गया है। यह 3 से 5 कार्यदिवसों में आपके पते पर पहुंचेगी।",
-        "or": "ଚେକ୍ ବହି ଅନୁରୋଧ ଗ୍ରହଣ କରାଯାଇଛି। ଏହା ୩ ରୁ ୫ କାର୍ଯ୍ୟଦିବସରେ ଆପଣଙ୍କ ଠିକଣାରେ ପହଞ୍ଚିବ।",
+    "aadhaar_services": {
+        "en": "For Aadhaar services, visit an authorized Aadhaar Seva Kendra for biometric updates, mobile number linking, or address change using valid proof of identity and address.",
+        "hi": "आधार सेवाओं के लिए नजदीकी आधार केंद्र पर जाएं। बायोमेट्रिक अपडेट, मोबाइल नंबर लिंक या पता सुधार के लिए वैध पहचान व पते का प्रमाण साथ ले जाएं।",
+        "or": "ଆଧାର ସେବା ପାଇଁ ଅନୁମୋଦିତ ଆଧାର କେନ୍ଦ୍ରକୁ ଯାଆନ୍ତୁ। ମୋବାଇଲ୍ ଲିଙ୍କ୍, ଫଟୋ ଅପଡେଟ୍ ବା ଠିକଣା ସଂଶୋଧନ ପାଇଁ ପରିଚୟ ପ୍ରମାଣ ଆବଶ୍ୟକ।",
     },
-    "loans_emi": {
-        "en": "We offer personal, home, and vehicle loans starting at competitive interest rates with easy EMIs.",
-        "hi": "हम आकर्षक ब्याज दरों और आसान ईएमआई पर व्यक्तिगत, गृह और वाहन ऋण प्रदान करते हैं।",
-        "or": "ଆମେ ସୁବିଧାଜନକ ସୁଧ ହାର ଏବଂ ସହଜ ଇଏମଆଇରେ ଋଣ ପ୍ରଦାନ କରୁ।",
+    "pan_card": {
+        "en": "For a new PAN card or correction, apply via Form 49A with Aadhaar e-KYC. Instant e-PAN is issued in 2 hours, and the physical plastic card is delivered within 10 to 15 days.",
+        "hi": "नया पैन कार्ड बनवाने या सुधार के लिए आधार ई-केवाईसी द्वारा फॉर्म 49A भरें। ई-पैन 2 घंटे में और भौतिक कार्ड 10 से 15 दिनों में डाक द्वारा मिलता है।",
+        "or": "ନୂଆ ପ୍ୟାନ୍ କାର୍ଡ ପାଇଁ ଆଧାର ଇ-କେୱାଇସି ମାଧ୍ୟମରେ ଫର୍ମ 49A ପୂରଣ କରନ୍ତୁ। ଇ-ପ୍ୟାନ୍ ୨ ଘଣ୍ଟାରେ ଏବଂ ଅସଲ କାର୍ଡ ୧୦ ରୁ ୧୫ ଦିନରେ ଡାକ ଯୋଗେ ଆସିଥାଏ।",
     },
-    "netbanking_mpin": {
-        "en": "Tap 'Forgot MPIN' on the mobile login screen to reset your password with your debit card.",
-        "hi": "ऐप पर 'Forgot MPIN' चुनकर अपने डेबिट कार्ड और ओटीपी से तुरंत नया पासवर्ड बनाएं।",
-        "or": "ଆପ୍‌ରେ 'Forgot MPIN' ବ୍ୟବହାର କରି ଡେବିଟ୍ କାର୍ଡ ଏବଂ ଓଟିପି ଦ୍ୱାରା ନୂଆ ପାସୱାର୍ଡ ସେଟ୍ କରନ୍ତୁ।",
+    "voter_id": {
+        "en": "Indian citizens aged 18 and above can apply for a Voter ID (EPIC card) using Form 6 with age proof, address proof, and photograph via the Voter Helpline app or Jana Seva Kendra.",
+        "hi": "18 वर्ष या उससे अधिक आयु के नागरिक फॉर्म 6 द्वारा वोटर आईडी कार्ड बनवा सकते हैं। इसके लिए आयु प्रमाण, पता प्रमाण और फोटो आवश्यक है।",
+        "or": "୧୮ ବର୍ଷ ବୟସ୍କ ନାଗରିକ ଫର୍ମ ୬ ମାଧ୍ୟମରେ ନୂଆ ଭୋଟର ଆଇଡି ପାଇଁ ଆବେଦନ କରିପାରିବେ। ବୟସ ପ୍ରମାଣ, ଠିକଣା ପ୍ରମାଣ ଓ ଫଟୋ ଆବଶ୍ୟକ।",
     },
-    "branch_hours": {
-        "en": "Our bank branches operate Monday through Friday from 10:00 AM to 4:00 PM.",
-        "hi": "हमारी शाखाएं सोमवार से शुक्रवार सुबह 10:00 से शाम 4:00 बजे तक खुली रहती हैं।",
-        "or": "ଆମ ଶାଖା ସୋମବାରରୁ ଶୁକ୍ରବାର ସକାଳ ୧୦:୦୦ ରୁ ଅପରାହ୍ନ ୪:୦୦ ପର୍ଯ୍ୟନ୍ତ ଖୋଲା ରହିଥାଏ।",
+    "legal_documents": {
+        "en": "We assist with legal documents including name change affidavits, income affidavits, agreement drafting, and stamp paper documentation through authorized legal notaries.",
+        "hi": "हम शपथ पत्र (Affidavit), नाम परिवर्तन, अनुबंध और स्टांप पेपर दस्तावेजों में सहायता करते हैं। इसके लिए वैध पहचान प्रमाण आवश्यक है।",
+        "or": "ଆମେ ସତ୍ୟପାଠ (Affidavit), ନାମ ପରିବର୍ତ୍ତନ, ଚୁକ୍ତିପତ୍ର ଏବଂ ଷ୍ଟାମ୍ପ ପେପର କାର୍ଯ୍ୟରେ ସହାୟତା କରୁ। ଏଥିପାଇଁ ପରିଚୟ ପ୍ରମାଣ ଆବଶ୍ୟକ।",
+    },
+    "kendra_hours": {
+        "en": "Jana Seva Kendras operate Monday through Saturday from 9:00 AM to 6:00 PM across all blocks and urban centers in Odisha. Closed on Sundays and gazetted holidays.",
+        "hi": "जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुले रहते हैं। रविवार और सरकारी छुट्टियों पर बंद रहते हैं।",
+        "or": "ଜନ ସେବା କେନ୍ଦ୍ର ସୋମବାରରୁ ଶନିବାର ସକାଳ ୯:୦୦ ରୁ ସନ୍ଧ୍ୟା ୬:୦୦ ପର୍ଯ୍ୟନ୍ତ ଖୋଲା ରହିଥାଏ। ରବିବାର ଏବଂ ସରକାରୀ ଛୁଟିଦିନରେ ବନ୍ଦ ରହେ।",
+    },
+    "kendra_contact": {
+        "en": "Jana Seva Kendra is located at Kalabuda, Kendrapara, Odisha, PIN 754153. The helpline phone number is +91 1234567890, and email is support@janasevaodisha.com.",
+        "hi": "जन सेवा केंद्र कलाबुदा, केंद्रापड़ा, ओडिशा 754153 में स्थित है। हेल्पलाइन नंबर +91 1234567890 और ईमेल support@janasevaodisha.com है।",
+        "or": "ଜନ ସେବା କେନ୍ଦ୍ର କଳାବୁଦା, କେନ୍ଦ୍ରାପଡ଼ା ୭୫୪୧୫୩ ରେ ଅବସ୍ଥିତ। ହେଲ୍ପଲାଇନ ନମ୍ବର +91 1234567890 ଏବଂ ଇମେଲ support@janasevaodisha.com ଅଟେ।",
+    },
+    "two_pan_prohibition": {
+        "en": "Holding more than one PAN card is strictly illegal under Section 272B of the Income Tax Act with a mandatory 10,000 rupee fine. If lost, apply for a duplicate reprint using your existing PAN number.",
+        "hi": "एक से अधिक पैन कार्ड रखना आयकर अधिनियम की धारा 272B के तहत गैरकानूनी है और 10,000 रुपये का जुर्माना लगता है। खोने पर डुप्लीकेट पैन कार्ड रिप्रिंट कराएं।",
+        "or": "ଏକାଧିକ ପ୍ୟାନ୍ କାର୍ଡ ରଖିବା ଆୟକର ନିୟମ ଅନୁଯାୟୀ ବେଆଇନ ଏବଂ ୧୦,୦୦୦ ଟଙ୍କା ଜୋରିମାନା ଲାଗିଥାଏ। ହଜିଗଲେ ଡୁପ୍ଲିକେଟ୍ ରିପ୍ରିଣ୍ଟ କରନ୍ତୁ।",
+    },
+    "kendra_status": {
+        "en": "Jana Seva Odisha is an independent facilitation service provider, not a government department. It assists with document applications, while official certificates are issued by competent government authorities.",
+        "hi": "जन सेवा केंद्र एक स्वतंत्र नागरिक सुविधा केंद्र है, न कि सरकारी विभाग। यह आवेदन में सहायता करता है, जबकि प्रमाण पत्र केवल सक्षम सरकारी अधिकारियों द्वारा जारी किए जाते हैं।",
+        "or": "ଜନ ସେବା କେନ୍ଦ୍ର ଏକ ସ୍ୱତନ୍ତ୍ର ନାଗରିକ ସୁବିଧା କେନ୍ଦ୍ର, ସରକାରୀ ବିଭାଗ ନୁହେଁ। ଏହା ଆବେଦନରେ ସାହାଯ୍ୟ କରେ କିନ୍ତୁ ପ୍ରମାଣପତ୍ର ସରକାରୀ ଅଧିକାରୀଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଏ।",
+    },
+    "website_tools": {
+        "en": "The Jana Seva website provides digital document tools: JPG to PDF conversion, Word to PDF conversion, and photo resizing tools for portal uploads.",
+        "hi": "वेबसाइट पर मुफ्त दस्तावेज टूल उपलब्ध हैं: JPG से PDF, Word से PDF और फोटो रीसाइज़ टूल।",
+        "or": "ୱେବସାଇଟରେ ଡକ୍ୟୁମେଣ୍ଟ ଟୁଲ୍ସ ଉପଲବ୍ଧ ଅଛି: JPG ରୁ PDF, Word ରୁ PDF ଏବଂ ଫଟୋ ସାଇଜ୍ ଛୋଟ କରିବା ଟୁଲ୍।",
     },
     "human_agent": {
         "en": "Connecting you with a live customer care representative right away. Please hold the line.",
@@ -116,14 +141,14 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ଆପଣଙ୍କୁ ସ୍ୱାଗତ! ଆପଣଙ୍କ ଦିନଟି ଶୁଭମୟ ହେଉ!",
     },
     "fallback": {
-        "en": "Could you please clarify? How can I help with your Video KYC, UPI refund, or account today?",
-        "hi": "माफ़ कीजिए, क्या आप दोहरा सकते हैं? मैं आपकी क्या मदद करूँ?",
-        "or": "କ୍ଷମା କରିବେ, ଆଉଥରେ କହିବେ କି? ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
+        "en": "Could you please clarify? How can I assist you with Subhadra Scheme, certificates, or citizen services today?",
+        "hi": "माफ़ कीजिए, क्या आप दोहरा सकते हैं? मैं सुभद्रा योजना, प्रमाण पत्र या नागरिक सेवाओं में आपकी क्या मदद करूँ?",
+        "or": "କ୍ଷମା କରିବେ, ଆଉଥରେ କହିବେ କି? ମୁଁ ସୁଭଦ୍ରା ଯୋଜନା, ପ୍ରମାଣପତ୍ର ବା ନାଗରିକ ସେବାରେ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
     "capabilities": {
-        "en": "I can assist you with Video KYC, UPI refunds, card blocking, ATM PIN, and account balance.",
-        "hi": "मैं वीडियो केवाईसी, यूपीआई रिफंड, कार्ड ब्लॉक, एटीएम पिन और बैलेंस चेक में आपकी मदद कर सकती हूँ।",
-        "or": "ମୁଁ ଭିଡିଓ କେୱାଇସି, ୟୁପିଆଇ ରିଫଣ୍ଡ, କାର୍ଡ ବ୍ଲକ୍ ଏବଂ ବାଲାନ୍ସ ସେବାରେ ସାହାଯ୍ୟ କରିପାରିବି।",
+        "en": "I can assist you with Subhadra Scheme, Caste, Income, and Residence certificates, Aadhaar, PAN card, Voter ID, and citizen grievance registration.",
+        "hi": "मैं सुभद्रा योजना, जाति, आय और निवास प्रमाण पत्र, आधार, पैन कार्ड, वोटर आईडी और नागरिक शिकायत पंजीकरण में आपकी मदद कर सकती हूँ।",
+        "or": "ମୁଁ ସୁଭଦ୍ରା ଯୋଜନା, ଜାତି, ଆୟ ଏବଂ ବାସସ୍ଥାନ ପ୍ରମାଣପତ୍ର, ଆଧାର, ପ୍ୟାନ୍ କାର୍ଡ, ଭୋଟର ଆଇଡି ଏବଂ ଅଭିଯୋଗ ପଞ୍ଜୀକରଣରେ ସାହାଯ୍ୟ କରିପାରିବି।",
     },
     "feedback": {
         "en": "Thank you for your valuable feedback! We truly appreciate you sharing your thoughts with us. Have a wonderful day!",
@@ -151,9 +176,9 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରି ମୁଁ ଖୁସି! ଆପଣଙ୍କ ସମସ୍ୟାର ସମାଧାନ ହୋଇଗଲା କି?",
     },
     "unrelated_general": {
-        "en": "I specialize exclusively in bank customer support. How can I assist you with your account, UPI, or KYC services today?",
-        "hi": "मैं विशेष रूप से बैंक ग्राहक सेवा के लिए हूँ। बताइए मैं आपके बैंक खाते, यूपीआई या केवाईसी में क्या सहायता कर सकती हूँ?",
-        "or": "ମୁଁ କେବଳ ବ୍ୟାଙ୍କ ଗ୍ରାହକ ସେବା ପାଇଁ ଉପଲବ୍ଧ। ଆଜି ଆପଣଙ୍କ ଖାତା, ୟୁପିଆଇ ବା କେୱାଇସିରେ ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
+        "en": "I specialize exclusively in Jana Seva Odisha citizen government services and grievance registration. How may I assist you today?",
+        "hi": "मैं विशेष रूप से जन सेवा ओडिशा नागरिक सेवाओं और शिकायत पंजीकरण के लिए उपलब्ध हूँ। बताइए मैं क्या सहायता करूँ?",
+        "or": "ମୁଁ କେବଳ ଜନ ସେବା ଓଡ଼ିଶା ନାଗରିକ ସେବା ଏବଂ ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ ପାଇଁ ଉପଲବ୍ଧ। କୁହନ୍ତୁ ମୁଁ କିପରି ସାହାଯ୍ୟ କରିବି?",
     },
     "order_status_ask_digits": {
         "en": "Certainly! Please tell me the last 4 digits of your Order ID so I can check and share its complete status.",
@@ -171,29 +196,29 @@ AUTONOMOUS_KNOWLEDGE = {
         "or": "ଆଜ୍ଞା ହଁ, ଦୟାକରି ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର (ଯେପରି ୧ ବା ୦୦୦୧) କିମ୍ବା ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନମ୍ବର କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_state": {
-        "en": "Certainly! To register your complaint, please tell me your State.",
-        "hi": "जी बिल्कुल! आपकी शिकायत दर्ज करने के लिए, कृपया अपने राज्य (State) का नाम बताएं।",
-        "or": "ନିଶ୍ଚୟ! ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ କରିବା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ ରାଜ୍ୟର (State) ନାମ କୁହନ୍ତୁ।",
+        "en": "Certainly! Please describe the issue or problem you are experiencing.",
+        "hi": "जी बिल्कुल! कृपया अपनी समस्या या शिकायत का विवरण बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_city": {
-        "en": "Got it! What is your City?",
-        "hi": "बहुत अच्छा! आपके शहर (City) का नाम क्या है?",
-        "or": "ବହୁତ ଭଲ! ଆପଣଙ୍କ ସହରର (City) ନାମ କ’ଣ?",
+        "en": "Certainly! Please describe the issue or problem you are experiencing.",
+        "hi": "जी बिल्कुल! कृपया अपनी समस्या या शिकायत का विवरण बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_address": {
-        "en": "Got it. Please provide your Area or Street Address.",
-        "hi": "ठीक है। कृपया अपने इलाके, क्षेत्र या पते (Address) का विवरण दें।",
-        "or": "ଠିକ୍ ଅଛି। ଦୟାକରି ଆପଣଙ୍କ ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା (Address) କୁହନ୍ତୁ।",
+        "en": "Certainly! Please describe the issue or problem you are experiencing.",
+        "hi": "जी बिल्कुल! कृपया अपनी समस्या या शिकायत का विवरण बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_problem": {
-        "en": "Understood. Now please describe the issue or problem you are facing.",
-        "hi": "ठीक है। अब कृपया अपनी समस्या या शिकायत का पूरा विवरण बताएं।",
-        "or": "ଠିକ୍ ଅଛି। ଏବେ ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
+        "en": "Certainly! Please describe the issue or problem you are experiencing.",
+        "hi": "जी बिल्कुल! कृपया अपनी समस्या या शिकायत का विवरण बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
     },
     "complaint_register_ask_details": {
-        "en": "Certainly! To register your complaint, please tell me your State.",
-        "hi": "जी बिल्कुल! आपकी शिकायत दर्ज करने के लिए, कृपया अपने राज्य (State) का नाम बताएं।",
-        "or": "ନିଶ୍ଚୟ! ଆପଣଙ୍କ ଅଭିଯୋଗ ଦାଖଲ କରିବା ପାଇଁ, ଦୟାକରି ଆପଣଙ୍କ ରାଜ୍ୟର (State) ନାମ କୁହନ୍ତୁ।",
+        "en": "Certainly! Please describe the issue or problem you are experiencing.",
+        "hi": "जी बिल्कुल! कृपया अपनी समस्या या शिकायत का विवरण बताएं।",
+        "or": "ନିଶ୍ଚୟ! ଦୟାକରି ଆପଣଙ୍କ ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ ବିଷୟରେ କୁହନ୍ତୁ।",
     },
     "complaint_status": {
         "en": "Certainly! Please tell me your complaint ticket number (for example 1 or 0001), or your registered phone number.",
@@ -436,194 +461,64 @@ ORDER_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
 
 COMPLAINT_STATUS_CATALOG: Dict[str, Dict[str, str]] = {
     "1": {
-        "en": (
-            "Here are the complete details for complaint ticket number 1 (reference CMP 0001): "
-            "It was booked for customer Swagatika Swain on 21 September 2026 from Bhubaneswar, Odisha under the Support department. "
-            "The issue category is Discussion, and the current ticket status is Canceled after review. "
-            "Would you like to register a fresh complaint or need help with another service?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 1 (संदर्भ सीएमपी 0001) का पूरा विवरण यह है: "
-            "यह 21 सितंबर 2026 को भुवनेश्वर, ओडिशा से स्वातिका स्वाईं के लिए सपोर्ट विभाग में दर्ज किया गया था। "
-            "समस्या की श्रेणी चर्चा (Discussion) है, और वर्तमान स्थिति समीक्षा के बाद रद्द (Canceled) है। "
-            "क्या आप नई शिकायत दर्ज करना चाहते हैं या किसी अन्य सहायता की आवश्यकता है?"
-        ),
-        "or": (
-            "ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୧ (ସିଏମ୍‌ପି ୦୦୦୧) ର ସମ୍ପୂର୍ଣ୍ଣ ବିବରଣୀ: "
-            "ଏହା ୨୧ ସେପ୍ଟେମ୍ବର ୨୦୨୬ ରେ ଭୁବନେଶ୍ୱରରୁ ସ୍ଵାଗତିକା ସ୍ଵାଇଁଙ୍କ ନାମରେ ସପୋର୍ଟ ବିଭାଗରେ ପଞ୍ଜୀକୃତ ହୋଇଥିଲା। "
-            "ବିଷୟ ଶ୍ରେଣୀ ଆଲୋଚନା ଏବଂ ବର୍ତ୍ତମାନର ସ୍ଥିତି ବାତିଲ୍ (Canceled) ରହିଛି। "
-            "ଆପଣ ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି କି?"
-        ),
+        "en": "The status of complaint ticket 1 is Canceled.",
+        "hi": "शिकायत टिकट 1 की स्थिति रद्द (Canceled) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୧ ର ସ୍ଥିତି ବାତିଲ୍ (Canceled) ଅଟେ।",
     },
     "2": {
-        "en": (
-            "Here are the complete details for complaint ticket number 2 (reference CMP 0002): "
-            "It was booked for customer Shantanu on 30 September 2026 from Bhadrak, Odisha. "
-            "The current status is Solved, and the resolution has been verified and closed by our Support team. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 2 (सीएमपी 0002) का पूरा विवरण: "
-            "यह 30 सितंबर 2026 को भद्रक, ओडिशा से शांतनु के लिए दर्ज हुआ था। "
-            "इसकी वर्तमान स्थिति हल (Solved) हो चुकी है और सपोर्ट टीम द्वारा समस्या का समाधान कर दिया गया है। "
-            "क्या मैं और कोई सहायता करूँ?"
-        ),
-        "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୨ (ସିଏମ୍‌ପି ୦୦୦୨) ର ବିବରଣୀ: "
-            "ଏହା ୩୦ ସେପ୍ଟେମ୍ବର ୨୦୨୬ ରେ ଭଦ୍ରକରୁ ଶାନ୍ତନୁଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। "
-            "ଏହାର ସମାଧାନ ହୋଇସାରିଛି ଏବଂ ସ୍ଥିତି Solved ରହିଛି। "
-            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        ),
+        "en": "The status of complaint ticket 2 is Solved.",
+        "hi": "शिकायत टिकट 2 की स्थिति हल (Solved) हो चुकी है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୨ ର ସ୍ଥିତି ସମାଧାନ (Solved) ହୋଇଛି।",
     },
     "3": {
-        "en": (
-            "Here are the complete details for complaint ticket number 3 (reference CMP 0003): "
-            "It was booked for customer Swarna on 30 September 2026 from Kendrapada, Odisha for Network Issue under Epsumlabs. "
-            "The current status is Canceled. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 3 (सीएमपी 0003) का विवरण: "
-            "यह 30 सितंबर 2026 को केंद्रपाड़ा, ओडिशा से स्वर्णा के लिए एप्समलैब्स में नेटवर्क समस्या हेतु दर्ज था। "
-            "वर्तमान स्थिति रद्द (Canceled) है। "
-            "क्या मैं और कोई सहायता करूँ?"
-        ),
-        "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୩ (ସିଏମ୍‌ପି ୦୦୦୩) କେନ୍ଦ୍ରାପଡ଼ାରୁ ସ୍ୱର୍ଣ୍ଣାଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଥିଲା, ବର୍ତ୍ତମାନ ଏହା ବାତିଲ୍ ହୋଇଛି। "
-            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        ),
+        "en": "The status of complaint ticket 3 is Canceled.",
+        "hi": "शिकायत टिकट 3 की स्थिति रद्द (Canceled) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୩ ର ସ୍ଥିତି ବାତିଲ୍ (Canceled) ଅଟେ।",
     },
     "4": {
-        "en": (
-            "Here are the complete details for complaint ticket number 4 (reference CMP 0004): "
-            "It was booked for customer Saswat on 30 September 2026 from Bhadrak, Odisha under Epsumlabs. "
-            "The current status is Discussion with ongoing investigation. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 4 (सीएमपी 0004) का विवरण: "
-            "यह 30 सितंबर 2026 को भद्रक से शाश्वत के लिए एप्समलैब्स में दर्ज हुआ था। स्थिति अभी चर्चा में (Discussion) है। "
-            "क्या मैं और कोई सहायता करूँ?"
-        ),
-        "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୪ (ସିଏମ୍‌ପି ୦୦୦୪) ଭଦ୍ରକରୁ ଶାଶ୍ୱତଙ୍କ ପାଇଁ ଦାଖଲ ହୋଇଥିଲା। ଏହା ବର୍ତ୍ତମାନ ଚର୍ଚ୍ଚାରେ ଅଛି। "
-            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        ),
+        "en": "The status of complaint ticket 4 is in Discussion.",
+        "hi": "शिकायत टिकट 4 की स्थिति चर्चा (Discussion) में है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୪ ର ସ୍ଥିତି ଚର୍ଚ୍ଚାରେ (Discussion) ଅଛି।",
     },
     "5": {
-        "en": (
-            "Here are the complete details for complaint ticket number 5 (reference CMP 0005): "
-            "It was booked for customer Swagatika Swain on 30 September 2026 from Bhadrak, Odisha for Network Issue under Support. "
-            "The current status is New and awaiting assignment. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 5 (सीएमपी 0005) का विवरण: "
-            "यह 30 सितंबर 2026 को भद्रक से स्वातिका स्वाईं के लिए नेटवर्क समस्या हेतु दर्ज हुआ था। स्थिति नई (New) है। "
-            "क्या मैं और कोई सहायता करूँ?"
-        ),
-        "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୫ (ସିଏମ୍‌ପି ୦୦୦୫) ସ୍ଵାଗତିକା ସ୍ଵାଇଁଙ୍କ ପାଇଁ ନେଟୱର୍କ ସମସ୍ୟା ପାଇଁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ। "
-            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        ),
+        "en": "The status of complaint ticket 5 is New.",
+        "hi": "शिकायत टिकट 5 की स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୫ ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
     },
     "6": {
-        "en": (
-            "Here are the complete details for complaint ticket number 6 (reference CMP 0006): "
-            "It was booked for customer Sas on 30 September 2026 from Bhadrak, Odisha under Support for Discussion. "
-            "The current status is New. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": "शिकायत टिकट नंबर 6 (सीएमपी 0006) भद्रक से दर्ज किया गया था। वर्तमान स्थिति नई (New) है। क्या मैं और कोई सहायता करूँ?",
-        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୬ (ସିଏମ୍‌ପି ୦୦୦୬) ଭଦ୍ରକରୁ ଦାଖଲ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?",
+        "en": "The status of complaint ticket 6 is New.",
+        "hi": "शिकायत टिकट 6 की स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୬ ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
     },
     "7": {
-        "en": (
-            "Here are the complete details for complaint ticket number 7 (reference CMP 0007): "
-            "It was booked on 30 September 2026 under the Support department. The current status is New. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": "शिकायत टिकट नंबर 7 (सीएमपी 0007) सपोर्ट विभाग में दर्ज है। वर्तमान स्थिति नई (New) है। क्या मैं और कोई सहायता करूँ?",
-        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୭ (ସିଏମ୍‌ପି ୦୦୦୭) ସପୋର୍ଟ ବିଭାଗରେ ନୂଆ ରହିଛି। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?",
+        "en": "The status of complaint ticket 7 is New.",
+        "hi": "शिकायत टिकट 7 की स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୭ ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
     },
     "8": {
-        "en": (
-            "Here are the complete details for complaint ticket number 8 (reference CMP 0008): "
-            "It was booked for customer Suvarna Sai on 17 November 2026 from Bhubaneswar, Odisha under Customer Support. "
-            "The current status is New and under active review. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 8 (सीएमपी 0008) का पूरा विवरण: "
-            "यह 17 नवंबर 2026 को भुवनेश्वर से सुवर्णा साई के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है और समीक्षा में है। "
-            "क्या मैं और कोई सहायता करूँ?"
-        ),
-        "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୮ (ସିଏମ୍‌ପି ୦୦୦୮) ର ବିବରଣୀ: "
-            "ଏହା ୧୭ ନଭେମ୍ବର ୨୦୨୬ ରେ ଭୁବନେଶ୍ୱରରୁ ସୁବର୍ଣ୍ଣା ସାଇଙ୍କ ନାମରେ ଦାଖଲ ହୋଇଥିଲା। ବର୍ତ୍ତମାନର ସ୍ଥିତି ନୂଆ ଅଟେ। "
-            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        ),
+        "en": "The status of complaint ticket 8 is New.",
+        "hi": "शिकायत टिकट 8 की स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୮ ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
     },
     "9": {
-        "en": (
-            "Here are the complete details for complaint ticket number 9 (reference CMP 0009): "
-            "It was booked on 18 November 2026 for Broadband service issue under Customer Support. "
-            "The current status is New and under review. "
-            "Is there anything else I can help you with today?"
-        ),
-        "hi": (
-            "शिकायत टिकट नंबर 9 (सीएमपी 0009) का पूरा विवरण: "
-            "यह 18 नवंबर 2026 को ब्रॉडबैंड सेवा समस्या के लिए दर्ज हुआ था। वर्तमान स्थिति नई (New) है। "
-            "क्या मैं और कोई सहायता करूँ?"
-        ),
-        "or": (
-            "ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର ୯ (ସିଏମ୍‌ପି ୦୦୦୯) ର ବିବରଣୀ: "
-            "ଏହା ୧୮ ନଭେମ୍ବର ୨୦୨୬ ରେ ବ୍ରଡବ୍ୟାଣ୍ଡ ସମସ୍ୟା ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ। "
-            "ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        ),
+        "en": "The status of complaint ticket 9 is New.",
+        "hi": "शिकायत टिकट 9 की स्थिति नई (New) है।",
+        "or": "ଅଭିଯୋଗ ଟିକେଟ୍ ୯ ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
     },
     "8976453421": {
-        "en": (
-            "For registered phone number 8976453421 (Shantanu and Swagatika Swain), we found 3 complaints on file: "
-            "Ticket 1 from Bhubaneswar is Canceled, Ticket 2 from Bhadrak is Solved, and Ticket 5 is New. "
-            "Which ticket would you like full details on?"
-        ),
-        "hi": (
-            "पंजीकृत मोबाइल नंबर 8976453421 के लिए 3 टिकट दर्ज हैं: "
-            "टिकट 1 (भुवनेश्वर) रद्द है, टिकट 2 (भद्रक) हल हो चुका है, और टिकट 5 नया है। "
-            "आप किस टिकट की पूरी जानकारी चाहते हैं?"
-        ),
-        "or": (
-            "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ 8976453421 ପାଇଁ ୩ଟି ଟିକେଟ୍ ରହିଛି: "
-            "ଟିକେଟ୍ ୧ ବାତିଲ୍, ଟିକେଟ୍ ୨ ସମାଧାନ ହୋଇଛି, ଏବଂ ଟିକେଟ୍ ୫ ନୂଆ ଅଛି।"
-        ),
+        "en": "For your mobile number, Ticket 1 is Canceled, Ticket 2 is Solved, and Ticket 5 is New.",
+        "hi": "आपके मोबाइल नंबर के लिए टिकट 1 रद्द, टिकट 2 हल, और टिकट 5 नया है।",
+        "or": "ଆପଣଙ୍କ ମୋବାଇଲ୍ ପାଇଁ ଟିକେଟ୍ ୧ ବାତିଲ୍, ଟିକେଟ୍ ୨ ସମାଧାନ, ଏବଂ ଟିକେଟ୍ ୫ ନୂଆ ଅଟେ।",
     },
     "8976453488": {
-        "en": (
-            "For registered phone number 8976453488 (Swarna and Saswat), we found 2 complaints on file: "
-            "Ticket 3 is Canceled, and Ticket 4 is in Discussion under Epsumlabs. "
-            "Which ticket would you like full details on?"
-        ),
-        "hi": (
-            "पंजीकृत मोबाइल नंबर 8976453488 के लिए 2 टिकट दर्ज हैं: "
-            "टिकट 3 रद्द है और टिकट 4 चर्चा में है। आप किस टिकट की जानकारी चाहते हैं?"
-        ),
-        "or": (
-            "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ 8976453488 ପାଇଁ ଟିକେଟ୍ ୩ ବାତିଲ୍ ଏବଂ ଟିକେଟ୍ ୪ ଚର୍ଚ୍ଚାରେ ଅଛି।"
-        ),
+        "en": "For your mobile number, Ticket 3 is Canceled and Ticket 4 is in Discussion.",
+        "hi": "आपके मोबाइल नंबर के लिए टिकट 3 रद्द और टिकट 4 चर्चा में है।",
+        "or": "ଆପଣଙ୍କ ମୋବାଇଲ୍ ପାଇଁ ଟିକେଟ୍ ୩ ବାତିଲ୍ ଏବଂ ଟିକେଟ୍ ୪ ଚର୍ଚ୍ଚାରେ ଅଛି।",
     },
     "9937234512": {
-        "en": (
-            "For registered phone number 9937234512 (Suvarna Sai), you have Ticket 8 booked on 17 November 2026 from Bhubaneswar. "
-            "The current status is New and assigned to Customer Support."
-        ),
-        "hi": (
-            "पंजीकृत मोबाइल नंबर 9937234512 (सुवर्णा साई) के लिए टिकट 8 दर्ज है, जो 17 नवंबर को भुवनेश्वर से दर्ज हुआ था। "
-            "वर्तमान स्थिति नई (New) है।"
-        ),
-        "or": (
-            "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ 9937234512 (ସୁବର୍ଣ୍ଣା ସାଇ) ପାଇଁ ଟିକେଟ୍ ୮ ରହିଛି, ଯାହାର ସ୍ଥିତି ନୂଆ ଅଟେ।"
-        ),
+        "en": "For your mobile number, the status of Ticket 8 is New.",
+        "hi": "आपके मोबाइल नंबर के लिए टिकट 8 की स्थिति नई (New) है।",
+        "or": "ଆପଣଙ୍କ ମୋବାଇଲ୍ ପାଇଁ ଟିକେଟ୍ ୮ ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
     },
 }
 
@@ -712,9 +607,9 @@ def _load_offline_crm_catalog() -> None:
                         tnum_or = tnum.translate(str.maketrans("0123456789", "୦୧୨୩୪୫୬୭୮୯"))
                         pad4_or = pad4.translate(str.maketrans("0123456789", "୦୧୨୩୪୫୬୭୮୯"))
                         entry = {
-                            "en": f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): It was registered for customer {cname} from {city} on {booked}. The current status is {status} under the {dept} department regarding {clean_notes}.",
-                            "hi": f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: यह {cname} के लिए {city} से {booked} को दर्ज किया गया था। वर्तमान स्थिति {status} है और {dept} विभाग में {clean_notes} के लिए प्रक्रियाधीन है।",
-                            "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum_or} (ସିଏମ୍‌ପି {pad4_or}) ର ବିବରଣୀ: ଏହା {cname} ଙ୍କ ପାଇଁ {booked} ରେ ଦାଖଲ ହୋଇଥିଲା। ବର୍ତ୍ତମାନର ସ୍ଥିତି {status} ଅଟେ।",
+                            "en": f"The status of complaint ticket {tnum} is {status}.",
+                            "hi": f"शिकायत टिकट {tnum} की स्थिति {status} है।",
+                            "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ {tnum_or} ର ସ୍ଥିତି {status} ଅଟେ।",
                         }
                         COMPLAINT_STATUS_CATALOG[tnum] = entry
                         COMPLAINT_STATUS_CATALOG[pad4] = entry
@@ -736,9 +631,9 @@ def _load_offline_crm_catalog() -> None:
             desc = p.get("description", "").strip().rstrip(".")
             max_seen = max(max_seen, int(tnum))
             entry = {
-                "en": f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): It was registered recently for customer {cname} regarding \"{desc}\". The current status is New and assigned to Customer Support.",
-                "hi": f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: यह {cname} के लिए \"{desc}\" के संबंध में दर्ज किया गया है। वर्तमान स्थिति नई (New) है और सपोर्ट टीम जांच कर रही है।",
-                "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ର ବିବରଣୀ: ଏହା \"{desc}\" ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।",
+                "en": f"The status of complaint ticket {tnum} is New.",
+                "hi": f"शिकायत टिकट {tnum} की स्थिति नई (New) है।",
+                "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ {tnum} ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
             }
             COMPLAINT_STATUS_CATALOG[tnum] = entry
             COMPLAINT_STATUS_CATALOG[pad4] = entry
@@ -759,9 +654,9 @@ def _load_offline_crm_catalog() -> None:
         or_list = ", ".join(tkt_summaries_or[:-1]) + (f", ଏବଂ {tkt_summaries_or[-1]}" if len(tkt_summaries_or) > 1 else tkt_summaries_or[0])
 
         COMPLAINT_STATUS_CATALOG[ph] = {
-            "en": f"For registered phone number {ph} ({cname}), we found {len(tkts)} complaint{'s' if len(tkts) > 1 else ''} on file: {en_list}. Your latest is Ticket {tnum} (CMP {pad4}) regarding \"{clean_notes}\", with current status {stat}.",
-            "hi": f"पंजीकृत मोबाइल नंबर {ph} ({cname}) के लिए {len(tkts)} शिकायतें दर्ज हैं: {hi_list}। आपकी नवीनतम शिकायत टिकट नंबर {tnum} (सीएमपी {pad4}, \"{clean_notes}\") है, जिसकी स्थिति {stat} है।",
-            "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {ph} ({cname}) ପାଇଁ {len(tkts)} ଟି ଅଭିଯୋଗ ରହିଛି: {or_list}। ଆପଣଙ୍କ ସର୍ବଶେଷ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ରହିଛି, ସ୍ଥିତି {stat} ଅଟେ।",
+            "en": f"For your phone number, Ticket {tnum} is {stat}.",
+            "hi": f"आपके मोबाइल नंबर के लिए टिकट {tnum} की स्थिति {stat} है।",
+            "or": f"ଆପଣଙ୍କ ମୋବାଇଲ୍ ପାଇଁ ଟିକେଟ୍ {tnum} ର ସ୍ଥିତି {stat} ଅଟେ।",
         }
 
     if max_seen >= _NEXT_TICKET_COUNTER:
@@ -814,8 +709,8 @@ async def flush_pending_crm_complaints() -> int:
                     """,
                     c_sl,
                     c["ticket_id"],
-                    c.get("customer_name") or "Customer",
-                    c.get("caller_phone") or "9937234512",
+                    c.get("customer_name") or "",
+                    c.get("caller_phone") or "",
                     uuid.UUID("d6b3256a-fa21-4708-9910-3ea086831c6f"),
                     uuid.UUID("c84516c3-1592-4d0e-bc0e-7f50b2758f97"),
                     uuid.UUID("a778db92-1d4f-4778-a698-05830387b0ed"),
@@ -823,8 +718,8 @@ async def flush_pending_crm_complaints() -> int:
                     c_time,
                     False,
                     c["description"],
-                    c.get("state") or "Odisha",
-                    c.get("city") or "Bhubaneswar",
+                    c.get("state") or "",
+                    c.get("city") or "",
                     c.get("address") or "",
                 )
                 await conn.execute(
@@ -859,20 +754,20 @@ async def _persist_complaint_to_crm_db(
     complaint_sl: uuid.UUID,
     description: str,
     caller_phone: Optional[str] = None,
-    customer_name: Optional[str] = "Customer",
+    customer_name: Optional[str] = None,
     call_uuid: Optional[str] = None,
-    state: Optional[str] = "Odisha",
-    city: Optional[str] = "Bhubaneswar",
-    address: Optional[str] = "",
+    state: Optional[str] = None,
+    city: Optional[str] = None,
+    address: Optional[str] = None,
 ) -> bool:
     """
     Asynchronously persists a newly registered complaint into the remote CRM PostgreSQL DB
     ('ComplainBookings' and 'ComplainFollowUp') and registers locally without blocking audio.
     """
     phone_val = str(caller_phone or "").strip()
-    if not phone_val or phone_val.lower() in ("unknown", "anonymous", "none", "s"):
-        phone_val = "9937234512"
-    cust_val = str(customer_name or "Customer")
+    if phone_val.lower() in ("unknown", "anonymous", "none", "s"):
+        phone_val = ""
+    cust_val = str(customer_name or "").strip()
     now = datetime.now(timezone.utc)
 
     # 0. Always save to persistent local disk queue first (guarantees zero data loss even if remote DB is down)
@@ -885,8 +780,8 @@ async def _persist_complaint_to_crm_db(
             "caller_phone": phone_val,
             "customer_name": cust_val,
             "call_uuid": call_uuid,
-            "state": state or "Odisha",
-            "city": city or "Bhubaneswar",
+            "state": state or "",
+            "city": city or "",
             "address": address or "",
             "created_at": now.isoformat(),
             "synced_to_crm": False,
@@ -1149,24 +1044,9 @@ class IVRRAGMiniModel:
                 issue_or = f", ଯାହା '{clean_notes}' ବିଷୟରେ ଅଟେ" if clean_notes else ""
 
                 entry = {
-                    "en": (
-                        f"Here are the complete details for complaint ticket number {tnum} (reference CMP {pad4}): "
-                        f"It was registered for customer {cname} from {city} on {bdate_str} under {dept}{issue_en}. "
-                        f"The current ticket status is {status}. "
-                        f"Is there anything else I can help you with today?"
-                    ),
-                    "hi": (
-                        f"शिकायत टिकट नंबर {tnum} (संदर्भ सीएमपी {pad4}) का पूरा विवरण: "
-                        f"यह {city} से {cname} के लिए {dept} में {bdate_str} को दर्ज हुआ था{issue_hi}। "
-                        f"वर्तमान स्थिति {status_hi} है। "
-                        f"क्या मैं और कोई सहायता करूँ?"
-                    ),
-                    "or": (
-                        f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {tnum} (ସିଏମ୍‌ପି {pad4}) ର ବିବରଣୀ: "
-                        f"ଏହା {city} ରୁ {cname} ଙ୍କ ପାଇଁ {dept} ଅଧୀନରେ ଦାଖଲ ହୋଇଥିଲା{issue_or}। "
-                        f"ବର୍ତ୍ତମାନର ସ୍ଥିତି {status_or} ଅଟେ। "
-                        f"ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-                    ),
+                    "en": f"The status of complaint ticket {tnum} is {status}.",
+                    "hi": f"शिकायत टिकट {tnum} की स्थिति {status_hi} है।",
+                    "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ {tnum} ର ସ୍ଥିତି {status_or} ଅଟେ।",
                 }
                 COMPLAINT_STATUS_CATALOG[tnum] = entry
                 COMPLAINT_STATUS_CATALOG[pad4] = entry
@@ -1250,14 +1130,16 @@ class IVRRAGMiniModel:
     def _is_complaint_register_intent(self, lower_query: str) -> bool:
         """Checks if the user wants to register, file, or book a new complaint."""
         clean = (lower_query or "").strip().lower()
-        if any(w in clean for w in ("status", "check", "track", "where is", "existing", "update", "स्थिति", "ଟ୍ରାକ୍", "ପୂର୍ବ")):
+        if any(w in clean for w in ("status", "check", "track", "where is", "existing", "स्थिति", "ଟ୍ରାକ୍", "ପୂର୍ବ")):
             return False
         tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
-        if tokens.intersection({"register", "lodge", "file", "book", "दर्ज", "पंजीकृत", "पंजीकरण", "दाखिल", "ଦାଖଲ", "ପଞ୍ଜୀକରଣ"}):
+        # If complaint/grievance keyword is present along with register/file/lodge/new
+        has_complaint_kw = any(w in clean for w in ("complaint", "complain", "grievance", "ticket", "शिकायत", "अभिযোগ", "ଅଭିଯୋଗ"))
+        if has_complaint_kw and tokens.intersection({"register", "lodge", "file", "book", "new", "fresh", "दर्ज", "पंजीकृत", "पंजीकरण", "दाखिल", "नया", "नई", "ଦାଖଲ", "ପଞ୍ଜୀକରଣ", "ନୂଆ", "ନୂତନ"}):
+            return True
+        if tokens.intersection({"register", "lodge", "file", "book", "दर्ज", "पंजीकृत", "पंजीकरण", "दाखिल", "ଦାଖଲ", "ପଞ୍ଜୀକରଣ"}) and not any(w in clean for w in ("pan", "card", "aadhaar", "voter", "certificate", "पैन", "आधार", "प्रमाण")):
             return True
         if "new one" in clean or "fresh complaint" in clean or "new complaint" in clean or "register one" in clean or "a new one" in clean:
-            return True
-        if tokens.intersection({"new", "fresh", "नया", "नई", "ନୂଆ", "ନୂତନ"}):
             return True
         return any(
             phrase in clean
@@ -1273,6 +1155,30 @@ class IVRRAGMiniModel:
             )
         )
 
+    def _has_problem_description(self, lower_query: str) -> bool:
+        """Determines if the caller utterance already contains a concrete problem description."""
+        clean = (lower_query or "").strip().lower()
+        for phrase in (
+            "i want to register a new complaint that", "i want to register a new complaint",
+            "i want to register a complaint that", "i want to register a complaint",
+            "i want to file a new complaint", "i want to file a complaint",
+            "register a new complaint that", "register a new complaint",
+            "register new complaint that", "register new complaint",
+            "register a complaint that", "register a complaint",
+            "file a new complaint", "file a complaint",
+            "book a new complaint", "book a complaint",
+            "lodge a new complaint", "lodge a complaint",
+            "new complaint", "fresh complaint", "want to complain",
+            "register new one", "register a new one", "new one",
+            "नई शिकायत दर्ज करनी है", "नई शिकायत दर्ज करना है", "शिकायत दर्ज करनी है", "शिकायत दर्ज करना है",
+            "एक नई शिकायत लिखनी है", "नई शिकायत", "नया शिकायत",
+            "ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହେଁ", "ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହେଁ",
+            "ନୂଆ ଅଭିଯୋଗ", "ନୂଆ ଗୋଟିଏ",
+        ):
+            clean = clean.replace(phrase, "")
+        clean = clean.strip(" ,.-!?:;")
+        return len(clean.split()) >= 2
+
     def _is_complaint_status_intent(self, lower_query: str) -> bool:
         """Checks if the user wants to check the status or track an existing complaint."""
         clean = (lower_query or "").strip().lower()
@@ -1282,17 +1188,13 @@ class IVRRAGMiniModel:
             return True
         tokens = set(re.findall(r'[a-zA-Z\u0900-\u097f\u0b00-\u0b7f]+', clean))
         if tokens.intersection({
-            "status", "track", "existing", "old", "previous", "ticket", "tickets", "cmp", "update",
-            "explain", "detail", "details", "problem", "issue", "notes", "regarding",
-            "स्थिति", "पुरानी", "पुराना", "जांच", "अपडेट", "विवरण", "विस्तार", "समस्या",
-            "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା", "ବିବରଣୀ", "ସମସ୍ୟା"
+            "status", "track", "existing", "old", "previous", "ticket", "tickets", "cmp",
+            "स्थिति", "पुरानी", "पुराना", "जांच", "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା"
         }) and any(w in clean for w in ("complaint", "ticket", "cmp", "शिकायत", "टिकट", "ଅଭିଯୋଗ", "ଟିକେଟ୍")):
             return True
         if tokens.intersection({
-            "status", "track", "existing", "old", "previous", "ticket", "tickets", "cmp", "update",
-            "स्थिति", "पुरानी", "पुराना", "जांच", "अपडेट", "ଟ୍ରାକ୍", "ସ୍ଥିତି", "ପୂର୍ବ", "ପୁରୁଣା"
-        }):
-            # Ensure "ticket" or "tickets" or "status" alone isn't misinterpreting movie tickets or unrelated tokens
+            "status", "track", "cmp", "स्थिति", "ଟ୍ରାକ୍", "ସ୍ଥିତି"
+        }) and not any(w in clean for w in ("aadhaar", "pan", "voter", "certificate", "आधार", "पैन", "प्रमाण")):
             return True
         return any(
             phrase in clean
@@ -1363,31 +1265,16 @@ class IVRRAGMiniModel:
         return None
 
     def _was_asked_for_state(self, messages: Optional[List[ChatMessage]]) -> bool:
-        """Returns True if the previous assistant turn asked for the caller's State."""
-        c = self._last_substantive_assistant_message(messages)
-        if not c:
-            return False
-        return any(marker in c for marker in (
-            "tell me your state", "your state", "state name", "राज्य (state)", "राज्य का नाम", "ରାଜ୍ୟର (state)", "ରାଜ୍ୟର ନାମ"
-        ))
+        """Disabled: Complaint flow directly asks for problem description without asking for state."""
+        return False
 
     def _was_asked_for_city(self, messages: Optional[List[ChatMessage]]) -> bool:
-        """Returns True if the previous assistant turn asked for the caller's City."""
-        c = self._last_substantive_assistant_message(messages)
-        if not c:
-            return False
-        return any(marker in c for marker in (
-            "what is your city", "which city", "city or district", "शहर (city)", "शहर का नाम", "ସହରର (city)", "ସହରର ନାମ"
-        ))
+        """Disabled: Complaint flow directly asks for problem description without asking for city."""
+        return False
 
     def _was_asked_for_address(self, messages: Optional[List[ChatMessage]]) -> bool:
-        """Returns True if the previous assistant turn asked for the caller's Address / Area / Street."""
-        c = self._last_substantive_assistant_message(messages)
-        if not c:
-            return False
-        return any(marker in c for marker in (
-            "street address", "area or street address", "provide your area", "locality, area", "पते (address)", "क्षेत्र या पते", "ଠିକଣା (address)", "ଅଞ୍ଚଳ କିମ୍ବା ଠିକଣା"
-        ))
+        """Disabled: Complaint flow directly asks for problem description without asking for address."""
+        return False
 
     def _was_asked_for_complaint_description(self, messages: Optional[List[ChatMessage]]) -> bool:
         """Returns True if the previous assistant turn asked for a problem or issue description."""
@@ -1398,7 +1285,8 @@ class IVRRAGMiniModel:
             marker in c
             for marker in (
                 "describe the issue", "describe the problem", "problem you are facing",
-                "अपनी समस्या या शिकायत", "समस्या का विवरण", "ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ", "ସମସ୍ୟା ବିଷୟରେ", "register your complaint right away",
+                "issue or problem", "अपनी समस्या या शिकायत", "समस्या का विवरण", "अपनी समस्या",
+                "ସମସ୍ୟା କିମ୍ବା ଅଭିଯୋଗ", "ସମସ୍ୟା ବିଷୟରେ", "register your complaint right away",
             )
         )
 
@@ -1406,8 +1294,9 @@ class IVRRAGMiniModel:
         """
         Traverses conversation history and extracts previously collected State, City, and Address.
         Uses canonical Indian state and city normalization to resolve vernacular variants.
+        Does NOT set any defaults if caller did not provide them.
         """
-        slots = {"state": "Odisha", "city": "Bhubaneswar", "address": ""}
+        slots = {"state": "", "city": "", "address": ""}
         if not messages:
             return slots
 
@@ -1433,46 +1322,7 @@ class IVRRAGMiniModel:
                         norm_ct = normalize_indian_city(u_clean or u_val)
                         if norm_ct:
                             slots["city"] = norm_ct[0]
-                            if norm_ct[1] and slots.get("state") in ("Odisha", ""):
-                                slots["state"] = norm_ct[1]
-                        else:
-                            slots["city"] = u_clean.title() if u_clean else u_val.title()
-                    elif any(w in asst_text for w in ("street address", "area or street", "पते", "क्षेत्र", "ଠିକଣା")):
-                        slots["address"] = u_val
-
-        return slots
-
-    def _extract_registration_slots_from_history(self, messages: Optional[List[ChatMessage]]) -> Dict[str, str]:
-        """
-        Traverses conversation history and extracts previously collected State, City, and Address.
-        """
-        slots = {"state": "Odisha", "city": "Bhubaneswar", "address": ""}
-        if not messages:
-            return slots
-
-        for i, m in enumerate(messages):
-            if m.role == "assistant" and m.content and i + 1 < len(messages):
-                asst_text = str(m.content).lower()
-                user_msg = messages[i + 1]
-                if user_msg.role == "user" and user_msg.content:
-                    u_val = str(user_msg.content).strip().rstrip(".")
-                    u_clean = re.sub(r'^(?:i am in|i live in|my state is|my city is|it is|state is|city is|in)\s+', '', u_val, flags=re.IGNORECASE).strip()
-                    if any(w in asst_text for w in ("your state", "state name", "राज्य", "ରାଜ୍ୟ")):
-                        norm_st = normalize_indian_state(u_clean or u_val)
-                        if norm_st:
-                            slots["state"] = norm_st
-                        else:
-                            norm_ct = normalize_indian_city(u_clean or u_val)
-                            if norm_ct:
-                                slots["city"] = norm_ct[0]
-                                slots["state"] = norm_ct[1]
-                            else:
-                                slots["state"] = u_clean.title() if u_clean else u_val.title()
-                    elif any(w in asst_text for w in ("your city", "which city", "शहर", "ସହର")):
-                        norm_ct = normalize_indian_city(u_clean or u_val)
-                        if norm_ct:
-                            slots["city"] = norm_ct[0]
-                            if norm_ct[1] and slots.get("state") in ("Odisha", ""):
+                            if norm_ct[1] and not slots.get("state"):
                                 slots["state"] = norm_ct[1]
                         else:
                             slots["city"] = u_clean.title() if u_clean else u_val.title()
@@ -1606,67 +1456,74 @@ class IVRRAGMiniModel:
         description: str,
         lang: str = "en",
         caller_phone: Optional[str] = None,
-        customer_name: Optional[str] = "Customer",
+        customer_name: Optional[str] = None,
         call_uuid: Optional[str] = None,
-        state: Optional[str] = "Odisha",
-        city: Optional[str] = "Bhubaneswar",
-        address: Optional[str] = "",
+        state: Optional[str] = None,
+        city: Optional[str] = None,
+        address: Optional[str] = None,
     ) -> str:
         """
         Registers a new complaint instantly (< 2ms) without stalling telephony audio on slow LLMs.
         Allocates next sequential ticket ID, updates in-memory catalog, schedules async DB persistence,
         and returns a natural spoken confirmation.
+        Does NOT set any fields by default (no default city, state, or phone).
         """
         global _NEXT_TICKET_COUNTER
         clean_desc = (description or "").strip()
         if len(clean_desc) < 3:
             clean_desc = "Customer service inquiry and follow-up"
 
+        phone = str(caller_phone or "").strip()
+        if phone.lower() in ("unknown", "anonymous", "none", "s"):
+            phone = ""
+
+        # Duplicate complaint guard: prevent registering the same complaint twice in one call
+        dedup_key = f"{call_uuid or phone}:{clean_desc.lower()[:80]}"
+        if not hasattr(self, "_recent_complaints"):
+            self._recent_complaints: Dict[str, int] = {}
+        if dedup_key in self._recent_complaints:
+            existing_num = self._recent_complaints[dedup_key]
+            logger.info(f"[IVR Mini Brain] Duplicate complaint prevented for key={dedup_key[:40]} (existing ticket={existing_num})")
+            if lang == "hi":
+                return f"आपकी यह शिकायत पहले ही दर्ज की जा चुकी है। आपका शिकायत टिकट नंबर {existing_num} है।"
+            elif lang == "or":
+                return f"ଆପଣଙ୍କ ଏହି ଅଭିଯୋଗ ପୂର୍ବରୁ ଦାଖଲ ହୋଇସାରିଛି। ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {existing_num} ଅଟେ।"
+            return f"Your complaint has already been registered. Your complaint ticket number is {existing_num}."
+
         ticket_num = _NEXT_TICKET_COUNTER
         _NEXT_TICKET_COUNTER += 1
+        self._recent_complaints[dedup_key] = ticket_num
 
         pad_4 = f"{ticket_num:04d}"
         ticket_cmp = f"CMP/{pad_4}/26-27"
         comp_sl = uuid.uuid4()
-        phone = str(caller_phone or "").strip()
-        if not phone or phone.lower() in ("unknown", "anonymous", "none", "s"):
-            phone = "9937234512"
-        cust_name = customer_name or "Customer"
-        clean_state = (state or "Odisha").strip()
-        clean_city = (city or "Bhubaneswar").strip()
+        cust_name = str(customer_name or "").strip()
+        clean_state = (state or "").strip()
+        clean_city = (city or "").strip()
         clean_addr = (address or "").strip()
-        loc_str = f" from {clean_city}, {clean_state}" if clean_city and clean_state else (f" from {clean_city}" if clean_city else "")
+        loc_str = f" from {clean_city}, {clean_state}" if clean_city and clean_state else (f" from {clean_city}" if clean_city else (f" from {clean_state}" if clean_state else ""))
+        cust_str = f" for customer {cust_name}" if cust_name else ""
+        loc_desc_hi = f"यह {clean_city} से " if clean_city else "यह "
+        loc_desc_or = f"ଏହା {clean_city} ରୁ " if clean_city else "ଏହା "
 
         # Update in-memory catalog so immediate follow-up status queries work
         COMPLAINT_STATUS_CATALOG[str(ticket_num)] = {
-            "en": (
-                f"Here are the complete details for complaint ticket number {ticket_num} (reference CMP {pad_4}): "
-                f"It was registered recently for customer {cust_name}{loc_str} regarding '{clean_desc}'. "
-                f"The current status is New and assigned to Customer Support for investigation."
-            ),
-            "hi": (
-                f"शिकायत टिकट नंबर {ticket_num} (संदर्भ सीएमपी {pad_4}) का पूरा विवरण: "
-                f"यह {clean_city or 'आपके क्षेत्र'} से '{clean_desc}' के लिए दर्ज किया गया है। वर्तमान स्थिति नई (New) है और सपोर्ट टीम जांच कर रही है।"
-            ),
-            "or": (
-                f"ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}) ର ବିବରଣୀ: "
-                f"ଏହା {clean_city or 'ଆପଣଙ୍କ ଅଞ୍ଚଳ'} ରୁ '{clean_desc}' ପାଇଁ ପଞ୍ଜୀକୃତ ହୋଇଛି, ସ୍ଥିତି ନୂଆ ଅଟେ।"
-            ),
+            "en": f"The status of complaint ticket {ticket_num} is New.",
+            "hi": f"शिकायत टिकट {ticket_num} की स्थिति नई (New) है।",
+            "or": f"ଅଭିଯୋଗ ଟିକେଟ୍ {ticket_num} ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
         }
         COMPLAINT_STATUS_CATALOG[pad_4] = COMPLAINT_STATUS_CATALOG[str(ticket_num)]
         if phone:
-            issue_hi_reg = f", जो '{clean_desc}' के बारे में है," if clean_desc else ""
-            issue_or_reg = f", ଯାହା '{clean_desc}' ବିଷୟରେ ଅଟେ," if clean_desc else ""
             COMPLAINT_STATUS_CATALOG[phone] = {
-                "en": f"For registered phone number {phone}, complaint ticket number {ticket_num} (reference CMP {pad_4}) regarding '{clean_desc}' is on file with status New.",
-                "hi": f"पंजीकृत मोबाइल नंबर {phone} के लिए शिकायत टिकट नंबर {ticket_num} (सीएमपी {pad_4}){issue_hi_reg} नई (New) स्थिति में दर्ज है।",
-                "or": f"ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ {phone} ପାଇଁ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {ticket_num} (ସିଏମ୍‌ପି {pad_4}){issue_or_reg} ନୂଆ ଅଟେ।",
+                "en": f"For your mobile number, the status of complaint ticket {ticket_num} is New.",
+                "hi": f"आपके मोबाइल नंबर के लिए शिकायत टिकट {ticket_num} की स्थिति नई (New) है।",
+                "or": f"ଆପଣଙ୍କ ମୋବାଇଲ୍ ପାଇଁ ଅଭିଯୋଗ ଟିକେଟ୍ {ticket_num} ର ସ୍ଥିତି ନୂଆ (New) ଅଟେ।",
             }
 
-        # Fire async background task to persist to CRM DB & local DB
+        # Fire async background task to persist to CRM DB & local DB with failure logging
         try:
             loop = asyncio.get_running_loop()
-            loop.create_task(
+            task = loop.create_task(
                 _persist_complaint_to_crm_db(
                     ticket_id=ticket_cmp,
                     complaint_sl=comp_sl,
@@ -1679,6 +1536,11 @@ class IVRRAGMiniModel:
                     address=clean_addr,
                 )
             )
+            def _on_persist_done(t: asyncio.Task) -> None:
+                exc = t.exception() if not t.cancelled() else None
+                if exc:
+                    logger.error(f"[IVR Mini Brain] ❌ Complaint {ticket_cmp} DB persistence failed: {exc}")
+            task.add_done_callback(_on_persist_done)
         except RuntimeError:
             pass
 
@@ -1723,31 +1585,37 @@ class IVRRAGMiniModel:
         Runs entirely in local memory with zero external API/GPU dependencies.
         """
         clean_query = (user_query or "").strip()
+
+        # Telephony Whisper acoustic normalization for Indian English & regional terms
+        clean_query = re.sub(r'(?i)\b(?:madurai|to\s+badraheel|badraheel|subadra|suvadra|suvardha)\s*(?:scheme|team|stream|screen|scene)?\b', 'Subhadra Scheme', clean_query)
+        clean_query = re.sub(r'(?i)\bsubhadra\s+(?:team|stream|screen|scene)\b', 'Subhadra Scheme', clean_query)
+        clean_query = re.sub(r'(?i)\bsubadra\b', 'Subhadra', clean_query)
+        clean_query = re.sub(r'(?i)\b(?:cur|car|cor|kas|kos|cas)[\w]*s?atificat\w*\b', 'caste certificate', clean_query)
+        clean_query = re.sub(r'(?i)\b(?:cost|cast|coast|cars)\s+certificates?\b', 'caste certificate', clean_query)
+        clean_query = re.sub(r'(?i)\bcertificat\w*\b', 'certificate', clean_query)
+        clean_query = re.sub(r'(?i)\bpan\s+cart\b', 'PAN card', clean_query)
+        clean_query = re.sub(r'(?i)\b(?:water|voter)\s+(?:id|cart|card)\b', 'voter ID card', clean_query)
+        clean_query = re.sub(r'(?i)\bbonafide\s+cart\b', 'bonafide certificate', clean_query)
+
+        cat_str = str(service_category or "").lower()
+        if "subhadra" in cat_str or "subhadra" in clean_query.lower():
+            clean_query = re.sub(r'(?i)\b(?:given\s+)?to\s+the\s+weather\b', 'given to women under Subhadra', clean_query)
+            clean_query = re.sub(r'(?i)\bweather\b', 'women', clean_query)
+
         lower_query = clean_query.lower()
         lang = self._detect_language(clean_query, messages, default_lang=language)
 
         # Check active slot collection guards in complaint registration
         awaiting_complaint_desc = self._was_asked_for_complaint_description(messages)
-        awaiting_address = self._was_asked_for_address(messages)
-        awaiting_city = self._was_asked_for_city(messages)
-        awaiting_state = self._was_asked_for_state(messages)
         awaiting_complaint_id = self._was_asked_for_complaint_id(messages)
-        is_in_reg_slots = bool(awaiting_complaint_desc or awaiting_address or awaiting_city or awaiting_state)
+        is_in_reg_slots = bool(awaiting_complaint_desc)
 
         # 1. Check for appreciation / closing farewell turns (triggers auto-cut)
-        # Note: Must NOT trigger if caller is currently in the middle of active complaint data collection
+        # Note: Must NOT trigger if caller is currently describing their complaint
         if self._is_closing_intent(lower_query):
             if not is_in_reg_slots:
                 return AUTONOMOUS_KNOWLEDGE["appreciation"][lang]
-            # If in registration questionnaire, re-prompt for the pending slot rather than closing the call:
-            if awaiting_state:
-                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
-            elif awaiting_city:
-                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_city"][lang]
-            elif awaiting_address:
-                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_address"][lang]
-            elif awaiting_complaint_desc:
-                return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
+            return AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
 
         # 2. Check for pure greetings
         if self._is_greeting_intent(lower_query):
@@ -1766,7 +1634,13 @@ class IVRRAGMiniModel:
             return AUTONOMOUS_KNOWLEDGE["voice_clarification"][lang]
 
         # 4. Check for live human agent transfer
-        if any(w in lower_query for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
+        if any(w in lower_query for w in [
+            "representative", "agent", "executive", "operator", "talk to human", "speak to human",
+            "talk to person", "speak to person", "talk to agent", "speak to agent", "talk to representative",
+            "speak to representative", "connect agent", "connect to agent", "connect representative",
+            "human agent", "live agent", "real person", "talk to someone", "speak to someone",
+            "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"
+        ]):
             return AUTONOMOUS_KNOWLEDGE["human_agent"][lang]
 
         # 4b. Feedback intent (ratings, suggestions, service quality feedback, post-complaint rating)
@@ -1813,12 +1687,25 @@ class IVRRAGMiniModel:
             ]):
                 intel_emo = "satisfied"
 
-        # 4f. Check unrelated / general knowledge queries
-        if any(w in lower_query for w in [
-            "capital of", "weather", "who is", "who won", "tell me a joke", "cricket", "football",
+        # 4f. Check unrelated / general knowledge queries (only if NOT asking about citizen services/certificates)
+        is_known_service_query = (
+            bool(service_category)
+            or any(w in lower_query for w in (
+                "subhadra", "caste", "income", "residence", "bonafide", "aadhaar", "pan", "voter",
+                "kendra", "certificate", "ticket", "complaint", "legal", "affidavit", "notary",
+                "scheme", "yojana", "documents", "timing", "phone", "address", "email", "hours",
+                "money", "amount", "given", "receive", "apply", "benefit", "eligible", "paisa", "tanka",
+                "team", "free", "cost", "fee", "how to", "tell me", "explain", "who can", "where to",
+                "ପ୍ରମାଣପତ୍ର", "ଅଭିଯୋଗ", "ସୁଭଦ୍ରା", "ଯୋଜନା", "ଆଧାର", "ପ୍ୟାନ୍", "ସତ୍ୟପାଠ"
+            ))
+        )
+        is_real_unrelated = any(w in lower_query for w in [
+            "capital of", "who won", "tell me a joke", "cricket", "football",
             "prime minister", "president", "meaning of life", "how old are you", "what is ai",
-            "मौसम", "राजधानी", "क्रिकेट", "जोक", "ଭାରତ", "ପାଣିପାଗ"
-        ]):
+            "weather forecast", "weather today", "what is the weather", "temperature today",
+            "मौसम कैसा है", "आज का मौसम", "राजधानी", "क्रिकेट", "जोक", "ପାଣିପାଗ"
+        ])
+        if not is_known_service_query and is_real_unrelated:
             return AUTONOMOUS_KNOWLEDGE["unrelated_general"][lang]
 
         # 4g. Check if caller answered an affirmative 'yeah' / 'yes' to 'Is there anything else I can help you with today?'
@@ -1860,32 +1747,40 @@ class IVRRAGMiniModel:
                 caller_phone=caller_phone,
                 customer_name=customer_name,
                 call_uuid=call_uuid,
-                state=slots.get("state") or "Odisha",
-                city=slots.get("city") or "Bhubaneswar",
+                state=slots.get("state") or "",
+                city=slots.get("city") or "",
                 address=slots.get("address") or "",
             )
             return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5b. If previous turn asked caller for Address / Locality:
-        if awaiting_address:
+        # 5b. Caller explicitly declared intent to register a new complaint:
+        if is_register_intent:
+            # Check if caller already provided a concrete problem description in this utterance:
+            has_desc = self._has_problem_description(lower_query)
+
+            if has_desc:
+                # Immediate one-shot registration without setting any default location
+                ans = self.register_new_complaint(
+                    description=clean_query,
+                    lang=lang,
+                    caller_phone=caller_phone,
+                    customer_name=customer_name,
+                    call_uuid=call_uuid,
+                    state="",
+                    city="",
+                    address="",
+                )
+                return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
+
+            # Direct ask for problem/complaint (DO NOT ask for state, city, or address)
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5c. If previous turn asked caller for City:
-        if awaiting_city:
-            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_address"][lang]
-            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-
-        # 5d. If previous turn asked caller for State:
-        if awaiting_state:
-            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_city"][lang]
-            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-
-        # 5e. If previous turn asked caller for complaint ticket ID or phone:
+        # 5c. If previous turn asked caller for complaint ticket ID or phone:
         if awaiting_complaint_id:
             # If caller switched to register intent:
             if is_register_intent:
-                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
+                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
                 return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
             cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=True)
@@ -1905,13 +1800,7 @@ class IVRRAGMiniModel:
             ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang]
             return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
-        # 5f. Caller explicitly declared intent to register a new complaint:
-        if is_register_intent:
-            # Start step-by-step registration with Step 1: State
-            ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
-            return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
-
-        # 5g. Caller explicitly declared intent to check status of existing complaint:
+        # 5d. Caller explicitly declared intent to check status of existing complaint:
         if is_status_intent:
             cid_probe = extract_complaint_identifier(clean_query, allow_bare_digits=False)
             if cid_probe:
@@ -1937,7 +1826,7 @@ class IVRRAGMiniModel:
                 return self.apply_sentiment_tone(ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
             if self._is_complaint_register_intent(lower_query):
-                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_state"][lang]
+                ask_ans = AUTONOMOUS_KNOWLEDGE["complaint_register_ask_problem"][lang]
                 return self.apply_sentiment_tone(ask_ans, intel_emo, lang=lang, previous_attempts=prev_attempts)
 
             # Check if caller directly provided an issue description (>= 3 words describing a problem)
@@ -1968,8 +1857,9 @@ class IVRRAGMiniModel:
         inferred_intent = self._infer_intent_with_history(lower_query, messages)
         awaiting_digits = self._was_asked_for_order_digits(messages)
         if awaiting_digits and inferred_intent not in (
-            "video_kyc", "upi_refund", "card_block", "card_pin", "account_balance",
-            "cheque_book", "loans_emi", "netbanking_mpin", "branch_hours", "capabilities",
+            "subhadra_scheme", "caste_certificate", "income_certificate", "residence_certificate",
+            "bonafide_certificate", "aadhaar_services", "pan_card", "voter_id", "legal_documents",
+            "kendra_hours", "capabilities", "complaint", "complaint_status",
         ):
             inferred_intent = "order_status"
 
@@ -1999,18 +1889,20 @@ class IVRRAGMiniModel:
         # 8. Service-category guided response
         if service_category:
             cat_lower = service_category.lower()
-            if "upi" in cat_lower or "payment" in cat_lower or "1" in cat_lower:
-                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["upi_refund"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
-            elif "card" in cat_lower or "2" in cat_lower:
-                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["card_block"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
-            elif "kyc" in cat_lower:
-                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["video_kyc"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
-            elif "loan" in cat_lower or "3" in cat_lower:
-                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["loans_emi"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
-            elif "account" in cat_lower or "4" in cat_lower:
-                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["account_balance"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
-            elif "complaint" in cat_lower:
+            if "subhadra" in cat_lower or "3" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["subhadra_scheme"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "certificate" in cat_lower or "4" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["caste_certificate"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "identity" in cat_lower or "card" in cat_lower or "5" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["aadhaar_services"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "legal" in cat_lower or "affidavit" in cat_lower or "6" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["legal_documents"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "kendra" in cat_lower or "7" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["kendra_hours"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "complaint" in cat_lower or "2" in cat_lower:
                 return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["complaint_status_ask_id"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
+            elif "citizen" in cat_lower or "1" in cat_lower:
+                return self.apply_sentiment_tone(AUTONOMOUS_KNOWLEDGE["capabilities"][lang], intel_emo, lang=lang, previous_attempts=prev_attempts)
 
         # 9. Polite general fallback
         ans = AUTONOMOUS_KNOWLEDGE["fallback"][lang]
@@ -2180,52 +2072,143 @@ class IVRRAGMiniModel:
     ) -> Optional[str]:
         """
         Classifies user query intent using query semantics and preceding dialogue history.
+        Uses token boundary checks for short acronyms/words (sc, st, obc, pan, etc.) to prevent
+        accidental substring collisions (e.g. 'sc' in 'scheme' or 'st' in 'status').
         """
+        tokens = set(re.findall(r'\b[a-zA-Z0-9_\u0900-\u097f\u0b00-\u0b7f]+\b', lower_query))
+
         # Capabilities / What can you do
         if any(w in lower_query for w in [
             "what can you do", "what do you do", "what think you can do",
             "help me with", "your services", "what services", "capabilities",
-            "kya kar sakte", "kya kar sakti", "क्या कर सकती", "क्या सहायता", "କଣ କରିପାରିବ"
+            "kya kar sakte", "kya kar sakti", "क्या कर सकती", "क्या सहायता", "କଣ କରିପାରିବ",
+            "service list", "services available", "all services", "citizen services",
         ]):
             return "capabilities"
 
-        # Direct intent keywords
-        is_video_digit_mishearing = bool(re.search(r'\bvideo\b(?=(?:[\s,]+video)*[\s,]+(?:and\s*)?\d)', lower_query))
-        if not is_video_digit_mishearing and any(w in lower_query for w in [
-            "kyc", "केवाईसी", "वीडियो", "video kyc", "pan", "aadhaar", "document", "verification", "id proof", "କେୱାଇସି",
-            "vedio", "video", "कागजात", "पहचान पत्र", "दस्तावेज", "पैन", "आधार", "dastavez", "kagaj"
-        ]):
-            return "video_kyc"
+        # Subhadra Scheme / Citizen Schemes (evaluated before individual certificates)
+        if (
+            any(w in lower_query for w in [
+                "subhadra", "सुभद्रा", "ସୁଭଦ୍ରା", "50000", "50,000", "women scheme", "women financial",
+                "women assistance", "scheme", "schemes", "the scheme", "about the scheme", "tell me about the scheme",
+                "yojana", "योजना", "ଯୋଜନା", "sarkari yojana", "sarkari scheme", "government scheme",
+                "citizen scheme", "financial scheme",
+            ])
+            or bool(tokens.intersection({"subhadra", "yojana", "scheme", "schemes"}))
+        ):
+            return "subhadra_scheme"
 
+        # Caste Certificate (strictly token-bounded for short codes like SC/ST/OBC/SEBC to prevent substring false-positives)
+        caste_phrases = ["caste", "jati", "caste certificate", "जाति", "जाति प्रमाण", "ଜାତି", "ଜାତି ପ୍ରମାଣପତ୍ର"]
+        caste_short_codes = {"sc", "st", "obc", "sebc", "jati"}
+        if (
+            any(w in lower_query for w in caste_phrases)
+            or bool(tokens.intersection(caste_short_codes))
+        ):
+            return "caste_certificate"
+
+        # Income Certificate (token-bounded for short words like 'aay' to avoid matching 'today', 'pay', etc.)
+        if (
+            any(w in lower_query for w in [
+                "income certificate", "aay praman", "aaya praman", "salary certificate",
+                "आय प्रमाण", "आय प्रमाण पत्र", "ଆୟ ପ୍ରମାଣପତ୍ର", "ଆୟ ପ୍ରମାଣ",
+            ])
+            or bool(tokens.intersection({"aay", "aaya", "income"}))
+        ):
+            return "income_certificate"
+
+        # Residence / Domicile Certificate
+        if (
+            any(w in lower_query for w in [
+                "residence", "residential", "domicile", "niwas", "basasthana", "निवास प्रमाण", "निवास", "ବାସସ୍ଥାନ",
+            ])
+            or bool(tokens.intersection({"domicile", "niwas"}))
+        ):
+            return "residence_certificate"
+
+        # Bonafide Certificate
+        if (
+            any(w in lower_query for w in [
+                "bonafide", "student certificate", "बोनाफाइड", "ବୋନାଫାଇଡ୍",
+            ])
+            or bool(tokens.intersection({"bonafide"}))
+        ):
+            return "bonafide_certificate"
+
+        # Aadhaar Card Services
+        if (
+            any(w in lower_query for w in [
+                "aadhaar", "adhar", "uidai", "aadhar card", "आधार", "ଆଧାର",
+            ])
+            or bool(tokens.intersection({"aadhaar", "aadhar", "uidai"}))
+        ):
+            return "aadhaar_services"
+
+        # PAN Card Services
+        if (
+            any(w in lower_query for w in [
+                "pan card", "pancard", "nsdl", "uti", "पैन कार्ड", "पैन", "ପ୍ୟାନ୍",
+            ])
+            or bool(tokens.intersection({"pan"}))
+        ):
+            return "pan_card"
+
+        # Voter ID Services
+        if (
+            any(w in lower_query for w in [
+                "voter", "voter id", "epic", "election card", "वोटर आईडी", "वोटर", "ଭୋଟର",
+            ])
+            or bool(tokens.intersection({"voter", "epic"}))
+        ):
+            return "voter_id"
+
+        # Legal Documents & Affidavits
+        if (
+            any(w in lower_query for w in [
+                "affidavit", "legal document", "stamp paper", "notary", "deed", "agreement",
+                "शपथ पत्र", "स्टांप", "सत्यपाଠ", "ଆଫିଡେଭିଟ୍", "ସତ୍ୟପାଠ", "ଦଲିଲ", "ଷ୍ଟାମ୍ପ",
+            ])
+            or bool(tokens.intersection({"affidavit", "notary"}))
+        ):
+            return "legal_documents"
+
+        # Kendra Contact / Phone / Address / Email / Location
         if any(w in lower_query for w in [
-            "refund", "upi", "यूपीआई", "कट गया", "कट गए", "अटक", "फेल", "kat gaya", "atak", "पैसे कट", "पैसे", "paisa", "paise",
-            "debited", "failed", "utr", "pending payment", "वापस", "रिफंड", "यूपीआई पिन", "लिमिट", "ୟୁପିଆଇ", "ରିଫଣ୍ଡ",
-            "payment", "पेमेंट", "पैमेंट", "transaction", "ट्रांजेक्शन", "लेनदेन", "transfer", "you be a", "you be i", "gpay", "phonepe", "paytm"
-        ]):
-            return "upi_refund"
+            "phone number", "contact number", "helpline", "call number", "address", "location",
+            "kendrapara", "kalabuda", "email", "mail id", "website", "संपर्क", "फोन नंबर", "पता", "ईमेल",
+            "ଫୋନ ନମ୍ବର", "ଠିକଣା", "ଇମେଲ", "ଯୋଗାଯୋଗ", "ୱେବସାଇଟ୍"
+        ]) or (bool(tokens.intersection({"phone", "address", "location", "email", "kendrapara", "kalabuda", "website"})) and not bool(tokens.intersection({"complaint", "status"}))):
+            return "kendra_contact"
 
-        if any(w in lower_query for w in ["pin", "atm pin", "mpin", "पिन", "एमपिन", "ग्रीन पिन"]):
-            return "card_pin"
+        # Two PAN Cards / Lost PAN / Duplicate PAN
+        if (
+            any(w in lower_query for w in ["two pan", "second pan", "2 pan", "another pan", "do pan", "dusra pan", "duplicate pan", "lost pan", "pan lost"])
+            or ("pan" in lower_query and any(w in lower_query for w in ["two", "second", "another", "duplicate", "lost", "reprint", "do", "dusra", "haji"]))
+        ):
+            return "two_pan_prohibition"
 
+        # Government vs Private / Organisation Status
         if any(w in lower_query for w in [
-            "card", "debit card", "credit card", "atm", "block", "खो गया", "गुम", "चोरी", "कार्ड", "क्रेडिट", "डेबिट", "ब्लॉक", "freeze", "stolen", "lost"
+            "government or private", "is it government", "government agency", "government body",
+            "सरकारी है या", "सरकारी विभाग", "ସରକାରୀ ଅନୁଷ୍ଠାନ", "ସରକାରୀ କି"
         ]):
-            return "card_block"
+            return "kendra_status"
 
-        if any(w in lower_query for w in ["balance", "statement", "बैलेंस", "खाता", "अकाउंट", "बचत", "खाता शेष", "स्टेटमेंट", "passbook", "पासबुक"]):
-            return "account_balance"
+        # Website Tools & Utilities (PDF / Photo resize)
+        if any(w in lower_query for w in [
+            "jpg to pdf", "word to pdf", "resize photo", "photo resize", "tools", "utilities", "टूल", "फोटो रीसाइज"
+        ]):
+            return "website_tools"
 
-        if any(w in lower_query for w in ["cheque", "checkbook", "chequebook", "चेक", "चेकबुक"]):
-            return "cheque_book"
-
-        if any(w in lower_query for w in ["loan", "emi", "interest", "ऋण", "लोन", "ईएमआई", "ब्याज", "किस्त", "फोरक्लोजर", "ଋଣ"]):
-            return "loans_emi"
-
-        if any(w in lower_query for w in ["netbanking", "login", "password", "पासवर्ड", "अनलॉक", "नेटबैंकिंग", "लॉगिन", "unlock", "app"]):
-            return "netbanking_mpin"
-
-        if any(w in lower_query for w in ["timing", "timings", "opening hours", "open", "branch", "शाखा", "समय", "खुलती", "शनिवार"]):
-            return "branch_hours"
+        # Kendra Timings & Information
+        if (
+            any(w in lower_query for w in [
+                "kendra", "office hours", "timings", "timing", "open", "closing", "working hours",
+                "समय", "खुलती", "खुला", "କେନ୍ଦ୍ର ସମୟ", "ସମୟ କଣ", "କେବେ ଖୋଲେ"
+            ])
+            or (bool(tokens.intersection({"timing", "timings", "hours"})) and not bool(tokens.intersection({"complaint", "ticket", "status"})))
+        ):
+            return "kendra_hours"
 
         if any(w in lower_query for w in [
             "order", "order id", "delivery", "parcel", "shipment", "courier", "track", "tracking",
@@ -2236,7 +2219,7 @@ class IVRRAGMiniModel:
         if self._is_complaint_register_intent(lower_query):
             return "complaint_register"
 
-        if any(w in lower_query for w in [
+        if self._is_complaint_status_intent(lower_query) or any(w in lower_query for w in [
             "complaint", "ticket", "cmp", "cmp/", "cmp-", "status of complaint", "my complaint",
             "शिकायत", "अभिযোগ", "ଅଭିଯୋଗ", "ଟିକେଟ୍",
         ]):
@@ -2248,21 +2231,71 @@ class IVRRAGMiniModel:
                 str(m.content or "") for m in messages[-4:] if m.role in ("user", "assistant")
             ).lower()
 
-            if any(w in lower_query for w in ["time", "kitna time", "kab tak", "how long", "କେତେ ସମୟ"]):
-                if "kyc" in prev_turns:
-                    return "video_kyc"
-                if "upi" in prev_turns or "refund" in prev_turns:
-                    return "upi_refund"
-                if "card" in prev_turns:
-                    return "card_block"
-                if "cheque" in prev_turns:
-                    return "cheque_book"
+            if any(w in lower_query for w in ["apply", "how to apply", "where to apply", "process", "procedure", "kaise apply", "kahan"]):
+                if "caste" in prev_turns or "jati" in prev_turns:
+                    return "caste_certificate"
+                if "subhadra" in prev_turns or "scheme" in prev_turns or "yojana" in prev_turns:
+                    return "subhadra_scheme"
+                if "income" in prev_turns or "aay" in prev_turns:
+                    return "income_certificate"
+                if "residence" in prev_turns or "niwas" in prev_turns:
+                    return "residence_certificate"
+                if "pan" in prev_turns:
+                    return "pan_card"
+                if "voter" in prev_turns:
+                    return "voter_id"
 
-            if any(w in lower_query for w in ["document", "what needed", "kya chahiye", "documents"]):
-                if "kyc" in prev_turns:
-                    return "video_kyc"
-                if "loan" in prev_turns:
-                    return "loans_emi"
+            if any(w in lower_query for w in ["money", "benefit", "amount", "cash", "rupees", "kitna", "kete", "tanka", "tell me about", "about"]):
+                if "subhadra" in prev_turns or "scheme" in prev_turns or "yojana" in prev_turns:
+                    return "subhadra_scheme"
+                if "caste" in prev_turns:
+                    return "caste_certificate"
+                if "income" in prev_turns:
+                    return "income_certificate"
+                if "residence" in prev_turns:
+                    return "residence_certificate"
+                if "pan" in prev_turns:
+                    return "pan_card"
+
+            if any(w in lower_query for w in ["time", "kitna time", "kab tak", "how long", "କେତେ ସମୟ", "duration", "hours"]):
+                if "subhadra" in prev_turns or "scheme" in prev_turns or "yojana" in prev_turns:
+                    return "subhadra_scheme"
+                if "caste" in prev_turns or "jati" in prev_turns:
+                    return "caste_certificate"
+                if "income" in prev_turns or "aay" in prev_turns:
+                    return "income_certificate"
+                if "residence" in prev_turns or "niwas" in prev_turns:
+                    return "residence_certificate"
+                if "aadhaar" in prev_turns:
+                    return "aadhaar_services"
+                if "pan" in prev_turns:
+                    return "pan_card"
+                if "voter" in prev_turns:
+                    return "voter_id"
+                if "affidavit" in prev_turns or "legal" in prev_turns:
+                    return "legal_documents"
+                if "kendra" in prev_turns or "timing" in prev_turns or "open" in prev_turns:
+                    return "kendra_hours"
+                if "complaint" in prev_turns:
+                    return "complaint_status"
+
+            if any(w in lower_query for w in ["document", "what needed", "kya chahiye", "documents", "documents required", "କ'ଣ ଦରକାର"]):
+                if "subhadra" in prev_turns or "scheme" in prev_turns or "yojana" in prev_turns:
+                    return "subhadra_scheme"
+                if "caste" in prev_turns or "jati" in prev_turns:
+                    return "caste_certificate"
+                if "income" in prev_turns or "aay" in prev_turns:
+                    return "income_certificate"
+                if "residence" in prev_turns or "niwas" in prev_turns:
+                    return "residence_certificate"
+                if "aadhaar" in prev_turns:
+                    return "aadhaar_services"
+                if "pan" in prev_turns:
+                    return "pan_card"
+                if "voter" in prev_turns:
+                    return "voter_id"
+                if "affidavit" in prev_turns or "legal" in prev_turns:
+                    return "legal_documents"
 
         return None
 
@@ -2275,7 +2308,112 @@ class IVRRAGMiniModel:
         """
         Parses pgvector RAG chunks, strips technical metadata, and extracts
         the single most relevant sentence formatted naturally for telephone audio.
+        Supports high-precision resolution matching from verified Q&A pairs.
         """
+        if not rag_context or not rag_context.strip():
+            return None
+
+        # 1. Direct High-Precision Resolution Match from verified Q&A chunks
+        resolutions: List[str] = []
+        for line in rag_context.splitlines():
+            l_str = line.strip()
+            if "verified resolution:" in l_str.lower():
+                m = re.search(r'(?i)verified resolution\s*:\s*"([^"]+)"', l_str)
+                if not m:
+                    m = re.search(r'(?i)verified resolution\s*:\s*\'([^\']+)\'', l_str)
+                if not m:
+                    m = re.search(r'(?i)verified resolution\s*:\s*(.+)$', l_str)
+                if m:
+                    res = m.group(1).strip().strip('"\'')
+                    res_lower = res.lower()
+                    if res and not any(res_lower.startswith(p) for p in (
+                        "context:", "topic:", "category:", "title:", "document id:", "source:", "document title:"
+                    )) and res not in resolutions:
+                        resolutions.append(res)
+
+        query_words = set(
+            w for w in re.findall(r'\b[a-zA-Z0-9_\u0900-\u097f\u0b00-\u0b7f]+\b', lower_query)
+            if w not in {
+                "what", "is", "the", "are", "can", "how", "for", "and", "you", "tell", "about", "me",
+                "kya", "hai", "ka", "ki", "ko", "se", "karan", "karein", "kahin", "koun", "kuha", "kana",
+                "of", "in", "to", "do", "i", "a", "an", "this", "that", "please", "batao", "bataiye"
+            }
+        )
+
+        if resolutions:
+            scored_res: List[Tuple[float, str]] = []
+            for r in resolutions:
+                r_lower = r.lower()
+                r_words = set(re.findall(r'\b[a-zA-Z0-9_\u0900-\u097f\u0b00-\u0b7f]+\b', r_lower))
+                score = float(len(query_words.intersection(r_words))) * 3.0
+
+                # Language affinity bonus
+                if lang == "hi" and any("\u0900" <= ch <= "\u097f" for ch in r):
+                    score += 5.0
+                elif lang == "or" and any("\u0b00" <= ch <= "\u0b7f" for ch in r):
+                    score += 5.0
+                elif lang == "en" and not any(ch >= "\u0900" for ch in r):
+                    score += 2.0
+
+                # Specific entity match bonus with high-precision disambiguation
+                if any(w in query_words for w in ("email", "mail", "ईमेल", "ଇମେଲ")) and "@" in r:
+                    score += 50.0
+                elif any(w in query_words for w in ("phone", "number", "call", "contact", "helpline", "नंबर", "फ़ोन", "ଫୋନ", "ଫୋନ୍", "ନମ୍ବର", "ଯୋଗାଯୋଗ")) and any(d in r for d in ("1234567890", "+91", "हेल्पलाइन", "ହେଲ୍ପଲାଇନ", "ଫୋନ")):
+                    score += 50.0
+                elif any(w in query_words for w in ("address", "location", "where", "located", "पता", "ଠିକଣା")) and not any(w in query_words for w in ("email", "mail")) and any(l in r_lower for l in ("kalabuda", "kendrapara", "କଳାବୁଦା", "कलाबुदा")):
+                    score += 30.0
+
+                if any(w in query_words for w in ("two", "second", "another", "दो", "दूसरा", "ଦୁଇଟି")) and any(p in r_lower for p in ("illegal", "272b", "penalty", "गैरकानूनी", "ବେଆଇନ")):
+                    score += 25.0
+
+                if any(w in query_words for w in ("caste", "jati", "जाति", "ଜାତି")) and any(c in r_lower for c in ("caste", "ror", "sc", "st", "obc", "sebc", "जाति", "ଜାତି")):
+                    score += 30.0
+                elif any(w in query_words for w in ("income", "salary", "aay", "आय", "ଆୟ")) and any(i in r_lower for i in ("income", "salary", "itr", "आय", "ଆୟ")):
+                    score += 30.0
+                elif any(w in query_words for w in ("residence", "resident", "domicile", "niwas", "निवास", "ବାସସ୍ଥାନ")) and any(rd in r_lower for rd in ("residence", "domicile", "resident", "निवास", "ବାସସ୍ଥାନ")):
+                    score += 30.0
+
+                # Disambiguation penalties between certificate types
+                if any(w in query_words for w in ("residence", "resident", "domicile", "niwas", "निवास", "ବାସସ୍ଥାନ")):
+                    if not any(w in query_words for w in ("income", "salary", "आय", "ଆୟ")) and any(i in r_lower for i in ("salary slip", "itr", "family income")):
+                        score -= 25.0
+                    if not any(w in query_words for w in ("caste", "jati", "जाति", "ଜାତି")) and any(c in r_lower for c in ("sc", "st", "obc", "sebc", "lineage")):
+                        score -= 25.0
+
+                # Bank account & DBT requirements
+                if any(w in query_words for w in ("bank", "account", "dbt", "passbook", "खाता", "ବ୍ୟାଙ୍କ", "ଖାତା")) and any(b in r_lower for b in ("bank account", "single-holder", "aadhaar-seeded", "dbt", "passbook", "खाता", "ବ୍ୟାଙ୍କ")):
+                    score += 35.0
+
+                # Fee & Charges
+                if any(w in query_words for w in ("fee", "fees", "cost", "charge", "charges", "charged", "free", "price", "शुल्क", "फीस", "ମାଗଣା", "ଫି")) and any(f in r_lower for f in ("free of cost", "free", "zero fee", "charge", "fee", "शुल्क", "ମାଗଣା")):
+                    score += 40.0
+
+                # Validity period
+                if any(w in query_words for w in ("validity", "valid", "period", "expiry", "expire", "years", "year", "वैधता", "ମିଆଦ", "ବୈଧତା")) and any(v in r_lower for v in ("validity", "valid", "3 years", "three financial years", "साल", "ବର୍ଷ")):
+                    score += 40.0
+
+                if any(w in query_words for w in ("precautions", "precaution", "checklist", "bring", "carry", "visit", "visiting")) and any(ch in r_lower for ch in ("original documents", "self-attested", "photocopies", "checklist")):
+                    score += 25.0
+
+                if any(w in query_words for w in ("timing", "timings", "hours", "open", "time", "closing", "sunday")) and any(t in r_lower for t in ("9:00", "monday", "closed", "सोमवार", "ସୋମବାର")):
+                    score += 20.0
+
+                # Application process / how-to-apply disambiguation
+                if any(w in query_words for w in ("apply", "application", "process", "procedure", "register", "enroll", "submit", "आवेदन", "प्रक्रिया", "ଆବେଦନ", "ପ୍ରକ୍ରିୟା")):
+                    if any(a in r_lower for a in ("apply", "application", "portal", "kendra", "submit", "form", "anganwadi", "csc", "online", "offline", "आवेदन", "ଆବେଦନ")):
+                        score += 45.0
+                    if r_lower.startswith("no.") or "excluded" in r_lower:
+                        score -= 30.0
+
+                if "age" in query_words and any(a in r_lower for a in ("18 to 60", "18–60", "उम्र", "ବୟସ")):
+                    score += 20.0
+
+                scored_res.append((score, r))
+
+            scored_res.sort(key=lambda x: x[0], reverse=True)
+            return scored_res[0][1]
+
+        # 2. Extract and score declarative sentences from narrative knowledge chunks
         clean_lines: List[str] = []
         seen = set()
 
@@ -2284,8 +2422,15 @@ class IVRRAGMiniModel:
             if not l or l.startswith("---") or l.startswith("[Source") or "Relevant Context" in l or "You have access" in l:
                 continue
 
-            # Skip lines that represent caller questions / inquiries to prevent repeating the user's question!
             lower_raw = l.lower()
+
+            # Skip metadata headers (e.g. Context: Jana Seva Odisha Guide..., Topic: ...)
+            if any(lower_raw.startswith(m) for m in (
+                "context:", "topic:", "category:", "title:", "document id:", "source:", "document title:"
+            )):
+                continue
+
+            # Skip lines that represent caller questions / inquiries to prevent repeating the user's question!
             if any(lower_raw.startswith(p) for p in (
                 "caller:", "caller :", "user:", "user :", "customer:", "customer :",
                 "customer spoken inquiry:", "customer inquiry:", "caller query:",
@@ -2314,7 +2459,7 @@ class IVRRAGMiniModel:
             if l.startswith("[") and l.endswith("]"):
                 continue
 
-            # Filter generic filler and clarification phrases that should never be spoken as factual answers
+            # Filter generic filler and clarification phrases
             lower_l = l.lower()
             if any(filler in lower_l for filler in [
                 "what can i do for you", "how can i help you", "ready to help",
@@ -2330,7 +2475,7 @@ class IVRRAGMiniModel:
             ]):
                 continue
 
-            # Skip lines that end with '?' - bot questions / surveys are not factual answers
+            # Skip lines that end with '?'
             if l.endswith("?"):
                 continue
 
@@ -2342,12 +2487,8 @@ class IVRRAGMiniModel:
                 if overlap >= 0.60:
                     continue
 
-            # Ensure script matches the session language
-            if lang == "en" and any("\u0900" <= ch <= "\u097f" for ch in l):
-                continue
-            if lang == "hi" and not any("\u0900" <= ch <= "\u097f" for ch in l):
-                continue
-            if lang == "or" and any("\u0900" <= ch <= "\u097f" for ch in l):
+            # Avoid non-English text when session is English
+            if lang == "en" and any(ch >= "\u0900" for ch in l):
                 continue
 
             norm = l.lower()
@@ -2358,47 +2499,42 @@ class IVRRAGMiniModel:
         if not clean_lines:
             return None
 
-        # Dedicated synthesis for Video KYC document inquiries:
-        # If multiple document requirements (PAN + Aadhaar) are in the RAG chunks, synthesize a complete spoken summary.
-        if any(w in lower_query for w in ("kyc", "kyicy", "video", "document", "documents", "dastavez", "दस्तावेज", "कागजात", "ପ୍ୟାନ୍")):
-            pan_line = next((c for c in clean_lines if "pan" in c.lower() or "पैन" in c or "ପ୍ୟାନ୍" in c), None)
-            aadhaar_line = next((c for c in clean_lines if "aadhaar" in c.lower() or "aadhar" in c.lower() or "आधार" in c or "ଆଧାର" in c), None)
-            if pan_line and aadhaar_line:
-                if lang == "hi":
-                    return "वीडियो केवाईसी के लिए कृपया अपना मूल भौतिक पैन कार्ड और आधार लिंक मोबाइल तैयार रखें।"
-                elif lang == "or":
-                    return "ଭିଡିଓ କେୱାଇସି ପାଇଁ ଆପଣଙ୍କର ମୂଳ ପ୍ୟାନ୍ କାର୍ଡ ଏବଂ ଆଧାର ମୋବାଇଲ୍ ପ୍ରସ୍ତୁତ ରଖନ୍ତୁ।"
-                else:
-                    return "For Video KYC, please keep your original physical PAN card and Aadhaar-linked mobile ready for OTP verification."
-            elif pan_line:
-                return pan_line.strip()
-
         # Prioritize line matching query terms with factual domain relevance scoring
         best_line = None
-        query_words = set(w for w in re.findall(r'\w+', lower_query) if len(w) > 3)
+        query_words = set(
+            w for w in re.findall(r'\b[a-zA-Z0-9_\u0900-\u097f\u0b00-\u0b7f]+\b', lower_query)
+            if w not in {
+                "what", "is", "the", "are", "can", "how", "for", "and", "you", "tell", "about", "me",
+                "kya", "hai", "ka", "ki", "ko", "se", "karan", "karein", "kahin", "koun", "kuha", "kana",
+                "of", "in", "to", "do", "i", "a", "an", "this", "that", "please", "batao", "bataiye"
+            }
+        )
+
         if query_words:
             scored_candidates: List[Tuple[float, str]] = []
             for candidate in clean_lines:
                 cand_lower = candidate.lower()
-                cand_words = set(re.findall(r'\w+', cand_lower))
+                cand_words = set(re.findall(r'\b[a-zA-Z0-9_\u0900-\u097f\u0b00-\u0b7f]+\b', cand_lower))
                 overlap = len(query_words.intersection(cand_words))
-                score = float(overlap)
+                score = float(overlap) * 2.0
 
-                # Domain entity boost for concrete factual information
-                if any(w in cand_lower for w in ("pan", "aadhaar", "aadhar", "physical pan", "original physical")):
+                # Domain entity boosts
+                if any(w in cand_lower for w in ("+91", "1234567890", "kalabuda", "kendrapara", "support@janasevaodisha.com")):
+                    score += 6.0
+                if any(w in cand_lower for w in ("subhadra", "50,000", "50000", "2,50,000", "2.5 lakh", "18-60", "18 to 60")):
+                    score += 5.0
+                if any(w in cand_lower for w in ("caste", "income", "residence", "bonafide", "certificate", "tahasil", "revenue inspector")):
                     score += 4.0
-                if any(w in cand_lower for w in ("refund", "banking hours", "working days", "dispatch", "credited back")):
-                    score += 3.0
-                if any(w in cand_lower for w in ("atm pin", "forgot mpin", "otp", "debit card")):
-                    score += 3.0
-                if any(w in cand_lower for w in ("frozen", "block", "replacement")):
-                    score += 3.0
-                if any(w in cand_lower for w in ("complaint", "ticket", "cmp/", "cmp_", "phase", "sla", "resolved", "solved", "canceled")):
+                if any(w in cand_lower for w in ("pan", "form 49a", "second pan", "272b", "penalty", "aadhaar", "biometric")):
                     score += 4.0
-
-                # Boost complete declarative responses
-                if any(cand_lower.startswith(p) for p in ("for video kyc", "video kyc", "failed upi", "your card", "you can", "service complaint", "customer service complaint", "registered customer profile", "हमारी शाखा", "ଭିଡିଓ କେୱାଇସି")):
-                    score += 3.0
+                if any(w in cand_lower for w in ("voter", "epic", "form 6", "form 8", "electoral roll")):
+                    score += 4.0
+                if any(w in cand_lower for w in ("notarisation", "notary", "registration", "affidavit", "stamp paper")):
+                    score += 4.0
+                if any(w in cand_lower for w in ("jpg to pdf", "word to pdf", "resize photos", "utilities", "tools")):
+                    score += 4.0
+                if any(w in cand_lower for w in ("complaint", "ticket", "cmp/", "cmp_", "sla", "resolved")):
+                    score += 4.0
 
                 if score > 0:
                     scored_candidates.append((score, candidate))
@@ -2408,10 +2544,8 @@ class IVRRAGMiniModel:
                 best_line = scored_candidates[0][1]
 
         if not best_line:
-            # If no candidate line matches query keywords, this chunk does not answer the question
-            return None
+            return clean_lines[0] if clean_lines else None
 
-        # Return single clean, factual sentence for natural spoken telephone delivery
         return best_line.strip()
 
     def _was_asked_for_order_digits(self, messages: Optional[List[ChatMessage]]) -> bool:
@@ -2476,8 +2610,7 @@ class IVRRAGMiniModel:
 
     def lookup_complaint_status(self, identifier: str, lang: str = "en") -> str:
         """
-        Returns a natural, telephone-optimized status report for a complaint ticket or customer phone number.
-        Avoids clumsy strings like 'slash zero zero zero one' and speaks clear ticket IDs.
+        Returns strictly the status only of a complaint ticket or phone number without unnecessary explanations.
         """
         key = str(identifier).strip()
         if key in COMPLAINT_STATUS_CATALOG:
@@ -2486,18 +2619,17 @@ class IVRRAGMiniModel:
         # 10-digit phone lookup fallback
         if len(key) == 10 and key.isdigit():
             if lang == "hi":
-                return f"मोबाइल नंबर {key} के लिए हमारे रिकॉर्ड में कोई खुली शिकायत नहीं मिली है। यदि आप नई शिकायत दर्ज करना चाहते हैं, तो कृपया बताएं।"
+                return f"मोबाइल नंबर {key} के लिए कोई खुली शिकायत नहीं मिली।"
             elif lang == "or":
-                return f"ମୋବାଇଲ୍ ନମ୍ବର {key} ପାଇଁ କୌଣସି ଅଭିଯୋଗ ରେକର୍ଡ ମିଳିଲା ନାହିଁ। ନୂଆ ଅଭିଯୋଗ ଦାଖଲ କରିବାକୁ ଚାହାଁନ୍ତି କି?"
-            return f"No active complaints were found for registered phone number {key}. Would you like to register a new complaint?"
+                return f"ମୋବାଇଲ୍ ନମ୍ବର {key} ପାଇଁ କୌଣସି ଅଭିଯୋଗ ମିଳିଲା ନାହିଁ।"
+            return f"No active complaint found for phone number {key}."
 
         # Numeric ticket fallback
-        pad_id = f"{int(key):04d}" if key.isdigit() else key
         if lang == "hi":
-            return f"आपके शिकायत टिकट नंबर {key} (सीएमपी {pad_id}) की स्थिति प्रक्रियाधीन है और हमारी सपोर्ट टीम इस पर काम कर रही है। क्या मैं और कोई सहायता करूँ?"
+            return f"शिकायत टिकट {key} की स्थिति प्रक्रियाधीन (In Progress) है।"
         elif lang == "or":
-            return f"ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ ନମ୍ବର {key} (ସିଏମ୍‌ପି {pad_id}) ପ୍ରକ୍ରିୟାଧୀନ ରହିଛି। ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?"
-        return f"For complaint ticket number {key} (CMP {pad_id}), your ticket is currently in progress and being reviewed by our customer support team. Is there anything else I can help you with today?"
+            return f"ଆପଣଙ୍କ ଅଭିଯୋଗ ଟିକେଟ୍ {key} ପ୍ରକ୍ରିୟାଧୀନ (In Progress) ଅଛି।"
+        return f"The status of complaint ticket {key} is In Progress."
 
 
 # Module-level singleton

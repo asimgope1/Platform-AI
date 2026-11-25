@@ -1,0 +1,40 @@
+Category,Feature Name,PDF Reference,Status,Current Implementation Details,Remaining Work / Next Step
+Telephony & PBX,SIP IP Telephony Bridge,v1 Slide 3,DONE,"Live bi-directional WebSocket bridge at ws://192.168.1.133:9093 (Asterisk PBX, Ext 8000).",None (Production active)
+Telephony & PBX,Multi-Extension / Department Routing,v1 Slide 3,DONE,Routes to extension 8000 with Asterisk dialplan routing support.,Expand additional ring groups
+Telephony & PBX,Post-Call Quality Survey (1-5),v1 Slide 4,DONE,Captured in IVRSession on call completion and stored in metadata.,Hook into database survey table
+Telephony & PBX,Call Transfer to Human Agent (Blind/Attended),v1 Slide 3,NOT DONE,Recognizes transfer intent but lacks Asterisk SIP REFER / AMI bridge.,Implement Asterisk AMI Transfer command
+Telephony & PBX,Call Hold & Resume with Audio Tones,v1 Slide 3,NOT DONE,"Basic pause handling in code, but no MOH (Music on Hold) or channel park.",Integrate Asterisk MOH channel bridge
+Telephony & PBX,Call Detail Records (CDR) Logging,v1 Slide 4,DONE,"Call start/end timestamps, caller ID, duration recorded in session.",Persist into PostgreSQL CDR schema
+Telephony & PBX,Dual-Channel Call Recording Archive,v1 Slide 3,NOT DONE,Audio is processed in memory but full dual-channel WAV is not archived to disk.,Configure Asterisk MixMonitor path
+01 · Perceive (STT),Real-Time Streaming ASR (Whisper),v2 Slide 3,DONE,Whisper-base pre-warmed on CPU in memory with 8kHz PCM telephony input.,Test faster-whisper CTranslate2 for ~100ms latency
+01 · Perceive (STT),Noise & Telephony Audio Filtering,v2 Slide 3,DONE,VAD energy thresholding and silence cutoff implemented in IVRSession.,Add WebRTC AEC / NS pre-processing
+01 · Perceive (STT),Anti-Hallucination & Short Utterance Guard,v2 Slide 3,DONE,Cleaned conditioning prompts to eliminate false 'Thank you' on short city/state utterances.,None (Fixed & verified)
+01 · Perceive (STT),Multilingual Speech Recognition,v2 Slide 3,DONE,"Whisper multilingual model loaded for English, Hindi, and Indian dialects.",Add fine-tuned Odia acoustic model
+02 · Understand (NLU),Multi-Turn Complaint Slot-Filling,v2 Slide 3,DONE,Step-by-step state machine: State -> City -> Address -> Complaint description.,None (Tested & working)
+02 · Understand (NLU),Indian Geographic Entity Normalization,v2 Slide 3,DONE,"Built-in dictionary for 28 States, 8 UTs, and 50+ major cities (e.g. Mumbai, Delhi, Bhubaneswar).",Expand tier-2/3 talukas & towns
+02 · Understand (NLU),Anti-Loop State Machine Guard,v2 Slide 3,DONE,Guarded _is_closing_intent to prevent premature 'have a wonderful day' during active slot-filling.,None (Fixed & verified)
+02 · Understand (NLU),High-Capacity Cloud Reasoning (Gemma 4),v2 Slide 8,DONE,Integrated Google Colab T4 GPU tunnel (Ollama gemma4:latest pinned with keep_alive=-1).,Colab session restart automation
+02 · Understand (NLU),Ultra-Fast Local RAG Brain,v2 Slide 8,DONE,IVRRAGMiniModel provides sub-100ms instant query resolution for banking inquiries.,Add more domain question sets
+02 · Understand (NLU),Live Sentiment & Frustration Scoring,v2 Slide 4,DONE,Calculates sentiment polarity (-1.0 to +1.0) and detects frustration cues.,Hook into automatic escalation trigger
+02 · Understand (NLU),Mid-Call Language Switch (Eng/Hindi/Odia),v2 Slide 7,PARTIAL,"Detects language preference; prompts switch language, but mid-sentence dynamic flipping needs refinement.",Add mid-sentence bilingual code-switching
+03 · Respond (TTS),Neural Voice Synthesis (Kokoro),v2 Slide 3,DONE,Kokoro ONNX engine pre-loaded for high naturalness English & Hindi speech.,Optimize sample-rate downsampling
+03 · Respond (TTS),Native Regional Persona (Odia VITS),v2 Slide 7,DONE,Integrated speech_od_vits.onnx for authentic Odia voice generation.,Add Bengali/Tamil regional models
+03 · Respond (TTS),Voice Profile Consistency,v2 Slide 3,DONE,"Unified speaker persona across status replies, greetings, and complaint acknowledgments.",None (Fixed & verified)
+03 · Respond (TTS),Sub-100ms Pre-Rendered Audio Cache,v2 Slide 8,DONE,52+ core IVR prompts pre-generated and cached in memory/disk.,Pre-cache top 100 FAQ audio chunks
+04 · Act (CRM),Autonomous Complaint Registration,v2 Slide 3,DONE,Generates CMP-XXXXXX tracking ID and writes directly to PostgreSQL crm_backend_db.,None (Live in production)
+04 · Act (CRM),Real-Time Complaint Status Lookup,v2 Slide 5,DONE,Lookup by CMP ID or order last 4 digits directly from live database.,Support phone number lookup fallback
+04 · Act (CRM),Offline Resilience Queue & Auto-Flush,v2 Slide 3,DONE,Buffered in pending_crm_complaints.json and flushed by daemon on DB reconnection.,Add SMS notification on successful flush
+04 · Act (CRM),Lead Management Pipeline (5 Stages),v1 Slide 5,NOT DONE,Database tables need schema for New -> Contacted -> Qualified -> Proposal -> Converted.,Implement Lead CRM models & API
+04 · Act (CRM),Follow-Up Scheduling & Calendar Booking,v1 Slide 5,NOT DONE,Follow-up scheduling logic not connected to agent calendar/queue.,Add appointment booking slot engine
+Human-in-the-Loop,Explicit Human Agent Handover,v2 Slide 4,PARTIAL,"Detects 'talk to agent', but needs live SIP channel bridge to agent softphone queue.",Connect to Asterisk Queue 100
+Human-in-the-Loop,Negative Sentiment Spike Auto-Escalation,v2 Slide 4,NOT DONE,"Sentiment score calculated, but threshold-based auto-transfer not yet hooked.",Trigger transfer when sentiment < -0.6
+Human-in-the-Loop,Conversation Repeat Loop Escalation,v2 Slide 4,NOT DONE,Loop counter not yet triggering automatic handover after 2 repeated queries.,Add repeat query counter trigger
+Human-in-the-Loop,High-Value / VIP Caller Priority Flag,v2 Slide 4,NOT DONE,"CRM schema has customer profiles, but VIP tag doesn't bypass IVR queue yet.",Query VIP flag on incoming caller ID
+Human-in-the-Loop,Agent Screen Pop at Handover,v2 Slide 4,NOT DONE,"No frontend modal displaying live transcript, sentiment, and CRM record to agent.",Build WebSocket agent pop-up UI
+Advanced AI,Persistent Cross-Session Caller Memory,v2 Slide 7,NOT DONE,Session memory resets on call hangup; does not recall previous tickets on new call.,Add caller ID history lookup at call start
+Advanced AI,PII Redaction & Compliance Layer,v2 Slide 7,NOT DONE,"Aadhaar, PAN, and card numbers are stored in raw text in transcripts.",Add regex & NER redaction filter (e.g. XXXX-1234)
+Advanced AI,Continuous Learning & Feedback Loop,v2 Slide 7,NOT DONE,Unresolved/escalated calls are logged but not exported to training datasets.,Create daily fine-tuning export pipeline
+Analytics & Monitoring,Real-Time Supervisor Live Dashboard,v1 Slide 4,NOT DONE,Backend metrics logged to JSON; no real-time web dashboard for active calls.,Build FastAPI SSE/WebSocket live dashboard
+Analytics & Monitoring,Agent Performance & CSAT Reporting,v1 Slide 4,NOT DONE,"Ratings captured in session, but no aggregated reporting interface.",Create CSAT & SLA summary reports
+Video & HA,Call-to-WebRTC Video Escalation,v1 Slide 7,NOT DONE,No browser video room generation or SMS invite link dispatch.,Implement Jitsi / WebRTC room link generator
+Video & HA,Active-Passive PBX High Availability Cluster,v1 Slide 8,NOT DONE,Single Asterisk instance currently running; no Corosync/Pacemaker VIP.,Deploy secondary Asterisk standby node

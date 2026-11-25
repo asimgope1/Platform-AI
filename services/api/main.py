@@ -10,7 +10,7 @@ from platform_core.errors.api_errors import platform_error_handler, create_error
 from api.middleware.request_id import RequestIdMiddleware
 from api.middleware.rate_limit import RateLimitMiddleware
 from api.routes import health, models, chat_completions, embeddings, documents, audio_transcriptions, audio_speech
-from api.routes import ivr_websocket, tenant_databases, sync, complaints
+from api.routes import ivr_websocket, tenant_databases, sync, complaints, knowledge_management
 from services.api.lifespan import lifespan
 
 
@@ -58,14 +58,20 @@ def create_app() -> FastAPI:
     app.include_router(tenant_databases.router)
     app.include_router(sync.router)
     app.include_router(complaints.router)
+    app.include_router(knowledge_management.router)
 
     # Mount Interactive Test UI Console
     static_file = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    knowledge_ui = os.path.join(os.path.dirname(__file__), "static", "knowledge.html")
     if os.path.exists(static_file):
         @app.get("/", response_class=FileResponse, include_in_schema=False)
         @app.get("/ui", response_class=FileResponse, include_in_schema=False)
         async def serve_ui():
             return FileResponse(static_file)
+    if os.path.exists(knowledge_ui):
+        @app.get("/knowledge", response_class=FileResponse, include_in_schema=False)
+        async def serve_knowledge_ui():
+            return FileResponse(knowledge_ui)
 
     return app
 

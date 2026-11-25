@@ -231,9 +231,9 @@ def _select_ivr_session_tools(
 PBX_IGNORE_TRANSCRIPT = os.getenv("PBX_IGNORE_TRANSCRIPT", "true").lower() in ("true", "1", "yes")
 
 BASE_SYSTEM_PROMPT = (
-    "You are a friendly, polite, and warm customer support specialist on a live phone call. "
+    "You are a friendly, polite, and warm citizen service specialist for Jana Seva Kendra on a live phone call. "
     "Guidelines for natural phone conversation:\n"
-    "1. Speak naturally like a real human customer care agent — never say you are an AI, bot, virtual assistant, or language model.\n"
+    "1. Speak naturally like a real human citizen helpline representative — never say you are an AI, bot, virtual assistant, or language model.\n"
     "2. Always respond in conversational {language_name}.\n"
     "3. Keep all responses brief and natural (1 to 2 spoken sentences maximum, under 35 words).\n"
     "4. Be polite, warm, direct, and empathetic.\n"
@@ -393,6 +393,13 @@ class IVRCallSession:
             self._flush_task.cancel()
         self._pcm_buffer.clear()
 
+        # Release any assigned agent extension back to available pool
+        try:
+            from telephony.agent_dispatcher import agent_dispatcher
+            agent_dispatcher.release_call(self.call_uuid)
+        except Exception:
+            pass
+
         # Record end-of-call resolution telemetry before clearing session state
         try:
             self.intel_pipeline.record_call_end(self.conv_state)
@@ -406,6 +413,8 @@ class IVRCallSession:
                     tenant_id=self.tenant_id,
                     call_uuid=self.call_uuid,
                     history=list(self._history),
+                    service_category=self.selected_service,
+                    language=self.selected_language,
                 )
             )
 
@@ -650,15 +659,15 @@ class IVRCallSession:
         and transitions call into AI_CONVERSATION.
         """
         self._cancel_menu_timeout()
-        service_info = SERVICE_BY_KEY.get(self.selected_service or "customer_support", SERVICE_CATEGORIES["1"])
+        service_info = SERVICE_BY_KEY.get(self.selected_service or "citizen_services", SERVICE_CATEGORIES["1"])
         service_name = service_info.get(f"name_{self.selected_language}", service_info.get("name_en", "Customer Support"))
 
         # Configure specialized system prompt for natural human customer conversation
         lang_name = {"en": "English", "hi": "Hindi", "or": "Odia"}.get(self.selected_language, "English")
         service_system_prompt = (
-            f"You are a friendly, polite, and empathetic customer support specialist on a live phone call specializing in {service_name}. "
+            f"You are a friendly, polite, and empathetic citizen service specialist for Jana Seva Kendra on a live phone call specializing in {service_name}. "
             f"Guidelines for natural telephone conversation:\n"
-            f"1. Speak naturally like a real human customer care agent — never say you are an AI, bot, virtual assistant, or language model.\n"
+            f"1. Speak naturally like a real human citizen helpline representative — never say you are an AI, bot, virtual assistant, or language model.\n"
             f"2. Use conversational openings when appropriate (e.g. 'Sure, I can check that for you', 'Don't worry', 'Ji bilkul', 'Aap chinta mat kijiye', 'Samajh gaya', 'Aagnya').\n"
             f"3. Always respond in conversational {lang_name}.\n"
             f"4. Keep responses brief: exactly 1 to 2 spoken sentences (under 35 words) so it sounds natural over the phone.\n"
@@ -670,7 +679,7 @@ class IVRCallSession:
         self._history = [ChatMessage(role="system", content=service_system_prompt)]
         self._language = self.selected_language
 
-        ack_text = get_service_ack_prompt(self.selected_language, self.selected_service or "customer_support")
+        ack_text = get_service_ack_prompt(self.selected_language, self.selected_service or "citizen_services")
         self._history.append(ChatMessage(role="assistant", content=ack_text))
         if self.selected_service and "complaint" in self.selected_service.lower():
             asyncio.create_task(ivr_mini_brain.sync_live_crm_cache(force=True))
@@ -686,14 +695,31 @@ class IVRCallSession:
             self._last_playback_end_ts = self._last_voice_ts
 
     async def _play_transfer_notice(self) -> None:
-        """Announces call transfer to a customer support representative."""
+        """Announces call transfer and dispatches Asterisk transfer event to available non-busy extension."""
         self._cancel_menu_timeout()
+        from telephony.agent_dispatcher import agent_dispatcher
+
+        target_ext = agent_dispatcher.get_available_extension()
+        agent_dispatcher.mark_extension_busy(target_ext, call_uuid=self.call_uuid)
+
         prompt = HUMAN_TRANSFER.get(self.selected_language, HUMAN_TRANSFER["en"])
         try:
             await self._play_prompt(prompt)
-            logger.info(f"[IVR] Transfer announcement played for call uuid={self.call_uuid}.")
+            logger.info(f"[IVR] Transfer announcement played for call uuid={self.call_uuid} -> Ext {target_ext}.")
         except asyncio.CancelledError:
             pass
+
+        # Dispatch WebSocket transfer control event to Asterisk
+        payload = agent_dispatcher.build_transfer_payload(
+            call_uuid=self.call_uuid,
+            target_extension=target_ext,
+            reason="dtmf_keypad_human_transfer",
+            language=self.selected_language,
+            caller_number=self.caller_number,
+            summary=f"DTMF human agent request -> routed to available extension {target_ext}",
+        )
+        self.menu_machine.state = IVRState.ESCALATED
+        await self._emit_transfer_event(payload)
 
     async def _play_invalid_input_and_repeat(self) -> None:
         """Informs caller of invalid selection and replays current menu."""
@@ -1062,9 +1088,21 @@ class IVRCallSession:
                 f"'{mask_sensitive_text(user_text)}'"
             )
 
+            # Acoustic phonetic normalization for telephony mishearings before RAG search & reasoning
+            from providers.chat.ivr_mini_model import ivr_mini_brain
+            norm_user_text = user_text
+            norm_user_text = re.sub(r'(?i)\b(?:madurai|to\s+badraheel|badraheel|subadra|suvadra|suvardha)\s*(?:scheme|team|stream|screen|scene)?\b', 'Subhadra Scheme', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\bsubhadra\s+(?:team|stream|screen|scene)\b', 'Subhadra Scheme', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\b(?:cur|car|cor|kas|kos|cas)[\w]*s?atificat\w*\b', 'caste certificate', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\b(?:cost|cast|coast|cars)\s+certificates?\b', 'caste certificate', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\bcertificat\w*\b', 'certificate', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\bpan\s+cart\b', 'PAN card', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\b(?:water|voter)\s+(?:id|cart|card)\b', 'voter ID card', norm_user_text)
+            norm_user_text = re.sub(r'(?i)\bbonafide\s+cart\b', 'bonafide certificate', norm_user_text)
+
             # Start subtle background waiting chime only for valid utterances entering LLM/RAG
             self._start_processing_sound()
-            await self._run_ai_and_reply(user_text)
+            await self._run_ai_and_reply(norm_user_text)
         finally:
             await self._stop_processing_sound()
 
@@ -1131,12 +1169,9 @@ class IVRCallSession:
             ivr_mini_brain,
         )
 
-        # Check if conversation is actively engaged in complaint flow (state, city, address, problem, or ticket lookup)
+        # Check if conversation is actively engaged in complaint flow (problem description or ticket lookup)
         is_in_complaint_flow = (
-            ivr_mini_brain._was_asked_for_state(self._history)
-            or ivr_mini_brain._was_asked_for_city(self._history)
-            or ivr_mini_brain._was_asked_for_address(self._history)
-            or ivr_mini_brain._was_asked_for_complaint_description(self._history)
+            ivr_mini_brain._was_asked_for_complaint_description(self._history)
             or ivr_mini_brain._was_asked_for_complaint_id(self._history)
             or ivr_mini_brain._is_complaint_register_intent(lower_user)
             or ivr_mini_brain._is_complaint_status_intent(lower_user)
@@ -1188,13 +1223,79 @@ class IVRCallSession:
             logger.info(f"[IVR] 🔊 Voice clarity check: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
             return await self._finalize_and_speak(effective_user, reply_text)
 
-        # C. Representative / Live human agent transfer
-        if any(w in lower_user for w in ["representative", "agent", "executive", "human", "person", "operator", "talk to", "speak to", "एजेंट", "प्रतिनिधि", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"]):
+        # C. Representative / Live Human Agent Transfer (Explicit Request or High Frustration)
+        from telephony.agent_dispatcher import agent_dispatcher
+
+        fused_emo = str(self.conv_state.emotion.get("fused") or "").lower()
+        frustration_keywords = (
+            "fed up", "useless", "waste of time", "ridiculous", "frustrated", "stop repeating",
+            "terrible", "horrible", "screw", "angry", "hate this", "damn", "manager", "connect human",
+            "talk to human", "speak to someone", "representative", "agent", "executive", "person", "operator",
+            "बकवास", "बेकार", "परेशान हो गया", "दिमाग खराब", "पागल बना रहे हो", "गुस्सा", "फालतू",
+            "टाइम खराब", "मज़ाक बना रखा है", "चुप करो", "एजेंट से बात", "कस्टमर केयर", "प्रतिनिधि",
+            "ବେକାର", "ବକବାସ", "ରାଗ ଲାଗୁଛି", "ସମୟ ନଷ୍ଟ", "କିଛି ବୁଝୁନ", "ଅସୁବିଧା ହେଉଛି", "କଣ ମଜାକ କରୁଛ",
+            "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ", "ମଣିଷ ସହ କଥା"
+        )
+        is_explicit_agent = any(
+            w in lower_user for w in [
+                "representative", "agent", "executive", "human", "person", "operator",
+                "talk to", "speak to", "connect me", "connect to", "transfer me",
+                "एजेंट", "प्रतिनिधि", "बात कराओ", "बात करवाओ", "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ", "କଥା କରାଅ"
+            ]
+        )
+        has_explicit_frust_kw = any(kw in lower_user for kw in frustration_keywords)
+        is_appreciation_turn = str(getattr(self.conv_state, "intent", "") or "").lower() == "appreciation"
+        is_high_frustration = (
+            not (is_appreciation_turn and not has_explicit_frust_kw)
+            and (
+                fused_emo in ("frustration", "anger", "angry", "frustrated", "distressed")
+                or has_explicit_frust_kw
+                or (self.conv_state.failed_attempts >= 2 and fused_emo != "neutral")
+            )
+        )
+
+        if is_explicit_agent or is_high_frustration:
             self.conv_state.awaiting_order_id_digits = False
+            self.conv_state.awaiting_complaint_slots = False
             self._order_dtmf_buffer = ""
-            reply_text = AUTONOMOUS_KNOWLEDGE["human_agent"].get(self.selected_language, AUTONOMOUS_KNOWLEDGE["human_agent"]["en"])
-            logger.info(f"[IVR] 👤 Live human agent requested: '{mask_sensitive_text(clean_user)}' -> '{reply_text}'")
-            return await self._finalize_and_speak(effective_user, reply_text)
+
+            target_ext = agent_dispatcher.get_available_extension()
+            agent_dispatcher.mark_extension_busy(target_ext, call_uuid=self.call_uuid)
+
+            reason_str = "sentiment_high_frustration" if is_high_frustration else "caller_requested_agent"
+
+            if is_high_frustration:
+                frust_prompts = {
+                    "en": f"I understand your frustration and I am connecting you to an available representative right now at extension {target_ext}. Please hold the line.",
+                    "hi": f"मैं आपकी परेशानी बिल्कुल समझती हूँ। मैं आपको तुरंत उपलब्ध प्रतिनिधि से जोड़ रही हूँ। कृपया लाइन पर बने रहें।",
+                    "or": f"ମୁଁ ଆପଣଙ୍କ ଅସୁବିଧା ଭଲ ଭାବରେ ବୁଝିପାରୁଛି। ମୁଁ ଆପଣଙ୍କୁ ତୁରନ୍ତ ଉପଲବ୍ଧ ପ୍ରତିନିଧିଙ୍କ ସହିତ ସଂଯୋଗ କରୁଛି। ଦୟାକରି ଲାଇନରେ ରୁହନ୍ତୁ।",
+                }
+                reply_text = frust_prompts.get(self.selected_language, frust_prompts["en"])
+            else:
+                reply_text = AUTONOMOUS_KNOWLEDGE["human_agent"].get(
+                    self.selected_language, AUTONOMOUS_KNOWLEDGE["human_agent"]["en"]
+                )
+
+            logger.info(
+                f"[IVR] 🔀 Initiating live agent transfer to extension '{target_ext}' "
+                f"(reason={reason_str}, emotion={fused_emo}) for call uuid={self.call_uuid}."
+            )
+
+            # First play the empathetic transfer voice announcement to caller
+            await self._finalize_and_speak(effective_user, reply_text)
+
+            # Construct and dispatch Asterisk WebSocket transfer event
+            payload = agent_dispatcher.build_transfer_payload(
+                call_uuid=self.call_uuid,
+                target_extension=target_ext,
+                reason=reason_str,
+                language=self.selected_language,
+                caller_number=self.caller_number,
+                summary=f"Caller routed to non-busy extension {target_ext} due to {reason_str}",
+            )
+            self.menu_machine.state = IVRState.ESCALATED
+            await self._emit_transfer_event(payload)
+            return
 
         # D. Opening greeting on very first turn
         user_turn_count = len([m for m in self._history if m.role == "user"])
@@ -1281,7 +1382,7 @@ class IVRCallSession:
 
         # ── 2. RAG-First Conversational AI (Hybrid Retrieval + Gemma + Validator) ───
         ivr_tenant = self.tenant_id or os.getenv("IVR_TENANT_ID", "879e9bda-8049-4824-9aa0-fc5e9f0012d9")
-        service_info = SERVICE_BY_KEY.get(self.selected_service or "customer_support", SERVICE_CATEGORIES.get("1", {}))
+        service_info = SERVICE_BY_KEY.get(self.selected_service or "citizen_services", SERVICE_CATEGORIES.get("1", {}))
         service_name = service_info.get("name_en", "Customer Support")
         active_emotion = str(self.conv_state.emotion.get("fused") or "neutral").lower()
 
@@ -1463,7 +1564,8 @@ class IVRCallSession:
 
         # Trigger Level 1 / Level 2 knowledge learning after TTS synthesis so embedding never delays audio
         quality_ok = (self.conv_state.transcript_confidence >= 0.55) if self.conv_state.turn_number > 0 else True
-        resolved_flag = (self.conv_state.resolution_status == "resolved") if self.conv_state.turn_number > 0 else None
+        is_grounded = bool(self._last_retrieval_tier in ("strong", "partial"))
+        resolved_flag = True if is_grounded else (self.conv_state.resolution_status == "resolved" if self.conv_state.turn_number > 0 else None)
         if self._last_retrieval_tier == "none" and quality_ok:
             asyncio.create_task(
                 self.knowledge_learner.record_unanswered_query(
@@ -1482,6 +1584,9 @@ class IVRCallSession:
                     reply_text=reply_text,
                     quality_ok=quality_ok,
                     resolved=resolved_flag,
+                    service_category=self.selected_service,
+                    language=self.selected_language,
+                    grounded=is_grounded,
                 )
             )
 
@@ -1697,7 +1802,8 @@ def is_closing_turn(user_text: str, reply_text: str) -> bool:
         "दिन शुभ हो", "शुभ दिन",
         "ଦିନଟି ଶୁଭମୟ",
         "हमारी ग्राहक सेवा में संपर्क करने के लिए आभार",
-        "thank you for contacting our customer support",
+        "thank you for contacting Jana Seva citizen helpline",
+        "thank you for contacting customer support",
         "ଆମ ଗ୍ରାହକ ସେବା ସହିତ ଯୋଗାଯୋଗ କରିଥିବାରୁ କୃତଜ୍ଞତା",
         "you are most welcome",
         "rating us"

@@ -85,7 +85,7 @@ class DecisionManager:
                 return DecisionResult(
                     action=Action.TRANSFER,
                     reason=reason,
-                    policy_prompt=self.transfer_policy.get_initiate_prompt(state.language),
+                    policy_prompt=self.transfer_policy.get_initiate_prompt(state.language, reason=reason),
                     priority=1,
                     metadata={"transfer_payload": handoff.ws_event, "summary": handoff.summary},
                 )

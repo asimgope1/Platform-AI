@@ -1,13 +1,15 @@
 """
 RAG-First Response Generator
 ============================
-Orchestrates the 6-step RAG + Gemma + Grounded Validation voice pipeline:
+Orchestrates the 7-step RAG + Collaborative Gemma + Grounded Validation voice pipeline:
   1. Hybrid retrieval over pgvector + FAQ cache
   2. Retrieval relevance & confidence evaluation
-  3. Dynamic behavioral context construction
-  4. Gemma multi-turn generation via ChatOrchestrator
-  5. Groundedness & script validation via AnswerEvaluator
-  6. Graceful technical fallback (ivr_mini_brain) + metrics recording
+  3. Instant mini-brain RAG synthesis (zero latency)
+  4. Collaborative Gemma enrichment  (Colab GPU, fills gaps when mini-brain is weak)
+  5. Dynamic behavioral context construction
+  6. Gemma multi-turn generation via ChatOrchestrator
+  7. Groundedness & script validation via AnswerEvaluator
+  8. Graceful technical fallback (ivr_mini_brain) + metrics recording
 """
 from __future__ import annotations
 
@@ -54,6 +56,65 @@ def _extract_tool_names(tools: Optional[List[Dict[str, Any]]]) -> List[str]:
         if isinstance(fn, dict) and fn.get("name"):
             names.append(str(fn["name"]))
     return names
+
+
+async def _collaborative_enrich(
+    mini_reply: str,
+    user_query: str,
+    rag_context: str,
+    language: str,
+    orchestrator: ChatOrchestrator,
+    timeout_seconds: float = 1.5,
+) -> str:
+    """
+    Collaborative Gemma enrichment pass.
+    Sends the mini-brain draft + RAG context to Colab Gemma GPU to fix gaps,
+    expand brevity, correct language tone, and ensure completeness.
+    Falls back to the original mini_reply on any error.
+    """
+    lang_instruction = {
+        "hi": "Reply in Hindi (Devanagari). Telephone-style: short, clear, friendly.",
+        "or": "Reply in Odia (ଓଡ଼ିଆ). Telephone-style: short, clear, friendly.",
+        "en": "Reply in English. Telephone-style: short, clear, friendly.",
+    }.get(language, "Reply in English. Telephone-style: short, clear, friendly.")
+
+    system_msg = (
+        "You are a collaborative citizen services AI helping a mini-RAG model improve its answers. "
+        "Given the user question, the RAG knowledge context, and the mini-model's draft answer, "
+        "produce one improved, complete, accurate answer. "
+        f"{lang_instruction} "
+        "Max 40 words. No prefixes like 'Answer:'. Do not make up information not in the RAG context."
+    )
+    user_content = (
+        f"User question: {user_query}\n\n"
+        f"RAG knowledge:\n{rag_context[:500] if rag_context else 'No context available.'}\n\n"
+        f"Mini-model draft: {mini_reply}\n\n"
+        "Improved answer:"
+    )
+
+    from platform_core.contracts.requests import ChatMessage as CM, NormalizedChatRequest as NCR
+    collab_req = NCR(
+        model_alias="gemma-gpu",   # Colab GPU path
+        messages=[
+            CM(role="system", content=system_msg),
+            CM(role="user",   content=user_content),
+        ],
+        stream=False,
+        max_tokens=60,
+        temperature=0.2,
+    )
+    try:
+        res = await asyncio.wait_for(
+            orchestrator.execute(collab_req, context=None, intelligence_context=None),
+            timeout=timeout_seconds,
+        )
+        enriched = (res.choices[0].message.content or "").strip()
+        if enriched and len(enriched) > 10:
+            logger.info(f"[IVR] 🤝 Collaborative Gemma enrichment applied ({len(enriched)} chars).")
+            return enriched
+    except Exception as collab_err:
+        logger.debug(f"[IVR] Collaborative enrichment skipped ({collab_err}); using mini-brain reply.")
+    return mini_reply
 
 
 def _needs_live_action_fallback(user_message: str, service_category: Optional[str]) -> bool:
@@ -117,9 +178,30 @@ class RAGFirstResponseGenerator:
     ) -> GeneratedResponse:
         t_start = time.perf_counter()
 
+        # Context-expand follow-up questions before RAG retrieval using dialogue history
+        search_query = user_message
+        if conversation_history and len(conversation_history) >= 2:
+            prev_turns = " ".join(
+                str(getattr(m, "content", "") or "") for m in conversation_history[-4:]
+            ).lower()
+            lower_msg = (user_message or "").lower()
+            if any(w in lower_msg for w in ["apply", "kaise apply", "kahan", "process", "procedure", "how to", "eligibility", "document", "documents", "money", "kitna"]):
+                if ("caste" in prev_turns or "jati" in prev_turns) and "caste" not in lower_msg:
+                    search_query = f"{user_message} caste certificate"
+                elif ("subhadra" in prev_turns or "scheme" in prev_turns or "yojana" in prev_turns) and "subhadra" not in lower_msg:
+                    search_query = f"{user_message} subhadra scheme"
+                elif ("income" in prev_turns or "aay" in prev_turns) and "income" not in lower_msg:
+                    search_query = f"{user_message} income certificate"
+                elif ("residence" in prev_turns or "niwas" in prev_turns) and "residence" not in lower_msg:
+                    search_query = f"{user_message} residence certificate"
+                elif ("pan" in prev_turns) and "pan" not in lower_msg:
+                    search_query = f"{user_message} pan card"
+                elif ("voter" in prev_turns) and "voter" not in lower_msg:
+                    search_query = f"{user_message} voter id card"
+
         # 1 & 2. Retrieve relevant knowledge and evaluate retrieval confidence
         retrieved: RetrievedContext = await self.retrieval_service.search(
-            query=user_message,
+            query=search_query,
             tenant_id=tenant_id,
             top_k=4,
             preferred_category=service_category,
@@ -129,7 +211,7 @@ class RAGFirstResponseGenerator:
         if tool_output:
             rag_context_str = f"{rag_context_str}\n\nVerified Backend Tool Result:\n{tool_output}".strip()
 
-        # If knowledge exists in RAG or can be answered autonomously by the mini-model (complaint IDs, orders, banking FAQs),
+        # If knowledge exists in RAG or can be answered autonomously by the mini-model (complaint IDs, citizen services FAQs),
         # synthesize instantly with zero latency, without stalling on slow CPU LLMs.
         rag_first_enabled = os.getenv("IVR_RAG_FIRST_INSTANT", "true").lower() in ("1", "true", "yes")
         action_intent = _needs_live_action_fallback(user_message, service_category)
@@ -148,6 +230,35 @@ class RAGFirstResponseGenerator:
             generic_fallback = AUTONOMOUS_KNOWLEDGE["fallback"].get(language, AUTONOMOUS_KNOWLEDGE["fallback"]["en"])
             # Synthesize instantly if mini-brain answered with knowledge/catalog/chunk or if no tools to call
             if rag_reply and (rag_reply != generic_fallback or retrieved.chunk_texts or not tools):
+                # ── Collaborative Gemma Confirmation & Enrichment ────────────────
+                # Always consult Colab Gemma GPU when RAG chunks are retrieved
+                # (unless IVR_COLLAB_ENRICH_ENABLED=false) so Gemma confirms that
+                # the mini-brain draft accurately answers the caller from RAG, or
+                # refines it if needed. Falls back to mini-brain on timeout/error.
+                _COLLAB_THRESHOLD = int(os.getenv("IVR_COLLAB_ENRICH_THRESHOLD", "35"))
+                _COLLAB_ENABLED   = os.getenv("IVR_COLLAB_ENRICH_ENABLED", "true").lower() in ("1", "true", "yes")
+                _COLLAB_ALWAYS    = os.getenv("IVR_COLLAB_CONFIRM_RAG", "true").lower() in ("1", "true", "yes")
+                reply_is_weak = len(rag_reply.strip()) < _COLLAB_THRESHOLD
+                rich_rag_available = bool(len(retrieved.chunk_texts) >= 1 and rag_context_str.strip())
+                is_strong_instant = (
+                    (retrieved.cache_hit or retrieved.evaluation.tier == RetrievalConfidenceTier.STRONG)
+                    and len(rag_reply.strip()) >= 40
+                    and rag_reply != generic_fallback
+                )
+                if _COLLAB_ENABLED and rich_rag_available and not is_strong_instant and (_COLLAB_ALWAYS or reply_is_weak or rag_reply == generic_fallback):
+                    logger.info(
+                        f"[IVR] 🤝 Consulting Gemma to confirm/refine RAG reply "
+                        f"(reply_len={len(rag_reply)}, weak={reply_is_weak}, chunks={len(retrieved.chunk_texts)})."
+                    )
+                    rag_reply = await _collaborative_enrich(
+                        mini_reply=rag_reply,
+                        user_query=user_message,
+                        rag_context=rag_context_str,
+                        language=language,
+                        orchestrator=orchestrator,
+                        timeout_seconds=2.2,
+                    )
+                # ─────────────────────────────────────────────────────────────────
                 logger.info(
                     f"[IVR] ⚡ Instant RAG Synthesis ({len(retrieved.chunk_texts)} chunks, tier={retrieved.evaluation.tier.value}) "
                     f"for query: '{user_message[:60]}'"
@@ -161,7 +272,7 @@ class RAGFirstResponseGenerator:
                 latency_ms = round((time.perf_counter() - t_start) * 1000.0, 2)
                 return GeneratedResponse(
                     text=formatted_reply,
-                    source="instant_rag",
+                    source="instant_rag_collab" if _COLLAB_ENABLED else "instant_rag",
                     retrieval_eval=retrieved.evaluation,
                     grounded=True,
                     used_fallback=False,
@@ -279,16 +390,16 @@ class RAGFirstResponseGenerator:
                 source = "tool_unavailable_fallback"
                 unavailable_msgs = {
                     "en": (
-                        "I'm sorry, our live order and account lookup system is temporarily unavailable right now. "
-                        "Please try again in a moment, or press 0 to speak with a support agent."
+                        "I'm sorry, our citizen services verification system is temporarily unavailable right now. "
+                        "Please try again in a moment, or press 9 to speak with a representative."
                     ),
                     "hi": (
-                        "माफ़ कीजिए, हमारा लाइव ऑर्डर और खाता विवरण सिस्टम अभी अस्थायी रूप से उपलब्ध नहीं है। "
-                        "कृपया थोड़ी देर बाद प्रयास करें, या सहायता एजेंट से बात करने के लिए 0 दबाएं।"
+                        "माफ़ कीजिए, हमारा नागरिक सेवा सत्यापन सिस्टम अभी अस्थायी रूप से अनुपलब्ध है। "
+                        "कृपया थोड़ी देर बाद प्रयास करें, या प्रतिनिधि से बात करने के लिए 9 दबाएं।"
                     ),
                     "or": (
-                        "କ୍ଷମା କରିବେ, ଆମର ଲାଇଭ୍ ଅର୍ଡର ଏବଂ ଆକାଉଣ୍ଟ ତଥ୍ୟ ସିଷ୍ଟମ୍ ଏବେ ଅସ୍ଥାୟୀ ଭାବରେ ଉପଲବ୍ଧ ନାହିଁ। "
-                        "ଦୟାକରି କିଛି ସମୟ ପରେ ଚେଷ୍ଟା କରନ୍ତୁ, କିମ୍ବା ସହାୟତା ଏଜେଣ୍ଟଙ୍କ ସହିତ କଥା ହେବାକୁ 0 ଦବାନ୍ତୁ।"
+                        "କ୍ଷମା କରିବେ, ଆମର ନାଗରିକ ସେବା ସତ୍ୟାପନ ସିଷ୍ଟମ୍ ଏବେ ଅସ୍ଥାୟୀ ଭାବରେ ଉପଲବ୍ଧ ନାହିଁ। "
+                        "ଦୟାକରି କିଛି ସମୟ ପରେ ଚେଷ୍ଟା କରନ୍ତୁ, କିମ୍ବା ପ୍ରତିନିଧିଙ୍କ ସହ କଥା ହେବାକୁ 9 ଦବାନ୍ତୁ।"
                     ),
                 }
                 reply_text = ivr_mini_brain.apply_sentiment_tone(

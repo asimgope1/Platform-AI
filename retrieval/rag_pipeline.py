@@ -20,12 +20,26 @@ class RAGPipeline:
         self,
         tenant_id: str,
         query: str,
-        top_k: int = 3,
+        top_k: int = 4,
         min_similarity_score: float = 0.30,
     ) -> str:
-        # Retrieve candidate chunks (fetch slightly more if reranking)
-        fetch_k = top_k * 2 if self.reranker else top_k
-        results = await self.search_service.search(tenant_id=tenant_id, query=query, top_k=fetch_k)
+        import re
+        from services.knowledge.retrieval_service import HybridRetrievalService
+
+        # Acoustic phonetic normalization before vector search
+        norm_q = query or ""
+        norm_q = re.sub(r'(?i)\b(?:madurai|to\s+badraheel|badraheel|subadra|suvadra|suvardha)\s*(?:scheme|team|stream|screen|scene)?\b', 'Subhadra Scheme', norm_q)
+        norm_q = re.sub(r'(?i)\bsubhadra\s+(?:team|stream|screen|scene)\b', 'Subhadra Scheme', norm_q)
+        norm_q = re.sub(r'(?i)\b(?:cur|car|cor|kas|kos|cas)[\w]*s?atificat\w*\b', 'caste certificate', norm_q)
+        norm_q = re.sub(r'(?i)\b(?:cost|cast|coast|cars)\s+certificates?\b', 'caste certificate', norm_q)
+        norm_q = re.sub(r'(?i)\bcertificat\w*\b', 'certificate', norm_q)
+
+        augmented_query = HybridRetrievalService._augment_cross_lingual_query(norm_q)
+        results = await self.search_service.hybrid_search(
+            tenant_id=tenant_id,
+            query=augmented_query,
+            top_k=top_k,
+        )
         if not results:
             return ""
 
@@ -36,22 +50,8 @@ class RAGPipeline:
 
         chunks = [chunk for chunk, score in relevant_results]
 
-        # Rerank if reranker is available
-        if self.reranker and len(chunks) > 1:
-            try:
-                reranked = await self.reranker.rerank(
-                    query=query,
-                    documents=[c.content for c in chunks],
-                    top_n=top_k,
-                )
-                selected_chunks = [chunks[item["index"]] for item in reranked]
-            except Exception:
-                selected_chunks = chunks[:top_k]
-        else:
-            selected_chunks = chunks[:top_k]
-
         context_blocks = []
-        for idx, chunk in enumerate(selected_chunks, start=1):
+        for idx, chunk in enumerate(chunks[:top_k], start=1):
             context_blocks.append(f"[Source {idx}]: {chunk.content}")
 
         header = "--- BEGIN UNTRUSTED RETRIEVED CONTEXT ---"

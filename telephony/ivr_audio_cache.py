@@ -92,7 +92,7 @@ async def render_composite_multilingual_welcome(adapter) -> bytes:
     from telephony.ivr_session import _tts_output_to_pcm8k
     from telephony.pcm_utils import crossfade_concat_pcm
 
-    en_intro = "Namaste! Thank you for calling customer support. Please choose your preferred language to continue. Press one for English."
+    en_intro = "Namaste! Thank you for calling Jana Seva Citizen Helpline. Please choose your preferred language to continue. Press one for English."
     hi_part = "हिंदी के लिए दो दबाएं।"
     or_part = "ଓଡ଼ିଆ ପାଇଁ ତିନି ଦବାନ୍ତୁ।"
     en_outro = "To repeat this menu, press zero."

@@ -25,53 +25,53 @@ SUPPORTED_LANGUAGES: Dict[str, Dict[str, str]] = {
 
 SERVICE_CATEGORIES: Dict[str, Dict[str, str]] = {
     "1": {
-        "key": "customer_support",
-        "name_en": "Customer Support",
-        "name_hi": "ग्राहक सेवा (Customer Support)",
-        "name_or": "ଗ୍ରାହକ ସେବା (Customer Support)",
-        "rag_scope": "customer_support",
+        "key": "citizen_services",
+        "name_en": "Citizen Services & Schemes",
+        "name_hi": "नागरिक सेवाएं और योजनाएं (Citizen Services)",
+        "name_or": "ନାଗରିକ ସେବା ଓ ଯୋଜନା (Citizen Services)",
+        "rag_scope": "citizen_services",
     },
     "2": {
         "key": "complaint",
-        "name_en": "Register a Complaint",
-        "name_hi": "शिकायत पंजीकरण (Complaint)",
-        "name_or": "ଅଭିଯୋଗ ପଞ୍ଜୀକରଣ (Complaint)",
+        "name_en": "Complaint Status and Registration",
+        "name_hi": "शिकायत स्थिति और पंजीकरण (Complaint)",
+        "name_or": "ଅଭିଯୋଗ ସ୍ଥିତି ଏବଂ ପଞ୍ଜୀକରଣ (Complaint)",
         "rag_scope": "complaint",
     },
     "3": {
-        "key": "upi_payment",
-        "name_en": "UPI & Payment Issues",
-        "name_hi": "यूपीआई और भुगतान समस्याएं (UPI & Payments)",
-        "name_or": "ୟୁପିଆଇ ଏବଂ ପେମେଣ୍ଟ (UPI & Payments)",
-        "rag_scope": "upi_payment",
+        "key": "subhadra_scheme",
+        "name_en": "Subhadra Scheme Assistance",
+        "name_hi": "सुभद्रा योजना सहायता (Subhadra Scheme)",
+        "name_or": "ସୁଭଦ୍ରା ଯୋଜନା ସହାୟତା (Subhadra Scheme)",
+        "rag_scope": "subhadra_scheme",
     },
     "4": {
-        "key": "account_services",
-        "name_en": "Account & Banking Services",
-        "name_hi": "खाता और बैंकिंग सेवाएं (Account Services)",
-        "name_or": "ଖାତା ଏବଂ ବ୍ୟାଙ୍କିଙ୍ଗ ସେବା (Account Services)",
-        "rag_scope": "account_services",
+        "key": "certificates",
+        "name_en": "Certificate Services (Caste, Income, Residence)",
+        "name_hi": "प्रमाण पत्र सेवाएं (जाति, आय, निवास)",
+        "name_or": "ପ୍ରମାଣପତ୍ର ସେବା (ଜାତି, ଆୟ, ବାସସ୍ଥାନ)",
+        "rag_scope": "certificates",
     },
     "5": {
-        "key": "card_services",
-        "name_en": "Card-Related Issues",
-        "name_hi": "कार्ड संबंधित समस्याएं (Card Services)",
-        "name_or": "କାର୍ଡ ସମ୍ବନ୍ଧୀୟ ସମସ୍ୟା (Card Services)",
-        "rag_scope": "card_services",
+        "key": "identity_cards",
+        "name_en": "Identity Cards (Aadhaar, PAN, Voter ID)",
+        "name_hi": "पहचान पत्र (आधार, पैन, वोटर आईडी)",
+        "name_or": "ପରିଚୟ ପତ୍ର (ଆଧାର, ପ୍ୟାନ୍, ଭୋଟର ଆଇଡି)",
+        "rag_scope": "identity_cards",
     },
     "6": {
-        "key": "loans_emi",
-        "name_en": "Loan & EMI Queries",
-        "name_hi": "ऋण और ईएमआई पूछताछ (Loans & EMI)",
-        "name_or": "ଋଣ ଏବଂ ଇଏମଆଇ (Loans & EMI)",
-        "rag_scope": "loans_emi",
+        "key": "legal_documents",
+        "name_en": "Legal Documents & Affidavits",
+        "name_hi": "कानूनी दस्तावेज और शपथ पत्र (Legal Documents)",
+        "name_or": "ଆଇନଗତ ଦଲିଲ ଏବଂ ସତ୍ୟପାଠ (Legal Documents)",
+        "rag_scope": "legal_documents",
     },
     "7": {
-        "key": "other_enquiries",
-        "name_en": "Other Enquiries",
-        "name_hi": "अन्य पूछताछ (Other Enquiries)",
-        "name_or": "ଅନ୍ୟାନ୍ୟ ସୂଚନା (Other Enquiries)",
-        "rag_scope": "other_enquiries",
+        "key": "kendra_helpdesk",
+        "name_en": "Jana Seva Kendra Enquiries & Timings",
+        "name_hi": "जन सेवा केंद्र पूछताछ और समय (Kendra Helpdesk)",
+        "name_or": "ଜନ ସେବା କେନ୍ଦ୍ର ସୂଚନା (Kendra Helpdesk)",
+        "rag_scope": "kendra_helpdesk",
     },
 }
 
@@ -153,8 +153,8 @@ class IVRMenuStateMachine:
             # Invalid selection
             self.retries += 1
             if self.retries >= MAX_MENU_RETRIES:
-                # Default to general customer support
-                self.service_key = "customer_support"
+                # Default to general citizen services
+                self.service_key = "citizen_services"
                 self.service_info = SERVICE_CATEGORIES["1"]
                 self.state = IVRState.AI_CONVERSATION
                 self.retries = 0

@@ -31,11 +31,44 @@ class EscalationRules:
         self.low_satisfaction_threshold = low_satisfaction_threshold
 
     def evaluate(self, state: ConversationState) -> EscalationEvaluation:
+        # 1. Explicit Agent Transfer Requests
         if state.explicit_agent_request:
             return EscalationEvaluation(
                 should_transfer_immediately=True,
                 should_offer_transfer=False,
                 reason="explicit_agent_request",
+            )
+
+        # 2. High Frustration / Distress / Anger Sentiment Detection
+        fused_emo = str(state.emotion.get("fused") or "").lower()
+        emo_trend = str(state.emotion.get("trend") or "").lower()
+        last_text = str(state.last_masked_transcript or "").lower()
+
+        frustration_keywords = (
+            "fed up", "useless", "waste of time", "ridiculous", "frustrated", "stop repeating",
+            "terrible", "horrible", "screw", "angry", "hate this", "damn", "manager", "connect human",
+            "talk to human", "speak to someone", "representative", "agent",
+            "बकवास", "बेकार", "परेशान हो गया", "दिमाग खराब", "पागल बना रहे हो", "गुस्सा", "फालतू",
+            "टाइम खराब", "मज़ाक बना रखा है", "चुप करो", "एजेंट से बात", "कस्टमर केयर",
+            "ବେକାର", "ବକବାସ", "ରାଗ ଲାଗୁଛି", "ସମୟ ନଷ୍ଟ", "କିଛି ବୁଝୁନ", "ଅସୁବିଧା ହେଉଛି", "କଣ ମଜାକ କରୁଛ",
+            "ପ୍ରତିନିଧି", "ଏଜେଣ୍ଟ"
+        )
+        has_explicit_frustration_kw = any(kw in last_text for kw in frustration_keywords)
+        is_appreciation = str(getattr(state, "intent", "") or "").lower() == "appreciation"
+        is_high_frustration = (
+            not (is_appreciation and not has_explicit_frustration_kw)
+            and (
+                fused_emo in ("frustration", "anger", "angry", "frustrated", "distressed")
+                or has_explicit_frustration_kw
+                or (emo_trend == "worsening" and state.failed_attempts >= 1)
+            )
+        )
+
+        if is_high_frustration:
+            return EscalationEvaluation(
+                should_transfer_immediately=True,
+                should_offer_transfer=False,
+                reason="sentiment_high_frustration",
             )
 
         if state.requires_mandatory_escalation:

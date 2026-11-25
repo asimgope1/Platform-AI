@@ -69,10 +69,12 @@ model_aliases:
 
   gemma-gpu:
     provider: colab_gemma_gpu
-    model: google/gemma-4-E2B-it
-    description: "Live Google Gemma 4 E2B on T4 GPU (Cloud runtime)"
+    model: gemma4:latest
+    description: "Live Google Gemma 4 on T4 GPU via Colab Ollama tunnel"
     capabilities:
       - chat
+      - streaming
+      - tool_calling
 
   local-gemma:
     provider: local_transformers
@@ -120,7 +122,7 @@ providers:
     type: openai_compatible
     base_url_env: COLAB_GEMMA_BASE_URL
     api_key_env: COLAB_GEMMA_API_KEY
-    base_url: https://chronic-myself-pdf-brought.trycloudflare.com/v1
+    base_url: http://192.168.1.101:11434/v1
     api_key: _BQxQAgEeLAPEke1hKhotBfGeQItq79Z
     timeout_seconds: 4.0
 

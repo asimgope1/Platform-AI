@@ -20,9 +20,15 @@ OFFER_TRANSFER_PROMPTS = {
     "or": "ମୁଁ ବୁଝିପାରୁଛି ଆପଣ ଅସୁବିଧାରେ ଅଛନ୍ତି। ଆପଣ ଚାହାଁନ୍ତି କି ମୁଁ ଆପଣଙ୍କୁ ଆମ ପ୍ରତିନିଧିଙ୍କ ସହିତ ସଂଯୋଗ କରିବି?",
 }
 
+FRUSTRATION_TRANSFER_PROMPTS = {
+    "en": "I understand your frustration and I am connecting you to an available representative right now. Please hold the line.",
+    "hi": "मैं आपकी परेशानी बिल्कुल समझती हूँ। मैं आपको तुरंत उपलब्ध प्रतिनिधि से जोड़ रही हूँ। कृपया लाइन पर बने रहें।",
+    "or": "ମୁଁ ଆପଣଙ୍କ ଅସୁବିଧା ଭଲ ଭାବରେ ବୁଝିପାରୁଛି। ମୁଁ ଆପଣଙ୍କୁ ତୁରନ୍ତ ଉପଲବ୍ଧ ପ୍ରତିନିଧିଙ୍କ ସହିତ ସଂଯୋଗ କରୁଛି। ଦୟାକରି ଲାଇନରେ ରୁହନ୍ତୁ।",
+}
+
 INITIATE_TRANSFER_PROMPTS = {
-    "en": "Connecting you with a live customer care representative right away. Please hold the line.",
-    "hi": "मैं आपको तुरंत हमारे ग्राहक सेवा प्रतिनिधि से कनेक्ट कर रही हूँ। कृपया लाइन पर बने रहें।",
+    "en": "Connecting you with an available representative right away. Please hold the line.",
+    "hi": "मैं आपको तुरंत हमारे उपलब्ध प्रतिनिधि से कनेक्ट कर रही हूँ। कृपया लाइन पर बने रहें।",
     "or": "ମୁଁ ଆପଣଙ୍କୁ ତୁରନ୍ତ ଆମ ପ୍ରତିନିଧିଙ୍କ ସହିତ ସଂଯୋଗ କରୁଛି। ଦୟାକରି ଲାଇନରେ ରୁହନ୍ତୁ।",
 }
 
@@ -53,29 +59,36 @@ class TransferPolicy:
     def get_offer_prompt(self, language: str) -> str:
         return OFFER_TRANSFER_PROMPTS.get(language, OFFER_TRANSFER_PROMPTS["en"])
 
-    def get_initiate_prompt(self, language: str) -> str:
+    def get_initiate_prompt(self, language: str, reason: str = "") -> str:
+        if "frustration" in (reason or "").lower():
+            return FRUSTRATION_TRANSFER_PROMPTS.get(language, FRUSTRATION_TRANSFER_PROMPTS["en"])
         return INITIATE_TRANSFER_PROMPTS.get(language, INITIATE_TRANSFER_PROMPTS["en"])
 
     def get_unavailable_prompt(self, language: str) -> str:
         return TRANSFER_UNAVAILABLE_PROMPTS.get(language, TRANSFER_UNAVAILABLE_PROMPTS["en"])
 
     def build_handoff_payload(self, state: ConversationState, reason: str) -> TransferPayload:
-        intent = state.intent or state.service_category or "general_support"
+        from telephony.agent_dispatcher import agent_dispatcher
+
+        target_ext = agent_dispatcher.get_available_extension()
+        agent_dispatcher.mark_extension_busy(target_ext, call_uuid=state.call_uuid)
+
+        intent = state.intent or state.service_category or "citizen_services"
         emo = state.emotion.get("fused", "neutral")
         last_q = state.last_masked_transcript or "caller inquiry"
         summary = (
-            f"Intent={intent} | Lang={state.language} | Emotion={emo} ({state.emotion.get('trend', 'stable')}) "
+            f"TransferToExt={target_ext} | Intent={intent} | Lang={state.language} | Emotion={emo} ({state.emotion.get('trend', 'stable')}) "
             f"| FailedAttempts={state.failed_attempts} | Reason={reason} | LastQuery='{last_q[:120]}'"
         )
-        ws_event = {
-            "event": "transfer",
-            "uuid": state.call_uuid,
-            "reason": reason,
-            "language": state.language,
-            "intent": intent,
-            "emotion": emo,
-            "summary": summary,
-        }
+
+        ws_event = agent_dispatcher.build_transfer_payload(
+            call_uuid=state.call_uuid,
+            target_extension=target_ext,
+            reason=reason,
+            language=state.language,
+            caller_number=getattr(state, "caller_number", "unknown"),
+            summary=summary,
+        )
         return TransferPayload(
             call_uuid=state.call_uuid,
             reason=reason,

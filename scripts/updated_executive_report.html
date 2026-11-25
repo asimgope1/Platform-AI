@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Com-One Enterprise AI Platform — Executive Status & Support Framework Report</title>
+<style>
+  @page {
+    size: A4;
+    margin: 14mm 16mm 14mm 16mm;
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 7.5pt;
+      color: #64748b;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    line-height: 1.45;
+    font-size: 8.8pt;
+    margin: 0;
+    padding: 0;
+  }
+  .doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+  .doc-brand {
+    font-size: 16pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+  }
+  .doc-brand span {
+    color: #2563eb;
+  }
+  .doc-type {
+    font-size: 8pt;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 2px;
+  }
+  .doc-meta-table {
+    font-size: 8pt;
+    color: #475569;
+    text-align: right;
+  }
+  .doc-meta-table td {
+    padding: 1px 0;
+  }
+  .doc-meta-table td strong {
+    color: #0f172a;
+  }
+
+  .kpi-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .kpi-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 9px 12px;
+  }
+  .kpi-label {
+    font-size: 7pt;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+  }
+  .kpi-value {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+  .kpi-subtext {
+    font-size: 7pt;
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  .section-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 3px;
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    color: #334155;
+    text-align: justify;
+  }
+
+  .compliance-box {
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+    border-left: 3px solid #16a34a;
+    padding: 8px 12px;
+    margin: 10px 0 12px 0;
+    font-size: 8pt;
+    color: #14532d;
+    line-height: 1.4;
+  }
+
+  .three-col-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .grid-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 9px 11px;
+  }
+  .grid-card strong {
+    font-size: 8.5pt;
+    color: #1e1b4b;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .grid-card p {
+    font-size: 7.5pt;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 12px 0;
+    font-size: 7.5pt;
+  }
+  th, td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-top: 1px solid #cbd5e1;
+    border-bottom: 1px solid #cbd5e1;
+  }
+  tr:nth-child(even) td {
+    background: #fcfcfd;
+  }
+
+  .status-badge {
+    font-size: 6.8pt;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-block;
+  }
+  .status-operational {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+  .status-progress {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .callout-box {
+    background: #f8fafc;
+    border-left: 3px solid #2563eb;
+    padding: 8px 12px;
+    margin: 10px 0 12px 0;
+    font-size: 8pt;
+    color: #1e293b;
+  }
+
+  .footer-signature {
+    margin-top: 18px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    color: #64748b;
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div>
+    <div class="doc-brand">COM-ONE <span>PLATFORM</span></div>
+    <div class="doc-type">Executive Status &amp; Support Framework · Installation 1</div>
+  </div>
+  <table class="doc-meta-table">
+    <tr><td><strong>Document Ref:</strong></td><td>COP-ST-2026-11-V2</td></tr>
+    <tr><td><strong>Deployment Target:</strong></td><td>Installation 1 (100% On-Premise)</td></tr>
+    <tr><td><strong>Effective Date:</strong></td><td>November 24, 2026</td></tr>
+    <tr><td><strong>Security Classification:</strong></td><td>Confidential / Client Review</td></tr>
+  </table>
+</div>
+
+<div class="kpi-container">
+  <div class="kpi-card">
+    <div class="kpi-label">Telephony Status</div>
+    <div class="kpi-value">Live Ext 8000</div>
+    <div class="kpi-subtext">99.9% PBX Uptime</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Response Latency</div>
+    <div class="kpi-value">&lt; 1.0s</div>
+    <div class="kpi-subtext">Sub-second policy resolution</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Data Sovereignty</div>
+    <div class="kpi-value">100% On-Site</div>
+    <div class="kpi-subtext">Zero External Cloud Access</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Incident Intake</div>
+    <div class="kpi-value">Autonomous</div>
+    <div class="kpi-subtext">Direct PostgreSQL writes</div>
+  </div>
+</div>
+
+<div class="compliance-box">
+  <strong>Data Privacy &amp; On-Premise Security:</strong> Installation 1 is fully deployed strictly within the client's internal infrastructure. Speech transcription, neural voice synthesis, vector knowledge retrieval, and CRM database operations execute locally. No customer audio, transcripts, or records traverse external networks.
+</div>
+
+<div class="section-title">1. Current Operational Status (Phase 1 Baseline)</div>
+<p>
+  <strong>Installation 1</strong> is live and actively answering incoming phone calls on <strong>Extension 8000</strong> via Asterisk PBX. 
+  The autonomous voice agent picks up inbound calls instantly, delivers sub-second answers to policy inquiries, guides callers through structured multi-turn complaint intake with Indian geographic normalization, and synchronizes incident records directly into the local PostgreSQL CRM database. 
+  A 120-second background heartbeat daemon ensures zero cold-start delay across speech, reasoning, and database components.
+</p>
+
+<div class="section-title">2. Support &amp; Maintenance Methodology (Installation 1)</div>
+<div class="three-col-grid">
+  <div class="grid-card">
+    <strong>A. Continual Model Optimization</strong>
+    <p>Captures low-confidence speech turns locally. Retrains local acoustic and intent decoders with real phonetic speech patterns to adapt to regional accents.</p>
+  </div>
+  <div class="grid-card">
+    <strong>B. RAG Knowledge &amp; Vector Tuning</strong>
+    <p>Calibrates semantic distance boundaries in PostgreSQL pgvector. Regularly ingests updated institutional policies with zero hallucination.</p>
+  </div>
+  <div class="grid-card">
+    <strong>C. Sentiment &amp; Frustration Scoring</strong>
+    <p>Multi-turn acoustic and lexical sentiment tracking. Detects customer agitation early to trigger escalation protocols before frustration peaks.</p>
+  </div>
+</div>
+
+<div class="section-title">3. Operational Challenges &amp; Strategic Mitigations</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Challenge Domain</th>
+      <th style="width: 35%;">Operational Risk / Real-World Friction</th>
+      <th style="width: 40%;">Implemented Mitigation Strategy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>On-Premise Compute</strong></td>
+      <td>Local hardware capacity constraints can increase latency under high call concurrency.</td>
+      <td><strong>Dual-Brain Architecture:</strong> Fast-path mini-model handles 80% of calls in &lt;100ms; heavy model quantized for sub-second execution.</td>
+    </tr>
+    <tr>
+      <td><strong>8kHz Telephony Audio</strong></td>
+      <td>Bandwidth limits and background noise degrade speech accuracy on Indian names/cities.</td>
+      <td><strong>Geographic Normalization &amp; VAD:</strong> Pre-loaded dictionary covering 28 States &amp; 50+ Cities; noise-conditioned audio thresholding.</td>
+    </tr>
+    <tr>
+      <td><strong>Sentiment False-Positives</strong></td>
+      <td>Culturally expressive or loud speech can be misclassified as angry, causing premature transfer.</td>
+      <td><strong>Multi-Turn Moving Average:</strong> Requires consecutive negative sentiment turns and semantic confirmation before escalating.</td>
+    </tr>
+    <tr>
+      <td><strong>Policy &amp; Knowledge Drift</strong></td>
+      <td>Banking policies and fee structures change frequently, risking outdated AI responses.</td>
+      <td><strong>Versioned Single-Source RAG:</strong> Structured knowledge tagging with strict hierarchical precedence and effective date stamping.</td>
+    </tr>
+    <tr>
+      <td><strong>Zero-Downtime Patching</strong></td>
+      <td>Applying model or code patches on active PBX servers risks dropping in-flight calls.</td>
+      <td><strong>Graceful Worker Reloads:</strong> Blue/green rolling process reloads ensure active calls on Extension 8000 complete uninterrupted.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<div class="section-title">4. Deliverables Verification &amp; Feature Matrix</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 20%;">Platform Domain</th>
+      <th style="width: 25%;">Capability / Deliverable</th>
+      <th style="width: 40%;">Operational Specification</th>
+      <th style="width: 15%;">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Telephony Core</strong></td>
+      <td>Inbound SIP Ingestion</td>
+      <td>Active WebSocket telephony bridge on Extension 8000 via Asterisk PBX</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Speech Processing</strong></td>
+      <td>Streaming Speech Recognition</td>
+      <td>Noise-filtered local speech-to-text pipeline running in memory</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Conversational AI</strong></td>
+      <td>Structured Slot-Filling</td>
+      <td>Sequential multi-turn capture: State ➔ City ➔ Address ➔ Description</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Geographic NLU</strong></td>
+      <td>Entity Normalization</td>
+      <td>Normalized recognition of 28 States, 8 UTs, and 50+ major municipal cities</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Knowledge Engine</strong></td>
+      <td>Semantic Policy RAG</td>
+      <td>Sub-second retrieval over institutional banking and customer service catalog</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Voice Synthesis</strong></td>
+      <td>Multilingual Neural TTS</td>
+      <td>English, Hindi, and regional Odia persona with unified acoustic consistency</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>CRM Integration</strong></td>
+      <td>Autonomous Ticket Intake</td>
+      <td>Direct persistence to PostgreSQL CRM database with official <code>CMP-XXXXXX</code> IDs</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Incident Tracking</strong></td>
+      <td>Self-Service Status Lookup</td>
+      <td>Real-time ticket status verification and report via telephone keypad/voice</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Resilience Layer</strong></td>
+      <td>Offline Buffer &amp; Auto-Sync</td>
+      <td>Automated local queuing and background synchronization upon network recovery</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Quality Metrics</strong></td>
+      <td>CSAT Satisfaction Survey</td>
+      <td>Automated 1–5 star rating capture recorded directly to session metadata</td>
+      <td><span class="status-badge status-operational">Operational</span></td>
+    </tr>
+    <tr>
+      <td><strong>Agent Escalation</strong></td>
+      <td>SIP Call Transfer Bridge</td>
+      <td>Forwarding live calls to human agent softphone queue (Ext 8001 / Queue 100)</td>
+      <td><span class="status-badge status-progress">In Development</span></td>
+    </tr>
+    <tr>
+      <td><strong>Supervisory UI</strong></td>
+      <td>Real-Time Call Dashboard</td>
+      <td>Web interface displaying live active calls, sentiment meters, and transcripts</td>
+      <td><span class="status-badge status-progress">Phase 2 Scope</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="section-title">5. Support Cadence &amp; SLA Framework</div>
+<div class="three-col-grid">
+  <div class="grid-card">
+    <strong>Daily Maintenance</strong>
+    <p>Automated log health triage, offline buffer audit, and unhandled query queue review.</p>
+  </div>
+  <div class="grid-card">
+    <strong>Weekly Optimization</strong>
+    <p>RAG vector index refresh, new FAQ chunk ingestion, and sentiment boundary tuning.</p>
+  </div>
+  <div class="grid-card">
+    <strong>Bi-Weekly Patching</strong>
+    <p>Automated regression test runs, zero-downtime hot-patch releases, and PBX verification.</p>
+  </div>
+</div>
+
+<div class="section-title">6. Official SOW Sign-Off Statement</div>
+<div class="callout-box" style="border-left-color: #0f172a; background: #f1f5f9; font-size: 8pt;">
+  <strong>Contractual Statement:</strong><br>
+  "Ongoing Support &amp; Maintenance of Installation 1: Core AI telephony services are 100% operational on-premise on extension 8000 with 24/7 background keep-alive monitoring. The entire AI stack—including local speech recognition, neural voice synthesis, banking domain RAG knowledge retrieval, real-time sentiment scoring, and local LLM reasoning—runs entirely on local on-premise infrastructure, ensuring zero data leaves the site. Essential stability patches—including Indian geographic slot-filling, conversational loop-prevention guards, and local CRM database synchronization—have been successfully deployed and verified, with continuous model and pipeline optimizations delivered on an ongoing basis."
+</div>
+
+<div class="footer-signature">
+  <span>Com-One Autonomous Systems · Enterprise Communication &amp; CRM</span>
+  <span>Document Ref: COP-ST-2026-11-V2 · Page 2 of 2</span>
+</div>
+
+</body>
+</html>
