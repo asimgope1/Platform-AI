@@ -75,8 +75,8 @@ class HybridRetrievalService:
         if not text:
             return ""
         t = text
-        t = re.sub(r'(?i)\b(?:madurai|to\s+badraheel|badraheel|subadra|suvadra|suvardha)\s*(?:scheme|team|stream|screen|scene)?\b', 'Subhadra Scheme', t)
-        t = re.sub(r'(?i)\bsubhadra\s+(?:team|stream|screen|scene)\b', 'Subhadra Scheme', t)
+        t = re.sub(r'(?i)\b(?:madurai|to\s+badraheel|badraheel|subadra|suvadra|suvardha)\s*(?:scheme|sikim|team|stream|screen|scene)?\b', 'Subhadra Scheme', t)
+        t = re.sub(r'(?i)\bsubhadra\s+(?:sikim|team|stream|screen|scene)\b', 'Subhadra Scheme', t)
         t = re.sub(r'(?i)\b(?:cur|car|cor|kas|kos|cas)[\w]*s?atificat\w*\b', 'caste certificate', t)
         t = re.sub(r'(?i)\b(?:cost|cast|coast|cars)\s+certificates?\b', 'caste certificate', t)
         t = re.sub(r'(?i)\bcertificat\w*\b', 'certificate', t)

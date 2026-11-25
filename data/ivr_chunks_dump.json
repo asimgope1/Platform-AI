@@ -1519,22 +1519,6 @@
     }
   },
   {
-    "id": "06d59060-da80-4202-9c6b-cbf1948b9e42",
-    "document_id": "2c365797-9553-468b-813e-63276601091f",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 52,
-    "content": "Call Conversation Episode [Session bec9d864-f08d-4480-bdfc-de8edf34ab48]:\nService Category: complaint\nLanguage: en\nConsultation Flow:\nCaller: I want to register a new complaint.\nCaller: Certainly! To register your complaint, please tell me your State.\nAssistant: Book IDOL.\nAssistant: I understand you\nCaller: House number 62.\nCaller: Thank you. Now please describe the issue or problem you are facing.\nAssistant: No, just register the complaint.\nAssistant: I understand you\nCaller: House number 62.\nCaller: Thank you. Now please describe the issue or problem you are facing.\nKey Inquiries: I want to register a new complaint., Book IDOL., House number 62., No, just register the complaint.",
-    "meta": {
-      "type": "conversation_episode",
-      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
-      "category": "complaint",
-      "language": "en",
-      "turn_count": 5,
-      "verified": true
-    }
-  },
-  {
     "id": "b4f2b021-5dc4-47b1-b237-cc8adcb9ce46",
     "document_id": "2c365797-9553-468b-813e-63276601091f",
     "document_title": "Continuous Voice Call Learnings",
@@ -1553,6 +1537,22 @@
       "language": "en",
       "verified": true,
       "resolved": true
+    }
+  },
+  {
+    "id": "06d59060-da80-4202-9c6b-cbf1948b9e42",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 52,
+    "content": "Call Conversation Episode [Session bec9d864-f08d-4480-bdfc-de8edf34ab48]:\nService Category: complaint\nLanguage: en\nConsultation Flow:\nCaller: I want to register a new complaint.\nCaller: Certainly! To register your complaint, please tell me your State.\nAssistant: Book IDOL.\nAssistant: I understand you\nCaller: House number 62.\nCaller: Thank you. Now please describe the issue or problem you are facing.\nAssistant: No, just register the complaint.\nAssistant: I understand you\nCaller: House number 62.\nCaller: Thank you. Now please describe the issue or problem you are facing.\nKey Inquiries: I want to register a new complaint., Book IDOL., House number 62., No, just register the complaint.",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "bec9d864-f08d-4480-bdfc-de8edf34ab48",
+      "category": "complaint",
+      "language": "en",
+      "turn_count": 5,
+      "verified": true
     }
   },
   {
@@ -1633,6 +1633,22 @@
     }
   },
   {
+    "id": "f452e468-7210-43e2-b155-74c1c59b6d08",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 55,
+    "content": "Call Conversation Episode [Session d4800619-8f83-4f2a-adf2-8eb5dc90886b]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: Tell me about Subhadra scheme.\nAssistant: Context: Jana Seva Odisha Guide - Subhadra Scheme - Eligibility Criteria, Age Limits, and Income Cap\nKey Inquiries: Tell me about Subhadra scheme.",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "d4800619-8f83-4f2a-adf2-8eb5dc90886b",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 3,
+      "verified": true
+    }
+  },
+  {
     "id": "4e7069e9-da59-495b-b0f0-d42d31ff09ef",
     "document_id": "2c365797-9553-468b-813e-63276601091f",
     "document_title": "Continuous Voice Call Learnings",
@@ -1651,22 +1667,6 @@
       "language": "en",
       "verified": true,
       "resolved": true
-    }
-  },
-  {
-    "id": "f452e468-7210-43e2-b155-74c1c59b6d08",
-    "document_id": "2c365797-9553-468b-813e-63276601091f",
-    "document_title": "Continuous Voice Call Learnings",
-    "source_type": "voice_call",
-    "chunk_index": 55,
-    "content": "Call Conversation Episode [Session d4800619-8f83-4f2a-adf2-8eb5dc90886b]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: Tell me about Subhadra scheme.\nAssistant: Context: Jana Seva Odisha Guide - Subhadra Scheme - Eligibility Criteria, Age Limits, and Income Cap\nKey Inquiries: Tell me about Subhadra scheme.",
-    "meta": {
-      "type": "conversation_episode",
-      "call_uuid": "d4800619-8f83-4f2a-adf2-8eb5dc90886b",
-      "category": "citizen_services",
-      "language": "en",
-      "turn_count": 3,
-      "verified": true
     }
   },
   {
@@ -1814,6 +1814,776 @@
       "category": "citizen_services",
       "language": "hi",
       "turn_count": 3,
+      "verified": true
+    }
+  },
+  {
+    "id": "d5e35c5d-c611-4845-a431-341087bb0d0f",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 64,
+    "content": "Customer Spoken Inquiry: \"Who can apply to us to bedrosky?\"\nVerified Resolution: \"Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (e03de55e-cfec-45d1-a66e-fb674d828a69)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "e03de55e-cfec-45d1-a66e-fb674d828a69",
+      "caller_query": "Who can apply to us to bedrosky?",
+      "variants": [
+        "Who can apply to us to bedrosky?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "3df6ba54-8808-4773-ae7c-c027c58f5020",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 65,
+    "content": "Customer Spoken Inquiry: \"Okay, and how to apply for this scheme?\"\nVerified Resolution: \"Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (e03de55e-cfec-45d1-a66e-fb674d828a69)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "e03de55e-cfec-45d1-a66e-fb674d828a69",
+      "caller_query": "Okay, and how to apply for this scheme?",
+      "variants": [
+        "Okay, and how to apply for this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "3383a3ef-356b-44a2-b113-13b26ae6270a",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 66,
+    "content": "Customer Spoken Inquiry: \"How to apply?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (e03de55e-cfec-45d1-a66e-fb674d828a69)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "e03de55e-cfec-45d1-a66e-fb674d828a69",
+      "caller_query": "How to apply?",
+      "variants": [
+        "How to apply?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "98f37f3f-e3aa-4460-898b-80bfec79a60e",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 67,
+    "content": "Call Conversation Episode [Session e03de55e-cfec-45d1-a66e-fb674d828a69]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: Who can apply to us to bedrosky?\nAssistant: Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\nCaller: Okay, and how to apply for this scheme?\nAssistant: Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\nCaller: How to apply?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\nKey Inquiries: Who can apply to us to bedrosky?, Okay, and how to apply for this scheme?, How to apply?",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "e03de55e-cfec-45d1-a66e-fb674d828a69",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 7,
+      "verified": true
+    }
+  },
+  {
+    "id": "62cf97c6-9efd-4d7c-83e7-961706a38742",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 68,
+    "content": "Customer Spoken Inquiry: \"I want to know about the super drive scheme.\"\nVerified Resolution: \"Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (fba74bae-cb92-4e3a-a495-b1a7bdd5a07f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "fba74bae-cb92-4e3a-a495-b1a7bdd5a07f",
+      "caller_query": "I want to know about the super drive scheme.",
+      "variants": [
+        "I want to know about the super drive scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "95f9b179-4d83-4c46-8946-991cd67c714a",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 69,
+    "content": "Customer Spoken Inquiry: \"How to apply?\"\nVerified Resolution: \"Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (fba74bae-cb92-4e3a-a495-b1a7bdd5a07f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "fba74bae-cb92-4e3a-a495-b1a7bdd5a07f",
+      "caller_query": "How to apply?",
+      "variants": [
+        "How to apply?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "50d7a3cf-2f6f-48f7-ab84-ee0cf75766bc",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 70,
+    "content": "Call Conversation Episode [Session fba74bae-cb92-4e3a-a495-b1a7bdd5a07f]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: I want to know about the super drive scheme.\nAssistant: Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: How to apply?\nAssistant: Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\nKey Inquiries: I want to know about the super drive scheme., How to apply?",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "fba74bae-cb92-4e3a-a495-b1a7bdd5a07f",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 5,
+      "verified": true
+    }
+  },
+  {
+    "id": "2c6ca6a4-6c9e-4563-982f-7509fc241111",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 71,
+    "content": "Customer Spoken Inquiry: \"How does subadra is came?\"\nVerified Resolution: \"Under Subhadra Scheme, eligible women receive total financial assistance of up to ₹50,000 disbursed directly into their bank account via Direct Benefit Transfer (DBT).\"\nTopic: citizen_services\nSource: Live Telephone Interaction (4a3f9d66-e107-4dff-85d7-c0916fba8405)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "4a3f9d66-e107-4dff-85d7-c0916fba8405",
+      "caller_query": "How does subadra is came?",
+      "variants": [
+        "How does subadra is came?",
+        "How does Subhadra Schemeis came?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "6e7a0844-afb7-4763-b1b5-327020a7c7b7",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 72,
+    "content": "Customer Spoken Inquiry: \"Okay, who can apply in this scheme?\"\nVerified Resolution: \"Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (4a3f9d66-e107-4dff-85d7-c0916fba8405)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "4a3f9d66-e107-4dff-85d7-c0916fba8405",
+      "caller_query": "Okay, who can apply in this scheme?",
+      "variants": [
+        "Okay, who can apply in this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "f8c5a7d1-ca6b-408c-964e-19e5d2c87189",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 73,
+    "content": "Customer Spoken Inquiry: \"How to apply for this scheme?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Visit your nearest Jana Seva Kendra or the official Subhadra portal with your Aadhaar, income certificate, residence certificate, bank passbook, and photo to submit your application.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (4a3f9d66-e107-4dff-85d7-c0916fba8405)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "4a3f9d66-e107-4dff-85d7-c0916fba8405",
+      "caller_query": "How to apply for this scheme?",
+      "variants": [
+        "How to apply for this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "c00f13c4-5e31-45d5-a50f-cc478f23dff0",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 74,
+    "content": "Customer Spoken Inquiry: \"Okay. Can you connect me to the agent?\"\nVerified Resolution: \"Connecting you with an available representative right away. Please hold the line.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (4a3f9d66-e107-4dff-85d7-c0916fba8405)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "4a3f9d66-e107-4dff-85d7-c0916fba8405",
+      "caller_query": "Okay. Can you connect me to the agent?",
+      "variants": [
+        "Okay. Can you connect me to the agent?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "9cbf554c-5ff8-42d9-b4b1-c4710720cc99",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 75,
+    "content": "Call Conversation Episode [Session 4a3f9d66-e107-4dff-85d7-c0916fba8405]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: How does Subhadra Schemeis came?\nAssistant: Under Subhadra Scheme, eligible women receive total financial assistance of up to ₹50,000 disbursed directly into their bank account via Direct Benefit Transfer (DBT).\nCaller: Okay, who can apply in this scheme?\nAssistant: Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\nCaller: How to apply for this scheme?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Visit your nearest Jana Seva Kendra or the official Subhadra portal with your Aadhaar, income certificate, residence certificate, bank passbook, and photo to submit your application.\nCaller: Okay. Can you connect me to the agent?\nAssistant: Connecting you with an available representative right away. Please hold the line.\nKey Inquiries: How does Subhadra Schemeis came?, Okay, who can apply in this scheme?, How to apply for this scheme?, Okay. Can you connect me to the agent?",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "4a3f9d66-e107-4dff-85d7-c0916fba8405",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 9,
+      "verified": true
+    }
+  },
+  {
+    "id": "35450ed5-01d8-4283-85c1-2226c257ed92",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 76,
+    "content": "Customer Spoken Inquiry: \"Help me about this sub-adurised scheme.\"\nVerified Resolution: \"Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (f7baa64f-6ec0-403c-938d-9ffe047bd226)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "f7baa64f-6ec0-403c-938d-9ffe047bd226",
+      "caller_query": "Help me about this sub-adurised scheme.",
+      "variants": [
+        "Help me about this sub-adurised scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "b0738cd2-246c-4ca8-9daa-fb8dd3420341",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 77,
+    "content": "Customer Spoken Inquiry: \"Who can apply in this scheme?\"\nVerified Resolution: \"Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (f7baa64f-6ec0-403c-938d-9ffe047bd226)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "f7baa64f-6ec0-403c-938d-9ffe047bd226",
+      "caller_query": "Who can apply in this scheme?",
+      "variants": [
+        "Who can apply in this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "3a1f450e-831f-443f-bf9c-e229618fe4b3",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 78,
+    "content": "Customer Spoken Inquiry: \"How do I like this scheme?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (f7baa64f-6ec0-403c-938d-9ffe047bd226)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "f7baa64f-6ec0-403c-938d-9ffe047bd226",
+      "caller_query": "How do I like this scheme?",
+      "variants": [
+        "How do I like this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "4ade4d89-2648-402a-9d7e-a043c4966937",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 79,
+    "content": "Customer Spoken Inquiry: \"How to apply on this SIM?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Visit your nearest Jana Seva Kendra or the official Subhadra portal with your Aadhaar, income certificate, residence certificate, bank passbook, and photo to submit your application.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (f7baa64f-6ec0-403c-938d-9ffe047bd226)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "f7baa64f-6ec0-403c-938d-9ffe047bd226",
+      "caller_query": "How to apply on this SIM?",
+      "variants": [
+        "How to apply on this SIM?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "c17e7442-246f-4105-96ba-19ac690370da",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 80,
+    "content": "Customer Spoken Inquiry: \"Could you please transfer the call to agent?\"\nVerified Resolution: \"Connecting you with an available representative right away. Please hold the line.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (f7baa64f-6ec0-403c-938d-9ffe047bd226)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "f7baa64f-6ec0-403c-938d-9ffe047bd226",
+      "caller_query": "Could you please transfer the call to agent?",
+      "variants": [
+        "Could you please transfer the call to agent?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "95190b97-d6ac-4893-8cc8-4d2aaff288ed",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 81,
+    "content": "Call Conversation Episode [Session f7baa64f-6ec0-403c-938d-9ffe047bd226]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: Help me about this sub-adurised scheme.\nAssistant: Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: Who can apply in this scheme?\nAssistant: Yes, all eligible women permanent residents of Odisha aged 18 to 60 who meet the income criteria can apply.\nCaller: How do I like this scheme?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: How to apply on this SIM?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Visit your nearest Jana Seva Kendra or the official Subhadra portal with your Aadhaar, income certificate, residence certificate, bank passbook, and photo to submit your application.\nCaller: Could you please transfer the call to agent?\nAssistant: Connecting you with an available representative right away. Please hold the line.\nKey Inquiries: Help me about this sub-adurised scheme., Who can apply in this scheme?, How do I like this scheme?, How to apply on this SIM?",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "f7baa64f-6ec0-403c-938d-9ffe047bd226",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 11,
+      "verified": true
+    }
+  },
+  {
+    "id": "487c91e7-c134-472b-8844-17dd0c0b2b2e",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 82,
+    "content": "Customer Spoken Inquiry: \"کیا آپ مجھے سوبرڑا یو جنا کے بارےم بتا سکتی ہو\"\nVerified Resolution: \"जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुला रहता है। रविवार को बंद रहता है।\"\nTopic: citizen_services\nSource: Live Telephone Interaction (af58e814-be60-4348-861f-f73154ca0f7f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "af58e814-be60-4348-861f-f73154ca0f7f",
+      "caller_query": "کیا آپ مجھے سوبرڑا یو جنا کے بارےم بتا سکتی ہو",
+      "variants": [
+        "کیا آپ مجھے سوبرڑا یو جنا کے بارےم بتا سکتی ہو"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "ef97242f-2f1f-4cfb-a258-b3fae74f6864",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 83,
+    "content": "Customer Spoken Inquiry: \"سبترا یو جنا کے بارے میں بتایا\"\nVerified Resolution: \"जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुला रहता है। रविवार को बंद रहता है।\"\nTopic: citizen_services\nSource: Live Telephone Interaction (af58e814-be60-4348-861f-f73154ca0f7f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "af58e814-be60-4348-861f-f73154ca0f7f",
+      "caller_query": "سبترا یو جنا کے بارے میں بتایا",
+      "variants": [
+        "سبترا یو جنا کے بارے میں بتایا"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "f265dd13-8dc5-43d7-b831-8399b2f97a0d",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 84,
+    "content": "Customer Spoken Inquiry: \"لیکن میں ایک سوبرتی ہے\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुला रहता है। रविवार को बंद रहता है।\"\nTopic: citizen_services\nSource: Live Telephone Interaction (af58e814-be60-4348-861f-f73154ca0f7f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "af58e814-be60-4348-861f-f73154ca0f7f",
+      "caller_query": "لیکن میں ایک سوبرتی ہے",
+      "variants": [
+        "لیکن میں ایک سوبرتی ہے"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "b7f025a2-6813-4e24-84ca-3022ee5ecc0a",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 85,
+    "content": "Call Conversation Episode [Session af58e814-be60-4348-861f-f73154ca0f7f]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: کیا آپ مجھے سوبرڑا یو جنا کے بارےم بتا سکتی ہو\nAssistant: जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुला रहता है। रविवार को बंद रहता है।\nCaller: سبترا یو جنا کے بارے میں بتایا\nAssistant: जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुला रहता है। रविवार को बंद रहता है।\nCaller: لیکن میں ایک سوبرتی ہے\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. जन सेवा केंद्र सोमवार से शनिवार सुबह 9:00 बजे से शाम 6:00 बजे तक खुला रहता है। रविवार को बंद रहता है।\nKey Inquiries: کیا آپ مجھے سوبرڑا یو جنا کے بارےم بتا سکتی ہو, سبترا یو جنا کے بارے میں بتایا, لیکن میں ایک سوبرتی ہے",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "af58e814-be60-4348-861f-f73154ca0f7f",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 7,
+      "verified": true
+    }
+  },
+  {
+    "id": "35d64d86-9f2f-4c61-be94-1a43d0cb6890",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 86,
+    "content": "Customer Spoken Inquiry: \"Tell me about the sub-adre scheme.\"\nVerified Resolution: \"Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (a7281434-05fc-43a8-a55e-edacd56e0cf7)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "a7281434-05fc-43a8-a55e-edacd56e0cf7",
+      "caller_query": "Tell me about the sub-adre scheme.",
+      "variants": [
+        "Tell me about the sub-adre scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "6b7826d0-aa5f-4a3b-a241-4312240c4e76",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 87,
+    "content": "Call Conversation Episode [Session a7281434-05fc-43a8-a55e-edacd56e0cf7]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: Tell me about the sub-adre scheme.\nAssistant: Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: Thank you.\nAssistant: You're welcome! Have a wonderful day!\nKey Inquiries: Tell me about the sub-adre scheme., Thank you.",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "a7281434-05fc-43a8-a55e-edacd56e0cf7",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 5,
+      "verified": true
+    }
+  },
+  {
+    "id": "559ef8bb-5d00-421d-a512-ac5cd1291a8b",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 88,
+    "content": "Customer Spoken Inquiry: \"about the subadresse scheme.\"\nVerified Resolution: \"Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f",
+      "caller_query": "about the subadresse scheme.",
+      "variants": [
+        "about the subadresse scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "9cd8a55d-6859-45a6-83cb-797977d60bc6",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 89,
+    "content": "Customer Spoken Inquiry: \"Please tell me about the Swadra scheme.\"\nVerified Resolution: \"Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f",
+      "caller_query": "Please tell me about the Swadra scheme.",
+      "variants": [
+        "Please tell me about the Swadra scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "ed228346-59c6-4f74-8c18-dfa8cd52edd2",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 90,
+    "content": "Customer Spoken Inquiry: \"Who can apply this scheme?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f",
+      "caller_query": "Who can apply this scheme?",
+      "variants": [
+        "Who can apply this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "3adcd966-cd4d-4845-bbb8-d10efa7a54fa",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 91,
+    "content": "Call Conversation Episode [Session 9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: about the subadresse scheme.\nAssistant: Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nAssistant: Sorry, I could not hear that clearly. Could you please repeat?\nCaller: Please tell me about the Swadra scheme.\nAssistant: Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: Who can apply this scheme?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: I'm going to go to the bathroom.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. I can assist you with Subhadra Scheme, Caste, Income, and Residence certificates, Aadhaar, PAN card, Voter ID, and citizen grievance registration.\nCaller: 1,5,5\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. The status of complaint ticket 155 is In Progress.\nKey Inquiries: about the subadresse scheme., Please tell me about the Swadra scheme., Who can apply this scheme?, I'm going to go to the bathroom.",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 12,
+      "verified": true
+    }
+  },
+  {
+    "id": "5a2ebee0-abf6-40e4-86b0-5d3eee2470c1",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 92,
+    "content": "Customer Spoken Inquiry: \"about Subhadra Sikim.\"\nVerified Resolution: \"I can assist you with Subhadra Scheme, Caste, Income, and Residence certificates, Aadhaar, PAN card, Voter ID, and citizen grievance registration.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (815ec90a-f796-403e-8ed8-3e04e5fcc741)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "815ec90a-f796-403e-8ed8-3e04e5fcc741",
+      "caller_query": "about Subhadra Sikim.",
+      "variants": [
+        "about Subhadra Sikim."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "5d7c65bb-9916-4227-84c1-f79aa23d2853",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 93,
+    "content": "Customer Spoken Inquiry: \"Okay, who can apply on this?\"\nVerified Resolution: \"No, caste certificates are meant for recognized reserved categories (SC, ST, OBC, SEBC). General category individuals do not receive a reserved caste certificate.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (815ec90a-f796-403e-8ed8-3e04e5fcc741)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "815ec90a-f796-403e-8ed8-3e04e5fcc741",
+      "caller_query": "Okay, who can apply on this?",
+      "variants": [
+        "Okay, who can apply on this?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "9604b506-5ff8-43d1-9f9e-635177d08778",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 94,
+    "content": "Call Conversation Episode [Session 815ec90a-f796-403e-8ed8-3e04e5fcc741]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: about Subhadra Sikim.\nAssistant: I can assist you with Subhadra Scheme, Caste, Income, and Residence certificates, Aadhaar, PAN card, Voter ID, and citizen grievance registration.\nCaller: Okay, who can apply on this?\nAssistant: No, caste certificates are meant for recognized reserved categories (SC, ST, OBC, SEBC). General category individuals do not receive a reserved caste certificate.\nKey Inquiries: about Subhadra Sikim., Okay, who can apply on this?",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "815ec90a-f796-403e-8ed8-3e04e5fcc741",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 5,
+      "verified": true
+    }
+  },
+  {
+    "id": "93caa3a6-f1da-4e92-9a39-c667ac99662a",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 95,
+    "content": "Customer Spoken Inquiry: \"W tym jest super przyjemny.\"\nVerified Resolution: \"जाति प्रमाण पत्र SC, ST, OBC और SEBC वर्ग के नागरिकों के लिए बनता है। सामान्य वर्ग के लिए आरक्षित जाति प्रमाण पत्र नहीं बनता।\"\nTopic: citizen_services\nSource: Live Telephone Interaction (ded79e1e-aa83-40f4-84a5-46d32bed99df)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "ded79e1e-aa83-40f4-84a5-46d32bed99df",
+      "caller_query": "W tym jest super przyjemny.",
+      "variants": [
+        "W tym jest super przyjemny."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "617cefcf-abad-464f-927c-cb442cb1f572",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 96,
+    "content": "Call Conversation Episode [Session ded79e1e-aa83-40f4-84a5-46d32bed99df]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: W tym jest super przyjemny.\nAssistant: जाति प्रमाण पत्र SC, ST, OBC और SEBC वर्ग के नागरिकों के लिए बनता है। सामान्य वर्ग के लिए आरक्षित जाति प्रमाण पत्र नहीं बनता।\nKey Inquiries: W tym jest super przyjemny.",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "ded79e1e-aa83-40f4-84a5-46d32bed99df",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 3,
+      "verified": true
+    }
+  },
+  {
+    "id": "857a2914-2356-4952-96c1-1b4b63bac39c",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 97,
+    "content": "Customer Spoken Inquiry: \"Okay, tell me about the subadrice scheme.\"\nVerified Resolution: \"Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (bbcf2242-c667-4e54-93d9-9d48cbddbe4e)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "bbcf2242-c667-4e54-93d9-9d48cbddbe4e",
+      "caller_query": "Okay, tell me about the subadrice scheme.",
+      "variants": [
+        "Okay, tell me about the subadrice scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "35d697ee-67a8-43fa-a548-256bdcc6d3cd",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 98,
+    "content": "Customer Spoken Inquiry: \"Okay, who can apply in this?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (bbcf2242-c667-4e54-93d9-9d48cbddbe4e)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "bbcf2242-c667-4e54-93d9-9d48cbddbe4e",
+      "caller_query": "Okay, who can apply in this?",
+      "variants": [
+        "Okay, who can apply in this?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "4166e374-dd13-4277-a6c7-9213221e5ce6",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 99,
+    "content": "Customer Spoken Inquiry: \"Who can apply on this scheme?\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (bbcf2242-c667-4e54-93d9-9d48cbddbe4e)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "bbcf2242-c667-4e54-93d9-9d48cbddbe4e",
+      "caller_query": "Who can apply on this scheme?",
+      "variants": [
+        "Who can apply on this scheme?"
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "5aee0167-21f5-4bf2-a63c-0c179dab65b3",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 100,
+    "content": "Customer Spoken Inquiry: \"to apply in this scheme.\"\nVerified Resolution: \"I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (bbcf2242-c667-4e54-93d9-9d48cbddbe4e)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "bbcf2242-c667-4e54-93d9-9d48cbddbe4e",
+      "caller_query": "to apply in this scheme.",
+      "variants": [
+        "to apply in this scheme."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "db80c59b-375d-4ce0-ae05-837961480f0f",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 101,
+    "content": "Customer Spoken Inquiry: \"connect me to the agent.\"\nVerified Resolution: \"Connecting you with an available representative right away. Please hold the line.\"\nTopic: citizen_services\nSource: Live Telephone Interaction (bbcf2242-c667-4e54-93d9-9d48cbddbe4e)",
+    "meta": {
+      "type": "learned_conversation_qa",
+      "call_uuid": "bbcf2242-c667-4e54-93d9-9d48cbddbe4e",
+      "caller_query": "connect me to the agent.",
+      "variants": [
+        "connect me to the agent."
+      ],
+      "ask_count": 1,
+      "category": "citizen_services",
+      "language": "en",
+      "verified": true,
+      "resolved": true
+    }
+  },
+  {
+    "id": "987286c9-f57f-442a-b870-fc0938d8999a",
+    "document_id": "2c365797-9553-468b-813e-63276601091f",
+    "document_title": "Continuous Voice Call Learnings",
+    "source_type": "voice_call",
+    "chunk_index": 102,
+    "content": "Call Conversation Episode [Session bbcf2242-c667-4e54-93d9-9d48cbddbe4e]:\nService Category: citizen_services\nLanguage: en\nDialogue Consultation Flow:\nAssistant: Sure, I can help you with Citizen Services & Welfare Schemes. Please explain your issue, I'm listening.\nCaller: Okay, tell me about the subadrice scheme.\nAssistant: Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: Okay, who can apply in this?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: Who can apply on this scheme?\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: to apply in this scheme.\nAssistant: I understand you've already tried this earlier — let me help you with the next option right away. Subhadra Scheme is an Odisha Government financial assistance initiative providing eligible women up to ₹50,000 via Direct Benefit Transfer (DBT) to support their financial independence.\nCaller: connect me to the agent.\nAssistant: Connecting you with an available representative right away. Please hold the line.\nKey Inquiries: Okay, tell me about the subadrice scheme., Okay, who can apply in this?, Who can apply on this scheme?, to apply in this scheme.",
+    "meta": {
+      "type": "conversation_episode",
+      "call_uuid": "bbcf2242-c667-4e54-93d9-9d48cbddbe4e",
+      "category": "citizen_services",
+      "language": "en",
+      "turn_count": 11,
       "verified": true
     }
   },
@@ -4343,6 +5113,25 @@
       "ask_count": 3,
       "call_uuid": "5fa13fec-0c77-4a45-9e37-ead4b5044a06",
       "last_asked_at": "2026-11-25T10:14:42.191271+00:00"
+    }
+  },
+  {
+    "id": "c435b888-0772-4552-9481-059237885025",
+    "document_id": "c2f557fd-9475-4a2a-801b-39c8b95550e9",
+    "document_title": "Unanswered Knowledge Candidates (Pending Review)",
+    "source_type": "candidate_draft",
+    "chunk_index": 2,
+    "content": "[CANDIDATE - PENDING REVIEW]\nUnanswered Caller Question: \"I'm going to go to the bathroom.\"\nProvisional Assistant Reply: \"I understand you've already tried this earlier — let me help you with the next option right away. I can assist you with Subhadra Scheme, Caste, Income, and Residence certificates, Aadhaar, PAN card, Voter ID, and citizen grievance registration.\"\nCall UUID: 9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f",
+    "meta": {
+      "type": "unanswered_candidate",
+      "verified": false,
+      "status": "pending_review",
+      "caller_query": "I'm going to go to the bathroom.",
+      "variants": [
+        "I'm going to go to the bathroom."
+      ],
+      "ask_count": 1,
+      "call_uuid": "9e577a8a-a77a-4a9a-a9b0-bcc84ea6ad7f"
     }
   },
   {

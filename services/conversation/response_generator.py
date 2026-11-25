@@ -186,10 +186,10 @@ class RAGFirstResponseGenerator:
             ).lower()
             lower_msg = (user_message or "").lower()
             if any(w in lower_msg for w in ["apply", "kaise apply", "kahan", "process", "procedure", "how to", "eligibility", "document", "documents", "money", "kitna"]):
-                if ("caste" in prev_turns or "jati" in prev_turns) and "caste" not in lower_msg:
-                    search_query = f"{user_message} caste certificate"
-                elif ("subhadra" in prev_turns or "scheme" in prev_turns or "yojana" in prev_turns) and "subhadra" not in lower_msg:
+                if ("subhadra" in prev_turns or "bedrosky" in prev_turns or "18 to 60" in prev_turns or "50,000" in prev_turns or "yojana" in prev_turns) and "subhadra" not in lower_msg:
                     search_query = f"{user_message} subhadra scheme"
+                elif ("caste" in prev_turns or "jati" in prev_turns) and "caste" not in lower_msg:
+                    search_query = f"{user_message} caste certificate"
                 elif ("income" in prev_turns or "aay" in prev_turns) and "income" not in lower_msg:
                     search_query = f"{user_message} income certificate"
                 elif ("residence" in prev_turns or "niwas" in prev_turns) and "residence" not in lower_msg:

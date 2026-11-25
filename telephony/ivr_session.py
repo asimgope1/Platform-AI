@@ -1026,13 +1026,40 @@ class IVRCallSession:
             self._last_turn_pcm = stt_pcm
             wav_bytes = _raw_pcm_to_wav(stt_pcm, sample_rate=PBX_SAMPLE_RATE)
             try:
+                stt_lang = None if os.getenv("IVR_AUTO_LANG_SWITCH", "true").lower() in ("1", "true", "yes") else self._language
                 stt_result = await self._audio_service.transcribe(
                     audio_bytes=wav_bytes,
                     filename="call_audio.wav",
-                    language=self._language,
+                    language=stt_lang,
                 )
                 self._last_stt_result = stt_result if isinstance(stt_result, dict) else {"text": str(stt_result or "")}
                 user_text = (self._last_stt_result.get("text") or "").strip()
+                detected_lang = str(self._last_stt_result.get("language") or "").lower()
+                # If Whisper auto-detected Urdu/Arabic script for spoken Hindi, re-transcribe forced to Hindi (Devanagari)
+                if detected_lang == "ur" or any("\u0600" <= ch <= "\u06ff" for ch in user_text):
+                    hi_res = await self._audio_service.transcribe(
+                        audio_bytes=wav_bytes,
+                        filename="call_audio.wav",
+                        language="hi",
+                    )
+                    self._last_stt_result = hi_res if isinstance(hi_res, dict) else {"text": str(hi_res or "")}
+                    user_text = (self._last_stt_result.get("text") or "").strip()
+                    detected_lang = "hi"
+                elif detected_lang and detected_lang not in ("en", "hi", "or"):
+                    # Guard against Whisper hallucinating unrelated languages (e.g. Polish) on noisy audio
+                    fb_res = await self._audio_service.transcribe(
+                        audio_bytes=wav_bytes,
+                        filename="call_audio.wav",
+                        language=self.selected_language,
+                    )
+                    self._last_stt_result = fb_res if isinstance(fb_res, dict) else {"text": str(fb_res or "")}
+                    user_text = (self._last_stt_result.get("text") or "").strip()
+                    detected_lang = self.selected_language
+                if detected_lang in ("en", "hi", "or") and detected_lang != self.selected_language:
+                    logger.info(f"[IVR] 🌐 Auto-switched call language: '{self.selected_language}' -> '{detected_lang}'")
+                    self.selected_language = detected_lang
+                    self._language = detected_lang
+                    self.conv_state.language = detected_lang
             except Exception as exc:
                 logger.error(f"[IVR] STT error: {exc}")
                 return

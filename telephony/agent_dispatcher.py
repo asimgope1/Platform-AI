@@ -12,8 +12,8 @@ from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
-# Default agent extensions pool (e.g. 1001, 1002, 1003, 8001)
-DEFAULT_EXTENSIONS = ["1001", "1002", "1003", "8001"]
+# Default agent extensions pool (e.g. 100, 200)
+DEFAULT_EXTENSIONS = ["100", "200"]
 
 
 class AgentDispatcher:

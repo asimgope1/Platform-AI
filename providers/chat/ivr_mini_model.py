@@ -2398,12 +2398,15 @@ class IVRRAGMiniModel:
                 if any(w in query_words for w in ("timing", "timings", "hours", "open", "time", "closing", "sunday")) and any(t in r_lower for t in ("9:00", "monday", "closed", "सोमवार", "ସୋମବାର")):
                     score += 20.0
 
-                # Application process / how-to-apply disambiguation
-                if any(w in query_words for w in ("apply", "application", "process", "procedure", "register", "enroll", "submit", "आवेदन", "प्रक्रिया", "ଆବେଦନ", "ପ୍ରକ୍ରିୟା")):
-                    if any(a in r_lower for a in ("apply", "application", "portal", "kendra", "submit", "form", "anganwadi", "csc", "online", "offline", "आवेदन", "ଆବେଦନ")):
+                # Application process / how-to-apply disambiguation (do not penalize eligibility when caller asks "who")
+                is_who_eligible = any(w in query_words for w in ("who", "eligible", "eligibility", "कौन", "पात्र", "କିଏ", "ଯୋଗ୍ୟ"))
+                if not is_who_eligible and any(w in query_words for w in ("apply", "application", "process", "procedure", "register", "enroll", "submit", "आवेदन", "प्रक्रिया", "ଆବେଦନ", "ପ୍ରକ୍ରିୟା")):
+                    if any(a in r_lower for a in ("visit", "portal", "kendra", "submit", "form", "anganwadi", "csc", "online", "offline", "आवेदन", "ଆବେଦନ")):
                         score += 45.0
-                    if r_lower.startswith("no.") or "excluded" in r_lower:
+                    if r_lower.startswith("no.") or r_lower.startswith("yes, all eligible") or "excluded" in r_lower:
                         score -= 30.0
+                elif is_who_eligible and r_lower.startswith("yes, all eligible"):
+                    score += 45.0
 
                 if "age" in query_words and any(a in r_lower for a in ("18 to 60", "18–60", "उम्र", "ବୟସ")):
                     score += 20.0
